@@ -1,0 +1,22 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version      : Vivado v.2025.1 (lin64) Build 6140274 Wed May 21 22:58:25 MDT 2025
+| Date              : Sat Jul 25 13:46:53 2026
+| Host              : yun-MS-7B50 running 64-bit Ubuntu 22.04.5 LTS
+| Command           : report_cdc -details -file /home/yun/lenet5/reports/lenet5_axis_wrapper/impl_cdc.rpt
+| Design            : lenet5_axis_wrapper
+| Device            : xck26-sfvc784
+| Speed File        : -2LV  PRODUCTION 1.30 05-15-2022
+| Design State      : Physopt postRoute
+| Temperature Grade : C
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+CDC Report
+
+ID  Severity  Count  Description
+--  --------  -----  -----------
+
+ID      Waived Endpoints  
+------  ----------------  
+CDC-26                 1  
+

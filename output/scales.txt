@@ -1,0 +1,11 @@
+input 0.02211621
+conv1_weight 0.00413322
+conv1_bias 0.00161404
+conv2_weight 0.00441846
+conv2_bias 0.00104479
+fc1_weight 0.00506821
+fc1_bias 0.00086569
+fc2_weight 0.00366050
+fc2_bias 0.00184555
+fc3_weight 0.00388619
+fc3_bias 0.00148633

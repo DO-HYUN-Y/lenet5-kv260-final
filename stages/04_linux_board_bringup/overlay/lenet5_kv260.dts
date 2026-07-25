@@ -1,0 +1,32 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+    fragment@0 {
+        target = <&fpga_full>;
+        __overlay__ {
+            firmware-name = "lenet5_kv260.bit.bin";
+        };
+    };
+
+    fragment@1 {
+        target = <&amba>;
+        __overlay__ {
+            #address-cells = <2>;
+            #size-cells = <2>;
+
+            lenet5_board: lenet5@a0000000 {
+                compatible = "yun,lenet5-kv260-board-1.1";
+                status = "okay";
+
+                reg = <0x0 0xa0000000 0x0 0x00010000>,
+                      <0x0 0xa0010000 0x0 0x00010000>;
+                reg-names = "accel", "dma";
+
+                clocks = <&zynqmp_clk 71>;
+                clock-names = "pl_clk0";
+                yun,fabric-clock-hz = <149998501>;
+            };
+        };
+    };
+};

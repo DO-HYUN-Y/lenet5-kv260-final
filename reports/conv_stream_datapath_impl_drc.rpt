@@ -1,0 +1,53 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.1 (lin64) Build 6140274 Wed May 21 22:58:25 MDT 2025
+| Date         : Fri Jul 24 22:43:42 2026
+| Host         : yun-MS-7B50 running 64-bit Ubuntu 22.04.5 LTS
+| Command      : report_drc -file reports/conv_stream_datapath_impl_drc.rpt
+| Design       : conv_stream_datapath
+| Device       : xck26-sfvc784-2LV-c
+| Speed File   : -2LV
+| Design State : Fully Routed
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Report DRC
+
+Table of Contents
+-----------------
+1. REPORT SUMMARY
+2. REPORT DETAILS
+
+1. REPORT SUMMARY
+-----------------
+            Netlist: conv_stream_datapath
+          Floorplan: design_1
+      Design limits: <entire design considered>
+           Ruledeck: default
+             Max checks: <unlimited>
+             Checks found: 1
++-----------+----------+-------------------+--------+
+| Rule      | Severity | Description       | Checks |
++-----------+----------+-------------------+--------+
+| RTSTAT-10 | Warning  | No routable loads | 1      |
++-----------+----------+-------------------+--------+
+
+2. REPORT DETAILS
+-----------------
+RTSTAT-10#1 Warning
+No routable loads  
+472 net(s) have no routable loads. The problem bus(es) and/or net(s) are done, u_output_router/pix_rd_en, u_output_router/result_acc_hi[0][31:0],
+u_output_router/result_acc_hi[1][31:0],
+u_output_router/result_acc_hi[2][31:0],
+u_output_router/result_acc_hi[3][31:0],
+u_output_router/result_acc_lo[0][31:0],
+u_output_router/result_acc_lo[1][31:0],
+u_output_router/result_acc_lo[2][31:0],
+u_output_router/result_acc_lo[3][31:0],
+u_output_router/result_addr_hi[0][15:0],
+u_output_router/result_addr_hi[1][15:0],
+u_output_router/result_addr_hi[2][15:0],
+u_output_router/result_addr_hi[3][15:0],
+u_output_router/result_addr_lo[0][15:0] (the first 15 of 36 listed).
+Related violations: <none>
+
+

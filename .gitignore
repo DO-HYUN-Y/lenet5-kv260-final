@@ -1,0 +1,24 @@
+# Vivado / Xilinx build artifacts (regenerate via scripts/*.tcl)
+build/
+**/build/
+checkpoints/
+cong/
+.Xil/
+**/.Xil/
+xsim.dir/
+**/xsim.dir/
+xsim_*/
+**/xsim_*/
+
+# tool logs
+*.log
+*.jou
+*.pb
+vivado_*.backup.*
+
+# python
+__pycache__/
+*.pyc
+
+# datasets (fetch via train_and_extract.py)
+data/

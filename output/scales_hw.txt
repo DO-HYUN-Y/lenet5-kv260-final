@@ -1,0 +1,16 @@
+input 0.02221643
+conv1_output 0.04675778
+conv2_output 0.09273862
+fc1_output 0.23638547
+fc2_output 0.20715650
+fc3_output 0.32091838
+conv1_weight 0.00413322
+conv1_m_fixed 257
+conv2_weight 0.00441846
+conv2_m_fixed 292
+fc1_weight 0.00506821
+fc1_m_fixed 261
+fc2_weight 0.00366050
+fc2_m_fixed 547
+fc3_weight 0.00388619
+fc3_m_fixed 329

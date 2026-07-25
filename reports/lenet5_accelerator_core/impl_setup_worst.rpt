@@ -1,0 +1,563 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version      : Vivado v.2025.1 (lin64) Build 6140274 Wed May 21 22:58:25 MDT 2025
+| Date              : Sat Jul 25 10:28:39 2026
+| Host              : yun-MS-7B50 running 64-bit Ubuntu 22.04.5 LTS
+| Command           : report_timing -delay_type max -max_paths 10 -sort_by group -file /home/yun/lenet5/reports/lenet5_accelerator_core/impl_setup_worst.rpt
+| Design            : lenet5_accelerator_core
+| Device            : xck26-sfvc784
+| Speed File        : -2LV  PRODUCTION 1.30 05-15-2022
+| Design State      : Physopt postRoute
+| Temperature Grade : C
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             0.110ns  (required time - arrival time)
+  Source:                 u_param_loader/param_mem_reg/CLKARDCLK
+                            (rising edge-triggered cell RAMB36E2 clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_compute/u_postprocess/scale_r_reg[54][2]/D
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.821ns  (logic 1.219ns (25.288%)  route 3.602ns (74.712%))
+  Logic Levels:           0  
+  Clock Path Skew:        -0.077ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.030ns = ( 5.030 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.107ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=25324, unset)        0.107     0.107    u_param_loader/clk
+    RAMB36_X0Y36         RAMB36E2                                     r  u_param_loader/param_mem_reg/CLKARDCLK
+  -------------------------------------------------------------------    -------------------
+    RAMB36_X0Y36         RAMB36E2 (Prop_RAMB36E2_RAMB36_CLKARDCLK_DOUTADOUT[2])
+                                                      1.219     1.326 r  u_param_loader/param_mem_reg/DOUTADOUT[2]
+                         net (fo=64, routed)          3.602     4.928    u_compute/u_postprocess/rsp_word_r[2]
+    SLICE_X53Y144        FDRE                                         r  u_compute/u_postprocess/scale_r_reg[54][2]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=25324, unset)        0.030     5.030    u_compute/u_postprocess/clk
+    SLICE_X53Y144        FDRE                                         r  u_compute/u_postprocess/scale_r_reg[54][2]/C
+                         clock pessimism              0.000     5.030    
+                         clock uncertainty           -0.035     4.995    
+    SLICE_X53Y144        FDRE (Setup_DFF_SLICEM_C_D)
+                                                      0.043     5.038    u_compute/u_postprocess/scale_r_reg[54][2]
+  -------------------------------------------------------------------
+                         required time                          5.038    
+                         arrival time                          -4.928    
+  -------------------------------------------------------------------
+                         slack                                  0.110    
+
+Slack (MET) :             0.119ns  (required time - arrival time)
+  Source:                 u_param_loader/param_mem_reg/CLKARDCLK
+                            (rising edge-triggered cell RAMB36E2 clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_compute/u_postprocess/scale_r_reg[38][2]/D
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.813ns  (logic 1.219ns (25.330%)  route 3.594ns (74.670%))
+  Logic Levels:           0  
+  Clock Path Skew:        -0.076ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.031ns = ( 5.031 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.107ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=25324, unset)        0.107     0.107    u_param_loader/clk
+    RAMB36_X0Y36         RAMB36E2                                     r  u_param_loader/param_mem_reg/CLKARDCLK
+  -------------------------------------------------------------------    -------------------
+    RAMB36_X0Y36         RAMB36E2 (Prop_RAMB36E2_RAMB36_CLKARDCLK_DOUTADOUT[2])
+                                                      1.219     1.326 r  u_param_loader/param_mem_reg/DOUTADOUT[2]
+                         net (fo=64, routed)          3.594     4.920    u_compute/u_postprocess/rsp_word_r[2]
+    SLICE_X53Y144        FDRE                                         r  u_compute/u_postprocess/scale_r_reg[38][2]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=25324, unset)        0.031     5.031    u_compute/u_postprocess/clk
+    SLICE_X53Y144        FDRE                                         r  u_compute/u_postprocess/scale_r_reg[38][2]/C
+                         clock pessimism              0.000     5.031    
+                         clock uncertainty           -0.035     4.996    
+    SLICE_X53Y144        FDRE (Setup_GFF_SLICEM_C_D)
+                                                      0.043     5.039    u_compute/u_postprocess/scale_r_reg[38][2]
+  -------------------------------------------------------------------
+                         required time                          5.039    
+                         arrival time                          -4.920    
+  -------------------------------------------------------------------
+                         slack                                  0.119    
+
+Slack (MET) :             0.122ns  (required time - arrival time)
+  Source:                 u_param_loader/param_mem_reg/CLKARDCLK
+                            (rising edge-triggered cell RAMB36E2 clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_compute/u_postprocess/bias_r_reg[55][17]/D
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.809ns  (logic 1.202ns (24.996%)  route 3.607ns (75.004%))
+  Logic Levels:           0  
+  Clock Path Skew:        -0.078ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.029ns = ( 5.029 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.107ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=25324, unset)        0.107     0.107    u_param_loader/clk
+    RAMB36_X0Y36         RAMB36E2                                     r  u_param_loader/param_mem_reg/CLKARDCLK
+  -------------------------------------------------------------------    -------------------
+    RAMB36_X0Y36         RAMB36E2 (Prop_RAMB36E2_RAMB36_CLKARDCLK_DOUTBDOUT[3])
+                                                      1.202     1.309 r  u_param_loader/param_mem_reg/DOUTBDOUT[3]
+                         net (fo=64, routed)          3.607     4.916    u_compute/u_postprocess/rsp_word_r[35]
+    SLICE_X52Y209        FDRE                                         r  u_compute/u_postprocess/bias_r_reg[55][17]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=25324, unset)        0.029     5.029    u_compute/u_postprocess/clk
+    SLICE_X52Y209        FDRE                                         r  u_compute/u_postprocess/bias_r_reg[55][17]/C
+                         clock pessimism              0.000     5.029    
+                         clock uncertainty           -0.035     4.994    
+    SLICE_X52Y209        FDRE (Setup_HFF_SLICEL_C_D)
+                                                      0.044     5.038    u_compute/u_postprocess/bias_r_reg[55][17]
+  -------------------------------------------------------------------
+                         required time                          5.038    
+                         arrival time                          -4.916    
+  -------------------------------------------------------------------
+                         slack                                  0.122    
+
+Slack (MET) :             0.122ns  (required time - arrival time)
+  Source:                 u_param_loader/param_mem_reg/CLKARDCLK
+                            (rising edge-triggered cell RAMB36E2 clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_compute/u_postprocess/bias_r_reg[23][17]/D
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.812ns  (logic 1.202ns (24.977%)  route 3.610ns (75.023%))
+  Logic Levels:           0  
+  Clock Path Skew:        -0.076ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.031ns = ( 5.031 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.107ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=25324, unset)        0.107     0.107    u_param_loader/clk
+    RAMB36_X0Y36         RAMB36E2                                     r  u_param_loader/param_mem_reg/CLKARDCLK
+  -------------------------------------------------------------------    -------------------
+    RAMB36_X0Y36         RAMB36E2 (Prop_RAMB36E2_RAMB36_CLKARDCLK_DOUTBDOUT[3])
+                                                      1.202     1.309 r  u_param_loader/param_mem_reg/DOUTBDOUT[3]
+                         net (fo=64, routed)          3.610     4.919    u_compute/u_postprocess/rsp_word_r[35]
+    SLICE_X53Y209        FDRE                                         r  u_compute/u_postprocess/bias_r_reg[23][17]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=25324, unset)        0.031     5.031    u_compute/u_postprocess/clk
+    SLICE_X53Y209        FDRE                                         r  u_compute/u_postprocess/bias_r_reg[23][17]/C
+                         clock pessimism              0.000     5.031    
+                         clock uncertainty           -0.035     4.996    
+    SLICE_X53Y209        FDRE (Setup_HFF2_SLICEM_C_D)
+                                                      0.046     5.042    u_compute/u_postprocess/bias_r_reg[23][17]
+  -------------------------------------------------------------------
+                         required time                          5.042    
+                         arrival time                          -4.919    
+  -------------------------------------------------------------------
+                         slack                                  0.122    
+
+Slack (MET) :             0.123ns  (required time - arrival time)
+  Source:                 u_controller/FSM_sequential_state_r_reg[1]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_controller/param_cycles_reg[0]/D
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.872ns  (logic 0.265ns (5.439%)  route 4.607ns (94.561%))
+  Logic Levels:           1  (LUT6=1)
+  Clock Path Skew:        -0.013ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.029ns = ( 5.029 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.042ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=25324, unset)        0.042     0.042    u_controller/clk
+    SLICE_X33Y114        FDRE                                         r  u_controller/FSM_sequential_state_r_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X33Y114        FDRE (Prop_HFF_SLICEL_C_Q)
+                                                      0.113     0.155 r  u_controller/FSM_sequential_state_r_reg[1]/Q
+                         net (fo=199, routed)         4.540     4.695    u_controller/state_r[1]
+    SLICE_X49Y230        LUT6 (Prop_A6LUT_SLICEL_I4_O)
+                                                      0.152     4.847 r  u_controller/param_cycles[0]_i_1/O
+                         net (fo=1, routed)           0.067     4.914    u_controller/param_cycles[0]_i_1_n_0
+    SLICE_X49Y230        FDRE                                         r  u_controller/param_cycles_reg[0]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=25324, unset)        0.029     5.029    u_controller/clk
+    SLICE_X49Y230        FDRE                                         r  u_controller/param_cycles_reg[0]/C
+                         clock pessimism              0.000     5.029    
+                         clock uncertainty           -0.035     4.994    
+    SLICE_X49Y230        FDRE (Setup_AFF_SLICEL_C_D)
+                                                      0.044     5.038    u_controller/param_cycles_reg[0]
+  -------------------------------------------------------------------
+                         required time                          5.038    
+                         arrival time                          -4.914    
+  -------------------------------------------------------------------
+                         slack                                  0.123    
+
+Slack (MET) :             0.141ns  (required time - arrival time)
+  Source:                 u_param_loader/param_mem_reg/CLKARDCLK
+                            (rising edge-triggered cell RAMB36E2 clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_compute/u_postprocess/scale_r_reg[54][3]/D
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.789ns  (logic 1.205ns (25.160%)  route 3.584ns (74.840%))
+  Logic Levels:           0  
+  Clock Path Skew:        -0.077ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.030ns = ( 5.030 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.107ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=25324, unset)        0.107     0.107    u_param_loader/clk
+    RAMB36_X0Y36         RAMB36E2                                     r  u_param_loader/param_mem_reg/CLKARDCLK
+  -------------------------------------------------------------------    -------------------
+    RAMB36_X0Y36         RAMB36E2 (Prop_RAMB36E2_RAMB36_CLKARDCLK_DOUTADOUT[3])
+                                                      1.205     1.312 r  u_param_loader/param_mem_reg/DOUTADOUT[3]
+                         net (fo=64, routed)          3.584     4.896    u_compute/u_postprocess/rsp_word_r[3]
+    SLICE_X53Y149        FDRE                                         r  u_compute/u_postprocess/scale_r_reg[54][3]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=25324, unset)        0.030     5.030    u_compute/u_postprocess/clk
+    SLICE_X53Y149        FDRE                                         r  u_compute/u_postprocess/scale_r_reg[54][3]/C
+                         clock pessimism              0.000     5.030    
+                         clock uncertainty           -0.035     4.995    
+    SLICE_X53Y149        FDRE (Setup_CFF_SLICEM_C_D)
+                                                      0.043     5.038    u_compute/u_postprocess/scale_r_reg[54][3]
+  -------------------------------------------------------------------
+                         required time                          5.038    
+                         arrival time                          -4.896    
+  -------------------------------------------------------------------
+                         slack                                  0.141    
+
+Slack (MET) :             0.154ns  (required time - arrival time)
+  Source:                 u_controller/op_index_reg[1]_rep__2/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_compute/u_fc_skew/g_skew[1].g_delay.d_lo_reg[0][4][1]/CE
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.719ns  (logic 0.902ns (19.115%)  route 3.817ns (80.885%))
+  Logic Levels:           6  (BUFGCE=1 LUT4=1 LUT5=2 LUT6=1 MUXF7=1)
+  Clock Path Skew:        -0.012ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.031ns = ( 5.031 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.043ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=25324, unset)        0.043     0.043    u_controller/clk
+    SLICE_X35Y116        FDRE                                         r  u_controller/op_index_reg[1]_rep__2/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X35Y116        FDRE (Prop_AFF_SLICEM_C_Q)
+                                                      0.113     0.156 r  u_controller/op_index_reg[1]_rep__2/Q
+                         net (fo=107, routed)         0.159     0.315    u_controller/op_index_reg[1]_rep__2_n_0
+    SLICE_X35Y115        LUT4 (Prop_G6LUT_SLICEM_I1_O)
+                                                      0.152     0.467 r  u_controller/pre_valid_r_i_4/O
+                         net (fo=10, routed)          0.342     0.809    u_controller/pre_valid_r_i_4_n_0
+    SLICE_X30Y114        LUT5 (Prop_C6LUT_SLICEL_I1_O)
+                                                      0.187     0.996 r  u_controller/pre_valid_r_i_2__6/O
+                         net (fo=169, routed)         0.109     1.105    u_compute/u_fc_router/CEP
+    SLICE_X30Y113        LUT5 (Prop_B6LUT_SLICEL_I2_O)
+                                                      0.152     1.257 f  u_compute/u_fc_router/act_lo_out[7]_i_11/O
+                         net (fo=1, routed)           0.307     1.564    u_compute/u_fc_router/act_lo_out[7]_i_11_n_0
+    SLICE_X32Y107        LUT6 (Prop_G6LUT_SLICEM_I4_O)
+                                                      0.152     1.716 r  u_compute/u_fc_router/act_lo_out[7]_i_4/O
+                         net (fo=1, routed)           0.021     1.737    u_compute/u_conv_router/fc_router_ready
+    SLICE_X32Y107        MUXF7 (Prop_F7MUX_GH_SLICEM_I1_O)
+                                                      0.102     1.839 r  u_compute/u_conv_router/act_lo_out_reg[7]_i_1/O
+                         net (fo=1124, routed)        1.288     3.127    u_compute/u_conv_router/mode_fc_r_reg_rep__15_bufg_place
+    BUFGCE_X0Y50         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.044     3.171 r  u_compute/u_conv_router/act_lo_out_reg[7]_i_1_bufg_place/O
+                         net (fo=2003, routed)        1.591     4.762    u_compute/u_fc_skew/g_skew[3].g_delay.d_mask_reg[1][7][0]_0
+    SLICE_X32Y73         FDRE                                         r  u_compute/u_fc_skew/g_skew[1].g_delay.d_lo_reg[0][4][1]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=25324, unset)        0.031     5.031    u_compute/u_fc_skew/clk
+    SLICE_X32Y73         FDRE                                         r  u_compute/u_fc_skew/g_skew[1].g_delay.d_lo_reg[0][4][1]/C
+                         clock pessimism              0.000     5.031    
+                         clock uncertainty           -0.035     4.996    
+    SLICE_X32Y73         FDRE (Setup_EFF2_SLICEM_C_CE)
+                                                     -0.080     4.916    u_compute/u_fc_skew/g_skew[1].g_delay.d_lo_reg[0][4][1]
+  -------------------------------------------------------------------
+                         required time                          4.916    
+                         arrival time                          -4.762    
+  -------------------------------------------------------------------
+                         slack                                  0.154    
+
+Slack (MET) :             0.155ns  (required time - arrival time)
+  Source:                 u_controller/op_index_reg[1]_rep__2/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_compute/u_conv_skew/pair_skew[3].gn.d_lo_reg[1][3]/CE
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.718ns  (logic 0.902ns (19.119%)  route 3.816ns (80.881%))
+  Logic Levels:           6  (BUFGCE=1 LUT4=1 LUT5=2 LUT6=1 MUXF7=1)
+  Clock Path Skew:        -0.012ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.031ns = ( 5.031 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.043ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=25324, unset)        0.043     0.043    u_controller/clk
+    SLICE_X35Y116        FDRE                                         r  u_controller/op_index_reg[1]_rep__2/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X35Y116        FDRE (Prop_AFF_SLICEM_C_Q)
+                                                      0.113     0.156 r  u_controller/op_index_reg[1]_rep__2/Q
+                         net (fo=107, routed)         0.159     0.315    u_controller/op_index_reg[1]_rep__2_n_0
+    SLICE_X35Y115        LUT4 (Prop_G6LUT_SLICEM_I1_O)
+                                                      0.152     0.467 r  u_controller/pre_valid_r_i_4/O
+                         net (fo=10, routed)          0.342     0.809    u_controller/pre_valid_r_i_4_n_0
+    SLICE_X30Y114        LUT5 (Prop_C6LUT_SLICEL_I1_O)
+                                                      0.187     0.996 r  u_controller/pre_valid_r_i_2__6/O
+                         net (fo=169, routed)         0.109     1.105    u_compute/u_fc_router/CEP
+    SLICE_X30Y113        LUT5 (Prop_B6LUT_SLICEL_I2_O)
+                                                      0.152     1.257 f  u_compute/u_fc_router/act_lo_out[7]_i_11/O
+                         net (fo=1, routed)           0.307     1.564    u_compute/u_fc_router/act_lo_out[7]_i_11_n_0
+    SLICE_X32Y107        LUT6 (Prop_G6LUT_SLICEM_I4_O)
+                                                      0.152     1.716 r  u_compute/u_fc_router/act_lo_out[7]_i_4/O
+                         net (fo=1, routed)           0.021     1.737    u_compute/u_conv_router/fc_router_ready
+    SLICE_X32Y107        MUXF7 (Prop_F7MUX_GH_SLICEM_I1_O)
+                                                      0.102     1.839 r  u_compute/u_conv_router/act_lo_out_reg[7]_i_1/O
+                         net (fo=1124, routed)        1.288     3.127    u_compute/u_conv_router/mode_fc_r_reg_rep__15_bufg_place
+    BUFGCE_X0Y50         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.044     3.171 r  u_compute/u_conv_router/act_lo_out_reg[7]_i_1_bufg_place/O
+                         net (fo=2003, routed)        1.590     4.761    u_compute/u_conv_skew/wgt_skew[7].cn.d_w_reg[6][0]_0
+    SLICE_X32Y75         FDCE                                         r  u_compute/u_conv_skew/pair_skew[3].gn.d_lo_reg[1][3]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=25324, unset)        0.031     5.031    u_compute/u_conv_skew/clk
+    SLICE_X32Y75         FDCE                                         r  u_compute/u_conv_skew/pair_skew[3].gn.d_lo_reg[1][3]/C
+                         clock pessimism              0.000     5.031    
+                         clock uncertainty           -0.035     4.996    
+    SLICE_X32Y75         FDCE (Setup_EFF2_SLICEM_C_CE)
+                                                     -0.080     4.916    u_compute/u_conv_skew/pair_skew[3].gn.d_lo_reg[1][3]
+  -------------------------------------------------------------------
+                         required time                          4.916    
+                         arrival time                          -4.761    
+  -------------------------------------------------------------------
+                         slack                                  0.155    
+
+Slack (MET) :             0.155ns  (required time - arrival time)
+  Source:                 u_controller/op_index_reg[1]_rep__2/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_compute/u_fc_skew/g_skew[1].g_delay.d_lo_reg[0][3][1]/CE
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.717ns  (logic 0.902ns (19.123%)  route 3.815ns (80.877%))
+  Logic Levels:           6  (BUFGCE=1 LUT4=1 LUT5=2 LUT6=1 MUXF7=1)
+  Clock Path Skew:        -0.012ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.031ns = ( 5.031 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.043ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=25324, unset)        0.043     0.043    u_controller/clk
+    SLICE_X35Y116        FDRE                                         r  u_controller/op_index_reg[1]_rep__2/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X35Y116        FDRE (Prop_AFF_SLICEM_C_Q)
+                                                      0.113     0.156 r  u_controller/op_index_reg[1]_rep__2/Q
+                         net (fo=107, routed)         0.159     0.315    u_controller/op_index_reg[1]_rep__2_n_0
+    SLICE_X35Y115        LUT4 (Prop_G6LUT_SLICEM_I1_O)
+                                                      0.152     0.467 r  u_controller/pre_valid_r_i_4/O
+                         net (fo=10, routed)          0.342     0.809    u_controller/pre_valid_r_i_4_n_0
+    SLICE_X30Y114        LUT5 (Prop_C6LUT_SLICEL_I1_O)
+                                                      0.187     0.996 r  u_controller/pre_valid_r_i_2__6/O
+                         net (fo=169, routed)         0.109     1.105    u_compute/u_fc_router/CEP
+    SLICE_X30Y113        LUT5 (Prop_B6LUT_SLICEL_I2_O)
+                                                      0.152     1.257 f  u_compute/u_fc_router/act_lo_out[7]_i_11/O
+                         net (fo=1, routed)           0.307     1.564    u_compute/u_fc_router/act_lo_out[7]_i_11_n_0
+    SLICE_X32Y107        LUT6 (Prop_G6LUT_SLICEM_I4_O)
+                                                      0.152     1.716 r  u_compute/u_fc_router/act_lo_out[7]_i_4/O
+                         net (fo=1, routed)           0.021     1.737    u_compute/u_conv_router/fc_router_ready
+    SLICE_X32Y107        MUXF7 (Prop_F7MUX_GH_SLICEM_I1_O)
+                                                      0.102     1.839 r  u_compute/u_conv_router/act_lo_out_reg[7]_i_1/O
+                         net (fo=1124, routed)        1.288     3.127    u_compute/u_conv_router/mode_fc_r_reg_rep__15_bufg_place
+    BUFGCE_X0Y50         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.044     3.171 r  u_compute/u_conv_router/act_lo_out_reg[7]_i_1_bufg_place/O
+                         net (fo=2003, routed)        1.589     4.760    u_compute/u_fc_skew/g_skew[3].g_delay.d_mask_reg[1][7][0]_0
+    SLICE_X32Y73         FDRE                                         r  u_compute/u_fc_skew/g_skew[1].g_delay.d_lo_reg[0][3][1]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=25324, unset)        0.031     5.031    u_compute/u_fc_skew/clk
+    SLICE_X32Y73         FDRE                                         r  u_compute/u_fc_skew/g_skew[1].g_delay.d_lo_reg[0][3][1]/C
+                         clock pessimism              0.000     5.031    
+                         clock uncertainty           -0.035     4.996    
+    SLICE_X32Y73         FDRE (Setup_EFF_SLICEM_C_CE)
+                                                     -0.081     4.915    u_compute/u_fc_skew/g_skew[1].g_delay.d_lo_reg[0][3][1]
+  -------------------------------------------------------------------
+                         required time                          4.915    
+                         arrival time                          -4.760    
+  -------------------------------------------------------------------
+                         slack                                  0.155    
+
+Slack (MET) :             0.155ns  (required time - arrival time)
+  Source:                 u_controller/op_index_reg[1]_rep__2/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_compute/u_fc_skew/g_skew[1].g_delay.d_lo_reg[0][5][1]/CE
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.717ns  (logic 0.902ns (19.123%)  route 3.815ns (80.877%))
+  Logic Levels:           6  (BUFGCE=1 LUT4=1 LUT5=2 LUT6=1 MUXF7=1)
+  Clock Path Skew:        -0.012ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.031ns = ( 5.031 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.043ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=25324, unset)        0.043     0.043    u_controller/clk
+    SLICE_X35Y116        FDRE                                         r  u_controller/op_index_reg[1]_rep__2/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X35Y116        FDRE (Prop_AFF_SLICEM_C_Q)
+                                                      0.113     0.156 r  u_controller/op_index_reg[1]_rep__2/Q
+                         net (fo=107, routed)         0.159     0.315    u_controller/op_index_reg[1]_rep__2_n_0
+    SLICE_X35Y115        LUT4 (Prop_G6LUT_SLICEM_I1_O)
+                                                      0.152     0.467 r  u_controller/pre_valid_r_i_4/O
+                         net (fo=10, routed)          0.342     0.809    u_controller/pre_valid_r_i_4_n_0
+    SLICE_X30Y114        LUT5 (Prop_C6LUT_SLICEL_I1_O)
+                                                      0.187     0.996 r  u_controller/pre_valid_r_i_2__6/O
+                         net (fo=169, routed)         0.109     1.105    u_compute/u_fc_router/CEP
+    SLICE_X30Y113        LUT5 (Prop_B6LUT_SLICEL_I2_O)
+                                                      0.152     1.257 f  u_compute/u_fc_router/act_lo_out[7]_i_11/O
+                         net (fo=1, routed)           0.307     1.564    u_compute/u_fc_router/act_lo_out[7]_i_11_n_0
+    SLICE_X32Y107        LUT6 (Prop_G6LUT_SLICEM_I4_O)
+                                                      0.152     1.716 r  u_compute/u_fc_router/act_lo_out[7]_i_4/O
+                         net (fo=1, routed)           0.021     1.737    u_compute/u_conv_router/fc_router_ready
+    SLICE_X32Y107        MUXF7 (Prop_F7MUX_GH_SLICEM_I1_O)
+                                                      0.102     1.839 r  u_compute/u_conv_router/act_lo_out_reg[7]_i_1/O
+                         net (fo=1124, routed)        1.288     3.127    u_compute/u_conv_router/mode_fc_r_reg_rep__15_bufg_place
+    BUFGCE_X0Y50         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.044     3.171 r  u_compute/u_conv_router/act_lo_out_reg[7]_i_1_bufg_place/O
+                         net (fo=2003, routed)        1.589     4.760    u_compute/u_fc_skew/g_skew[3].g_delay.d_mask_reg[1][7][0]_0
+    SLICE_X32Y73         FDRE                                         r  u_compute/u_fc_skew/g_skew[1].g_delay.d_lo_reg[0][5][1]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=25324, unset)        0.031     5.031    u_compute/u_fc_skew/clk
+    SLICE_X32Y73         FDRE                                         r  u_compute/u_fc_skew/g_skew[1].g_delay.d_lo_reg[0][5][1]/C
+                         clock pessimism              0.000     5.031    
+                         clock uncertainty           -0.035     4.996    
+    SLICE_X32Y73         FDRE (Setup_FFF_SLICEM_C_CE)
+                                                     -0.081     4.915    u_compute/u_fc_skew/g_skew[1].g_delay.d_lo_reg[0][5][1]
+  -------------------------------------------------------------------
+                         required time                          4.915    
+                         arrival time                          -4.760    
+  -------------------------------------------------------------------
+                         slack                                  0.155    
+
+
+
+

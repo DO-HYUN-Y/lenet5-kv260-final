@@ -1,0 +1,898 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version      : Vivado v.2025.1 (lin64) Build 6140274 Wed May 21 22:58:25 MDT 2025
+| Date              : Sat Jul 25 13:46:52 2026
+| Host              : yun-MS-7B50 running 64-bit Ubuntu 22.04.5 LTS
+| Command           : report_timing -delay_type min -max_paths 10 -sort_by group -file /home/yun/lenet5/reports/lenet5_axis_wrapper/impl_hold_worst.rpt
+| Design            : lenet5_axis_wrapper
+| Device            : xck26-sfvc784
+| Speed File        : -2LV  PRODUCTION 1.30 05-15-2022
+| Design State      : Physopt postRoute
+| Temperature Grade : C
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             0.046ns  (arrival time - required time)
+  Source:                 u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/AD[0]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.114ns  (logic 0.114ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_PREADD=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.034     0.034    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/CLK
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X10Y62       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[0])
+                                                      0.081     0.115 r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/D_DATA[0]
+                         net (fo=1, routed)           0.000     0.115    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA.D_DATA<0>
+    DSP48E2_X10Y62       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[0]_AD[0])
+                                                      0.033     0.148 r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_INST/AD[0]
+                         net (fo=1, routed)           0.000     0.148    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD.AD<0>
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/AD[0]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.042     0.042    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/CLK
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X10Y62       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[0])
+                                                      0.060     0.102    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.102    
+                         arrival time                           0.148    
+  -------------------------------------------------------------------
+                         slack                                  0.046    
+
+Slack (MET) :             0.046ns  (arrival time - required time)
+  Source:                 u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/AD[10]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.114ns  (logic 0.114ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_PREADD=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.034     0.034    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/CLK
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X10Y62       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[10])
+                                                      0.081     0.115 r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/D_DATA[10]
+                         net (fo=1, routed)           0.000     0.115    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA.D_DATA<10>
+    DSP48E2_X10Y62       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[10]_AD[10])
+                                                      0.033     0.148 r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_INST/AD[10]
+                         net (fo=1, routed)           0.000     0.148    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD.AD<10>
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/AD[10]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.042     0.042    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/CLK
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X10Y62       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[10])
+                                                      0.060     0.102    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.102    
+                         arrival time                           0.148    
+  -------------------------------------------------------------------
+                         slack                                  0.046    
+
+Slack (MET) :             0.046ns  (arrival time - required time)
+  Source:                 u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/AD[11]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.114ns  (logic 0.114ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_PREADD=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.034     0.034    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/CLK
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X10Y62       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[11])
+                                                      0.081     0.115 r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/D_DATA[11]
+                         net (fo=1, routed)           0.000     0.115    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA.D_DATA<11>
+    DSP48E2_X10Y62       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[11]_AD[11])
+                                                      0.033     0.148 r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_INST/AD[11]
+                         net (fo=1, routed)           0.000     0.148    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD.AD<11>
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/AD[11]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.042     0.042    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/CLK
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X10Y62       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[11])
+                                                      0.060     0.102    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.102    
+                         arrival time                           0.148    
+  -------------------------------------------------------------------
+                         slack                                  0.046    
+
+Slack (MET) :             0.046ns  (arrival time - required time)
+  Source:                 u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/AD[12]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.114ns  (logic 0.114ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_PREADD=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.034     0.034    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/CLK
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X10Y62       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[12])
+                                                      0.081     0.115 r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/D_DATA[12]
+                         net (fo=1, routed)           0.000     0.115    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA.D_DATA<12>
+    DSP48E2_X10Y62       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[12]_AD[12])
+                                                      0.033     0.148 r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_INST/AD[12]
+                         net (fo=1, routed)           0.000     0.148    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD.AD<12>
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/AD[12]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.042     0.042    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/CLK
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X10Y62       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[12])
+                                                      0.060     0.102    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.102    
+                         arrival time                           0.148    
+  -------------------------------------------------------------------
+                         slack                                  0.046    
+
+Slack (MET) :             0.046ns  (arrival time - required time)
+  Source:                 u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/AD[13]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.114ns  (logic 0.114ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_PREADD=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.034     0.034    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/CLK
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X10Y62       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[13])
+                                                      0.081     0.115 r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/D_DATA[13]
+                         net (fo=1, routed)           0.000     0.115    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA.D_DATA<13>
+    DSP48E2_X10Y62       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[13]_AD[13])
+                                                      0.033     0.148 r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_INST/AD[13]
+                         net (fo=1, routed)           0.000     0.148    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD.AD<13>
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/AD[13]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.042     0.042    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/CLK
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X10Y62       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[13])
+                                                      0.060     0.102    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.102    
+                         arrival time                           0.148    
+  -------------------------------------------------------------------
+                         slack                                  0.046    
+
+Slack (MET) :             0.046ns  (arrival time - required time)
+  Source:                 u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/AD[14]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.114ns  (logic 0.114ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_PREADD=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.034     0.034    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/CLK
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X10Y62       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[14])
+                                                      0.081     0.115 r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/D_DATA[14]
+                         net (fo=1, routed)           0.000     0.115    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA.D_DATA<14>
+    DSP48E2_X10Y62       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[14]_AD[14])
+                                                      0.033     0.148 r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_INST/AD[14]
+                         net (fo=1, routed)           0.000     0.148    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD.AD<14>
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/AD[14]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.042     0.042    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/CLK
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X10Y62       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[14])
+                                                      0.060     0.102    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.102    
+                         arrival time                           0.148    
+  -------------------------------------------------------------------
+                         slack                                  0.046    
+
+Slack (MET) :             0.046ns  (arrival time - required time)
+  Source:                 u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/AD[15]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.114ns  (logic 0.114ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_PREADD=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.034     0.034    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/CLK
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X10Y62       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[15])
+                                                      0.081     0.115 r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/D_DATA[15]
+                         net (fo=1, routed)           0.000     0.115    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA.D_DATA<15>
+    DSP48E2_X10Y62       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[15]_AD[15])
+                                                      0.033     0.148 r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_INST/AD[15]
+                         net (fo=1, routed)           0.000     0.148    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD.AD<15>
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/AD[15]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.042     0.042    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/CLK
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X10Y62       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[15])
+                                                      0.060     0.102    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.102    
+                         arrival time                           0.148    
+  -------------------------------------------------------------------
+                         slack                                  0.046    
+
+Slack (MET) :             0.046ns  (arrival time - required time)
+  Source:                 u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/AD[16]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.114ns  (logic 0.114ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_PREADD=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.034     0.034    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/CLK
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X10Y62       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[16])
+                                                      0.081     0.115 r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/D_DATA[16]
+                         net (fo=1, routed)           0.000     0.115    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA.D_DATA<16>
+    DSP48E2_X10Y62       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[16]_AD[16])
+                                                      0.033     0.148 r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_INST/AD[16]
+                         net (fo=1, routed)           0.000     0.148    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD.AD<16>
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/AD[16]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.042     0.042    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/CLK
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X10Y62       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[16])
+                                                      0.060     0.102    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.102    
+                         arrival time                           0.148    
+  -------------------------------------------------------------------
+                         slack                                  0.046    
+
+Slack (MET) :             0.046ns  (arrival time - required time)
+  Source:                 u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/AD[17]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.114ns  (logic 0.114ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_PREADD=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.034     0.034    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/CLK
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X10Y62       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[17])
+                                                      0.081     0.115 r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/D_DATA[17]
+                         net (fo=1, routed)           0.000     0.115    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA.D_DATA<17>
+    DSP48E2_X10Y62       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[17]_AD[17])
+                                                      0.033     0.148 r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_INST/AD[17]
+                         net (fo=1, routed)           0.000     0.148    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD.AD<17>
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/AD[17]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.042     0.042    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/CLK
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X10Y62       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[17])
+                                                      0.060     0.102    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.102    
+                         arrival time                           0.148    
+  -------------------------------------------------------------------
+                         slack                                  0.046    
+
+Slack (MET) :             0.046ns  (arrival time - required time)
+  Source:                 u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/AD[18]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.114ns  (logic 0.114ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_PREADD=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.034     0.034    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/CLK
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X10Y62       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[18])
+                                                      0.081     0.115 r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/D_DATA[18]
+                         net (fo=1, routed)           0.000     0.115    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA.D_DATA<18>
+    DSP48E2_X10Y62       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[18]_AD[18])
+                                                      0.033     0.148 r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_INST/AD[18]
+                         net (fo=1, routed)           0.000     0.148    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD.AD<18>
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/AD[18]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.042     0.042    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/CLK
+    DSP48E2_X10Y62       DSP_PREADD_DATA                              r  u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X10Y62       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[18])
+                                                      0.060     0.102    u_core/u_compute/u_sa/g_row[0].g_col[0].u_ppe/PREG_reg/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.102    
+                         arrival time                           0.148    
+  -------------------------------------------------------------------
+                         slack                                  0.046    
+
+Slack (MET) :             1.884ns  (arrival time - required time)
+  Source:                 reset_sync_r_reg[1]/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/acc_hi_q_reg[12]/CLR
+                            (removal check against rising-edge clock clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             **async_default**
+  Path Type:              Removal (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        1.872ns  (logic 0.108ns (5.770%)  route 1.764ns (94.230%))
+  Logic Levels:           1  (BUFGCE=1)
+  Clock Path Skew:        0.006ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.020ns
+    Source Clock Delay      (SCD):    0.014ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.014     0.014    clk
+    SLICE_X26Y154        FDCE                                         r  reset_sync_r_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X26Y154        FDCE (Prop_EFF2_SLICEL_C_Q)
+                                                      0.085     0.099 r  reset_sync_r_reg[1]/Q
+                         net (fo=130, routed)         0.959     1.058    reset_sync_r[1]_bufg_place
+    BUFGCE_X0Y74         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.023     1.081 r  reset_sync_r_reg[1]_bufg_place/O
+                         net (fo=12226, routed)       0.805     1.886    u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/SR[0]
+    SLICE_X23Y154        FDCE                                         f  u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/acc_hi_q_reg[12]/CLR  (IS_INVERTED)
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.020     0.020    u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/clk
+    SLICE_X23Y154        FDCE                                         r  u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/acc_hi_q_reg[12]/C
+                         clock pessimism              0.000     0.020    
+    SLICE_X23Y154        FDCE (Remov_HFF_SLICEL_C_CLR)
+                                                     -0.018     0.002    u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/acc_hi_q_reg[12]
+  -------------------------------------------------------------------
+                         required time                         -0.002    
+                         arrival time                           1.886    
+  -------------------------------------------------------------------
+                         slack                                  1.884    
+
+Slack (MET) :             1.884ns  (arrival time - required time)
+  Source:                 reset_sync_r_reg[1]/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/acc_hi_q_reg[13]/CLR
+                            (removal check against rising-edge clock clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             **async_default**
+  Path Type:              Removal (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        1.872ns  (logic 0.108ns (5.770%)  route 1.764ns (94.230%))
+  Logic Levels:           1  (BUFGCE=1)
+  Clock Path Skew:        0.006ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.020ns
+    Source Clock Delay      (SCD):    0.014ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.014     0.014    clk
+    SLICE_X26Y154        FDCE                                         r  reset_sync_r_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X26Y154        FDCE (Prop_EFF2_SLICEL_C_Q)
+                                                      0.085     0.099 r  reset_sync_r_reg[1]/Q
+                         net (fo=130, routed)         0.959     1.058    reset_sync_r[1]_bufg_place
+    BUFGCE_X0Y74         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.023     1.081 r  reset_sync_r_reg[1]_bufg_place/O
+                         net (fo=12226, routed)       0.805     1.886    u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/SR[0]
+    SLICE_X23Y154        FDCE                                         f  u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/acc_hi_q_reg[13]/CLR  (IS_INVERTED)
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.020     0.020    u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/clk
+    SLICE_X23Y154        FDCE                                         r  u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/acc_hi_q_reg[13]/C
+                         clock pessimism              0.000     0.020    
+    SLICE_X23Y154        FDCE (Remov_GFF_SLICEL_C_CLR)
+                                                     -0.018     0.002    u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/acc_hi_q_reg[13]
+  -------------------------------------------------------------------
+                         required time                         -0.002    
+                         arrival time                           1.886    
+  -------------------------------------------------------------------
+                         slack                                  1.884    
+
+Slack (MET) :             1.884ns  (arrival time - required time)
+  Source:                 reset_sync_r_reg[1]/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/acc_hi_q_reg[14]/CLR
+                            (removal check against rising-edge clock clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             **async_default**
+  Path Type:              Removal (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        1.872ns  (logic 0.108ns (5.770%)  route 1.764ns (94.230%))
+  Logic Levels:           1  (BUFGCE=1)
+  Clock Path Skew:        0.006ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.020ns
+    Source Clock Delay      (SCD):    0.014ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.014     0.014    clk
+    SLICE_X26Y154        FDCE                                         r  reset_sync_r_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X26Y154        FDCE (Prop_EFF2_SLICEL_C_Q)
+                                                      0.085     0.099 r  reset_sync_r_reg[1]/Q
+                         net (fo=130, routed)         0.959     1.058    reset_sync_r[1]_bufg_place
+    BUFGCE_X0Y74         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.023     1.081 r  reset_sync_r_reg[1]_bufg_place/O
+                         net (fo=12226, routed)       0.805     1.886    u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/SR[0]
+    SLICE_X23Y154        FDCE                                         f  u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/acc_hi_q_reg[14]/CLR  (IS_INVERTED)
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.020     0.020    u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/clk
+    SLICE_X23Y154        FDCE                                         r  u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/acc_hi_q_reg[14]/C
+                         clock pessimism              0.000     0.020    
+    SLICE_X23Y154        FDCE (Remov_HFF2_SLICEL_C_CLR)
+                                                     -0.018     0.002    u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/acc_hi_q_reg[14]
+  -------------------------------------------------------------------
+                         required time                         -0.002    
+                         arrival time                           1.886    
+  -------------------------------------------------------------------
+                         slack                                  1.884    
+
+Slack (MET) :             1.884ns  (arrival time - required time)
+  Source:                 reset_sync_r_reg[1]/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/acc_hi_q_reg[15]/CLR
+                            (removal check against rising-edge clock clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             **async_default**
+  Path Type:              Removal (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        1.872ns  (logic 0.108ns (5.770%)  route 1.764ns (94.230%))
+  Logic Levels:           1  (BUFGCE=1)
+  Clock Path Skew:        0.006ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.020ns
+    Source Clock Delay      (SCD):    0.014ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.014     0.014    clk
+    SLICE_X26Y154        FDCE                                         r  reset_sync_r_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X26Y154        FDCE (Prop_EFF2_SLICEL_C_Q)
+                                                      0.085     0.099 r  reset_sync_r_reg[1]/Q
+                         net (fo=130, routed)         0.959     1.058    reset_sync_r[1]_bufg_place
+    BUFGCE_X0Y74         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.023     1.081 r  reset_sync_r_reg[1]_bufg_place/O
+                         net (fo=12226, routed)       0.805     1.886    u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/SR[0]
+    SLICE_X23Y154        FDCE                                         f  u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/acc_hi_q_reg[15]/CLR  (IS_INVERTED)
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.020     0.020    u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/clk
+    SLICE_X23Y154        FDCE                                         r  u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/acc_hi_q_reg[15]/C
+                         clock pessimism              0.000     0.020    
+    SLICE_X23Y154        FDCE (Remov_FFF_SLICEL_C_CLR)
+                                                     -0.018     0.002    u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/acc_hi_q_reg[15]
+  -------------------------------------------------------------------
+                         required time                         -0.002    
+                         arrival time                           1.886    
+  -------------------------------------------------------------------
+                         slack                                  1.884    
+
+Slack (MET) :             1.884ns  (arrival time - required time)
+  Source:                 reset_sync_r_reg[1]/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/acc_hi_q_reg[16]/CLR
+                            (removal check against rising-edge clock clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             **async_default**
+  Path Type:              Removal (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        1.872ns  (logic 0.108ns (5.770%)  route 1.764ns (94.230%))
+  Logic Levels:           1  (BUFGCE=1)
+  Clock Path Skew:        0.006ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.020ns
+    Source Clock Delay      (SCD):    0.014ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.014     0.014    clk
+    SLICE_X26Y154        FDCE                                         r  reset_sync_r_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X26Y154        FDCE (Prop_EFF2_SLICEL_C_Q)
+                                                      0.085     0.099 r  reset_sync_r_reg[1]/Q
+                         net (fo=130, routed)         0.959     1.058    reset_sync_r[1]_bufg_place
+    BUFGCE_X0Y74         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.023     1.081 r  reset_sync_r_reg[1]_bufg_place/O
+                         net (fo=12226, routed)       0.805     1.886    u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/SR[0]
+    SLICE_X23Y154        FDCE                                         f  u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/acc_hi_q_reg[16]/CLR  (IS_INVERTED)
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.020     0.020    u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/clk
+    SLICE_X23Y154        FDCE                                         r  u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/acc_hi_q_reg[16]/C
+                         clock pessimism              0.000     0.020    
+    SLICE_X23Y154        FDCE (Remov_GFF2_SLICEL_C_CLR)
+                                                     -0.018     0.002    u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/acc_hi_q_reg[16]
+  -------------------------------------------------------------------
+                         required time                         -0.002    
+                         arrival time                           1.886    
+  -------------------------------------------------------------------
+                         slack                                  1.884    
+
+Slack (MET) :             1.884ns  (arrival time - required time)
+  Source:                 reset_sync_r_reg[1]/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/acc_hi_q_reg[18]/CLR
+                            (removal check against rising-edge clock clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             **async_default**
+  Path Type:              Removal (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        1.872ns  (logic 0.108ns (5.770%)  route 1.764ns (94.230%))
+  Logic Levels:           1  (BUFGCE=1)
+  Clock Path Skew:        0.006ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.020ns
+    Source Clock Delay      (SCD):    0.014ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.014     0.014    clk
+    SLICE_X26Y154        FDCE                                         r  reset_sync_r_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X26Y154        FDCE (Prop_EFF2_SLICEL_C_Q)
+                                                      0.085     0.099 r  reset_sync_r_reg[1]/Q
+                         net (fo=130, routed)         0.959     1.058    reset_sync_r[1]_bufg_place
+    BUFGCE_X0Y74         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.023     1.081 r  reset_sync_r_reg[1]_bufg_place/O
+                         net (fo=12226, routed)       0.805     1.886    u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/SR[0]
+    SLICE_X23Y154        FDCE                                         f  u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/acc_hi_q_reg[18]/CLR  (IS_INVERTED)
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.020     0.020    u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/clk
+    SLICE_X23Y154        FDCE                                         r  u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/acc_hi_q_reg[18]/C
+                         clock pessimism              0.000     0.020    
+    SLICE_X23Y154        FDCE (Remov_FFF2_SLICEL_C_CLR)
+                                                     -0.018     0.002    u_core/u_compute/u_sa/g_row[1].g_col[7].u_ppe/acc_hi_q_reg[18]
+  -------------------------------------------------------------------
+                         required time                         -0.002    
+                         arrival time                           1.886    
+  -------------------------------------------------------------------
+                         slack                                  1.884    
+
+Slack (MET) :             1.884ns  (arrival time - required time)
+  Source:                 reset_sync_r_reg[1]/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_compute/u_sa/g_row[2].g_col[7].u_ppe/acc_hi_q_reg[28]/CLR
+                            (removal check against rising-edge clock clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             **async_default**
+  Path Type:              Removal (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        1.872ns  (logic 0.108ns (5.770%)  route 1.764ns (94.230%))
+  Logic Levels:           1  (BUFGCE=1)
+  Clock Path Skew:        0.006ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.020ns
+    Source Clock Delay      (SCD):    0.014ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.014     0.014    clk
+    SLICE_X26Y154        FDCE                                         r  reset_sync_r_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X26Y154        FDCE (Prop_EFF2_SLICEL_C_Q)
+                                                      0.085     0.099 r  reset_sync_r_reg[1]/Q
+                         net (fo=130, routed)         0.959     1.058    reset_sync_r[1]_bufg_place
+    BUFGCE_X0Y74         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.023     1.081 r  reset_sync_r_reg[1]_bufg_place/O
+                         net (fo=12226, routed)       0.805     1.886    u_core/u_compute/u_sa/g_row[2].g_col[7].u_ppe/SR[0]
+    SLICE_X23Y153        FDCE                                         f  u_core/u_compute/u_sa/g_row[2].g_col[7].u_ppe/acc_hi_q_reg[28]/CLR  (IS_INVERTED)
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.020     0.020    u_core/u_compute/u_sa/g_row[2].g_col[7].u_ppe/clk
+    SLICE_X23Y153        FDCE                                         r  u_core/u_compute/u_sa/g_row[2].g_col[7].u_ppe/acc_hi_q_reg[28]/C
+                         clock pessimism              0.000     0.020    
+    SLICE_X23Y153        FDCE (Remov_HFF_SLICEL_C_CLR)
+                                                     -0.018     0.002    u_core/u_compute/u_sa/g_row[2].g_col[7].u_ppe/acc_hi_q_reg[28]
+  -------------------------------------------------------------------
+                         required time                         -0.002    
+                         arrival time                           1.886    
+  -------------------------------------------------------------------
+                         slack                                  1.884    
+
+Slack (MET) :             1.884ns  (arrival time - required time)
+  Source:                 reset_sync_r_reg[1]/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_compute/u_sa/g_row[2].g_col[7].u_ppe/acc_hi_q_reg[29]/CLR
+                            (removal check against rising-edge clock clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             **async_default**
+  Path Type:              Removal (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        1.872ns  (logic 0.108ns (5.770%)  route 1.764ns (94.230%))
+  Logic Levels:           1  (BUFGCE=1)
+  Clock Path Skew:        0.006ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.020ns
+    Source Clock Delay      (SCD):    0.014ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.014     0.014    clk
+    SLICE_X26Y154        FDCE                                         r  reset_sync_r_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X26Y154        FDCE (Prop_EFF2_SLICEL_C_Q)
+                                                      0.085     0.099 r  reset_sync_r_reg[1]/Q
+                         net (fo=130, routed)         0.959     1.058    reset_sync_r[1]_bufg_place
+    BUFGCE_X0Y74         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.023     1.081 r  reset_sync_r_reg[1]_bufg_place/O
+                         net (fo=12226, routed)       0.805     1.886    u_core/u_compute/u_sa/g_row[2].g_col[7].u_ppe/SR[0]
+    SLICE_X23Y153        FDCE                                         f  u_core/u_compute/u_sa/g_row[2].g_col[7].u_ppe/acc_hi_q_reg[29]/CLR  (IS_INVERTED)
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.020     0.020    u_core/u_compute/u_sa/g_row[2].g_col[7].u_ppe/clk
+    SLICE_X23Y153        FDCE                                         r  u_core/u_compute/u_sa/g_row[2].g_col[7].u_ppe/acc_hi_q_reg[29]/C
+                         clock pessimism              0.000     0.020    
+    SLICE_X23Y153        FDCE (Remov_GFF_SLICEL_C_CLR)
+                                                     -0.018     0.002    u_core/u_compute/u_sa/g_row[2].g_col[7].u_ppe/acc_hi_q_reg[29]
+  -------------------------------------------------------------------
+                         required time                         -0.002    
+                         arrival time                           1.886    
+  -------------------------------------------------------------------
+                         slack                                  1.884    
+
+Slack (MET) :             1.884ns  (arrival time - required time)
+  Source:                 reset_sync_r_reg[1]/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_compute/u_sa/g_row[2].g_col[7].u_ppe/acc_hi_q_reg[30]/CLR
+                            (removal check against rising-edge clock clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             **async_default**
+  Path Type:              Removal (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        1.872ns  (logic 0.108ns (5.770%)  route 1.764ns (94.230%))
+  Logic Levels:           1  (BUFGCE=1)
+  Clock Path Skew:        0.006ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.020ns
+    Source Clock Delay      (SCD):    0.014ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.014     0.014    clk
+    SLICE_X26Y154        FDCE                                         r  reset_sync_r_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X26Y154        FDCE (Prop_EFF2_SLICEL_C_Q)
+                                                      0.085     0.099 r  reset_sync_r_reg[1]/Q
+                         net (fo=130, routed)         0.959     1.058    reset_sync_r[1]_bufg_place
+    BUFGCE_X0Y74         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.023     1.081 r  reset_sync_r_reg[1]_bufg_place/O
+                         net (fo=12226, routed)       0.805     1.886    u_core/u_compute/u_sa/g_row[2].g_col[7].u_ppe/SR[0]
+    SLICE_X23Y153        FDCE                                         f  u_core/u_compute/u_sa/g_row[2].g_col[7].u_ppe/acc_hi_q_reg[30]/CLR  (IS_INVERTED)
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.020     0.020    u_core/u_compute/u_sa/g_row[2].g_col[7].u_ppe/clk
+    SLICE_X23Y153        FDCE                                         r  u_core/u_compute/u_sa/g_row[2].g_col[7].u_ppe/acc_hi_q_reg[30]/C
+                         clock pessimism              0.000     0.020    
+    SLICE_X23Y153        FDCE (Remov_HFF2_SLICEL_C_CLR)
+                                                     -0.018     0.002    u_core/u_compute/u_sa/g_row[2].g_col[7].u_ppe/acc_hi_q_reg[30]
+  -------------------------------------------------------------------
+                         required time                         -0.002    
+                         arrival time                           1.886    
+  -------------------------------------------------------------------
+                         slack                                  1.884    
+
+Slack (MET) :             1.884ns  (arrival time - required time)
+  Source:                 reset_sync_r_reg[1]/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_compute/u_sa/g_row[2].g_col[7].u_ppe/acc_hi_q_reg[31]/CLR
+                            (removal check against rising-edge clock clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             **async_default**
+  Path Type:              Removal (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        1.872ns  (logic 0.108ns (5.770%)  route 1.764ns (94.230%))
+  Logic Levels:           1  (BUFGCE=1)
+  Clock Path Skew:        0.006ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.020ns
+    Source Clock Delay      (SCD):    0.014ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.014     0.014    clk
+    SLICE_X26Y154        FDCE                                         r  reset_sync_r_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X26Y154        FDCE (Prop_EFF2_SLICEL_C_Q)
+                                                      0.085     0.099 r  reset_sync_r_reg[1]/Q
+                         net (fo=130, routed)         0.959     1.058    reset_sync_r[1]_bufg_place
+    BUFGCE_X0Y74         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.023     1.081 r  reset_sync_r_reg[1]_bufg_place/O
+                         net (fo=12226, routed)       0.805     1.886    u_core/u_compute/u_sa/g_row[2].g_col[7].u_ppe/SR[0]
+    SLICE_X23Y153        FDCE                                         f  u_core/u_compute/u_sa/g_row[2].g_col[7].u_ppe/acc_hi_q_reg[31]/CLR  (IS_INVERTED)
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=27683, unset)        0.020     0.020    u_core/u_compute/u_sa/g_row[2].g_col[7].u_ppe/clk
+    SLICE_X23Y153        FDCE                                         r  u_core/u_compute/u_sa/g_row[2].g_col[7].u_ppe/acc_hi_q_reg[31]/C
+                         clock pessimism              0.000     0.020    
+    SLICE_X23Y153        FDCE (Remov_GFF2_SLICEL_C_CLR)
+                                                     -0.018     0.002    u_core/u_compute/u_sa/g_row[2].g_col[7].u_ppe/acc_hi_q_reg[31]
+  -------------------------------------------------------------------
+                         required time                         -0.002    
+                         arrival time                           1.886    
+  -------------------------------------------------------------------
+                         slack                                  1.884    
+
+
+
+

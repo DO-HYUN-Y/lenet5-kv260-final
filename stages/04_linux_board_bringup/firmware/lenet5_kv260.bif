@@ -1,0 +1,4 @@
+all:
+{
+  [destination_device=pl] lenet5_kv260.bit
+}
