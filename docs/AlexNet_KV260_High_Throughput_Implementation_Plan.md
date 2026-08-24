@@ -37,19 +37,19 @@ DDR4 model/activation
 
 ### 1.1 Model contract
 
-현재 성능 산정은 5 Conv + 3 FC, grouped convolution을 포함하는 고전 AlexNet을 기준으로 한다. 이 수치는 sizing 기준이며, RTL 의미론의 최종 기준은 아래 산출물로 별도 고정한다.
+기준 모델은 `torchvision.models.alexnet`과 `AlexNet_Weights.IMAGENET1K_V1`으로 고정한다. 채널 수는 64/192/384/256/256이고 모든 convolution의 `groups=1`이다. 고전 Caffe의 96/256/384/384/256 grouped-convolution 모델과 혼용하지 않는다.
 
 ```text
-model/alexnet_contract.yaml
+alexnet/alexnet_contract.yaml
 ```
 
 계약 파일에는 최소한 다음 항목이 들어가야 한다.
 
-- 입력 크기: 224 또는 227
-- 입력 전처리와 channel 순서
-- Conv1 padding, stride, output shape
-- Conv2/4/5 group 수와 channel 연결
-- LRN 사용 여부와 구현 위치
+- 입력 크기: RGB `3x224x224`
+- 입력 전처리: resize 256, center crop 224, ImageNet mean/std
+- Conv1: kernel 11, stride 4, padding 2, output `64x55x55`
+- 모든 convolution: `groups=1`
+- LRN: 사용하지 않음
 - Pool kernel, stride, padding
 - classifier output class 수
 - layer fusion 경계
@@ -83,7 +83,7 @@ model/alexnet_contract.yaml
 - 음수 rounding 규칙
 - saturation 순서
 - padding 값
-- group convolution의 input/output channel 순서
+- dense convolution의 input/output channel 순서
 
 비대칭 UINT8 activation을 채택하려면 기존 INT8 packing을 그대로 사용하지 않고 zero-point 보상식 또는 WP487 UINT8 방식을 별도로 검증한다.
 
@@ -92,7 +92,7 @@ model/alexnet_contract.yaml
 다음 layout은 Python, C++, packer, RTL, driver가 공유하는 단일 ABI로 정의한다.
 
 - activation layout: NCHW 또는 tiled-NCHW
-- weight layout: OIHW 및 group 순서
+- weight layout: OIHW
 - output-channel tile order
 - spatial tile order
 - packed DSP lo/hi lane order
@@ -141,9 +141,9 @@ C++ 모델은 RTL의 직접적인 functional oracle이다. cycle timing을 모�
 필수 operator:
 
 - packed INT8 product split
-- grouped Conv2D
+- dense Conv2D
 - MaxPool
-- LRN 또는 대체 operator
+- ReLU
 - FC/GEMM
 - bias/ReLU/requantization
 - tensor pack/unpack
@@ -214,9 +214,10 @@ signed INT8의 전체 범위를 사용하는 최악 조건 기준이다.
 | Layer | Dot-product depth | 최소 signed 폭 |
 |---|---:|---:|
 | Conv1 | 363 | 24-bit |
-| Conv2 grouped | 1,200 | 26-bit |
-| Conv3 | 2,304 | 27-bit |
-| Conv4/5 grouped | 1,728 | 26-bit |
+| Conv2 | 1,600 | 26-bit |
+| Conv3 | 1,728 | 26-bit |
+| Conv4 | 3,456 | 27-bit |
+| Conv5 | 2,304 | 27-bit |
 | FC6 | 9,216 | 29-bit |
 | FC7/FC8 | 4,096 | 28-bit |
 
@@ -320,11 +321,11 @@ DMA와 compute를 겹치기 위해 각 ping/pong buffer는 명시적인 owner와
 
 ### 6.1 산정 기준
 
-AlexNet sizing 기준:
+torchvision AlexNet FP32 모델에서 검증한 sizing 기준:
 
 ```text
-724,406,816 MAC/image
-1,448,813,632 OPS/image
+714,188,480 MAC/image
+1,428,376,960 OPS/image
 ```
 
 TOPS 계산:
@@ -348,8 +349,8 @@ TOPS/W = TOPS / measured_VCC_SOM_W
 1,024 packed-MAC DSP의 peak는 다음과 같다.
 
 ```text
-250 MHz: 1.024 TOPS, peak 706.8 image/s
-300 MHz: 1.229 TOPS, peak 848.1 image/s
+250 MHz: 1.024 TOPS, peak 716.9 image/s
+300 MHz: 1.229 TOPS, peak 860.3 image/s
 ```
 
 이 수치는 목표 설정용 roofline이며 구현 완료를 의미하지 않는다.
@@ -397,6 +398,12 @@ Gate:
 
 ### Phase 1 — Python references
 
+현재 진행 상태:
+
+- 완료: torchvision 호환 FP32 모델, 224 입력 전처리 계약, 공식 V1 checkpoint SHA-256, layer shape/MAC smoke test
+- 대기: ILSVRC2012 validation 50,000장 Top-1/Top-5 실측
+- 다음: 실제 integer INT8 reference 및 per-layer golden tensor
+
 산출물:
 
 - FP32 inference
@@ -414,7 +421,7 @@ Gate:
 
 산출물:
 
-- grouped Conv/Pool/FC/requant C++ model
+- dense Conv/Pool/FC/requant C++ model
 - pack/unpack model
 - directed/random test-vector generator
 
@@ -450,7 +457,7 @@ Gate:
 Gate:
 
 - Conv1 전체 output byte-exact
-- grouped Conv2 output byte-exact
+- Conv2 output byte-exact
 - FC6 worst-depth test 통과
 - backpressure/stall 주입 test 통과
 
@@ -512,7 +519,7 @@ Gate:
 - packed lo lane only valid
 - packed hi lane only valid
 - both packed lanes valid
-- group boundary channel
+- channel-tile boundary
 - partial output-channel tile
 - partial spatial tile
 - accumulator positive/negative extreme
@@ -545,7 +552,7 @@ Python FP32
 | FC weight bandwidth 병목 | weight tile을 batch 8/16에서 재사용 |
 | 높은 utilization로 Fmax 하락 | 10-15% routing margin 유지 |
 | 300 MHz 전력/열 초과 | 250 MHz sign-off 후 clock sweep |
-| LRN throughput 저하 | PL 구현, PS 분할, 또는 model contract에서 제거 후 재학습 비교 |
+| ImageNet validation 데이터 부재 | 공식 ILSVRC2012 devkit/validation set 확보 후 FP32·INT8를 같은 loader로 측정 |
 
 ## 10. 저장소 확장 계획
 
@@ -579,7 +586,7 @@ AlexNet 변경으로 기존 `rtl/`, `tb/`, Stage04~06 LeNet board 결과가 깨�
 2. `alexnet_contract.yaml`을 작성하고 version 1을 고정한다.
 3. FP32 및 실제 integer INT8 Python 모델을 완성한다.
 4. per-layer accumulator range와 quantization 정확도를 확인한다.
-5. C++ bit-exact grouped Conv/FC/requant 모델을 작성한다.
+5. C++ bit-exact dense Conv/FC/requant 모델을 작성한다.
 6. Conv1 `11x11x3`, stride/padding, packed two-lane vector를 생성한다.
 7. 기존 split-every-cycle PE와 7-term DSP cascade를 동일 조건으로 합성한다.
 8. 250 MHz에서 resource, throughput, power estimate를 비교해 PE 구조를 선택한다.

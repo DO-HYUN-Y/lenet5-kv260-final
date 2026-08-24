@@ -1,0 +1,51 @@
+contract_version: 1
+model:
+  family: AlexNet
+  variant: torchvision.models.alexnet
+  weights: AlexNet_Weights.IMAGENET1K_V1
+  checkpoint_url: https://download.pytorch.org/models/alexnet-owt-7be5be79.pth
+  checkpoint_sha256: 7be5be791159472b1fbf3c69796f7cb30dca7ad8466c2df70058c37116cdee02
+  class_count: 1000
+  parameter_count: 61100840
+  macs_per_image: 714188480
+  ops_per_image_1mac_equals_2ops: 1428376960
+  grouped_convolution: false
+input:
+  tensor_layout: NCHW
+  shape: [1, 3, 224, 224]
+  channel_order: RGB
+preprocess:
+  resize_shorter_side: 256
+  center_crop: [224, 224]
+  interpolation: bilinear
+  antialias: true
+  scale_uint8_to_float: 0.00392156862745098
+  normalize_mean: [0.485, 0.456, 0.406]
+  normalize_std: [0.229, 0.224, 0.225]
+layers:
+  conv1: {in_channels: 3, out_channels: 64, kernel: 11, stride: 4, padding: 2, groups: 1, output: [64, 55, 55]}
+  pool1: {kernel: 3, stride: 2, padding: 0, output: [64, 27, 27]}
+  conv2: {in_channels: 64, out_channels: 192, kernel: 5, stride: 1, padding: 2, groups: 1, output: [192, 27, 27]}
+  pool2: {kernel: 3, stride: 2, padding: 0, output: [192, 13, 13]}
+  conv3: {in_channels: 192, out_channels: 384, kernel: 3, stride: 1, padding: 1, groups: 1, output: [384, 13, 13]}
+  conv4: {in_channels: 384, out_channels: 256, kernel: 3, stride: 1, padding: 1, groups: 1, output: [256, 13, 13]}
+  conv5: {in_channels: 256, out_channels: 256, kernel: 3, stride: 1, padding: 1, groups: 1, output: [256, 13, 13]}
+  pool5: {kernel: 3, stride: 2, padding: 0, output: [256, 6, 6]}
+  fc6: {in_features: 9216, out_features: 4096}
+  fc7: {in_features: 4096, out_features: 4096}
+  fc8: {in_features: 4096, out_features: 1000}
+reference_accuracy_percent:
+  source: torchvision_weights_metadata
+  imagenet1k_top1: 56.522
+  imagenet1k_top5: 79.066
+validation:
+  dataset: ILSVRC2012 validation
+  sample_count: 50000
+  metric: [top1, top5]
+  measured: false
+  note: Actual accuracy must be recorded after the validation dataset is supplied.
+smoke_verification:
+  runtime: {python: 3.12.10, torch: 2.13.0+cpu, torchvision: 0.28.0+cpu}
+  architecture_matches_torchvision: true
+  output_matches_torchvision_with_identical_state_dict: bit_exact
+  pretrained_checkpoint_loaded: true
