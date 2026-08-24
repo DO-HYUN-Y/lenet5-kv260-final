@@ -63,7 +63,10 @@ validation:
 
 # 저장소에서 실제로 실행해 통과한 빠른 구조 검증 결과
 smoke_verification:
-  runtime: {python: 3.12.10, torch: 2.13.0+cpu, torchvision: 0.28.0+cpu}
+  cpu_runtime: {python: 3.12.10, torch: 2.13.0+cpu, torchvision: 0.28.0+cpu}
+  cuda_runtime: {python: 3.12.10, torch: 2.13.0+cu126, torchvision: 0.28.0+cu126}
+  cuda_device: NVIDIA GeForce RTX 3050 8GB
   architecture_matches_torchvision: true
   output_matches_torchvision_with_identical_state_dict: bit_exact
   pretrained_checkpoint_loaded: true
+  cuda_smoke_test_passed: true

@@ -1,16 +1,4 @@
-"""AlexNet FP32 모델을 실행하고 구조·추론·정확도를 검증하는 프로그램.
-
-사용 예시:
-
-1. 모델 구조만 빠르게 검사
-   ``python -m alexnet.validate_fp32 --no-pretrained``
-2. 공식 checkpoint까지 불러와 검사
-   ``python -m alexnet.validate_fp32``
-3. 한 장의 사진 분류
-   ``python -m alexnet.validate_fp32 --image 사진.jpg``
-4. ImageNet 전체 정확도 측정
-   ``python -m alexnet.validate_fp32 --data-root 데이터셋경로``
-"""
+"""Smoke-test, inspect, and validate the frozen FP32 AlexNet reference."""
 
 from __future__ import annotations
 
@@ -51,41 +39,56 @@ REFERENCE_TOP5 = 79.066
 
 
 def parse_args() -> argparse.Namespace:
-    """터미널에서 전달한 실행 옵션을 읽어 Namespace로 반환한다.
-
-    예를 들어 ``--batch-size 32``를 입력하면 ``args.batch_size``가 32가 된다.
-    """
+    """Parse command-line options and return them as an argparse Namespace."""
 
     parser = argparse.ArgumentParser(
-        description="224x224 torchvision 호환 AlexNet FP32 기준 모델을 검증합니다."
+        description="Validate the torchvision-compatible 224x224 AlexNet FP32 reference."
     )
     parser.add_argument(
         "--data-root",
         type=Path,
-        help="공식 devkit과 validation archive/directory가 있는 ImageNet 루트 경로",
+        help="ImageNet root containing the official devkit and validation archive/directory.",
     )
-    parser.add_argument("--image", type=Path, help="사진 한 장을 분류하고 Top-5 출력")
+    parser.add_argument("--image", type=Path, help="Run top-5 inference on one image.")
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--workers", type=int, default=4)
-    parser.add_argument("--limit", type=int, default=0, help="앞의 N장만 검사(0이면 전체)")
-    parser.add_argument("--device", default="auto", help="auto, cpu, cuda 또는 PyTorch device 문자열")
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=0,
+        help="Validate only the first N images (0 = all).",
+    )
+    parser.add_argument(
+        "--device",
+        default="auto",
+        help="auto, cpu, cuda, or a torch device string.",
+    )
     parser.add_argument(
         "--no-pretrained",
         action="store_true",
-        help="checkpoint를 받지 않고 구조만 검사",
+        help="Skip checkpoint loading for an offline shape test.",
     )
     parser.add_argument(
         "--dump-dir",
         type=Path,
-        help="사진 한 장의 입력과 layer별 FP32 출력을 .npy로 저장할 폴더",
+        help="Save one image's FP32 input and per-layer .npy tensors.",
     )
-    parser.add_argument("--report", type=Path, help="검증 결과를 저장할 JSON 경로")
-    parser.add_argument("--print-every", type=int, default=50, help="N개 batch마다 진행률 출력")
+    parser.add_argument(
+        "--report",
+        type=Path,
+        help="Write machine-readable validation results as JSON.",
+    )
+    parser.add_argument(
+        "--print-every",
+        type=int,
+        default=50,
+        help="Print validation progress every N batches.",
+    )
     return parser.parse_args()
 
 
 def select_device(requested: str) -> torch.device:
-    """모델을 실행할 CPU 또는 GPU를 선택한다."""
+    """Select the CPU or CUDA device used to run the model."""
 
     if requested == "auto":
         # NVIDIA CUDA GPU를 쓸 수 있으면 GPU, 아니면 CPU를 자동 선택한다.
@@ -100,11 +103,7 @@ def select_device(requested: str) -> torch.device:
 
 
 def sha256_file(path: Path) -> str:
-    """파일 전체의 SHA-256 hash를 계산한다.
-
-    checkpoint가 바뀌지 않았는지 확인하는 디지털 지문 역할을 한다. 큰 파일을
-    한 번에 메모리에 올리지 않고 1 MiB씩 나누어 읽는다.
-    """
+    """Calculate the SHA-256 digest of a file in 1 MiB chunks."""
 
     digest = hashlib.sha256()
     with path.open("rb") as stream:
@@ -115,7 +114,7 @@ def sha256_file(path: Path) -> str:
 
 
 def checkpoint_metadata(weights: object | None) -> dict[str, Any] | None:
-    """사용한 checkpoint의 이름, URL, 파일명, hash를 보고서 형식으로 만든다."""
+    """Return checkpoint name, URL, filename, and SHA-256 metadata."""
 
     if weights is None:
         # --no-pretrained 실행에서는 checkpoint가 없으므로 기록할 것도 없다.
@@ -135,7 +134,7 @@ def checkpoint_metadata(weights: object | None) -> dict[str, Any] | None:
 
 
 def runtime_metadata(device: torch.device) -> dict[str, Any]:
-    """결과 재현에 필요한 Python/PyTorch 버전과 실행 device를 기록한다."""
+    """Return the runtime versions and selected execution device."""
 
     return {
         "python": platform.python_version(),
@@ -147,11 +146,7 @@ def runtime_metadata(device: torch.device) -> dict[str, Any]:
 
 
 def run_smoke_test(model: AlexNet, device: torch.device) -> dict[str, Any]:
-    """가짜 0 입력 한 장으로 모델 구조와 고정 수치를 빠르게 검사한다.
-
-    smoke test는 실제 정확도를 재는 시험이 아니다. 모델이 실행되는지, shape와
-    파라미터/MAC 수가 우리가 정한 계약과 같은지를 빠르게 잡아낸다.
-    """
+    """Check frozen shapes and counts using one all-zero input image."""
 
     # 실제 사진 대신 모든 값이 0인 [1, 3, 224, 224] FP32 tensor를 만든다.
     x = torch.zeros(INPUT_SHAPE, dtype=torch.float32, device=device)
@@ -199,7 +194,7 @@ def run_single_image(
     device: torch.device,
     dump_dir: Path | None,
 ) -> dict[str, Any]:
-    """이미지 한 장을 전처리하고 AlexNet Top-5 예측을 반환한다."""
+    """Preprocess one image and return the AlexNet top-5 predictions."""
 
     if not image_path.is_file():
         raise FileNotFoundError(image_path)
@@ -254,7 +249,7 @@ def validate_imagenet(
     limit: int,
     print_every: int,
 ) -> dict[str, Any]:
-    """ImageNet validation set에서 Top-1/Top-5 정확도를 측정한다."""
+    """Measure top-1 and top-5 accuracy on the ImageNet validation set."""
 
     if not data_root.exists():
         raise FileNotFoundError(data_root)
@@ -341,7 +336,7 @@ def validate_imagenet(
 
 
 def main() -> None:
-    """명령행 옵션에 따라 smoke/image/ImageNet 검증을 순서대로 실행한다."""
+    """Run smoke, single-image, and ImageNet validation as requested."""
 
     args = parse_args()
 

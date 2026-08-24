@@ -1,8 +1,8 @@
-"""torchvision과 호환되는 AlexNet FP32 기준 모델.
+"""Frozen torchvision-compatible AlexNet FP32 architecture.
 
-이 파일은 앞으로 만들 INT8 모델과 RTL의 정답(golden reference)이 된다.
-클래스와 layer 순서를 torchvision AlexNet과 동일하게 만들었기 때문에 공식
-IMAGENET1K_V1 가중치를 이름 변환 없이 그대로 불러올 수 있다.
+This module is the golden reference for future INT8, C++, and RTL models. Its
+state_dict keys match torchvision.models.alexnet so the official
+IMAGENET1K_V1 checkpoint can be loaded without key conversion.
 """
 
 # 타입 힌트에서 아직 정의되지 않은 클래스 이름도 사용할 수 있게 해 준다.
@@ -25,12 +25,7 @@ CLASS_COUNT = 1000
 
 
 class AlexNet(nn.Module):
-    """224x224 입력을 사용하는 torchvision 방식의 AlexNet.
-
-    ``nn.Module``은 모든 PyTorch 신경망의 기본 클래스이다. 이 클래스를
-    상속하면 학습 파라미터 저장, CPU/GPU 이동, 추론 실행 등을 PyTorch가
-    관리해 준다.
-    """
+    """Torchvision-compatible AlexNet with a fixed 224x224 input contract."""
 
     def __init__(self, num_classes: int = CLASS_COUNT, dropout: float = 0.5) -> None:
         # 부모 클래스(nn.Module)의 초기화를 먼저 실행해야 layer가 정상 등록된다.
@@ -86,14 +81,7 @@ class AlexNet(nn.Module):
         )
 
     def forward(self, x: Tensor) -> Tensor:
-        """입력 영상 tensor를 받아 class별 점수(logit)를 반환한다.
-
-        입력 shape:  [N, 3, 224, 224]
-        출력 shape:  [N, 1000]
-
-        출력은 확률이 아니라 logit이다. 확률이 필요하면 바깥에서 softmax를
-        적용한다. 학습 시에는 CrossEntropyLoss가 softmax 역할까지 처리한다.
-        """
+        """Return class logits for an input tensor shaped [N, 3, 224, 224]."""
 
         # 1) Conv/ReLU/Pool을 통과시켜 영상 특징을 추출한다.
         x = self.features(x)
@@ -138,12 +126,7 @@ def create_alexnet(
     *,
     progress: bool = True,
 ) -> tuple[AlexNet, object | None]:
-    """AlexNet 객체를 만들고 필요하면 공식 학습 가중치를 불러온다.
-
-    ``pretrained=True``이면 ImageNet으로 학습된 V1 checkpoint를 사용한다.
-    반환값은 ``(model, weights)`` 두 개이다. ``weights``에는 가중치뿐 아니라
-    resize, center crop, mean/std 정규화 규칙도 들어 있다.
-    """
+    """Create AlexNet and optionally load the official ImageNet V1 weights."""
 
     # 우선 구조만 가진 빈 모델을 만든다. 이 시점의 가중치는 임의 값이다.
     model = AlexNet()
@@ -163,11 +146,7 @@ def create_alexnet(
 
 
 def capture_layer_shapes(model: AlexNet, x: Tensor) -> OrderedDict[str, tuple[int, ...]]:
-    """추론을 한 번 실행하며 각 layer 출력 shape를 순서대로 기록한다.
-
-    hook은 layer가 실행될 때 PyTorch가 자동으로 호출해 주는 관찰 함수다.
-    모델 계산을 바꾸지 않고 중간 결과만 확인할 때 사용한다.
-    """
+    """Run one forward pass and record each contract-relevant output shape."""
 
     # OrderedDict는 입력한 순서를 유지하므로 출력 보고서도 layer 순서가 된다.
     shapes: OrderedDict[str, tuple[int, ...]] = OrderedDict()
@@ -203,11 +182,7 @@ def capture_layer_shapes(model: AlexNet, x: Tensor) -> OrderedDict[str, tuple[in
 
 
 def count_macs(model: AlexNet, x: Tensor) -> tuple[OrderedDict[str, int], int]:
-    """입력 shape 기준으로 Conv/FC의 MAC 횟수를 계산한다.
-
-    MAC은 ``한 번의 곱셈 + 한 번의 누산``을 뜻한다. bias 덧셈, ReLU, Pool은
-    이 숫자에서 제외한다. 프로젝트 성능 표기에서는 ``1 MAC = 2 OPS``이다.
-    """
+    """Count Conv/Linear MACs for the supplied input batch shape."""
 
     macs: OrderedDict[str, int] = OrderedDict()
     handles = []
@@ -252,11 +227,7 @@ def count_macs(model: AlexNet, x: Tensor) -> tuple[OrderedDict[str, int], int]:
 
 
 def capture_activations(model: AlexNet, x: Tensor) -> OrderedDict[str, Tensor]:
-    """각 layer의 FP32 출력값을 CPU tensor로 복사해 기록한다.
-
-    나중에 Python INT8, C++, RTL 결과와 layer별로 비교하기 위한 golden
-    tensor를 만들 때 사용한다.
-    """
+    """Capture CPU copies of FP32 layer outputs for bit-exact comparisons."""
 
     activations: OrderedDict[str, Tensor] = OrderedDict()
     handles = []

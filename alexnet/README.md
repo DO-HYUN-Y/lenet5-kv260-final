@@ -17,38 +17,49 @@ C++, or RTL work starts.  The selected model is torchvision AlexNet with
 This is the 64/192/384/256/256-channel torchvision variant; it does not use the
 grouped convolutions from the historical two-GPU Caffe model.
 
-## Environment
+## CUDA GPU environment (recommended)
 
-From the repository root on Windows PowerShell:
+The CUDA torch wheel is large and exceeds the legacy Windows path limit when
+the virtual environment is created under this deeply nested repository. Use a
+shorter environment path. From the repository root on Windows PowerShell:
 
 ```powershell
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r alexnet\requirements.txt
+$alexnetGpuVenv = "$env:USERPROFILE\Documents\Codex\.venvs\alexnet-kv260"
+python -m venv $alexnetGpuVenv
+& "$alexnetGpuVenv\Scripts\python.exe" -m pip install -r alexnet\requirements-cu126.txt
+$alexnetPython = "$alexnetGpuVenv\Scripts\python.exe"
 ```
 
-On a Windows installation with the legacy path-length limit, the first pip run
-can report `WinError 206` after torch itself has been installed. Re-run the same
-pip command once; pip then completes the remaining torchvision installation.
+Verified hardware/runtime:
+
+```text
+NVIDIA GeForce RTX 3050 8GB
+NVIDIA driver 560.94 / CUDA driver 12.6
+torch 2.13.0+cu126 / torchvision 0.28.0+cu126
+```
+
+For a CPU-only fallback, create `.venv` in the repository and install
+`alexnet\requirements.txt` instead.
 
 ## Architecture and checkpoint smoke test
 
 The first run downloads the official checkpoint into the PyTorch cache:
 
 ```powershell
-.\.venv\Scripts\python.exe -m alexnet.validate_fp32 --report alexnet_output\smoke_report.json
+& $alexnetPython -m alexnet.validate_fp32 --report alexnet_output\smoke_report.json
 ```
 
 For an offline architecture-only check:
 
 ```powershell
-.\.venv\Scripts\python.exe -m alexnet.validate_fp32 --no-pretrained
-.\.venv\Scripts\python.exe -m unittest alexnet.test_model
+& $alexnetPython -m alexnet.validate_fp32 --no-pretrained
+& $alexnetPython -m unittest alexnet.test_model
 ```
 
 ## One-image inference and golden tensor dump
 
 ```powershell
-.\.venv\Scripts\python.exe -m alexnet.validate_fp32 `
+& $alexnetPython -m alexnet.validate_fp32 `
   --image path\to\image.jpg `
   --dump-dir alexnet_output\sample_0001 `
   --report alexnet_output\sample_0001.json
@@ -64,7 +75,7 @@ Use torchvision's official ImageNet dataset layout so that the ILSVRC class
 mapping is not replaced by an accidental alphabetical directory mapping:
 
 ```powershell
-.\.venv\Scripts\python.exe -m alexnet.validate_fp32 `
+& $alexnetPython -m alexnet.validate_fp32 `
   --data-root D:\datasets\imagenet `
   --batch-size 64 `
   --workers 8 `

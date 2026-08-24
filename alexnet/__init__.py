@@ -1,7 +1,4 @@
-"""KV260 프로젝트의 AlexNet FP32 기준 모델 package.
-
-이 파일이 있으면 ``alexnet`` 폴더를 Python package로 import할 수 있다.
-"""
+"""FP32 AlexNet reference package for the KV260 accelerator project."""
 
 # 자주 쓰는 두 이름을 ``from alexnet import AlexNet``처럼 짧게 불러오게 한다.
 from .model import AlexNet, create_alexnet

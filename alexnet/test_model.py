@@ -1,8 +1,4 @@
-"""AlexNet FP32 기준 모델이 실수로 바뀌지 않았는지 검사하는 단위 테스트.
-
-단위 테스트는 프로그램의 작은 조건을 자동으로 확인하는 코드이다. 조건이
-맞으면 통과하고 하나라도 달라지면 어느 줄에서 실패했는지 알려 준다.
-"""
+"""Architecture contract tests for the FP32 AlexNet reference."""
 
 import unittest
 
@@ -13,10 +9,10 @@ from .model import AlexNet, INPUT_SHAPE, capture_layer_shapes, count_macs
 
 
 class AlexNetContractTest(unittest.TestCase):
-    """unittest가 자동으로 찾아 실행할 AlexNet 검사 모음."""
+    """Verify the frozen AlexNet structure and torchvision compatibility."""
 
     def test_shapes_and_parameter_count(self) -> None:
-        """layer shape, parameter 수, MAC 수가 계약값과 같은지 검사한다."""
+        """Check layer shapes, parameter count, and MAC count."""
 
         # eval()은 학습이 아니라 추론 모드로 바꿔 Dropout을 끈다.
         model = AlexNet().eval()
@@ -45,7 +41,7 @@ class AlexNetContractTest(unittest.TestCase):
         self.assertEqual(macs_by_layer["fc8"], 4_096_000)
 
     def test_state_dict_and_output_match_torchvision(self) -> None:
-        """우리 구현이 torchvision 원본과 완전히 같은 계산을 하는지 검사한다."""
+        """Check exact output equivalence with torchvision AlexNet."""
 
         # 두 모델의 임의 입력과 초기 상태를 반복 가능하게 만들기 위한 seed이다.
         torch.manual_seed(1234)

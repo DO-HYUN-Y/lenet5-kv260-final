@@ -33,6 +33,16 @@ torch 2.13.0+cpu
 torchvision 0.28.0+cpu
 ```
 
+CUDA environment:
+
+```text
+NVIDIA GeForce RTX 3050 8GB (compute capability 8.6)
+NVIDIA driver 560.94 / driver-supported CUDA 12.6
+torch 2.13.0+cu126
+torchvision 0.28.0+cu126
+CUDA available: true
+```
+
 Commands:
 
 ```powershell
@@ -52,6 +62,27 @@ Results:
 - Every Conv/Pool/FC layer shape matched `alexnet_contract.yaml`.
 - Parameter and MAC counts matched the frozen contract.
 - The Python dependency environment passed `pip check`.
+- A CUDA tensor matrix multiplication completed on `cuda:0`.
+- `validate_fp32.py` selected `device=cuda` automatically and passed the full
+  checkpoint/shape/MAC smoke test.
+
+## Local RTX 3050 benchmark
+
+This is a short synthetic-data benchmark, so it excludes ImageNet file loading
+and augmentation overhead. Training used automatic mixed precision (AMP FP16).
+
+```text
+training batch 16:  209.853 image/s
+training batch 32:  336.706 image/s
+training batch 64:  479.822 image/s
+training batch 128: 617.178 image/s
+training batch 256: 697.996 image/s, peak torch allocation 1.434 GiB
+inference batch 64: 1759.407 image/s
+```
+
+At the measured batch-256 compute rate, 90 ImageNet epochs contain about 45.9
+hours of model compute. Real end-to-end training should be budgeted at roughly
+50-60 hours after image decoding, augmentation, validation, and checkpoint I/O.
 
 ## Accuracy status
 
