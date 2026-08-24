@@ -1,5 +1,16 @@
 # AlexNet FP32 reference
 
+## Python 초보자가 먼저 볼 순서
+
+1. `model.py`: AlexNet layer 구성과 입력이 지나가는 순서
+2. `validate_fp32.py`: 모델을 실행하고 shape·사진·정확도를 검사하는 방법
+3. `test_model.py`: 구조가 바뀌지 않았는지 자동으로 확인하는 방법
+4. `alexnet_contract.yaml`: Python/C++/RTL이 공통으로 따라야 할 고정 수치
+
+Python 코드에는 각 함수의 역할, tensor shape, 필요한 이유를 한국어 주석으로
+기록했다. 처음에는 `model.py`의 `AlexNet.__init__()`과 `forward()`만 읽고,
+그다음 `validate_fp32.py`의 `main()`에서 호출 흐름을 따라가는 것이 쉽다.
+
 This directory freezes the software reference that must be correct before INT8,
 C++, or RTL work starts.  The selected model is torchvision AlexNet with
 `AlexNet_Weights.IMAGENET1K_V1`, a `3x224x224` RGB input, and Conv1 padding 2.

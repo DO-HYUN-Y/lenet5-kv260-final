@@ -1,4 +1,8 @@
+# 이 파일은 Python, C++, RTL이 공통으로 따라야 할 AlexNet 실행 규격이다.
+# YAML에서 # 뒤의 내용은 설명용 주석이며 프로그램 데이터에는 포함되지 않는다.
 contract_version: 1
+
+# 사용할 AlexNet 종류와 공식 checkpoint 정보
 model:
   family: AlexNet
   variant: torchvision.models.alexnet
@@ -10,10 +14,15 @@ model:
   macs_per_image: 714188480
   ops_per_image_1mac_equals_2ops: 1428376960
   grouped_convolution: false
+
+# 모델에 들어가는 tensor 한 장의 모양
+# NCHW = batch 수, channel 수, 높이, 너비 순서
 input:
   tensor_layout: NCHW
   shape: [1, 3, 224, 224]
   channel_order: RGB
+
+# 원본 사진을 model 입력 tensor로 바꾸는 전처리 규칙
 preprocess:
   resize_shorter_side: 256
   center_crop: [224, 224]
@@ -22,6 +31,9 @@ preprocess:
   scale_uint8_to_float: 0.00392156862745098
   normalize_mean: [0.485, 0.456, 0.406]
   normalize_std: [0.229, 0.224, 0.225]
+
+# 각 layer의 고정 파라미터와 예상 출력 shape
+# Conv의 output은 batch 차원을 제외한 [channel, height, width]이다.
 layers:
   conv1: {in_channels: 3, out_channels: 64, kernel: 11, stride: 4, padding: 2, groups: 1, output: [64, 55, 55]}
   pool1: {kernel: 3, stride: 2, padding: 0, output: [64, 27, 27]}
@@ -34,16 +46,22 @@ layers:
   fc6: {in_features: 9216, out_features: 4096}
   fc7: {in_features: 4096, out_features: 4096}
   fc8: {in_features: 4096, out_features: 1000}
+
+# torchvision이 공개한 checkpoint 기준 정확도이며 아직 우리 실측값은 아니다.
 reference_accuracy_percent:
   source: torchvision_weights_metadata
   imagenet1k_top1: 56.522
   imagenet1k_top5: 79.066
+
+# ImageNet 50,000장 검증 상태
 validation:
   dataset: ILSVRC2012 validation
   sample_count: 50000
   metric: [top1, top5]
   measured: false
   note: Actual accuracy must be recorded after the validation dataset is supplied.
+
+# 저장소에서 실제로 실행해 통과한 빠른 구조 검증 결과
 smoke_verification:
   runtime: {python: 3.12.10, torch: 2.13.0+cpu, torchvision: 0.28.0+cpu}
   architecture_matches_torchvision: true
