@@ -102,6 +102,35 @@ K26에는 160개 DSP가 routing/기타 기능 여유로 남는다.
 각 slice의 output write는 8 INT8 = 64-bit/cycle이고 계수 8개는 tile 동안 local
 register에 고정하므로 64 B/cycle burst를 단일 global memory port에 몰지 않는다.
 
+## Output router 구조
+
+Output router는 **8개**로 고정한다. 64-lane postprocess를 N8 단위로 정확히 나눠
+`postprocess slice 0..7 -> router 0..7`로 1:1 연결한다. router 하나의 payload는
+같은 M 좌표의 INT8 8개, 즉 64 bit/cycle이고, 전체 순간 burst는 512 bit/cycle이다.
+중앙 512-bit crossbar/arbiter나 64개의 byte router는 두지 않는다.
+
+각 router는 독립 `ready/valid`와 64-entry FIFO를 가진다. 한 entry는 N8 payload
+8 B이므로 router당 payload 512 B, 8개 합계 4 KiB이며 M32 tile burst 두 개를
+흡수한다. 한 router가 막혀도 나머지 7개는 계속 전송한다. FIFO가 full이어도 같은
+cycle에 downstream pop이 있으면 새 packet을 받는다. descriptor의 destination과
+N64 base는 FIFO가 완전히 빈 경계에서만 바꿔 서로 다른 tile tag가 섞이지 않게 한다.
+
+| Producer layer | Router destination |
+|---|---|
+| Conv1, Conv2, Conv5 | local `3x3/s2` pool bank |
+| Conv3, Conv4, FC6, FC7 | activation buffer / 다음 feeder |
+| FC8 | final-output/logit buffer |
+
+on-chip 물리 순서는 `[n64_tile][n8_slice][m][n_lane]`로 유지하고 NCHW 변환은 다음
+feeder/packer가 담당한다. N tail은 inactive N8 slice의 `valid`를 내지 않고, 부분
+slice가 생기면 `lane_mask` 밖 payload를 반드시 0으로 만든다. M tail은 packet의
+좌표/valid로 제거한다. 현재 FC8 N=1000의 마지막 N64 tile은 base 960에서 slice
+0..4만 활성이고 slice 5..7은 packet을 만들지 않는다.
+
+이 수는 postprocess 개수와 함께 정한다. 현재 64 parallel output이므로 8개이고,
+나중에 실제 timing 결과로 128 parallel output을 채택한다면 같은 64-bit granularity로
+router도 16개가 필요하다. baseline은 DSP 1,088개를 쓰는 64 postprocess/8 router다.
+
 ## Buffer, DMA와 layer overlap
 
 - 58.260 MiB weight 전체는 on-chip에 넣지 않는다.
@@ -153,6 +182,7 @@ weight는 1.19~3.88%뿐이므로 dense weight format을 유지한다.
 | RS feeder | `window_ref` | K11/5/3, stride/pad, row/tile tail |
 | M32xN64 top | `sa_tile_ref` | fanout, M/N tail, result count/order |
 | postprocess | `quant_ref` + `PostprocessScannerRef` | 8개 독립 N8/M32 scan, 32-cycle no-stall drain, N40 tail, slice별 stall hold, s27xs18 |
+| output router | `N8OutputRouterRef` | 8개 N8 route, destination/N-base/tag, FIFO full, 동시 pop/push, 독립 stall, tail mask |
 | pool | `maxpool_ref` | 3x3/s2, backpressure |
 | DMA/layout | `layout_ref` | K-major N64, burst tail, ping/pong ownership |
 | descriptor | `descriptor_ref` | K/M/N loop, address, timeout/error |

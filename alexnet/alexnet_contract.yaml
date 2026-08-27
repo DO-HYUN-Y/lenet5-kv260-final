@@ -153,4 +153,19 @@ pre_rtl_architecture:
     output_partition: eight_independent_n8_scanner_fifo_pool_slices
     output_width_per_slice_bits: 64
     parameter_residency: eight_channel_records_in_slice_local_registers_per_tile
+  output_router:
+    count: 8
+    mapping: one_router_per_n8_postprocess_slice
+    width_per_router_bits: 64
+    aggregate_burst_width_bits: 512
+    fifo_depth_packets_per_router: 64
+    packet_payload_bytes: 8
+    buffered_m32_tiles_per_router: 2
+    total_payload_storage_bytes: 4096
+    ready_domain: independent_per_router
+    destinations: [pool3x3, activation_buffer, final_output]
+    physical_layout: [n64_tile, n8_slice, m, n_lane]
+    descriptor_change_requires_empty_fifo: true
+    invalid_n_lanes_are_masked_and_zero: true
+    scaling_rule: one_router_per_eight_parallel_postprocess_outputs
   total_dsp48e2_target: 1088

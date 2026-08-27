@@ -12,6 +12,7 @@ set(ALEXNET_GOLDEN_SOURCES
     src/layout_ref.cpp
     src/linear_ref.cpp
     src/maxpool_ref.cpp
+    src/output_router_ref.cpp
     src/packed_mac_ref.cpp
     src/quant_ref.cpp
     src/sa_tile_ref.cpp

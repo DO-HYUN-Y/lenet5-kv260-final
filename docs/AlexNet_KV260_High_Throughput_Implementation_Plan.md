@@ -359,6 +359,32 @@ post-route timing gate에서 판정한다.
 bias/multiplier/shift record는 N tile 시작 전에 slice-local register에 load하고 M32
 scan 동안 고정한다.
 
+#### 4.2.1 Output router
+
+64-lane postprocess 뒤에는 N8 단위 **output router 8개**를 둔다. router 0..7은
+동일 번호 postprocess slice와 1:1로 연결되고 router당 `8 x INT8 = 64 bit/cycle`를
+처리한다. 8개 합계 순간 폭은 512 bit/cycle이지만 중앙 512-bit crossbar나 global
+arbiter로 합치지 않는다. 각 sink도 N8 bank로 분할하거나 packer에서 순차 결합한다.
+
+각 router에는 64-entry local FIFO를 둔다. 한 entry는 한 M 좌표의 N8 payload 8 B라서
+router당 payload 512 B, 전체 4 KiB이고 M32 결과 burst 두 개를 저장할 수 있다.
+`ready/valid`는 router별로 독립이며 FIFO full 상태에서도 downstream pop과 upstream
+push를 같은 cycle에 처리한다. destination과 N64 tile base는 FIFO가 빈 descriptor
+경계에서만 갱신한다.
+
+| Output source | Destination mode |
+|---|---|
+| Conv1/Conv2/Conv5 | `POOL3X3` |
+| Conv3/Conv4/FC6/FC7 | `ACTIVATION_BUFFER` |
+| FC8 | `FINAL_OUTPUT` |
+
+물리 layout은 `[n64_tile][n8_slice][m][n_lane]`이며 logical NCHW 재배열은 다음
+feeder/packer에서 한다. inactive N8 tail slice는 packet을 발행하지 않고 부분 slice는
+`lane_mask` 밖 값을 0으로 강제한다. FC8 마지막 N64 tile(base 960)은 40 channel만
+유효하므로 router 0..4만 동작한다. 128-lane postprocess 후보로 바꿀 때도 router당
+64-bit granularity를 유지하면 router는 16개로 늘린다. 현재 baseline은
+64 postprocess/8 router다.
+
 Conv는 `A[P,K] x B[K,Cout]`에서 M을 spatial position, N을 output
 channel로 사용한다. FC도 같은 operand 방향을 유지하되 M을 batch image로 사용한다.
 첫 AlexNet 구현에서는 기존 LeNet FC의 operand-role swap mode를 제거한다. 이 mode를
@@ -896,8 +922,10 @@ Gate:
 - `alexnet/cpp` 공통 library에 quant, packed PE, packed SA tile, window/RS,
   dense/grouped Conv2D, MaxPool, FC, layout, DMA burst/ping-pong ownership,
   descriptor/DDR address, skew timing, full-network 모델을 구현했다.
-- 얇은 C ABI/DPI wrapper와 CMake/CTest 회귀 테스트를 추가했으며 24,954개
+- 얇은 C ABI/DPI wrapper와 CMake/CTest 회귀 테스트를 추가했으며 25,060개
   directed/random check가 통과한다.
+- 8개 N8 output router의 destination/N-base/tag 전달, 독립 backpressure,
+  64-entry FIFO full 및 동시 pop/push, tail mask cycle model도 추가했다.
 - PyTorch 2.13.0과 C++ DLL을 직접 연결한 operator parity에서 packed product,
   requant, dense/grouped Conv, FC, packed SA, MaxPool이 모두 exact-match한다.
 - 실제 calibration 계수와 pretrained INT8 weight를 적용한 전체 네트워크에서 Conv1,
@@ -942,6 +970,7 @@ Gate:
 - registered broadcast tree로 결합한 `M32xN64` top array
 - INT32 partial-sum 처리
 - N64 channel-stationary 64-lane postprocess와 8개 N8 slice의 AlexNet `3x3/s2` pooling
+- 8개 N8/64-bit output router, router별 64-entry FIFO와 destination descriptor
 - token/tag assertion과 sparsity performance counter
 
 Gate:
@@ -1013,6 +1042,7 @@ Gate:
 | window/RS feeder | `window_ref` | K11/5/3, stride 4/1, pad, row/tile boundary |
 | weight DMA/tile buffer | `layout_ref` | K-major order, burst/tail, bank ownership, swap |
 | postprocess | `quant_ref` + `PostprocessScannerRef` | 8개 독립 N8/M32 scan, N40 tail, slice별 stall hold, bias/rounding/ReLU/saturation |
+| output router | `N8OutputRouterRef` | 8개 N8 destination/N-base/tag, FIFO full, 동시 pop/push, 독립 backpressure, tail mask |
 | max pool | `maxpool_ref` | `3x3/s2`, boundary와 backpressure |
 | Conv tile/full layer | `conv2d_ref` | Conv1/2 및 random small shape byte-exact |
 | FC tile/full layer | `linear_ref` | batch 1/8/16, FC6 K=9216, N tail 40 |

@@ -1,3 +1,4 @@
+#include <array>
 #include <cstdint>
 #include <cstdlib>
 #include <exception>
@@ -10,6 +11,7 @@
 #include "alexnet_golden/descriptor_ref.hpp"
 #include "alexnet_golden/dpi_wrappers.h"
 #include "alexnet_golden/layout_ref.hpp"
+#include "alexnet_golden/output_router_ref.hpp"
 #include "alexnet_golden/packed_mac_ref.hpp"
 #include "alexnet_golden/quant_ref.hpp"
 #include "alexnet_golden/sa_tile_ref.hpp"
@@ -369,6 +371,123 @@ void test_conv_and_pool() {
   expect_equal(static_cast<int>(pooled.at(0, 0, 1, 1)), 12, "pool last maximum");
 }
 
+void test_output_router() {
+  const ag::OutputRouterIngress first{
+      17, 23, 0xff, {-8, -1, 0, 1, 2, 3, 126, 127}};
+
+  ag::N8OutputRouterRef unconfigured(0);
+  const auto before_config = unconfigured.tick(true, first, false);
+  expect(!before_config.ingress_ready,
+         "unconfigured output-router asserted ingress ready");
+  expect_equal(unconfigured.queued_packets(), std::size_t{0},
+               "unconfigured output-router consumed input");
+
+  // The baseline has eight independent 64-bit routers, one for each N8 slice.
+  for (int slice = 0; slice < 8; ++slice) {
+    ag::N8OutputRouterRef router(slice);
+    expect_equal(router.fifo_depth(), std::size_t{64},
+                 "output-router default FIFO depth");
+    router.configure(ag::OutputDestination::kPool3x3, 64);
+    const auto accepted = router.tick(true, first, false);
+    expect(accepted.ingress_ready, "output-router rejected an empty FIFO push");
+    expect(!accepted.egress.has_value(),
+           "output-router bypassed its registered FIFO");
+    const auto output = router.tick(false, {}, false);
+    expect(output.egress.has_value(), "output-router did not expose queued data");
+    expect_equal(static_cast<int>(output.egress->destination),
+                 static_cast<int>(ag::OutputDestination::kPool3x3),
+                 "output-router destination tag");
+    expect_equal(output.egress->slice, slice, "output-router slice tag");
+    expect_equal(output.egress->m, 17, "output-router M tag");
+    expect_equal(output.egress->n_base, 64 + slice * 8,
+                 "output-router global N base");
+    expect_equal(output.egress->tile_tag, 23, "output-router tile tag");
+    expect_equal(static_cast<int>(output.egress->lane_mask), 0xff,
+                 "output-router lane mask");
+    expect(output.egress->values == first.values,
+           "output-router changed INT8 lane data");
+  }
+
+  // A blocked slice holds its packet while a different slice keeps draining.
+  ag::N8OutputRouterRef blocked(0);
+  ag::N8OutputRouterRef running(1);
+  blocked.configure(ag::OutputDestination::kActivationBuffer, 0);
+  running.configure(ag::OutputDestination::kActivationBuffer, 0);
+  static_cast<void>(blocked.tick(true, first, false));
+  static_cast<void>(running.tick(true, first, false));
+  const auto blocked_before = blocked.tick(false, {}, false);
+  const auto running_transfer = running.tick(false, {}, true);
+  const auto blocked_after = blocked.tick(false, {}, false);
+  expect(blocked_before.egress.has_value() && blocked_after.egress.has_value(),
+         "blocked output-router dropped valid");
+  expect(blocked_before.egress->values == blocked_after.egress->values,
+         "blocked output-router changed data");
+  expect(running_transfer.egress.has_value() && running.idle(),
+         "independent output-router did not drain");
+
+  // Depth two exercises full backpressure and a same-cycle pop/push turnover.
+  ag::N8OutputRouterRef turnover(3, 2);
+  turnover.configure(ag::OutputDestination::kFinalOutput, 960);
+  auto p0 = first;
+  auto p1 = first;
+  auto p2 = first;
+  p0.m = 0;
+  p1.m = 1;
+  p2.m = 2;
+  static_cast<void>(turnover.tick(true, p0, false));
+  static_cast<void>(turnover.tick(true, p1, false));
+  const auto full = turnover.tick(false, {}, false);
+  expect(!full.ingress_ready && full.egress.has_value(),
+         "full output-router did not apply backpressure");
+  const auto held_push = turnover.tick(true, p2, false);
+  expect(!held_push.ingress_ready && held_push.egress.has_value(),
+         "output-router mishandled valid while not ready");
+  expect_equal(turnover.queued_packets(), std::size_t{2},
+               "output-router consumed input while not ready");
+  const auto replace = turnover.tick(true, p2, true);
+  expect(replace.ingress_ready && replace.egress.has_value(),
+         "full output-router rejected simultaneous pop/push");
+  expect_equal(replace.egress->m, 0, "output-router FIFO first packet");
+  expect_equal(turnover.queued_packets(), std::size_t{2},
+               "output-router turnover occupancy");
+  const auto second = turnover.tick(false, {}, true);
+  const auto third = turnover.tick(false, {}, true);
+  expect_equal(second.egress->m, 1, "output-router FIFO second packet");
+  expect_equal(third.egress->m, 2, "output-router FIFO third packet");
+  expect_equal(third.egress->n_base, 984, "output-router FC8 N base");
+  expect(turnover.idle(), "output-router FIFO did not become empty");
+
+  ag::N8OutputRouterRef tail(7);
+  tail.configure(ag::OutputDestination::kActivationBuffer, 0);
+  ag::OutputRouterIngress masked{31, 99, 0x0f, {-4, -3, -2, -1, 0, 0, 0, 0}};
+  static_cast<void>(tail.tick(true, masked, false));
+  const auto tail_output = tail.tick(false, {}, true);
+  expect_equal(static_cast<int>(tail_output.egress->lane_mask), 0x0f,
+               "output-router tail mask");
+
+  bool rejected_masked_data = false;
+  try {
+    masked.values[7] = 1;
+    static_cast<void>(tail.tick(true, masked, false));
+  } catch (const std::invalid_argument&) {
+    rejected_masked_data = true;
+  }
+  expect(rejected_masked_data,
+         "output-router accepted nonzero data in an invalid lane");
+
+  bool rejected_reconfigure = false;
+  try {
+    ag::N8OutputRouterRef busy(0);
+    busy.configure(ag::OutputDestination::kActivationBuffer, 0);
+    static_cast<void>(busy.tick(true, first, false));
+    busy.configure(ag::OutputDestination::kPool3x3, 64);
+  } catch (const std::logic_error&) {
+    rejected_reconfigure = true;
+  }
+  expect(rejected_reconfigure,
+         "output-router allowed descriptor change with queued data");
+}
+
 void test_linear() {
   ag::MatrixI8 input(2, 3, {1, 2, 3, -1, 0, 2});
   ag::MatrixI8 weights(2, 3, {1, 0, -1, 2, 3, 4});
@@ -531,6 +650,7 @@ int main() {
     test_packed_mac();
     test_sa_tile();
     test_window_and_layout();
+    test_output_router();
     test_conv_and_pool();
     test_linear();
     test_descriptor();

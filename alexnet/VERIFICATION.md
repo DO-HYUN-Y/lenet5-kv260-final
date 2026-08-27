@@ -199,8 +199,10 @@ cmake --build alexnet/cpp/build
 
 Results:
 
-- CTest golden executable passed 24,954 checks, including 4,096 random plus
+- CTest golden executable passed 25,060 checks, including 4,096 random plus
   directed-corner native signed-27 by signed-18 postprocess products.
+- Eight independent N8 output routers passed destination/N-base/tag, FIFO-full,
+  valid-without-ready hold, same-cycle pop/push, tail-mask and independent-stall tests.
 - 6/6 cross-language parity tests passed with exact equality.
 - 4,096 signed INT8 packed lo/hi product vectors matched PyTorch INT32 products.
 - 2,052 directed/random requantization vectors matched the frozen rounding,
