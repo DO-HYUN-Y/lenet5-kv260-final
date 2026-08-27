@@ -811,6 +811,16 @@ Gate:
 
 ### Phase 2 — C++ bit-exact golden
 
+현재 상태 (2026-08-27):
+
+- `alexnet/cpp` 공통 library에 quant, packed PE, packed SA tile, window/RS,
+  dense/grouped Conv2D, MaxPool, FC, layout, DMA burst/ping-pong ownership,
+  descriptor/DDR address, skew timing, full-network 모델을 구현했다.
+- 얇은 C ABI/DPI wrapper와 CMake/CTest 회귀 테스트를 추가했으며 20,812개
+  directed/random check가 통과한다.
+- 실제 calibration multiplier/shift와 Python INT8 per-layer tensor exporter는 아직
+  미정이므로 `Python INT8 == C++` layer별 byte-exact gate는 Phase 1 완료 후 닫는다.
+
 산출물:
 
 - dense Conv/Pool/FC/requant C++ model

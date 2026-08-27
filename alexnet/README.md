@@ -6,6 +6,7 @@
 2. `validate_fp32.py`: 모델을 실행하고 shape·사진·정확도를 검사하는 방법
 3. `test_model.py`: 구조가 바뀌지 않았는지 자동으로 확인하는 방법
 4. `alexnet_contract.yaml`: Python/C++/RTL이 공통으로 따라야 할 고정 수치
+5. `cpp/README.md`: INT8 모듈별 C++ golden model과 빌드 방법
 
 Python 코드에는 각 함수의 역할, tensor shape, 필요한 이유를 한국어 주석으로
 기록했다. 처음에는 `model.py`의 `AlexNet.__init__()`과 `forward()`만 읽고,

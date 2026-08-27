@@ -70,3 +70,20 @@ smoke_verification:
   output_matches_torchvision_with_identical_state_dict: bit_exact
   pretrained_checkpoint_loaded: true
   cuda_smoke_test_passed: true
+
+# 첫 INT8 C++/RTL operator golden의 산술 및 physical K-order 계약이다.
+# 실제 layer별 multiplier/shift 값과 INT8 정확도는 calibration 후 추가한다.
+int8_operator_contract:
+  status: operator_semantics_frozen_calibration_values_pending
+  activation: signed_int8
+  weight: signed_int8
+  zero_point: 0
+  accumulator: signed_int32_checked_no_overflow
+  bias: signed_int32_added_before_scale
+  multiplier: signed_int32_non_negative
+  rounding: right_shift_round_half_away_from_zero
+  relu: after_scaling_before_saturation
+  output: signed_int8_saturate_minus128_to_127
+  physical_k_order: [kernel_y, kernel_x, input_channel_in_group]
+  weight_tile_order: [output_channel_tile, k, output_channel_lane]
+  packed_pe: two_activation_lanes_times_one_common_weight_split_every_cycle
