@@ -166,9 +166,12 @@ INT32 remains the accumulator storage/ABI, but a checked signed-27-bit value is
 sufficient at the postprocess multiplier input. Together with the selected
 signed-18-bit multiplier this is one native DSP48E2 `27x18` product with a
 signed-45-bit exact result; no runtime clipping or split multiplication is
-allowed. Eight postprocess lanes drain an `M32xN64` result tile in 256 cycles,
-below the minimum compute interval of 363 cycles (Conv1), so postprocess is not
-the steady-state bottleneck when its result FIFO can hold one complete tile.
+allowed. Sixty-four channel-stationary postprocess lanes drain an `M32xN64`
+result tile in 32 cycles, far below the minimum compute interval of 363 cycles
+(Conv1). Within each N8 slice the scanner keeps eight N lanes on the same M
+coordinate, handles the FC8 N=40 tail, and holds coordinates exactly during
+backpressure. Eight slices may advance independently so one full FIFO does not
+create a global ready fanout or stall the other seven slices.
 
 Measured on all 500 calibration images:
 
@@ -196,7 +199,7 @@ cmake --build alexnet/cpp/build
 
 Results:
 
-- CTest golden executable passed 24,938 checks, including 4,096 random plus
+- CTest golden executable passed 24,954 checks, including 4,096 random plus
   directed-corner native signed-27 by signed-18 postprocess products.
 - 6/6 cross-language parity tests passed with exact equality.
 - 4,096 signed INT8 packed lo/hi product vectors matched PyTorch INT32 products.

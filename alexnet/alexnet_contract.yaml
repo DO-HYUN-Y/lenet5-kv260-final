@@ -134,3 +134,23 @@ int8_operator_contract:
   physical_k_order: [kernel_y, kernel_x, input_channel_in_group]
   weight_tile_order: [output_channel_tile, k, output_channel_lane]
   packed_pe: two_activation_lanes_times_one_common_weight_split_every_cycle
+
+pre_rtl_architecture:
+  board: kria_kv260_k26
+  baseline_clock_mhz: 200
+  logical_sa: {m: 32, n: 64}
+  local_sa: {m: 8, n: 8, tile_count: 32}
+  compute_dsp48e2: 1024
+  postprocess:
+    mapping: one_dsp_per_n_output_channel_scan_m32
+    lanes: 64
+    dsp48e2: 64
+    full_tile_drain_cycles: 32
+    n_tail_mask_supported: true
+    ready_stall_holds_coordinate_and_data: true
+    ready_domain: independent_per_n8_slice
+    m_selector_pipeline: registered_m8_then_registered_m_group
+    output_partition: eight_independent_n8_scanner_fifo_pool_slices
+    output_width_per_slice_bits: 64
+    parameter_residency: eight_channel_records_in_slice_local_registers_per_tile
+  total_dsp48e2_target: 1088

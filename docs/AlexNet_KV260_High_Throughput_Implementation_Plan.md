@@ -332,14 +332,32 @@ logical M = 4 x 8 = 32 spatial/batch lanes
 logical N = 8 x 8 = 64 output channels
 packed MAC DSP = 32 base tiles x 32 DSP = 1,024 DSP
 MAC per cycle = 2,048
-postprocess DSP = 8
-total DSP target = 1,032 / 1,248
+postprocess DSP = 64, N64 output-channel lane마다 1개
+total DSP target = 1,088 / 1,248
 ```
 
-각 tile 종료 시 2,048개 INT32 결과를 PE별 holding register에 snapshot하고 8-lane
-postprocess가 256 cycle에 scan한다. 최소 K인 Conv1도 다음 tile 계산에 363 cycle이
-걸리므로 scan은 다음 결과가 나오기 전에 끝난다. holding register와 accumulator를
-분리하지 않으면 256-cycle drain 동안 SA가 멈추므로 이 decoupling은 필수다.
+각 tile 종료 시 2,048개 INT32 결과를 PE별 holding register에 snapshot한다. 64개
+postprocess lane은 각각 하나의 N output channel과 bias/multiplier/shift를 고정해서
+M32 결과만 순서대로 읽으므로 tile을 32 cycle에 scan한다. 최소 K인 Conv1도 다음
+tile 계산에 363 cycle이 걸리므로 scan은 다음 결과가 나오기 훨씬 전에 끝난다.
+holding register와 accumulator를 분리하지 않으면 drain 동안 SA가 멈추므로 이
+decoupling은 그대로 필수다.
+
+200 MHz timing을 위해 각 N lane의 M32 selector는 `global 2048:64` crossbar로 만들지
+않는다. 네 M8 group 안의 8:1 선택을 첫 stage에서 각각 수행하고 register한 뒤,
+두 번째 stage에서 4:1 M-group을 선택해 해당 N lane의 DSP48E2 A/D input으로 넣는다.
+DSP의 A/D/B/M/P pipeline register를 사용하고 45-bit rounding/shift/ReLU/saturation도
+후단 pipeline으로 분리한다. 출력은 하나의 64-wide 중앙 FIFO로 모으지 않고 8개
+N8 local scanner/FIFO/pool slice로 내보낸다. 각 slice는 독립 `ready/valid`와 M32
+scan counter를 가져 한 slice의 backpressure가 다른 slice를 멈추지 않으며, tile
+holding bank는 8개 slice가 모두 drain된 뒤에만 재사용한다. 이 구조는 global ready
+fanout, lane당 계수 fanout과 결과 mux 깊이를 제한한다. 정확한 200 MHz 달성 여부는
+post-route timing gate에서 판정한다.
+
+각 N8 slice는 8개 INT8 결과, 즉 64-bit/cycle만 local FIFO 또는 pooling bank에
+쓴다. N64 전체 64 B/cycle burst를 단일 BRAM/DDR port에 연결하지 않는다. 8개
+bias/multiplier/shift record는 N tile 시작 전에 slice-local register에 load하고 M32
+scan 동안 고정한다.
 
 Conv는 `A[P,K] x B[K,Cout]`에서 M을 spatial position, N을 output
 channel로 사용한다. FC도 같은 operand 방향을 유지하되 M을 batch image로 사용한다.
@@ -407,7 +425,7 @@ padding과 row/tile tail은 실제 memory read 대신 mask로 생성한다.
 
 | Resource | 목표 상한 |
 |---|---:|
-| DSP48E2 | 1,032 / 1,248, 약 83% |
+| DSP48E2 | 1,088 / 1,248, 약 87% |
 | LUT | 90,000 / 117,120, 약 77% |
 | FF | 180,000 / 234,240, 약 77% |
 | BRAM | 125 / 144, 약 87% |
@@ -602,8 +620,9 @@ Conv1 종료 전 완료에 필요한 한 port effective bandwidth = 1.781 GB/s
 - result/postprocess/pool FIFO가 full이 아님
 - DMA error와 tag mismatch가 없음
 
-Conv1의 평균 result 발생률은 `2048/363 = 5.64 output/cycle`이므로 result capture
-FIFO와 requant/ReLU/pool intake는 최소 8 lane/cycle을 목표로 한다. Conv1 결과가
+Conv1의 평균 result 발생률은 `2048/363 = 5.64 output/cycle`이지만 8-lane 중앙
+scanner의 큰 결과 mux가 timing 위험이므로 requant/ReLU는 N-stationary 64 lane으로
+분산한다. Conv1 결과가
 나오는 즉시 ReLU와 Pool1을 거쳐 Conv2 feeder를 prefill한다. layer 경계에서 SA
 전체 reset을 사용하지 않고 `reduce_last`와 다음 `acc_clear` token으로 전환한다.
 
@@ -877,7 +896,7 @@ Gate:
 - `alexnet/cpp` 공통 library에 quant, packed PE, packed SA tile, window/RS,
   dense/grouped Conv2D, MaxPool, FC, layout, DMA burst/ping-pong ownership,
   descriptor/DDR address, skew timing, full-network 모델을 구현했다.
-- 얇은 C ABI/DPI wrapper와 CMake/CTest 회귀 테스트를 추가했으며 24,938개
+- 얇은 C ABI/DPI wrapper와 CMake/CTest 회귀 테스트를 추가했으며 24,954개
   directed/random check가 통과한다.
 - PyTorch 2.13.0과 C++ DLL을 직접 연결한 operator parity에서 packed product,
   requant, dense/grouped Conv, FC, packed SA, MaxPool이 모두 exact-match한다.
@@ -922,7 +941,7 @@ Gate:
 - physical `4x8` / logical `M8xN8` local-skew OS base tile
 - registered broadcast tree로 결합한 `M32xN64` top array
 - INT32 partial-sum 처리
-- 8-lane 이상 postprocess와 AlexNet `3x3/s2` pooling
+- N64 channel-stationary 64-lane postprocess와 8개 N8 slice의 AlexNet `3x3/s2` pooling
 - token/tag assertion과 sparsity performance counter
 
 Gate:
@@ -993,7 +1012,7 @@ Gate:
 | `M32xN64` broadcast top | SV transaction scoreboard | partition fanout, tile tag, result count |
 | window/RS feeder | `window_ref` | K11/5/3, stride 4/1, pad, row/tile boundary |
 | weight DMA/tile buffer | `layout_ref` | K-major order, burst/tail, bank ownership, swap |
-| postprocess | `quant_ref` | bias, rounding, negative shift, ReLU, saturation |
+| postprocess | `quant_ref` + `PostprocessScannerRef` | 8개 독립 N8/M32 scan, N40 tail, slice별 stall hold, bias/rounding/ReLU/saturation |
 | max pool | `maxpool_ref` | `3x3/s2`, boundary와 backpressure |
 | Conv tile/full layer | `conv2d_ref` | Conv1/2 및 random small shape byte-exact |
 | FC tile/full layer | `linear_ref` | batch 1/8/16, FC6 K=9216, N tail 40 |

@@ -264,12 +264,71 @@ void test_window_and_layout() {
                "pong bank release after compute");
 
   const auto order = ag::make_postprocess_scan_order(32, 64);
-  expect_equal(order.size(), std::size_t{256}, "postprocess cycle count");
-  expect_equal(order.front().size(), std::size_t{8}, "postprocess lanes per cycle");
+  expect_equal(order.size(), std::size_t{32}, "postprocess cycle count");
+  expect_equal(order.front().size(), std::size_t{64}, "postprocess lanes per cycle");
   expect_equal(order.front()[0].m, 0, "postprocess first m");
-  expect_equal(order.front()[2].m, 8, "postprocess second M-group");
-  expect_equal(order[3][1].m, 7, "postprocess last pair in first M-group");
-  expect_equal(order[4][0].n, 1, "postprocess next output channel");
+  expect_equal(order.front()[63].n, 63, "postprocess last N lane");
+  expect_equal(order[1][0].m, 1, "postprocess next M position");
+  expect_equal(order.back()[0].m, 31, "postprocess final M position");
+  std::vector<bool> postprocess_seen(32 * 64, false);
+  bool postprocess_coverage_ok = true;
+  for (const auto& cycle : order) {
+    for (const auto& coordinate : cycle) {
+      const auto flat = static_cast<std::size_t>(coordinate.m * 64 + coordinate.n);
+      if (flat >= postprocess_seen.size() || postprocess_seen[flat]) {
+        postprocess_coverage_ok = false;
+      } else {
+        postprocess_seen[flat] = true;
+      }
+    }
+  }
+  for (const bool seen : postprocess_seen) {
+    postprocess_coverage_ok = postprocess_coverage_ok && seen;
+  }
+  expect(postprocess_coverage_ok, "postprocess scan coverage or uniqueness failed");
+
+  const auto n_tail_order = ag::make_postprocess_scan_order(32, 40, 64, 960);
+  expect_equal(n_tail_order.size(), std::size_t{32}, "N40 tail cycle count");
+  expect_equal(n_tail_order.front().size(), std::size_t{40}, "N40 active lanes");
+  expect_equal(n_tail_order.front().front().n, 960, "N40 global base channel");
+  expect_equal(n_tail_order.back().back().n, 999, "N40 final active lane");
+  bool rejected_oversized_n_tile = false;
+  try {
+    static_cast<void>(ag::make_postprocess_scan_order(32, 65));
+  } catch (const std::invalid_argument&) {
+    rejected_oversized_n_tile = true;
+  }
+  expect(rejected_oversized_n_tile, "postprocess accepted an N tile wider than 64");
+
+  ag::PostprocessScannerRef scanner(2, 64);
+  const auto stalled_first = scanner.tick(false);
+  const auto stalled_again = scanner.tick(false);
+  expect(stalled_first.has_value() && stalled_again.has_value(),
+         "postprocess scanner lost valid during stall");
+  expect_equal(stalled_again->front().m, stalled_first->front().m,
+               "postprocess scanner changed M during stall");
+  expect_equal(stalled_again->back().n, stalled_first->back().n,
+               "postprocess scanner changed N during stall");
+  static_cast<void>(scanner.tick(true));
+  const auto second_m = scanner.tick(true);
+  expect(second_m.has_value(), "postprocess scanner missed second M position");
+  expect_equal(second_m->front().m, 1, "postprocess scanner advance after ready");
+  expect(scanner.done(), "postprocess scanner did not finish after two transfers");
+  scanner.reset();
+  expect(!scanner.done(), "postprocess scanner reset failed");
+
+  ag::PostprocessScannerRef stalled_slice(2, 8, 8, 0);
+  ag::PostprocessScannerRef running_slice(2, 8, 8, 8);
+  static_cast<void>(stalled_slice.tick(false));
+  static_cast<void>(running_slice.tick(true));
+  const auto stalled_slice_next = stalled_slice.tick(false);
+  const auto running_slice_next = running_slice.tick(false);
+  expect_equal(stalled_slice_next->front().m, 0,
+               "stalled N8 slice advanced its M coordinate");
+  expect_equal(running_slice_next->front().m, 1,
+               "independent N8 slice did not advance");
+  expect_equal(running_slice_next->front().n, 8,
+               "independent N8 slice lost its global N base");
 
   expect_equal(ag::pack_i8_pair_le(-1, -128), std::uint16_t{0x80FF},
                "packed pair little endian");

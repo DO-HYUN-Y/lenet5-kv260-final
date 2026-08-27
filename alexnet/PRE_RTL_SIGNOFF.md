@@ -75,8 +75,8 @@ s18이 s32 후보보다 Top-1 3장, Top-5 6장 더 맞았으므로 DSP 입력 �
 base tile: physical 4x8 packed PE = logical M8xN8 = 32 DSP
 top array: 4 M-groups x 8 N-groups = logical M32xN64
 compute DSP: 32 base tiles x 32 = 1,024
-postprocess DSP: 8
-total target: 1,032 / 1,248 DSP48E2
+postprocess DSP: 64, N output-channel마다 1개
+total target: 1,088 / 1,248 DSP48E2
 peak at 200 MHz: 2,048 MAC/cycle = 0.819 TOPS (1 MAC = 2 OPS)
 ```
 
@@ -84,11 +84,23 @@ Skew는 전체 `M32xN64` wire를 runtime에 바꾸지 않는다. 각 `M8xN8` 안
 고정 delay를 사용하고 상위는 registered activation/weight broadcast tree다. Conv와
 FC의 차이는 descriptor, loop bound, lane mask와 buffer address이고 배선은 동일하다.
 
-8-lane postprocess는 2,048개 tile 결과를 256 cycle에 처리한다. 최소 compute 간격인
-Conv1 K=363보다 짧으므로 평균 처리율은 충분하다. SA가 drain 동안 멈추지 않게
+64-lane postprocess는 같은 M 위치의 N64 결과를 한 cycle에 처리하여 2,048개 tile
+결과를 32 cycle에 처리한다. 최소 compute 간격인 Conv1 K=363보다 충분히 짧다.
+SA가 drain 동안 멈추지 않게
 `reduce_last`에서 결과를 PE별 holding register로 snapshot하고 accumulator를 다음
 tile에 즉시 clear한다. holding 결과가 비워지기 전 다음 `reduce_last`가 오면 assertion
 failure로 처리한다.
+
+각 postprocess DSP는 tile 동안 하나의 output channel 계수를 고정하고 M32만 scan한다.
+M selector는 M8 내부 8:1 register stage와 M-group 4:1 register stage로 나누며,
+DSP48E2 A/D/B/M/P register와 후단 rounding/shift pipeline을 모두 사용한다. 결과도
+독립 `ready/valid`를 가진 8개 N8 local scanner/FIFO/pool slice로 유지해 중앙
+2,048-to-8 mux, global ready fanout과 64-wide global FIFO를 만들지 않는다. 한
+slice가 stall되어도 다른 slice의 M scan은 진행한다. 이 변경은 DSP를 56개 더
+쓰는 대신 200 MHz 배선 위험을 낮추며,
+K26에는 160개 DSP가 routing/기타 기능 여유로 남는다.
+각 slice의 output write는 8 INT8 = 64-bit/cycle이고 계수 8개는 tile 동안 local
+register에 고정하므로 64 B/cycle burst를 단일 global memory port에 몰지 않는다.
 
 ## Buffer, DMA와 layer overlap
 
@@ -140,7 +152,7 @@ weight는 1.19~3.88%뿐이므로 dense weight format을 유지한다.
 | local skew | `skew_ref` | tag alignment, stall hold, flush |
 | RS feeder | `window_ref` | K11/5/3, stride/pad, row/tile tail |
 | M32xN64 top | `sa_tile_ref` | fanout, M/N tail, result count/order |
-| postprocess | `quant_ref` | s27xs18, half-way rounding, ReLU, saturation |
+| postprocess | `quant_ref` + `PostprocessScannerRef` | 8개 독립 N8/M32 scan, 32-cycle no-stall drain, N40 tail, slice별 stall hold, s27xs18 |
 | pool | `maxpool_ref` | 3x3/s2, backpressure |
 | DMA/layout | `layout_ref` | K-major N64, burst tail, ping/pong ownership |
 | descriptor | `descriptor_ref` | K/M/N loop, address, timeout/error |
@@ -154,6 +166,6 @@ full layer는 `.bin + manifest + SHA-256`을 사용한다.
 ## 다음 단계
 
 다음 커밋부터가 RTL 단계다. 우선순위는 packed PE와 local `M8xN8` skew,
-RS feeder, result holding + 8-lane postprocess, `M32xN64` registered top, DMA 순이다.
+RS feeder, result holding + N-stationary 64-lane postprocess, `M32xN64` registered top, DMA 순이다.
 아직 닫히지 않은 항목은 합성 후 200 MHz timing/resource, 실제 AXI bandwidth,
 KV260 board 전력/열, batch 8/16 throughput, 전체 ImageNet 50,000장 release 정확도다.

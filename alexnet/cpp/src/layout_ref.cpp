@@ -142,31 +142,42 @@ RequantParams unpack_parameter_record(const std::vector<std::uint8_t>& record) {
 }
 
 std::vector<std::vector<OutputCoordinate>> make_postprocess_scan_order(
-    int m_count, int n_count, int m_group_size, int lanes_per_block) {
-  if (m_count <= 0 || n_count <= 0 || m_group_size <= 0 ||
-      lanes_per_block <= 0 || m_group_size % lanes_per_block != 0) {
+    int m_count, int n_count, int n_lanes, int n_base) {
+  if (m_count <= 0 || n_count <= 0 || n_lanes <= 0 || n_count > n_lanes ||
+      n_base < 0 || n_base > std::numeric_limits<int>::max() - n_count) {
     throw std::invalid_argument("invalid postprocess scan geometry");
   }
-  const int group_count = (m_count + m_group_size - 1) / m_group_size;
-  const int pairs_per_group = m_group_size / lanes_per_block;
   std::vector<std::vector<OutputCoordinate>> cycles;
-  cycles.reserve(static_cast<std::size_t>(n_count) * pairs_per_group);
+  cycles.reserve(static_cast<std::size_t>(m_count));
 
-  for (int n = 0; n < n_count; ++n) {
-    for (int pair = 0; pair < pairs_per_group; ++pair) {
-      std::vector<OutputCoordinate> cycle;
-      for (int group = 0; group < group_count; ++group) {
-        for (int lane = 0; lane < lanes_per_block; ++lane) {
-          const int m = group * m_group_size + pair * lanes_per_block + lane;
-          if (m < m_count) {
-            cycle.push_back(OutputCoordinate{m, n});
-          }
-        }
-      }
-      cycles.push_back(std::move(cycle));
+  for (int m = 0; m < m_count; ++m) {
+    std::vector<OutputCoordinate> cycle;
+    cycle.reserve(static_cast<std::size_t>(n_count));
+    for (int n = 0; n < n_count; ++n) {
+      cycle.push_back(OutputCoordinate{m, n_base + n});
     }
+    cycles.push_back(std::move(cycle));
   }
   return cycles;
+}
+
+PostprocessScannerRef::PostprocessScannerRef(int m_count, int n_count,
+                                             int n_lanes, int n_base)
+    : schedule_(make_postprocess_scan_order(m_count, n_count, n_lanes,
+                                            n_base)) {}
+
+void PostprocessScannerRef::reset() { cycle_index_ = 0; }
+
+std::optional<std::vector<OutputCoordinate>> PostprocessScannerRef::tick(
+    bool ready) {
+  if (done()) {
+    return std::nullopt;
+  }
+  auto current = schedule_[cycle_index_];
+  if (ready) {
+    ++cycle_index_;
+  }
+  return current;
 }
 
 std::vector<DmaBurst> make_dma_bursts(std::uint64_t address,

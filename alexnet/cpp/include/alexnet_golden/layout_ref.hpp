@@ -3,6 +3,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "alexnet_golden/conv2d_ref.hpp"
@@ -40,10 +41,28 @@ std::vector<std::int8_t> pack_linear_weight_tile_k_major(
 std::vector<std::uint8_t> pack_parameter_record(const RequantParams& params);
 RequantParams unpack_parameter_record(const std::vector<std::uint8_t>& record);
 
-// Scan order for four local dual-lane postprocess blocks. A cycle contains one
-// pair from every M group, giving 8 results/cycle for M32/N64.
+// N-stationary postprocess scan. Each physical lane owns one output channel and
+// scans the M dimension; M32/N64 therefore emits 64 results for 32 cycles.
+// n_count is one hardware tile and must not exceed n_lanes; smaller N tails mask
+// the unused lanes without adding drain cycles. n_base preserves the global
+// output-channel tag for independent N8 slices and the final FC8 tile.
 std::vector<std::vector<OutputCoordinate>> make_postprocess_scan_order(
-    int m_count, int n_count, int m_group_size = 8, int lanes_per_block = 2);
+    int m_count, int n_count, int n_lanes = 64, int n_base = 0);
+
+// Cycle model for ready/valid verification. tick() exposes the coordinates
+// visible before the edge and advances only on ready, so a stall holds all tags.
+class PostprocessScannerRef {
+ public:
+  PostprocessScannerRef(int m_count, int n_count, int n_lanes = 64,
+                        int n_base = 0);
+  void reset();
+  std::optional<std::vector<OutputCoordinate>> tick(bool ready);
+  bool done() const { return cycle_index_ == schedule_.size(); }
+
+ private:
+  std::vector<std::vector<OutputCoordinate>> schedule_;
+  std::size_t cycle_index_ = 0;
+};
 
 struct DmaBurst {
   std::uint64_t address = 0;

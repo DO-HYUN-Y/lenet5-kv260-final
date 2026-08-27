@@ -34,7 +34,7 @@ hardcoded in this library.
 | `conv2d_ref` | dense or grouped logical OIHW convolution |
 | `maxpool_ref` | AlexNet 3x3/stride-2 max pool |
 | `linear_ref` | batch x K by N x K fully connected reference |
-| `layout_ref` | NCHW bytes, K-major N tiles, DMA bursts, ping/pong ownership, result scan |
+| `layout_ref` | NCHW bytes, K-major N tiles, DMA bursts, ping/pong ownership, N64/M32 postprocess scanner |
 | `descriptor_ref` | runtime K/M/N derivation, tile schedule and DDR address calculation |
 | `skew_ref` | local M8xN8 activation/weight delay chains and tag timing |
 | `alexnet_ref` | five Conv, three Pool and three FC operators connected end-to-end |
@@ -69,7 +69,7 @@ All comparisons require exact equality (`rtol=0`, `atol=0`).
 The test executable checks product corner cases and deterministic random packed
 MACs, quantization, K-major window/weight order, dense/grouped convolution,
 pooling, FC, descriptors/DDR addresses, DMA burst tails, ping/pong ownership,
-local skew timing, postprocess scan order, C ABI wrappers and a small
+local skew timing, 64-lane postprocess scan/tail/stall order, C ABI wrappers and a small
 end-to-end network.
 
 Full `224x224` vectors are generated as `.bin + manifest + SHA-256` by
