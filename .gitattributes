@@ -1,1 +1,2 @@
 alexnet/calibration/*.json text eol=lf
+alexnet/calibration/*.txt text eol=lf

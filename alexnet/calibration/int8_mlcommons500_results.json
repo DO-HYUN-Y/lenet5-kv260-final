@@ -33,12 +33,13 @@
   ],
   "selected_activation_absolute_percentile": 100.0,
   "export": {
+    "multiplier_storage_bits": 18,
     "weight_bytes": 61090496,
     "parameter_bytes": 165504,
     "output_channel_parameter_count": 10344,
     "parameter_record_bytes": 16,
-    "model_manifest_sha256": "e21af69c261cc4360ddb748710f2223b2097cd80d4089f8dd3cdfffa6d732cd1",
-    "quantization_contract_sha256": "e2b79df33cb06d4c420004f47b80ca54fda1868f7706a8b8811f0f1477a67d62"
+    "model_manifest_sha256": "53b09c7a50a6b6cec317e12250bcb495aa0508809ea9510dc60d638748a76b7c",
+    "quantization_contract_sha256": "1a85423e46a77b088703428b00292b14b6d86c1f835c697537305f04641207d0"
   },
   "python_cpp_full_network_parity": {
     "source_image": "ILSVRC2012_val_00027145.JPEG",
@@ -57,8 +58,8 @@
       "fc7",
       "fc8"
     ],
-    "vector_manifest_sha256": "070d62779effde5aa78a2b1fed3e05bbf793520bd896cd9a426f7166f5a9165b",
-    "parity_report_sha256": "e515965cc105e2df258b28d3fc6785172371c77761ba15d4dee98db2c173a7b5"
+    "vector_manifest_sha256": "5d2a4427ff80f85057522e8be7cc06b25b76b30b563e29c95b86933255535094",
+    "parity_report_sha256": "e26c4f00d440934ff4484410a025aafc4ca0c8186525ac1a916ae3aaf98c70f2"
   },
   "accuracy_on_calibration_subset": {
     "note": "Implementation check on the same images used for activation calibration; not an unbiased final-accuracy estimate.",
@@ -66,10 +67,10 @@
     "fp32_top1": {"correct": 290, "percent": 58.0},
     "fp32_top5": {"correct": 388, "percent": 77.6},
     "int8_top1": {"correct": 284, "percent": 56.8},
-    "int8_top5": {"correct": 383, "percent": 76.6},
-    "top1_prediction_agreement": {"correct": 459, "percent": 91.8},
+    "int8_top5": {"correct": 385, "percent": 77.0},
+    "top1_prediction_agreement": {"correct": 464, "percent": 92.8},
     "top1_drop_percentage_points": 1.2,
-    "top5_drop_percentage_points": 1.0,
-    "accuracy_report_sha256": "61d1d4306d22615302da91e68735c6fcf1684c8ef8c771b97dea291fb1d6df1a"
+    "top5_drop_percentage_points": 0.6,
+    "accuracy_report_sha256": "61a145a616fffc8caeb252d46e69841fbc63440218c5845be1de02a3d225702d"
   }
 }

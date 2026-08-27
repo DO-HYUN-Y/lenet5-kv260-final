@@ -9,6 +9,7 @@
 5. `cpp/README.md`: INT8 모듈별 C++ golden model과 빌드 방법
 6. `calibrate_int8.py`: 실제 영상으로 activation scale을 정하고 RTL parameter를 내보내는 방법
 7. `compare_full_int8_cpp.py`: Python과 C++ 전체 네트워크 tensor를 층별 비교하는 방법
+8. `PRE_RTL_SIGNOFF.md`: 최종 SA/buffer/numeric/zero-skip 결정과 RTL 진입 gate
 
 Python 코드에는 각 함수의 역할, tensor shape, 필요한 이유를 한국어 주석으로
 기록했다. 처음에는 `model.py`의 `AlexNet.__init__()`과 `forward()`만 읽고,
@@ -138,7 +139,8 @@ a manifest with every file hash, and one full-network tensor vector:
   --devkit data\imagenet\ILSVRC2012_devkit_t12.tar.gz `
   --output-dir alexnet_output\int8_mlcommons500 `
   --contract-output alexnet\calibration\int8_mlcommons500_contract.json `
-  --device cuda --batch-size 32 --limit 500 --percentile 100
+  --device cuda --batch-size 32 --limit 500 --percentile 100 `
+  --multiplier-bits 18
 ```
 
 Build the C++ library and require byte-exact equality at every Conv, Pool and
@@ -169,8 +171,27 @@ complete 50,000-image validation run.
 
 The frozen 2026-08-27 run selected abs-max (`--percentile 100`) after a
 50-image comparison against 99.99 and 99.999. On all 500 calibration images,
-FP32 measured 58.0%/77.6% and compiled C++ INT8 measured 56.8%/76.6%
+FP32 measured 58.0%/77.6% and compiled C++ INT8 measured 56.8%/77.0%
 Top-1/Top-5. The eleven exported Conv/Pool/FC boundaries all matched the Python
 integer reference byte-for-byte. The exact 10,344-channel parameters are in
 `calibration/int8_mlcommons500_contract.json`; the compact evidence record is
 `calibration/int8_mlcommons500_results.json`.
+
+## Pre-RTL sign-off dataset and profiler
+
+Create a calibration-disjoint, class-balanced validation subset directly from
+the official archive. The checked-in lists contain only ImageNet filenames;
+the licensed images remain under ignored `data/`:
+
+```powershell
+& $alexnetPython -m alexnet.prepare_disjoint_validation `
+  --archive data\imagenet\ILSVRC2012_img_val.tar `
+  --devkit data\imagenet\ILSVRC2012_devkit_t12.tar.gz `
+  --exclude-list data\imagenet\cal_image_list_option_1.txt
+```
+
+`imagenet_disjoint_balanced_5000.txt` selects five deterministic images from
+each of 1,000 classes. `imagenet_profile_balanced_1000.txt` selects one per
+class for accumulator, saturation, structural-padding, kernel-row, packed-pair,
+M32-vector and 4x4-block sparsity profiling. The frozen results and RTL-entry
+decisions are summarized in `PRE_RTL_SIGNOFF.md`.

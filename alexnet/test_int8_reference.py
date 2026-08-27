@@ -35,6 +35,14 @@ class Int8ReferenceTest(unittest.TestCase):
             approximation = multiplier / (1 << shift)
             self.assertLessEqual(abs(approximation - real), 0.5 / (1 << shift))
 
+    def test_fixed_point_multiplier_fits_signed_18_bit_dsp_input(self) -> None:
+        for real in (1e-7, 0.003125, 0.75, 1.0, 3.5):
+            multiplier, shift = _fixed_point_multiplier(real, storage_bits=18)
+            self.assertGreater(multiplier, 0)
+            self.assertLessEqual(multiplier, (1 << 17) - 1)
+            approximation = multiplier / (1 << shift)
+            self.assertLessEqual(abs(approximation - real), 0.5 / (1 << shift))
+
     def test_requantize_channel_parameters_and_relu(self) -> None:
         layer = QuantizedLayer(
             name="test",

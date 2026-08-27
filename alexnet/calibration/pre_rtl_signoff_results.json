@@ -1,0 +1,99 @@
+{
+  "format_version": 1,
+  "date": "2026-08-27",
+  "status": "pass",
+  "scope": "software and architecture gates before RTL implementation",
+  "board": "AMD Kria KV260 / K26",
+  "baseline_clock_mhz": 200,
+  "model": {
+    "name": "torchvision AlexNet_Weights.IMAGENET1K_V1",
+    "checkpoint_sha256": "7be5be791159472b1fbf3c69796f7cb30dca7ad8466c2df70058c37116cdee02",
+    "quantization_contract_sha256": "1a85423e46a77b088703428b00292b14b6d86c1f835c697537305f04641207d0",
+    "model_manifest_sha256": "53b09c7a50a6b6cec317e12250bcb495aa0508809ea9510dc60d638748a76b7c"
+  },
+  "architecture": {
+    "logical_sa": "M32xN64",
+    "local_tile": "M8xN8",
+    "local_tile_count": 32,
+    "compute_dsp": 1024,
+    "postprocess_lanes": 8,
+    "postprocess_dsp": 8,
+    "total_dsp_target": 1032,
+    "dataflow": "RS activation feeder + OS PE accumulator + WS weight tile",
+    "postprocess_product": "signed 27x18 -> signed 45-bit exact",
+    "result_tile_elements": 2048,
+    "result_drain_cycles": 256,
+    "minimum_compute_cycles_between_result_tiles": 363,
+    "result_holding_required": true
+  },
+  "calibration_accuracy": {
+    "image_count": 500,
+    "fp32_top1": {"correct": 290, "percent": 58.0},
+    "fp32_top5": {"correct": 388, "percent": 77.6},
+    "int8_top1": {"correct": 284, "percent": 56.8},
+    "int8_top5": {"correct": 385, "percent": 77.0},
+    "top1_agreement": {"correct": 464, "percent": 92.8},
+    "report_sha256": "61a145a616fffc8caeb252d46e69841fbc63440218c5845be1de02a3d225702d"
+  },
+  "calibration_disjoint_accuracy": {
+    "selection": "five deterministic images per each of 1000 classes",
+    "image_count": 5000,
+    "list_sha256": "96f9623a099efd48bcd99c64ef2b8bb2c34ce9e91e659187010b9cb158306af4",
+    "ordered_image_set_sha256": "50677ca17e6854d8253c7672ba38f18cfe2477533fd7ea9df8f7fda2934002f4",
+    "fp32_top1": {"correct": 2805, "percent": 56.1},
+    "fp32_top5": {"correct": 3924, "percent": 78.48},
+    "int8_top1": {"correct": 2783, "percent": 55.66},
+    "int8_top5": {"correct": 3941, "percent": 78.82},
+    "top1_agreement": {"correct": 4680, "percent": 93.6},
+    "report_sha256": "f08b2e34b3b530310449f4ef1061a567fd185ec49823c0593687ea2bbc616a9e"
+  },
+  "multiplier_selection": {
+    "selected_storage_bits": 18,
+    "value_range": [65540, 131067],
+    "right_shift_range": [23, 32],
+    "same_1000_image_int8_top1_s32": 561,
+    "same_1000_image_int8_top1_s18": 561,
+    "five_thousand_image_s18_minus_s32_top1_correct": 3,
+    "five_thousand_image_s18_minus_s32_top5_correct": 6
+  },
+  "all_int8_input_post_bias_bound": {
+    "conv1": {"min": -1805100, "max": 1801110, "signed_bits": 22},
+    "conv2": {"min": -5755159, "max": 5786420, "signed_bits": 24},
+    "conv3": {"min": -6420373, "max": 6431117, "signed_bits": 24},
+    "conv4": {"min": -12459168, "max": 12476517, "signed_bits": 25},
+    "conv5": {"min": -9253804, "max": 9276026, "signed_bits": 25},
+    "fc6": {"min": -56555046, "max": 56622879, "signed_bits": 27},
+    "fc7": {"min": -27100445, "max": 27139840, "signed_bits": 26},
+    "fc8": {"min": -13591467, "max": 13587963, "signed_bits": 25}
+  },
+  "profile": {
+    "selection": "one deterministic image per each of 1000 classes",
+    "image_count": 1000,
+    "list_sha256": "5b4556d82105db697d500db8c2779a132ddd9c91d85df06778f2039ab0ce9393",
+    "report_sha256": "24f1fb8600c963cb5d9f7c1569a72e2ca595aff8132581227d8ab9cd632e1d7c",
+    "conv1": {"input_zero_percent": 0.6060, "pair_zero_percent": 0.0341, "m32_zero_percent": 0.0, "kernel_row_zero_percent": 0.0, "padding_percent": 0.9893},
+    "conv2": {"input_zero_percent": 28.7614, "pair_zero_percent": 21.9604, "m32_zero_percent": 2.6554, "kernel_row_zero_percent": 0.0, "padding_percent": 8.6914},
+    "conv3": {"input_zero_percent": 52.6633, "pair_zero_percent": 43.2273, "m32_zero_percent": 6.8073, "kernel_row_zero_percent": 0.0, "padding_percent": 9.9934},
+    "conv4": {"input_zero_percent": 84.5860, "pair_zero_percent": 78.6127, "m32_zero_percent": 21.4713, "kernel_row_zero_percent": 0.0, "padding_percent": 9.9934},
+    "conv5": {"input_zero_percent": 82.3670, "pair_zero_percent": 75.9552, "m32_zero_percent": 19.2251, "kernel_row_zero_percent": 0.0, "padding_percent": 9.9934}
+  },
+  "full_network_parity": {
+    "captured_layer_count": 11,
+    "total_mismatch_count": 0,
+    "vector_manifest_sha256": "5d2a4427ff80f85057522e8be7cc06b25b76b30b563e29c95b86933255535094",
+    "report_sha256": "e26c4f00d440934ff4484410a025aafc4ca0c8186525ac1a916ae3aaf98c70f2"
+  },
+  "zero_skip_policy": {
+    "structural_padding_and_tail_skip": "first RTL",
+    "packed_pair_zero_clock_enable": "first RTL power feature",
+    "kernel_row_compaction": "rejected: measured zero percent",
+    "m32_and_4x4_compression": "counter only in first dense RTL",
+    "weight_format": "dense"
+  },
+  "remaining_after_pre_rtl": [
+    "RTL implementation and simulation",
+    "post-synthesis and post-route timing/resource closure",
+    "KV260 AXI bandwidth, throughput, power and thermal measurement",
+    "full 50000-image release accuracy"
+  ]
+}

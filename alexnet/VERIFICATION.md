@@ -87,12 +87,13 @@ hours of model compute. Real end-to-end training should be budgeted at roughly
 ## Accuracy status
 
 The torchvision checkpoint metadata reports ImageNet-1K Top-1 56.522% and
-Top-5 79.066%. The official validation archive and devkit are now available in
-the local ignored `data/` directory. The MLCommons option-1 500-image subset
-measured FP32 Top-1 58.0% and Top-5 77.6%. This subset also supplies INT8
-activation calibration, so it is a reproducible implementation check but not
-an unbiased replacement for the complete 50,000-image validation run. Full-set
-accuracy sign-off remains pending.
+Top-5 79.066%. The official validation archive and devkit are available in the
+local ignored `data/` directory. A deterministic class-balanced 5,000-image set
+(five images per class) that excludes every MLCommons calibration image measured
+FP32 Top-1/Top-5 56.10/78.48% and C++ INT8 55.66/78.82%. The INT8 Top-1 drop is
+0.44 percentage points and Top-1 prediction agreement is 93.60%. This closes the
+pre-RTL accuracy gate; the complete 50,000-image run remains the board-release
+accuracy gate.
 
 ## INT8 calibration and export
 
@@ -119,32 +120,65 @@ The frozen contract therefore uses sampled abs-max (`100.0`). Weights are
 signed symmetric INT8 per output channel; activations are signed symmetric
 INT8 per tensor/layer. The export contains 61,090,496 weight bytes and 165,504
 parameter bytes. All 10,344 output channels have an independent signed INT32
-bias, non-negative signed INT32 multiplier and 0..62 right shift in a 16-byte
+bias, non-negative signed 18-bit multiplier and right shift in a 16-byte
 little-endian record. Exact values and file hashes are tracked in
 `calibration/int8_mlcommons500_contract.json`.
 
 The selected input scale is `0.020787402400820273`. Layer summaries are:
 
-| Layer | Output scale | Bias INT32 range | Right-shift range |
+| Layer | Output scale | Bias INT32 range | Multiplier range | Right-shift range |
+|---|---:|---:|---:|---:|
+| Conv1 | 0.3221652114 | -102825..38116 | 65886..127572 | 28..30 |
+| Conv2 | 0.6464929656 | -615..1117 | 65925..131044 | 23..28 |
+| Conv3 | 0.8195159792 | -517..783 | 65589..131047 | 24..27 |
+| Conv4 | 0.7341894916 | -1277..901 | 66223..130312 | 25..27 |
+| Conv5 | 0.3391598979 | -695..4015 | 65540..130576 | 25..26 |
+| FC6 | 0.2235676473 | -699..927 | 65546..131067 | 27..31 |
+| FC7 | 0.2909000126 | -572..1983 | 65541..131003 | 27..32 |
+| FC8 | 0.3300604933 | -721..684 | 65577..130874 | 26..28 |
+
+The selected quantization-contract SHA-256 is
+`1a85423e46a77b088703428b00292b14b6d86c1f835c697537305f04641207d0`.
+On the same class-balanced 1,000-image slice, reducing multiplier storage from
+32 to 18 bits preserved the INT8 Top-1 count exactly (561/1,000). On the full
+5,000-image pre-RTL set the selected 18-bit form gained three Top-1 and six
+Top-5 correct predictions over the 32-bit candidate.
+
+## Pre-RTL numeric-width proof
+
+For every output channel, the fixed INT8 weights were exhaustively reduced into
+an input-independent interval by selecting `-128` or `127` for each product term
+according to the weight sign. Adding the exported bias gives the following
+worst-case bounds for every possible signed INT8 input tensor:
+
+| Layer | Post-bias minimum | Post-bias maximum | Required signed bits |
 |---|---:|---:|---:|
-| Conv1 | 0.3221652114 | -102825..38116 | 42..44 |
-| Conv2 | 0.6464929656 | -615..1117 | 37..42 |
-| Conv3 | 0.8195159792 | -517..783 | 38..41 |
-| Conv4 | 0.7341894916 | -1277..901 | 39..41 |
-| Conv5 | 0.3391598979 | -695..4015 | 39..40 |
-| FC6 | 0.2235676473 | -699..927 | 41..45 |
-| FC7 | 0.2909000126 | -572..1983 | 41..46 |
-| FC8 | 0.3300604933 | -721..684 | 40..42 |
+| Conv1 | -1,805,100 | 1,801,110 | 22 |
+| Conv2 | -5,755,159 | 5,786,420 | 24 |
+| Conv3 | -6,420,373 | 6,431,117 | 24 |
+| Conv4 | -12,459,168 | 12,476,517 | 25 |
+| Conv5 | -9,253,804 | 9,276,026 | 25 |
+| FC6 | -56,555,046 | 56,622,879 | 27 |
+| FC7 | -27,100,445 | 27,139,840 | 26 |
+| FC8 | -13,591,467 | 13,587,963 | 25 |
+
+INT32 remains the accumulator storage/ABI, but a checked signed-27-bit value is
+sufficient at the postprocess multiplier input. Together with the selected
+signed-18-bit multiplier this is one native DSP48E2 `27x18` product with a
+signed-45-bit exact result; no runtime clipping or split multiplication is
+allowed. Eight postprocess lanes drain an `M32xN64` result tile in 256 cycles,
+below the minimum compute interval of 363 cycles (Conv1), so postprocess is not
+the steady-state bottleneck when its result FIFO can hold one complete tile.
 
 Measured on all 500 calibration images:
 
 | Model | Top-1 | Top-5 |
 |---|---:|---:|
 | FP32 pretrained | 58.0% (290/500) | 77.6% (388/500) |
-| compiled C++ INT8 | 56.8% (284/500) | 76.6% (383/500) |
+| compiled C++ INT8 | 56.8% (284/500) | 77.0% (385/500) |
 
-The observed loss is 1.2 percentage points Top-1 and 1.0 point Top-5. FP32 and
-INT8 Top-1 predictions agree on 459/500 images (91.8%). These numbers are not
+The observed loss is 1.2 percentage points Top-1 and 0.6 point Top-5. FP32 and
+INT8 Top-1 predictions agree on 464/500 images (92.8%). These numbers are not
 an unbiased final-accuracy estimate because calibration and measurement use the
 same 500 images.
 
@@ -162,6 +196,8 @@ cmake --build alexnet/cpp/build
 
 Results:
 
+- CTest golden executable passed 24,938 checks, including 4,096 random plus
+  directed-corner native signed-27 by signed-18 postprocess products.
 - 6/6 cross-language parity tests passed with exact equality.
 - 4,096 signed INT8 packed lo/hi product vectors matched PyTorch INT32 products.
 - 2,052 directed/random requantization vectors matched the frozen rounding,

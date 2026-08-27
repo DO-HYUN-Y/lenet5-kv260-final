@@ -288,7 +288,13 @@ signed INT8의 전체 범위를 사용하는 최악 조건 기준이다.
 | FC6 | 9,216 | 29-bit |
 | FC7/FC8 | 4,096 | 28-bit |
 
-INT32 accumulator는 전체 layer에 충분하다. 기존 `dual_lane_postprocess`의 27-bit multiplier input clamp는 AlexNet 최악 조건을 보장하지 못하므로 그대로 재사용하지 않는다. calibration으로 실제 범위를 제한하거나 postprocess 입력 폭과 scaling 구조를 다시 설계한다.
+INT32 accumulator는 전체 layer에 충분하다. 고정된 INT8 weight의 부호에 따라 각
+곱항의 `[-128,127]` 최댓값과 최솟값을 output channel별로 합산하고 bias까지 더한
+정적 증명 결과, 모든 가능한 INT8 입력에서 post-bias 최악은 FC6의
+`-56,555,046..56,622,879`이며 signed 27-bit에 들어온다. calibration으로 관측한
+값만 믿고 폭을 줄인 것이 아니므로 runtime clip은 필요 없다. 최종 multiplier는
+non-negative signed 18-bit `65,540..131,067`이고, postprocess 곱은 DSP48E2 한 개의
+native signed `27x18 -> 45-bit`로 수행한다.
 
 ## 4. 목표 microarchitecture
 
@@ -326,9 +332,14 @@ logical M = 4 x 8 = 32 spatial/batch lanes
 logical N = 8 x 8 = 64 output channels
 packed MAC DSP = 32 base tiles x 32 DSP = 1,024 DSP
 MAC per cycle = 2,048
-postprocess DSP = 32 to 64
-total DSP target = 1,056 to 1,088 / 1,248
+postprocess DSP = 8
+total DSP target = 1,032 / 1,248
 ```
+
+각 tile 종료 시 2,048개 INT32 결과를 PE별 holding register에 snapshot하고 8-lane
+postprocess가 256 cycle에 scan한다. 최소 K인 Conv1도 다음 tile 계산에 363 cycle이
+걸리므로 scan은 다음 결과가 나오기 전에 끝난다. holding register와 accumulator를
+분리하지 않으면 256-cycle drain 동안 SA가 멈추므로 이 decoupling은 필수다.
 
 Conv는 `A[P,K] x B[K,Cout]`에서 M을 spatial position, N을 output
 channel로 사용한다. FC도 같은 operand 방향을 유지하되 M을 batch image로 사용한다.
@@ -396,7 +407,7 @@ padding과 row/tile tail은 실제 memory read 대신 mask로 생성한다.
 
 | Resource | 목표 상한 |
 |---|---:|
-| DSP48E2 | 1,088 / 1,248, 약 87% |
+| DSP48E2 | 1,032 / 1,248, 약 83% |
 | LUT | 90,000 / 117,120, 약 77% |
 | FF | 180,000 / 234,240, 약 77% |
 | BRAM | 125 / 144, 약 87% |
@@ -794,6 +805,28 @@ CE gating을 추가하고, block/vector zero가 구현 비용을 상쇄할 만�
 block-sparse engine 또는 structured pruning을 검토한다. 모든 OS/RS/WS baseline
 memory-access 표는 sparsity 이득을 제외한 dense worst-case 수치로 유지한다.
 
+2026-08-27에 calibration과 분리된 class-balanced 1,000장(각 class 1장)을 최종
+INT8 C++ 경로로 측정한 결과는 다음과 같다. padding은 natural zero에서 분리했다.
+
+| Conv | Input zero | Pair both-zero | M32 all-zero | 4x4 all-zero | Kernel-row all-zero | Full-window all-zero | Structural padding |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Conv1 | 0.61% | 0.03% | 0.00% | 0.00% | 0.00% | 0.00% | 0.99% |
+| Conv2 | 28.76% | 21.96% | 2.66% | 9.09% | 0.00% | 0.00% | 8.69% |
+| Conv3 | 52.66% | 43.23% | 6.81% | 16.03% | 0.00% | 0.00% | 9.99% |
+| Conv4 | 84.59% | 78.61% | 21.47% | 48.11% | 0.00% | 0.00% | 9.99% |
+| Conv5 | 82.37% | 75.96% | 19.23% | 44.03% | 0.00% | 0.00% | 9.99% |
+
+결론은 다음으로 고정한다.
+
+- padding/tail structural skip은 첫 RTL에서 구현하며 DDR read와 MAC token을 줄인다.
+- kernel-row/full-window compaction은 측정 이득이 0%이므로 구현하지 않는다.
+- packed-pair both-zero CE gating은 Conv2~5에서 선택하며 cycle/DDR 감소가 아닌
+  DSP switching 전력 감소로만 성능표에 반영한다.
+- M32 compaction과 4x4 sparse compression은 Conv4/5에 잠재 이득이 있지만 첫 dense
+  RTL에서는 counter만 구현한다. 이미 읽은 dense activation을 검사하는 것만으로는
+  DDR byte가 줄지 않으므로 압축 write/bitmap/decompressor가 있는 별도 phase에서 비교한다.
+- exact-zero weight 비율은 layer별 1.19~3.88%라서 dense weight format을 유지한다.
+
 ## 7. 구현 단계 및 통과 게이트
 
 ### Phase 0 — Contract freeze
@@ -816,10 +849,13 @@ Gate:
 
 - 완료: torchvision 호환 FP32 모델, 224 입력 전처리 계약, 공식 V1 checkpoint SHA-256, layer shape/MAC smoke test
 - 완료: MLCommons option-1 ImageNet 500장 calibration, 실제 integer INT8 reference, per-layer golden tensor exporter
-- 완료: 10,344개 output channel의 bias/multiplier/right-shift 및 61,090,496 B INT8 weight export
-- 완료: 동일 500장에서 FP32 `58.0/77.6%`, INT8 `56.8/76.6%` Top-1/Top-5 측정
-- 대기: ILSVRC2012 validation 50,000장 Top-1/Top-5 실측
-- 다음: calibration과 분리된 validation set 정확도 및 전체 layer accumulator 범위 보고서
+- 완료: 10,344개 output channel의 bias/signed-18-bit multiplier/right-shift 및 61,090,496 B INT8 weight export
+- 완료: 동일 500장에서 FP32 `58.0/77.6%`, 최종 s18 INT8 `56.8/77.0%` Top-1/Top-5 측정
+- 완료: calibration과 겹치지 않는 class-balanced 5,000장에서 FP32
+  `56.10/78.48%`, C++ INT8 `55.66/78.82%`, Top-1 agreement `93.60%`
+- 완료: 고정 weight 전 채널의 all-INT8-input post-bias bound signed 27-bit 증명
+- 완료: class-balanced 1,000장 accumulator/saturation/zero granularity 프로파일
+- 대기: board release 전 ILSVRC2012 validation 50,000장 Top-1/Top-5 실측
 
 산출물:
 
@@ -841,7 +877,7 @@ Gate:
 - `alexnet/cpp` 공통 library에 quant, packed PE, packed SA tile, window/RS,
   dense/grouped Conv2D, MaxPool, FC, layout, DMA burst/ping-pong ownership,
   descriptor/DDR address, skew timing, full-network 모델을 구현했다.
-- 얇은 C ABI/DPI wrapper와 CMake/CTest 회귀 테스트를 추가했으며 20,812개
+- 얇은 C ABI/DPI wrapper와 CMake/CTest 회귀 테스트를 추가했으며 24,938개
   directed/random check가 통과한다.
 - PyTorch 2.13.0과 C++ DLL을 직접 연결한 operator parity에서 packed product,
   requant, dense/grouped Conv, FC, packed SA, MaxPool이 모두 exact-match한다.
@@ -849,6 +885,8 @@ Gate:
   Pool1, Conv2, Pool2, Conv3, Conv4, Conv5, Pool5, FC6, FC7, FC8의 mismatch가 모두 0이다.
 - 전체 계수는 `alexnet/calibration/int8_mlcommons500_contract.json`, 후보 sweep·정확도·
   parity 요약은 `alexnet/calibration/int8_mlcommons500_results.json`에 고정했다.
+- multiplier를 signed 18-bit로 제한한 최종 contract에서도 11개 경계가 byte-exact이고,
+  post-bias signed-27-bit와 multiplier signed-18-bit의 native DSP 곱 경로를 CTest로 검증했다.
 
 산출물:
 
@@ -1010,7 +1048,7 @@ Python FP32
 |---|---|
 | 모델 variant 불일치 | contract와 checkpoint hash 선고정 |
 | packed accumulation field overflow | 매-cycle split 또는 최대 7-term chunk 준수 |
-| INT32 이후 27-bit postprocess clip | range report 후 postprocess 재설계 |
+| model/quantization 변경으로 signed-27 post-bias 증명 무효 | contract version bump, all-input bound 재생성, runtime assertion |
 | 1,024 DSP 배열 routing 실패 | 2/4 partition, local controller, floorplan |
 | LUT accumulator 폭증 | DSP cascade 후보와 achieved TOPS/W 비교 |
 | 단일 HP DDR 병목 | multi-HP DMA 및 batch reuse |

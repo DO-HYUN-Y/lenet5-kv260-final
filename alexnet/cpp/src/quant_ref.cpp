@@ -5,6 +5,20 @@
 
 namespace alexnet::golden {
 
+std::int64_t multiply_s27_s18(std::int64_t biased,
+                              std::int32_t multiplier) {
+  constexpr std::int64_t kSigned27Min = -(std::int64_t{1} << 26);
+  constexpr std::int64_t kSigned27Max = (std::int64_t{1} << 26) - 1;
+  constexpr std::int32_t kSigned18Max = (std::int32_t{1} << 17) - 1;
+  if (biased < kSigned27Min || biased > kSigned27Max) {
+    throw std::out_of_range("post-bias value must fit signed 27-bit");
+  }
+  if (multiplier < 0 || multiplier > kSigned18Max) {
+    throw std::out_of_range("multiplier must fit non-negative signed 18-bit");
+  }
+  return biased * static_cast<std::int64_t>(multiplier);
+}
+
 std::int64_t round_shift_half_away_from_zero(std::int64_t value,
                                             std::uint8_t right_shift) {
   if (right_shift == 0) {
@@ -39,7 +53,14 @@ std::int8_t requantize(std::int32_t accumulator, const RequantParams& params) {
   }
 
   const std::int64_t biased = static_cast<std::int64_t>(accumulator) + params.bias;
-  const std::int64_t product = biased * static_cast<std::int64_t>(params.multiplier);
+  constexpr std::int32_t kSigned18Max = (std::int32_t{1} << 17) - 1;
+  constexpr std::int64_t kSigned27Min = -(std::int64_t{1} << 26);
+  constexpr std::int64_t kSigned27Max = (std::int64_t{1} << 26) - 1;
+  const std::int64_t product =
+      params.multiplier <= kSigned18Max && biased >= kSigned27Min &&
+              biased <= kSigned27Max
+          ? multiply_s27_s18(biased, params.multiplier)
+          : biased * static_cast<std::int64_t>(params.multiplier);
   std::int64_t scaled = round_shift_half_away_from_zero(product, params.right_shift);
   if (params.relu && scaled < 0) {
     scaled = 0;

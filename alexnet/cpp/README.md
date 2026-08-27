@@ -10,8 +10,10 @@ latency. The exception is `skew_ref`, whose only function is cycle alignment.
 - symmetric numeric zero with bit-pattern zero
 - exact signed INT8 product
 - checked signed INT32 accumulation
-- bias added before scaling using a wider C++ intermediate
-- non-negative fixed-point multiplier
+- signed INT32 bias added before scaling
+- model-wide checked post-bias bound: signed 27 bits for every INT8 input
+- non-negative signed 18-bit fixed-point multiplier
+- exact signed 45-bit product, matching one DSP48E2 `27x18` multiplier
 - right shift rounded half away from zero
 - optional ReLU after scaling
 - signed INT8 saturation

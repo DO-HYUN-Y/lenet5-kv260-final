@@ -11,6 +11,7 @@
 #include "alexnet_golden/dpi_wrappers.h"
 #include "alexnet_golden/layout_ref.hpp"
 #include "alexnet_golden/packed_mac_ref.hpp"
+#include "alexnet_golden/quant_ref.hpp"
 #include "alexnet_golden/sa_tile_ref.hpp"
 #include "alexnet_golden/skew_ref.hpp"
 #include "alexnet_golden/window_ref.hpp"
@@ -76,6 +77,42 @@ void test_quant() {
   expect_equal(unpacked.multiplier, 12345, "parameter multiplier round trip");
   expect_equal(static_cast<int>(unpacked.right_shift), 9, "parameter shift round trip");
   expect(unpacked.relu, "parameter relu round trip");
+
+  const std::vector<std::int64_t> biased_corners{
+      -(std::int64_t{1} << 26), -(std::int64_t{1} << 20) - 1, -1, 0, 1,
+      (std::int64_t{1} << 20) - 1, (std::int64_t{1} << 26) - 1};
+  const std::vector<std::int32_t> multiplier_corners{0, 1, 65535, 131071};
+  for (const auto biased : biased_corners) {
+    for (const auto multiplier : multiplier_corners) {
+      expect_equal(ag::multiply_s27_s18(biased, multiplier),
+                   biased * multiplier, "native s27xs18 corner mismatch");
+    }
+  }
+  std::uint64_t split_state = 0x8a5cd789635d2dffULL;
+  for (int index = 0; index < 4096; ++index) {
+    split_state = split_state * 6364136223846793005ULL + 1;
+    const std::int64_t biased =
+        static_cast<std::int64_t>(split_state & ((std::uint64_t{1} << 27) - 1)) -
+        (std::int64_t{1} << 26);
+    split_state = split_state * 6364136223846793005ULL + 1;
+    const std::int32_t multiplier = static_cast<std::int32_t>(split_state & 0x1ffff);
+    expect_equal(ag::multiply_s27_s18(biased, multiplier),
+                 biased * multiplier, "native s27xs18 random mismatch");
+  }
+  bool rejected_wide_post_bias = false;
+  try {
+    static_cast<void>(ag::multiply_s27_s18(std::int64_t{1} << 26, 1));
+  } catch (const std::out_of_range&) {
+    rejected_wide_post_bias = true;
+  }
+  expect(rejected_wide_post_bias, "s27 multiplier input range was not enforced");
+  bool rejected_wide_multiplier = false;
+  try {
+    static_cast<void>(ag::multiply_s27_s18(1, std::int32_t{1} << 17));
+  } catch (const std::out_of_range&) {
+    rejected_wide_multiplier = true;
+  }
+  expect(rejected_wide_multiplier, "s18 multiplier range was not enforced");
 }
 
 void test_packed_mac() {

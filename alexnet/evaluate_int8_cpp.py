@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import time
@@ -13,6 +14,14 @@ from .calibrate_int8 import CalibrationImages, load_imagenet_validation_targets
 from .compare_full_int8_cpp import configure_library, run_cpp_alexnet
 from .int8_reference import load_quantized_alexnet, quantize_activation
 from .model import create_alexnet
+
+
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def parse_args() -> argparse.Namespace:
@@ -96,9 +105,11 @@ def main() -> None:
     report = {
         "status": "pass",
         "note": (
-            "These images also form the calibration subset; metrics validate the "
-            "implementation but are not an unbiased final-accuracy estimate."
+            "FP32 and exported C++ INT8 were evaluated with the same deterministic "
+            "preprocessing and ordered image list."
         ),
+        "model_manifest_sha256": sha256_file(args.model_manifest),
+        "image_list_sha256": sha256_file(args.image_list),
         "image_count": count,
         "offset": args.offset,
         "elapsed_seconds": time.perf_counter() - started,

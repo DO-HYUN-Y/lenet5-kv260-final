@@ -208,6 +208,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--workers", type=int, default=0)
     parser.add_argument("--limit", type=int, default=500)
     parser.add_argument("--percentile", type=float, default=100.0)
+    parser.add_argument(
+        "--multiplier-bits",
+        type=int,
+        default=18,
+        help="signed storage width; 18 maps directly to a DSP48E2 multiplier input",
+    )
     parser.add_argument("--vector-count", type=int, default=1)
     return parser.parse_args()
 
@@ -216,6 +222,8 @@ def main() -> None:
     args = parse_args()
     if not 0 < args.percentile <= 100:
         raise ValueError("--percentile must be in (0, 100]")
+    if not 2 <= args.multiplier_bits <= 32:
+        raise ValueError("--multiplier-bits must be in [2, 32]")
     if sha256_file(args.calibration_list) != MLPERF_LIST_SHA256:
         raise RuntimeError("MLCommons calibration list SHA-256 mismatch")
 
@@ -239,7 +247,7 @@ def main() -> None:
     scales, statistics = collect_activation_scales(
         model, loader, device, args.percentile
     )
-    quantized = build_quantized_alexnet(model, scales)
+    quantized = build_quantized_alexnet(model, scales, args.multiplier_bits)
     selected_names = dataset.names
     targets = (
         load_imagenet_validation_targets(args.devkit) if args.devkit is not None else {}
@@ -253,6 +261,7 @@ def main() -> None:
         "image_count": len(dataset),
         "image_set_sha256": dataset_digest(args.image_dir, selected_names),
         "percentile": args.percentile,
+        "multiplier_storage_bits": args.multiplier_bits,
         "sampling": "deterministic_uniform_stride_up_to_65536_values_per_batch_layer",
         "activation_scales": scales,
         "activation_statistics": statistics,
@@ -294,6 +303,7 @@ def main() -> None:
             "format_version": 1,
             "numeric_contract": exported_manifest["numeric_contract"],
             "parameter_record": "little_endian_<iiBB6x>_16_bytes_per_output_channel",
+            "multiplier_storage_bits": args.multiplier_bits,
             "input_scale": quantized.input_scale,
             "calibration": calibration_metadata,
             "layers": contract_layers,

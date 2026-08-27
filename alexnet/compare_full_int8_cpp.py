@@ -43,11 +43,23 @@ def configure_library(path: Path) -> tuple[ctypes.CDLL, list[object]]:
         I8P, ctypes.c_int,
     ]
     library.alexnet_golden_conv2d_int8.restype = ctypes.c_int
+    library.alexnet_golden_conv2d_accumulate.argtypes = [
+        I8P, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,
+        I8P, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,
+        ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,
+        ctypes.c_int, ctypes.c_int, I32P, ctypes.c_int,
+    ]
+    library.alexnet_golden_conv2d_accumulate.restype = ctypes.c_int
     library.alexnet_golden_linear_int8.argtypes = [
         I8P, ctypes.c_int, ctypes.c_int, I8P, ctypes.c_int,
         I32P, I32P, U8P, ctypes.c_uint8, I8P, ctypes.c_int,
     ]
     library.alexnet_golden_linear_int8.restype = ctypes.c_int
+    library.alexnet_golden_linear_accumulate.argtypes = [
+        I8P, ctypes.c_int, ctypes.c_int, I8P, ctypes.c_int,
+        I32P, ctypes.c_int,
+    ]
+    library.alexnet_golden_linear_accumulate.restype = ctypes.c_int
     library.alexnet_golden_maxpool2d.argtypes = [
         I8P, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,
         ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,
@@ -83,6 +95,28 @@ def cpp_conv(library: ctypes.CDLL, value: torch.Tensor, layer: QuantizedLayer) -
     return output
 
 
+def cpp_conv_accumulate(
+    library: ctypes.CDLL, value: torch.Tensor, layer: QuantizedLayer
+) -> torch.Tensor:
+    batch, input_channels, input_h, input_w = value.shape
+    output_channels, channels_per_group, kernel_h, kernel_w = layer.weight.shape
+    output_h = output_dim(input_h, kernel_h, layer.stride[0], layer.padding[0])
+    output_w = output_dim(input_w, kernel_w, layer.stride[1], layer.padding[1])
+    output = torch.empty(
+        (batch, output_channels, output_h, output_w), dtype=torch.int32
+    ).contiguous()
+    status = library.alexnet_golden_conv2d_accumulate(
+        pointer(value, I8P), batch, input_channels, input_h, input_w,
+        pointer(layer.weight, I8P), output_channels, channels_per_group,
+        kernel_h, kernel_w, layer.groups, layer.stride[0], layer.stride[1],
+        layer.padding[0], layer.padding[1], layer.dilation[0], layer.dilation[1],
+        pointer(output, I32P), output.numel(),
+    )
+    if status != 0:
+        raise RuntimeError(f"C++ {layer.name} accumulate returned status {status}")
+    return output
+
+
 def cpp_pool(library: ctypes.CDLL, value: torch.Tensor) -> torch.Tensor:
     batch, channels, input_h, input_w = value.shape
     output_h = output_dim(input_h, 3, 2, 0)
@@ -109,6 +143,21 @@ def cpp_linear(library: ctypes.CDLL, value: torch.Tensor, layer: QuantizedLayer)
     )
     if status != 0:
         raise RuntimeError(f"C++ {layer.name} returned status {status}")
+    return output
+
+
+def cpp_linear_accumulate(
+    library: ctypes.CDLL, value: torch.Tensor, layer: QuantizedLayer
+) -> torch.Tensor:
+    batch, k_depth = value.shape
+    n_count = layer.weight.shape[0]
+    output = torch.empty((batch, n_count), dtype=torch.int32).contiguous()
+    status = library.alexnet_golden_linear_accumulate(
+        pointer(value, I8P), batch, k_depth, pointer(layer.weight, I8P), n_count,
+        pointer(output, I32P), output.numel(),
+    )
+    if status != 0:
+        raise RuntimeError(f"C++ {layer.name} accumulate returned status {status}")
     return output
 
 

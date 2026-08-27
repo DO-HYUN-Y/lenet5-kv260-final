@@ -86,17 +86,21 @@ def _checked_int32(values: torch.Tensor, context: str) -> torch.Tensor:
     return values.to(torch.int32)
 
 
-def _fixed_point_multiplier(real_multiplier: float) -> tuple[int, int]:
+def _fixed_point_multiplier(
+    real_multiplier: float, storage_bits: int = 32
+) -> tuple[int, int]:
     """Approximate a positive real multiplier as integer / 2**right_shift."""
 
     if not real_multiplier >= 0:
         raise ValueError("real multiplier must be non-negative")
+    if not 2 <= storage_bits <= 32:
+        raise ValueError("multiplier storage width must be in the range 2..32")
     if real_multiplier == 0:
         return 0, 0
-    int32_max = (1 << 31) - 1
+    multiplier_max = (1 << (storage_bits - 1)) - 1
     for right_shift in range(62, -1, -1):
         multiplier = int(math.floor(real_multiplier * (1 << right_shift) + 0.5))
-        if 0 < multiplier <= int32_max:
+        if 0 < multiplier <= multiplier_max:
             return multiplier, right_shift
     raise OverflowError(f"cannot represent multiplier {real_multiplier}")
 
@@ -106,6 +110,7 @@ def _quantize_layer(
     module: nn.Conv2d | nn.Linear,
     input_scale: float,
     output_scale: float,
+    multiplier_bits: int,
 ) -> QuantizedLayer:
     weight_fp64 = module.weight.detach().cpu().to(torch.float64)
     reduce_dimensions = tuple(range(1, weight_fp64.ndim))
@@ -130,7 +135,8 @@ def _quantize_layer(
     shifts = []
     for channel_scale in weight_scale.tolist():
         multiplier, shift = _fixed_point_multiplier(
-            input_scale * float(channel_scale) / output_scale
+            input_scale * float(channel_scale) / output_scale,
+            multiplier_bits,
         )
         multipliers.append(multiplier)
         shifts.append(shift)
@@ -158,7 +164,9 @@ def _quantize_layer(
 
 
 def build_quantized_alexnet(
-    model: AlexNet, activation_scales: dict[str, float]
+    model: AlexNet,
+    activation_scales: dict[str, float],
+    multiplier_bits: int = 32,
 ) -> QuantizedAlexNet:
     required = {
         "input", "conv1", "conv2", "conv3", "conv4", "conv5",
@@ -174,13 +182,13 @@ def build_quantized_alexnet(
     for name, accessor in CONV_ACCESSORS.items():
         output_scale = float(activation_scales[name])
         layers[name] = _quantize_layer(
-            name, accessor(model), previous_scale, output_scale
+            name, accessor(model), previous_scale, output_scale, multiplier_bits
         )
         previous_scale = output_scale
     for name, accessor in LINEAR_ACCESSORS.items():
         output_scale = float(activation_scales[name])
         layers[name] = _quantize_layer(
-            name, accessor(model), previous_scale, output_scale
+            name, accessor(model), previous_scale, output_scale, multiplier_bits
         )
         previous_scale = output_scale
     return QuantizedAlexNet(input_scale=input_scale, layers=layers)
