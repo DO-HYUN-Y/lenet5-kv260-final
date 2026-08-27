@@ -92,3 +92,30 @@ Measured accuracy remains pending because the ILSVRC2012 validation set is not
 present in the workspace. The baseline is considered accuracy-verified only
 after all 50,000 validation images are run with `validate_fp32.py` and the
 resulting report is recorded.
+
+## C++ INT8 golden parity
+
+Date: 2026-08-27 (Asia/Seoul)
+
+The compiled C++ golden DLL was loaded from Python and compared directly with
+PyTorch using deterministic tensors. Commands:
+
+```powershell
+cmake --build alexnet/cpp/build
+& $alexnetPython -m unittest alexnet.test_cpp_golden_against_pytorch -v
+```
+
+Results:
+
+- 5/5 cross-language parity tests passed with exact equality.
+- 4,096 signed INT8 packed lo/hi product vectors matched PyTorch INT32 products.
+- 2,052 directed/random requantization vectors matched the frozen rounding,
+  ReLU and saturation contract.
+- Dense Conv, grouped Conv and AlexNet Conv1 `11x11/s4/p2` accumulation matched.
+- FC and the packed OS SA model matched PyTorch INT32 matrix multiplication,
+  including odd `M=33` and output tail `N=65`.
+- AlexNet `3x3/s2` MaxPool matched.
+
+This proves operator-level parity. Full trained INT8 AlexNet layer-by-layer
+parity is still pending calibration/export of real INT8 weights, bias,
+multiplier and shift values.

@@ -34,7 +34,7 @@ shift. No trained values are hardcoded in this library.
 | `descriptor_ref` | runtime K/M/N derivation, tile schedule and DDR address calculation |
 | `skew_ref` | local M8xN8 activation/weight delay chains and tag timing |
 | `alexnet_ref` | five Conv, three Pool and three FC operators connected end-to-end |
-| `dpi_wrappers` | small C ABI entry points suitable for thin SV DPI imports |
+| `dpi_wrappers` | scalar and tensor C ABI entry points for SV DPI and Python parity tests |
 
 `conv2d_ref` and `descriptor_ref` support `groups > 1`. The currently frozen
 `alexnet_contract.yaml` still selects the torchvision `groups=1` model; support
@@ -50,6 +50,17 @@ cmake -S alexnet/cpp -B alexnet/cpp/build -G "MinGW Makefiles"
 cmake --build alexnet/cpp/build
 ctest --test-dir alexnet/cpp/build --output-on-failure
 ```
+
+With the CUDA Python environment from `alexnet/README.md`, compare the compiled
+C++ operators directly against PyTorch:
+
+```powershell
+& $alexnetPython -m unittest alexnet.test_cpp_golden_against_pytorch -v
+```
+
+This parity test covers packed products, requantization, dense/grouped Conv2D,
+AlexNet Conv1 geometry, FC, packed OS SA including odd M/N tails, and MaxPool.
+All comparisons require exact equality (`rtol=0`, `atol=0`).
 
 The test executable checks product corner cases and deterministic random packed
 MACs, quantization, K-major window/weight order, dense/grouped convolution,

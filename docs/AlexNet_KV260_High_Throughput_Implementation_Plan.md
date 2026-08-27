@@ -818,6 +818,8 @@ Gate:
   descriptor/DDR address, skew timing, full-network 모델을 구현했다.
 - 얇은 C ABI/DPI wrapper와 CMake/CTest 회귀 테스트를 추가했으며 20,812개
   directed/random check가 통과한다.
+- PyTorch 2.13.0과 C++ DLL을 직접 연결한 operator parity에서 packed product,
+  requant, dense/grouped Conv, FC, packed SA, MaxPool이 모두 exact-match한다.
 - 실제 calibration multiplier/shift와 Python INT8 per-layer tensor exporter는 아직
   미정이므로 `Python INT8 == C++` layer별 byte-exact gate는 Phase 1 완료 후 닫는다.
 
