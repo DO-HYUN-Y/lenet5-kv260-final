@@ -1,8 +1,8 @@
 {
-  "format_version": 1,
-  "date": "2026-08-27",
-  "status": "pass",
-  "scope": "software and architecture gates before RTL implementation",
+  "format_version": 2,
+  "date": "2026-08-28",
+  "status": "software_numeric_pass_architecture_resource_pending",
+  "scope": "software and numeric gates passed; physical array size requires RTL OOC and full post-route resource gate",
   "board": "AMD Kria KV260 / K26",
   "baseline_clock_mhz": 200,
   "model": {
@@ -12,7 +12,10 @@
     "model_manifest_sha256": "53b09c7a50a6b6cec317e12250bcb495aa0508809ea9510dc60d638748a76b7c"
   },
   "architecture": {
-    "logical_sa": "M32xN64",
+    "logical_sa": "M32xN64 candidate",
+    "logical_sa_status": "provisional until OOC resource and full-shell 200 MHz post-route gate",
+    "logical_sa_fallback": "M16xN64 preserving N64 memory/postprocess/router contract",
+    "logical_sa_fallback_resources": {"local_tile_count": 16, "compute_dsp48e2": 512, "postprocess_dsp48e2": 64, "total_dsp48e2": 576, "full_tile_drain_cycles": 16},
     "local_tile": "M8xN8",
     "local_tile_count": 32,
     "compute_dsp": 1024,
@@ -35,7 +38,29 @@
     "result_tile_elements": 2048,
     "result_drain_cycles": 32,
     "minimum_compute_cycles_between_result_tiles": 363,
-    "result_holding_required": true
+    "result_holding_required": true,
+    "resource_gate": {
+      "device_limits": {"lut": 117120, "ff": 234240, "bram36": 144, "uram288": 64, "dsp48e2": 1248},
+      "release_targets": {"lut_max": 90000, "ff_max": 180000, "bram36_max": 125, "uram288_max": 56},
+      "existing_lenet_conv_only_m8n8_routed": {"lut": 3672, "ff": 4947, "dsp48e2": 32},
+      "unchanged_32_tile_lut_extrapolation": 117504,
+      "provisional_alexnet_m8n8_targets": {"lut_max_about": 2000, "ff_max_about": 4000, "dsp48e2": 32},
+      "candidate_formula": "32 * measured M8xN8 + every measured non-SA block",
+      "required_full_shell_clock_mhz": 200
+    },
+    "memory_gate": {
+      "all_activation_boundaries_bytes": 733032,
+      "all_resident_capacity_only_bram36": 160,
+      "activation_scheme": "two reused N8-banked A/B sets with direct streaming pool for Conv1/2/5",
+      "batch8_activation_bram36_estimate": {"set_a": 24, "set_b": 16, "streaming_pool": 8},
+      "total_bram36_provisional_range_including_rs_dma": [64, 88],
+      "full_k_weight_pingpong_uram_estimate": 48,
+      "resident_parameter_uram_estimate": 6,
+      "combined_uram_estimate": 54,
+      "router_fifo_payload_bytes": 4096,
+      "router_fifo_storage_target": "distributed RAM, at most about 1000 LUT including control"
+    },
+    "controller_memory_change": "replace fixed layer read/write set and base with src/dst buffer descriptor, output mode, and activation/weight ownership; do not add controllers"
   },
   "calibration_accuracy": {
     "image_count": 500,
@@ -102,6 +127,9 @@
     "weight_format": "dense"
   },
   "remaining_after_pre_rtl": [
+    "AlexNet packed PE and M8xN8 OOC RTL resource measurement",
+    "postprocess/router/RS/BRAM/URAM primitive inference measurement",
+    "M32xN64 versus M16xN64 release configuration decision from measured resource equation",
     "RTL implementation and simulation",
     "post-synthesis and post-route timing/resource closure",
     "KV260 AXI bandwidth, throughput, power and thermal measurement",

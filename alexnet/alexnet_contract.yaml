@@ -139,8 +139,20 @@ pre_rtl_architecture:
   board: kria_kv260_k26
   baseline_clock_mhz: 200
   logical_sa: {m: 32, n: 64}
+  logical_sa_status: provisional_until_ooc_resource_and_full_postroute_gate
+  logical_sa_fallback: {m: 16, n: 64}
+  logical_sa_fallback_resources: {local_tile_count: 16, compute_dsp48e2: 512, postprocess_dsp48e2: 64, total_dsp48e2: 576, full_tile_drain_cycles: 16}
   local_sa: {m: 8, n: 8, tile_count: 32}
   compute_dsp48e2: 1024
+  resource_gate:
+    device_limits: {lut: 117120, ff: 234240, bram36: 144, uram288: 64, dsp48e2: 1248}
+    release_targets: {lut_max: 90000, ff_max: 180000, bram36_max: 125, uram288_max: 56}
+    provisional_m8n8_targets: {lut_max_about: 2000, ff_max_about: 4000, dsp48e2: 32}
+    existing_lenet_conv_only_m8n8_routed: {lut: 3672, ff: 4947, dsp48e2: 32}
+    candidate_scale_formula: 32_times_measured_m8n8_plus_measured_non_sa
+    full_shell_clock_mhz: 200
+    require_clean_postroute_wns_tns: true
+    fallback_on_failure: m16xn64_preserve_n64_memory_postprocess_router_contract
   postprocess:
     mapping: one_dsp_per_n_output_channel_scan_m32
     lanes: 64
@@ -168,4 +180,33 @@ pre_rtl_architecture:
     descriptor_change_requires_empty_fifo: true
     invalid_n_lanes_are_masked_and_zero: true
     scaling_rule: one_router_per_eight_parallel_postprocess_outputs
+    rtl_storage_target: distributed_ram
+    rtl_lut_target_max_about: 1000
+  activation_memory:
+    scheme: two_reused_n8_banked_sets_with_streaming_pool
+    simultaneous_all_layer_storage_forbidden: true
+    all_boundary_bytes_if_resident: 733032
+    capacity_only_bram36_if_all_resident: 160
+    batch8_estimated_bram36: {set_a: 24, set_b: 16, streaming_pool: 8}
+    provisional_total_bram36_range_including_rs_dma: [64, 88]
+    macro_schedule:
+      - {op: conv1_pool1, source: ddr_stream, destination: a}
+      - {op: conv2_pool2, source: a, destination: b}
+      - {op: conv3, source: b, destination: a}
+      - {op: conv4, source: a, destination: b}
+      - {op: conv5_pool5, source: b, destination: a}
+      - {op: fc6, source: a, destination: b}
+      - {op: fc7, source: b, destination: a}
+      - {op: fc8, source: a, destination: final_output}
+  weight_parameter_memory:
+    full_k_n64_weight_pingpong_uram_estimate: 48
+    resident_parameter_uram_estimate: 6
+    combined_uram_estimate: 54
+    k_chunk_controller_fields_only_if_selected_after_rtl_measurement: true
+  controller_memory_descriptor:
+    controller_count_increase_required: false
+    fields: [src_buffer_id, dst_buffer_id, src_base, dst_base, tensor_shape, physical_layout, output_mode]
+    activation_states: [empty, writing, ready, reading]
+    weight_states: [empty, dma_fill, ready, compute]
   total_dsp48e2_target: 1088
+  total_dsp48e2_target_status: m32xn64_candidate_not_release_commitment

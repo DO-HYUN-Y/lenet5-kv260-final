@@ -1,7 +1,7 @@
 # AlexNet KV260 고처리량 가속기 구현 계획
 
 - 최초 작성일: 2026-08-24
-- 최근 설계 결정 반영일: 2026-08-27
+- 최근 설계 결정 반영일: 2026-08-28
 - 대상 보드: AMD Kria KV260 / XCK26-SFVC784-2LV
 - 기준 저장소: `DO-HYUN-Y/lenet5-kv260-final`
 - 현재 상태: 계획 및 수치 검증 단계
@@ -33,7 +33,7 @@ DDR4 model/activation
 6. 처리량 측정은 batch 1과 batch 8 이상을 분리한다.
 7. TOPS는 `1 MAC = 2 OPS`, 전력은 `VCC_SOM` 실측값으로 계산한다.
 8. DSP 100% 점유가 아니라 250 MHz timing closure를 유지하는 최대 유효 점유를 목표로 한다.
-9. 기본 SA는 logical `M8 x N8` tile을 계층적으로 결합한 `M32 x N64` 배열로 한다.
+9. 기본 SA tile은 logical `M8 x N8`이며 `M32 x N64`는 RTL resource gate를 통과해야 하는 성능 후보다. 실패 시 N64 계약을 유지한 `M16 x N64`를 사용한다.
 10. RS는 SA PE 안이 아니라 activation line/patch feeder에, WS는 URAM/BRAM weight tile 계층에, OS는 PE accumulator에 구현한다.
 11. 기본 AlexNet 성능 수치에는 입력 sparsity 또는 zero skipping 이득을 포함하지 않는다.
 12. DMA/compute overlap은 대기 시간을 숨기는 최적화이고, loop ordering과 on-chip residency는 실제 DDR byte를 줄이는 최적화로 구분한다.
@@ -316,7 +316,8 @@ Conv1 기준 reuse는 다음과 같다.
 
 ### 4.2 Base SA tile과 전체 배열
 
-기본 compute tile은 기존 packed PE를 재사용한 logical `M8 x N8`이다.
+기본 compute tile은 기존 packed arithmetic 계약을 재사용하되 dual-mode/control을
+제거해 새로 합성할 logical `M8 x N8`이다.
 
 ```text
 physical PE array = 4 packed-spatial rows x 8 output-channel columns
@@ -325,7 +326,7 @@ DSP per base tile = 4 x 8 = 32
 MAC per cycle     = 8 x 8 = 64
 ```
 
-전체 목표 배열은 base tile 32개를 `4 M-groups x 8 N-groups`로 결합한다.
+성능 후보 배열은 base tile 32개를 `4 M-groups x 8 N-groups`로 결합한다.
 
 ```text
 logical M = 4 x 8 = 32 spatial/batch lanes
@@ -459,6 +460,58 @@ padding과 row/tile tail은 실제 memory read 대신 mask로 생성한다.
 
 상한을 넘으면 배열 크기보다 Fmax, clock enable, data fanout, memory banking을 먼저 재검토한다.
 
+`M32xN64`는 현재 **성능 후보**이며 RTL resource gate를 통과하기 전까지 물리 구현
+크기로 확정하지 않는다. 같은 K26에서 기존 LeNet RTL을 route한 실측값은 다음과 같다.
+
+| 기존 routed RTL | DSP | LUT | FF |
+|---|---:|---:|---:|
+| `packed_pe` 1개 | 1 | 120 | 165 |
+| Conv-only logical `M8xN8` base tile | 32 | 3,672 | 4,947 |
+| LeNet dual-mode `M8xN8` 경로 | 32 | 4,835 | 5,168 |
+
+곱셈은 DSP48E2에 들어가지만 packed lo/hi split, signed correction, 두 개의 독립
+accumulator와 holding/tag는 LUT/FF를 사용한다. Conv-only base tile을 변경 없이 32개
+복제하면 SA만 `117,504 LUT`가 되어 K26의 `117,120 LUT`를 넘는다. 이 값은 AlexNet
+전용 PE에서 dual-mode mux, accumulator 폭, reset/control을 줄이기 전의 상한 추정이지만,
+기존 PE를 그대로 복제하는 것은 허용하지 않는다.
+
+RTL 시작 후 다음 식을 실제 OOC report 숫자로 채운다.
+
+```text
+LUT_total_est = 32 * LUT_M8xN8 + LUT_post64 + LUT_feeder
+                + LUT_router8 + LUT_memory_control + LUT_DMA_shell
+FF_total_est  = 32 * FF_M8xN8  + 동일한 non-SA block FF 합계
+```
+
+`M32xN64` 유지 gate는 `LUT_total_est <= 90,000`, `FF_total_est <= 180,000`,
+BRAM `<=125`, URAM `<=56`이고, partition 통합 post-route에서 200 MHz WNS/TNS가
+동시에 clean인 경우다. non-SA를 위한 routing 여유를 남기기 위해 AlexNet 전용
+`M8xN8`의 1차 목표는 약 `2,000 LUT`, `4,000 FF` 이하로 둔다. 목표를 넘으면
+PE의 27-bit accumulator, reset/control set, holding 구조를 먼저 최적화한다. 그래도
+전체 식을 통과하지 못하면 N64 weight/router layout은 유지하고 compute만
+`M16xN64`(base tile 16개)로 낮춘다. 이 경우 compute 512 DSP와 postprocess
+64 DSP로 합계 576 DSP이며 M16 result drain은 16 cycle이다. 배열 축소는 OOC
+수치 없이 선결정하지 않는다.
+
+필수 OOC 측정 순서는 다음과 같다.
+
+| 순서 | RTL 측정 대상 | 반드시 기록할 값 |
+|---:|---|---|
+| 1 | AlexNet packed PE | DSP/LUT/FF, accumulator mapping, WNS/TNS/WHS, worst path |
+| 2 | local `M8xN8` + skew/holding | DSP/LUT/FF, control set, fanout, 200/225/250 MHz |
+| 3 | N8 postprocess/router slice | DSP/LUT/LUTRAM/BRAM, FIFO inference, stall Fmax |
+| 4 | 64-lane postprocess + router 8개 | M selector path, credit reduction, congestion |
+| 5 | RS feeder + line/patch memory | RAM primitive 수, read-port replication, II=1 여부 |
+| 6 | weight URAM ping/pong | URAM width/depth fragmentation, 512-bit read timing |
+| 7 | activation A/B + streaming pool | BRAM banking, simultaneous read/write, buffer swap |
+| 8 | layer/tile + buffer ownership controller | LUT/FF, descriptor decode, completion/credit path, max fanout |
+| 9 | 2/4 partition top | scaled LUT/FF, high-fanout net, route delay, 200 MHz |
+| 10 | full KV260 shell | WNS/TNS/WHS/THS, DRC/CDC, power, 실제 자원 |
+
+합성 utilization만으로 통과시키지 않는다. OOC implementation과 full-shell post-route
+결과를 모두 보관하고, worst path의 logic/route delay 비율, 최대 fanout, congestion,
+clock uncertainty와 inferred RAM primitive까지 report에 남긴다.
+
 ## 5. Memory 및 DMA 계획
 
 ### 5.1 DDR roofline
@@ -551,11 +604,63 @@ resident로 둘 수 있다. 전체 output-channel record 수는 10,344이고 16 
 
 주요 INT8 activation 크기는 input 150,528 B, Conv1 output 193,600 B, Pool1
 output 46,656 B, Conv2 output 139,968 B, Pool2 output 32,448 B, Conv3 output
-64,896 B, Conv4/5 output 43,264 B, Pool5 output 9,216 B이다. 최대 activation 두
-개를 단순 ping/pong으로 잡으면 약 387,200 B가 필요하므로 K26의 약 648 KiB BRAM에
-parameter, line buffer, FIFO까지 모두 무계획하게 배치하지 않는다. weight는 URAM,
-activation/line buffer는 BRAM 중심으로 두되 남는 URAM과 distributed RAM을 포함한
-구체적 배치는 synthesis 결과로 조정한다.
+64,896 B, Conv4/5 output 43,264 B, Pool5 output 9,216 B이다. input과 모든 layer
+경계를 동시에 resident로 두면 733,032 B이고 banking 전 순수 용량만으로도 BRAM36
+약 160개라 K26의 144개를 넘는다. 따라서 LeNet처럼 layer별 고정 base를 tensor의
+영구 저장소로 사용하는 방식은 AlexNet에 허용하지 않는다.
+
+물리 activation memory는 두 개의 재사용 bank set A/B만 둔다. Conv1/2/5는 raw
+Conv output 전체를 저장하지 않고 output router에서 `3x3/s2` line buffer로 직접
+보내 pooled tensor만 다음 set에 쓴다.
+
+| Macro operation | Source | Resident destination |
+|---|---|---|
+| Conv1 + Pool1 | DDR input stream/RS line buffer | A |
+| Conv2 + Pool2 | A | B |
+| Conv3 | B | A |
+| Conv4 | A | B |
+| Conv5 + Pool5 | B | A |
+| FC6 | A | B |
+| FC7 | B | A |
+| FC8 | A | final output/DDR |
+
+64-bit N8 bank 8개, BRAM36의 72-bit x 512 구성을 기준으로 batch 8에서 A의 최대는
+Pool5 `9,216 B x 8` 때문에 약 24 BRAM, B의 최대는 Conv4 때문에 약 16 BRAM으로
+예상한다. 이는 합계 40 BRAM이다. Streaming pool line buffer는 약 8 BRAM이며,
+RS line/patch와 DMA/elastic FIFO에는 각각 8~24, 8~16 BRAM의 provisional budget을
+둔다. 따라서 fused-pool baseline의 전체 BRAM 예측 범위는 약 64~88개다. 실제
+primitive packing과 port replication 때문에 달라질 수 있으므로 위 OOC gate에서
+확정한다. Batch 16은 A set이 더 커지므로 별도 resource mode로 합성한다.
+
+Router FIFO payload는 `8 x 64 entries x 64 bit = 4 KiB`다. 실제 RTL FIFO에는
+`destination`과 N64 base를 packet마다 저장하지 않고 FIFO가 빌 때까지 slice-local
+config register에 고정한다. M/address는 descriptor와 read pointer로 생성한다. 데이터
+LUTRAM은 이론상 약 512개의 64x1 LUT이고 pointer/mask/control을 포함한 router 8개
+목표는 1,000 LUT 이하다. `ram_style="distributed"` 또는 동등한 XPM 설정을 명시하고,
+Vivado가 8개의 작은 FIFO를 BRAM36 8개로 잘못 추론하지 않았는지 report에서 확인한다.
+
+Weight FC6 N64 bank는 512-bit x 9,216 때문에 full-K ping/pong에서 약 48 URAM,
+128-bit parameter record 10,344개는 약 6 URAM으로 예상해 합계 54/64 URAM이다.
+Parameter를 BRAM에 중복 저장하지 않는다. 실제 URAM cascade/latency가 200 MHz를
+통과하지 못하면 K-chunk streaming을 별도 후보로 측정하되, 이 경우에만 controller에
+`k_chunk`, partial-sum residency와 chunk-boundary bank swap을 추가한다.
+
+Controller 수를 늘리지는 않지만 LeNet의 고정 `read_set/write_set/base` 계약은 다음
+descriptor/ownership 계약으로 교체한다.
+
+```text
+src_buffer_id, dst_buffer_id
+src_base, dst_base, tensor_shape, physical_layout
+output_mode = POOL3X3 | ACTIVATION_BUFFER | FINAL_OUTPUT
+activation_state = EMPTY | WRITING | READY | READING
+weight_state = EMPTY | DMA_FILL | READY | COMPUTE
+```
+
+Conv+Pool macro operation은 마지막 pooled write에서만 destination을 `READY`로 만든다.
+Source가 `READING`인 동안 같은 set을 덮어쓰지 않고, activation set swap과 weight
+bank swap은 registered completion에서만 수행한다. 이는 새 controller를 추가하는
+변경이 아니라 기존 layer/tile controller의 descriptor와 buffer-ownership 상태를
+수정하는 것이다.
 
 weight buffer는 full-K x N64 supertile을 기본 단위로 한다.
 
@@ -953,12 +1058,16 @@ Gate:
 - split-every-cycle OS PE
 - 7-term packed cascade PE
 - 동일 clock/resource/power 비교 보고서
+- LeNet dual-mode를 제거하고 signed-27 accumulator/holding을 적용한 AlexNet 전용 PE
+- PE와 local `M8xN8`의 OOC synth/implementation utilization 및 timing report
 
 Gate:
 
 - C++ golden과 bit-exact
 - post-route 250 MHz 후보 최소 1개
 - DSP packing corner case 전수 또는 충분한 formal/random 검증
+- packed PE당 DSP=1인지와 lo/hi accumulator가 LUT/FF 어디에 배치됐는지 확인
+- `M8xN8` provisional gate 약 LUT 2,000/FF 4,000 이하 또는 전체 resource 식으로 동등한 여유 증명
 
 ### Phase 4 — Conv/FC tile engine
 
@@ -967,7 +1076,7 @@ Gate:
 - runtime K/M/N descriptor
 - K11/K5/K3, stride/padding-aware M8 line/patch feeder
 - physical `4x8` / logical `M8xN8` local-skew OS base tile
-- registered broadcast tree로 결합한 `M32xN64` top array
+- registered broadcast tree로 결합한 candidate `M32xN64` top array
 - INT32 partial-sum 처리
 - N64 channel-stationary 64-lane postprocess와 8개 N8 slice의 AlexNet `3x3/s2` pooling
 - 8개 N8/64-bit output router, router별 64-entry FIFO와 destination descriptor
@@ -980,6 +1089,11 @@ Gate:
 - FC6 worst-depth test 통과
 - backpressure/stall 주입 test 통과
 - local skew `k_tag/tile_tag` alignment assertion 통과
+- Router FIFO 8개가 합계 4 KiB distributed RAM으로 추론되고 packet마다 고정 config를 중복 저장하지 않음
+- Activation A/B, streaming pool, RS/DMA buffer의 실제 BRAM 합계가 125 이하
+- Full-K weight ping/pong과 parameter buffer의 실제 URAM 합계가 56 이하
+- `32*base_tile + measured non-SA`가 LUT 90,000/FF 180,000 이하일 때만 M32xN64 유지
+- 위 resource gate 실패 시 동일 N64/postprocess/router를 유지한 `M16xN64` 구현과 비교
 - 200 MHz post-route 최소 통과 후 250 MHz closure 시도
 
 ### Phase 5 — Multi-port DMA system
@@ -1038,7 +1152,7 @@ Gate:
 |---|---|---|
 | packed PE | `packed_mac_ref` | lo/hi sign correction, clear/last, INT32 extreme |
 | local `M8xN8` skew | SV cycle queue + tag model | g/c delay, stall hold, flush, lane mask |
-| `M32xN64` broadcast top | SV transaction scoreboard | partition fanout, tile tag, result count |
+| candidate `M32xN64`/fallback `M16xN64` top | SV transaction scoreboard | partition fanout, tile tag, result count, 동일 numeric ABI |
 | window/RS feeder | `window_ref` | K11/5/3, stride 4/1, pad, row/tile boundary |
 | weight DMA/tile buffer | `layout_ref` | K-major order, burst/tail, bank ownership, swap |
 | postprocess | `quant_ref` + `PostprocessScannerRef` | 8개 독립 N8/M32 scan, N40 tail, slice별 stall hold, bias/rounding/ReLU/saturation |
@@ -1048,6 +1162,27 @@ Gate:
 | FC tile/full layer | `linear_ref` | batch 1/8/16, FC6 K=9216, N tail 40 |
 | scheduler/descriptor | `descriptor_ref` | loop/address, dependency, DMA error, timeout |
 | full AlexNet | `alexnet_ref` + pre-generated vectors | 모든 layer hash와 final logits |
+
+### 8.1 RTL resource/timing measurement gate
+
+각 DUT test가 PASS해도 아래 report가 없으면 다음 hierarchy로 확장하지 않는다.
+
+| DUT | Synth/OOC implementation gate | 확장 결정 |
+|---|---|---|
+| packed PE | 1 DSP mapping, LUT/FF, 200/225/250 MHz worst path | accumulator/control 최적화 후보 선택 |
+| `M8xN8` | LUT/FF/DSP, control sets, skew/holding timing | 32개 복제 resource 식 계산 |
+| N8 postprocess/router | DSP, LUTRAM/BRAM inference, full/stall timing | FIFO storage type와 depth 64 고정 |
+| RS feeder | BRAM/LUTRAM/FF, port replication, sustained token II | 4 M-group 통합 가능 여부 |
+| URAM weight bank | 512-bit read, 72-bit banking/cascade 수, latency | full-K 또는 K-chunk 후보 선택 |
+| Activation A/B + pool | primitive별 BRAM 수, read/write collision, swap | fused Conv+Pool buffer schedule 고정 |
+| layer/tile controller | LUT/FF, descriptor decode, registered completion/credit path | controller 수를 늘리지 않고 ownership 계약 고정 |
+| 2/4 partition | WNS/TNS/WHS/THS, congestion, max fanout | full top 진입 여부 |
+| full shell | 실제 LUT/FF/BRAM/URAM/DSP와 power | M32 또는 M16 release configuration 결정 |
+
+보관 파일은 최소 `synth_utilization`, `impl_utilization_hierarchical`,
+`timing_summary`, `worst_setup`, `worst_hold`, `high_fanout`, `clock_utilization`,
+`route_status`, `power` report다. 모든 report에는 Vivado version, part,
+speed grade, clock constraint와 git commit을 함께 기록한다.
 
 작은 operator는 DPI로 cycle마다/transaction마다 비교하고, full layer/network는
 미리 생성한 `.bin + manifest + SHA-256` vector를 사용한다. 모든 ready/valid interface에
@@ -1098,8 +1233,11 @@ Python FP32
 | 모델 variant 불일치 | contract와 checkpoint hash 선고정 |
 | packed accumulation field overflow | 매-cycle split 또는 최대 7-term chunk 준수 |
 | model/quantization 변경으로 signed-27 post-bias 증명 무효 | contract version bump, all-input bound 재생성, runtime assertion |
-| 1,024 DSP 배열 routing 실패 | 2/4 partition, local controller, floorplan |
-| LUT accumulator 폭증 | DSP cascade 후보와 achieved TOPS/W 비교 |
+| 1,024 DSP 배열 routing 실패 | M8xN8 OOC 수치 후 2/4 partition, floorplan, 필요 시 M16xN64 fallback |
+| LUT accumulator 폭증 | 기존 PE 단순 복제 금지, signed-27/holding/control 최적화 후 전체 resource 식 재계산 |
+| 레이어별 activation BRAM 상주로 144 BRAM 초과 | A/B 두 set 재사용, Conv1/2/5 direct streaming pool, batch별 합성 |
+| 작은 router FIFO가 BRAM36 8개로 낭비 추론 | config register 분리, distributed/XPM FIFO 강제 후 primitive report 확인 |
+| full-K weight+parameter가 URAM 56 초과 | banking 실측 후 K-chunk 후보와 controller 변경을 함께 비교 |
 | 단일 HP DDR 병목 | multi-HP DMA 및 batch reuse |
 | FC weight bandwidth 병목 | weight tile을 batch 8/16에서 재사용 |
 | global `M32xN64` skew/fanout timing 실패 | local `M8xN8` skew, registered tree, 2/4 partition |
@@ -1158,14 +1296,18 @@ AlexNet 변경으로 기존 `rtl/`, `tb/`, Stage04~06 LeNet board 결과가 깨�
 4. calibration image에서 accumulator range, quantization 정확도와 element/pair/vector/block sparsity를 측정한다.
 5. 공통 C++ bit-exact Conv/FC/Pool/requant/layout library와 얇은 DPI wrapper를 작성한다.
 6. Conv1 `11x11x3`, stride/padding, M8 patch-width 39, packed two-lane vector를 생성한다.
-7. 기존 split-every-cycle PE와 7-term DSP cascade를 동일 조건으로 합성한다.
-8. logical `M8xN8` local-skew base tile을 bit-exact 검증하고 200/250 MHz timing을 확인한다.
-9. registered tree로 base tile 32개를 `M32xN64`로 결합하고 partition별 timing을 측정한다.
-10. K-major N64 weight packer와 576 KiB logical URAM ping/pong buffer를 구현한다.
-11. Conv1 계산과 Conv2 DMA를 겹치고 readiness/FIFO 조건을 assertion과 counter로 검증한다.
-12. layer/weight-major batch scheduler를 구현하고 AXI byte가 분석값과 일치하는지 확인한다.
-13. batch 1 기능/latency 검증 후 batch 4/8/16 throughput과 `VCC_SOM` power를 측정한다.
-14. dense 결과를 기준선으로 고정한 뒤 측정된 sparsity가 충분할 때만 CE gating 또는 block-sparse 확장을 진행한다.
+7. AlexNet 전용 split-every-cycle PE와 7-term DSP cascade를 동일 조건 OOC 합성한다.
+8. logical `M8xN8` local-skew/holding tile을 bit-exact 검증하고 LUT/FF/DSP 및 200/225/250 MHz를 기록한다.
+9. N8 postprocess/router slice를 구현해 64-entry FIFO의 LUTRAM inference, full/stall timing과 1,000 LUT 목표를 확인한다.
+10. RS feeder, activation A/B, streaming pool을 각각 합성해 batch 1/8/16 BRAM 표를 작성한다.
+11. K-major N64 weight packer와 full-K URAM ping/pong을 합성해 48 URAM/512-bit timing 가정을 확인한다.
+12. 실제 OOC 수치로 `32*base + non-SA` 식을 계산하고 M32xN64 또는 M16xN64 release 후보를 선택한다.
+13. 선택한 배열을 2/4 partition registered tree로 결합하고 200 MHz post-route를 통과시킨다.
+14. `src/dst_buffer_id`, output mode와 bank ownership을 가진 layer/tile controller를 구현한다.
+15. Conv1 계산과 Conv2 DMA를 겹치고 readiness/FIFO 조건을 assertion과 counter로 검증한다.
+16. layer/weight-major batch scheduler를 구현하고 AXI byte가 분석값과 일치하는지 확인한다.
+17. batch 1 기능/latency 검증 후 batch 4/8/16 throughput과 `VCC_SOM` power를 측정한다.
+18. dense 결과를 기준선으로 고정한 뒤 측정된 sparsity가 충분할 때만 CE gating 또는 block-sparse 확장을 진행한다.
 
 ## 12. 참고 자료
 

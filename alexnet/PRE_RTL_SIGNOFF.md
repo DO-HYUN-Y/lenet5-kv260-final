@@ -1,12 +1,16 @@
 # AlexNet KV260 pre-RTL sign-off
 
-Date: 2026-08-27 (Asia/Seoul)
+Date: 2026-08-28 (Asia/Seoul)
 
 ## 결론
 
-RTL 작성 전 software/architecture gate는 통과했다. RTL은 아직 작성하지 않았다.
-첫 구현은 K26의 200 MHz 기준 logical `M32xN64` packed SA, local `M8xN8`
-skew, RS activation feeder, OS PE accumulator, WS weight ping/pong 구조로 고정한다.
+RTL 작성 전 software/numeric gate는 통과했다. RTL은 아직 작성하지 않았다.
+K26의 200 MHz 기준 logical `M32xN64` packed SA는 성능 후보이며, local
+`M8xN8` OOC resource와 full partition post-route gate를 통과할 때만 최종 크기로
+고정한다. gate 실패 시 N64 weight/postprocess/router 계약은 유지하고 compute를
+`M16xN64`로 낮춘다. fallback은 compute 512 DSP + postprocess 64 DSP = 576 DSP이고
+M16 result drain은 16 cycle이다. 공통 구조는 local `M8xN8` skew, RS activation feeder,
+OS PE accumulator, WS weight ping/pong이다.
 INT8 C++ golden은 최종 18-bit multiplier 계약으로 11개 network 경계가 모두
 byte-exact이고, calibration과 분리된 5,000장에서 FP32 대비 INT8 Top-1 하락은
 0.44 percentage point다.
@@ -73,12 +77,31 @@ s18이 s32 후보보다 Top-1 3장, Top-5 6장 더 맞았으므로 DSP 입력 �
 
 ```text
 base tile: physical 4x8 packed PE = logical M8xN8 = 32 DSP
-top array: 4 M-groups x 8 N-groups = logical M32xN64
+candidate top: 4 M-groups x 8 N-groups = logical M32xN64
 compute DSP: 32 base tiles x 32 = 1,024
 postprocess DSP: 64, N output-channel마다 1개
 total target: 1,088 / 1,248 DSP48E2
 peak at 200 MHz: 2,048 MAC/cycle = 0.819 TOPS (1 MAC = 2 OPS)
 ```
+
+PE 곱셈은 DSP48E2에 합성되지만 packed lo/hi split과 두 독립 accumulator는
+LUT/FF다. 같은 K26에서 기존 routed Conv-only `M8xN8`은 32 DSP, 3,672 LUT,
+4,947 FF였고, 변경 없이 32개를 복제하면 SA만 117,504 LUT라 device 117,120 LUT를
+넘는다. AlexNet 전용 PE에서 dual-mode mux 제거, signed-27 accumulator, holding과
+reset/control을 최적화한 뒤 다시 측정해야 한다.
+
+Candidate M32 유지 조건은 다음 실제 report 식이 LUT 90,000, FF 180,000,
+BRAM 125, URAM 56 이하이고 full-shell 200 MHz post-route가 clean인 경우다.
+
+```text
+total = 32 * measured(M8xN8) + measured(post64/router8/RS/memory/DMA/control)
+provisional M8xN8 target: LUT <= about 2,000, FF <= about 4,000
+```
+
+측정 순서는 AlexNet packed PE, M8xN8/skew/holding, N8 postprocess/router,
+post64/router8, RS feeder, weight URAM, activation/pool, 2/4 partition, full shell이다.
+각 단계에서 DSP/LUT/FF/LUTRAM/BRAM/URAM, WNS/TNS/WHS/THS, worst path,
+fanout, congestion, inferred RAM primitive를 저장한다.
 
 Skew는 전체 `M32xN64` wire를 runtime에 바꾸지 않는다. 각 `M8xN8` 안에서만
 고정 delay를 사용하고 상위는 registered activation/weight broadcast tree다. Conv와
@@ -129,7 +152,7 @@ slice가 생기면 `lane_mask` 밖 payload를 반드시 0으로 만든다. M tai
 
 이 수는 postprocess 개수와 함께 정한다. 현재 64 parallel output이므로 8개이고,
 나중에 실제 timing 결과로 128 parallel output을 채택한다면 같은 64-bit granularity로
-router도 16개가 필요하다. baseline은 DSP 1,088개를 쓰는 64 postprocess/8 router다.
+router도 16개가 필요하다. 성능 후보는 DSP 1,088개를 쓰는 64 postprocess/8 router다.
 
 ## Buffer, DMA와 layer overlap
 
@@ -141,6 +164,33 @@ router도 16개가 필요하다. baseline은 DSP 1,088개를 쓰는 64 postproce
 - bank owner는 `EMPTY -> DMA_FILL -> READY -> COMPUTE -> EMPTY`로 고정한다.
 - RS는 line/patch feeder에서 window overlap을 재사용하고, OS는 PE에서 psum을
   끝까지 보관하며, WS는 weight tile을 spatial position과 batch 사이에 유지한다.
+
+모든 activation 경계를 동시에 저장하면 733,032 B, banking 전에도 BRAM36 약
+160개라 K26의 144개를 넘는다. 물리 activation은 layer별 BRAM이 아니라 A/B 두
+bank set을 재사용한다. Conv1/2/5 raw output은 전체 저장하지 않고 router에서 pool
+line buffer로 바로 보내 Pool1/2/5만 저장한다.
+
+```text
+Conv1+Pool1: DDR -> A
+Conv2+Pool2: A -> B
+Conv3:       B -> A
+Conv4:       A -> B
+Conv5+Pool5: B -> A
+FC6:         A -> B
+FC7:         B -> A
+FC8:         A -> final/DDR
+```
+
+8개의 64-bit N8 bank 기준 batch 8 activation은 A 약 24 BRAM, B 약 16 BRAM,
+streaming pool 약 8 BRAM이다. RS와 DMA FIFO를 포함한 provisional 총 BRAM은
+64~88개다. Weight full-K ping/pong은 약 48 URAM, 전체 parameter는 약 6 URAM으로
+합계 54 URAM을 예상한다. Router FIFO 8개의 payload는 합계 4 KiB이며 config를
+packet마다 저장하지 않는 distributed RAM으로 강제해 목표 1,000 LUT 이하를 확인한다.
+
+Controller 개수는 늘리지 않는다. 기존 고정 `read_set/write_set/base` 대신
+`src/dst_buffer_id`, base/shape/layout, `POOL3X3/ACTIVATION/FINAL` output mode와
+activation/weight ownership state를 layer/tile descriptor에 추가한다. K-chunk weight
+후보를 실제로 선택하는 경우에만 `k_chunk`와 chunk-boundary swap 상태를 추가한다.
 
 200 MHz Conv1 예상 시간은 약 172.5 us다. Conv2 weight 307,200 B는 한 128-bit
 port ideal 96 us이며, Conv1 종료 전 load에 필요한 유효 대역폭은 1.781 GB/s,
@@ -180,7 +230,7 @@ weight는 1.19~3.88%뿐이므로 dense weight format을 유지한다.
 | packed PE | `packed_mac_ref` | signed lo/hi split, mask, INT32 extreme |
 | local skew | `skew_ref` | tag alignment, stall hold, flush |
 | RS feeder | `window_ref` | K11/5/3, stride/pad, row/tile tail |
-| M32xN64 top | `sa_tile_ref` | fanout, M/N tail, result count/order |
+| candidate M32xN64/fallback M16xN64 top | `sa_tile_ref` | fanout, M/N tail, result count/order, 동일 numeric ABI |
 | postprocess | `quant_ref` + `PostprocessScannerRef` | 8개 독립 N8/M32 scan, 32-cycle no-stall drain, N40 tail, slice별 stall hold, s27xs18 |
 | output router | `N8OutputRouterRef` | 8개 N8 route, destination/N-base/tag, FIFO full, 동시 pop/push, 독립 stall, tail mask |
 | pool | `maxpool_ref` | 3x3/s2, backpressure |
@@ -195,7 +245,9 @@ full layer는 `.bin + manifest + SHA-256`을 사용한다.
 
 ## 다음 단계
 
-다음 커밋부터가 RTL 단계다. 우선순위는 packed PE와 local `M8xN8` skew,
-RS feeder, result holding + N-stationary 64-lane postprocess, `M32xN64` registered top, DMA 순이다.
-아직 닫히지 않은 항목은 합성 후 200 MHz timing/resource, 실제 AXI bandwidth,
+다음 커밋부터가 RTL resource-gate 단계다. 우선순위는 AlexNet packed PE와 local
+`M8xN8` skew/holding OOC 합성, N8 postprocess/router FIFO inference, RS/activation/
+URAM memory OOC 합성, 전체 resource 식 계산, 2/4 partition top 순이다. 이 결과로
+`M32xN64` 또는 `M16xN64` release configuration을 고정한 뒤 controller/DMA를 통합한다.
+아직 닫히지 않은 항목은 200 MHz timing/resource, 실제 AXI bandwidth,
 KV260 board 전력/열, batch 8/16 throughput, 전체 ImageNet 50,000장 release 정확도다.
