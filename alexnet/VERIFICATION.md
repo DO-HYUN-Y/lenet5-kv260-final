@@ -87,11 +87,66 @@ hours of model compute. Real end-to-end training should be budgeted at roughly
 ## Accuracy status
 
 The torchvision checkpoint metadata reports ImageNet-1K Top-1 56.522% and
-Top-5 79.066%. These are not yet measurements made from this repository.
-Measured accuracy remains pending because the ILSVRC2012 validation set is not
-present in the workspace. The baseline is considered accuracy-verified only
-after all 50,000 validation images are run with `validate_fp32.py` and the
-resulting report is recorded.
+Top-5 79.066%. The official validation archive and devkit are now available in
+the local ignored `data/` directory. The MLCommons option-1 500-image subset
+measured FP32 Top-1 58.0% and Top-5 77.6%. This subset also supplies INT8
+activation calibration, so it is a reproducible implementation check but not
+an unbiased replacement for the complete 50,000-image validation run. Full-set
+accuracy sign-off remains pending.
+
+## INT8 calibration and export
+
+Calibration source and identity:
+
+```text
+ILSVRC2012_img_val.tar: 6,744,924,160 bytes
+archive MD5: 29b22e2961454d5413ddabcf34fc5622
+ILSVRC2012 devkit MD5: fa75699e90414af021442c21a62c3abf
+MLCommons option-1 list: 500 unique images
+list SHA-256: 7662247d1d9407d6cb564268f64c5a4a6cf9f1a34fd2e6cdc3b94dcf278b3dc9
+ordered image-set SHA-256: 3ac0e8c994678ead04eee6479cae87d1c80c5600c6cd03fae17883f5ef6d9cec
+```
+
+Three activation-range candidates were evaluated on the first 50 list entries:
+
+| Absolute percentile | INT8 Top-1 | INT8 Top-5 | FP32 Top-1 agreement |
+|---:|---:|---:|---:|
+| 99.99 | 48.0% | 64.0% | 84.0% |
+| 99.999 | 50.0% | 64.0% | 86.0% |
+| 100.0 | 52.0% | 64.0% | 90.0% |
+
+The frozen contract therefore uses sampled abs-max (`100.0`). Weights are
+signed symmetric INT8 per output channel; activations are signed symmetric
+INT8 per tensor/layer. The export contains 61,090,496 weight bytes and 165,504
+parameter bytes. All 10,344 output channels have an independent signed INT32
+bias, non-negative signed INT32 multiplier and 0..62 right shift in a 16-byte
+little-endian record. Exact values and file hashes are tracked in
+`calibration/int8_mlcommons500_contract.json`.
+
+The selected input scale is `0.020787402400820273`. Layer summaries are:
+
+| Layer | Output scale | Bias INT32 range | Right-shift range |
+|---|---:|---:|---:|
+| Conv1 | 0.3221652114 | -102825..38116 | 42..44 |
+| Conv2 | 0.6464929656 | -615..1117 | 37..42 |
+| Conv3 | 0.8195159792 | -517..783 | 38..41 |
+| Conv4 | 0.7341894916 | -1277..901 | 39..41 |
+| Conv5 | 0.3391598979 | -695..4015 | 39..40 |
+| FC6 | 0.2235676473 | -699..927 | 41..45 |
+| FC7 | 0.2909000126 | -572..1983 | 41..46 |
+| FC8 | 0.3300604933 | -721..684 | 40..42 |
+
+Measured on all 500 calibration images:
+
+| Model | Top-1 | Top-5 |
+|---|---:|---:|
+| FP32 pretrained | 58.0% (290/500) | 77.6% (388/500) |
+| compiled C++ INT8 | 56.8% (284/500) | 76.6% (383/500) |
+
+The observed loss is 1.2 percentage points Top-1 and 1.0 point Top-5. FP32 and
+INT8 Top-1 predictions agree on 459/500 images (91.8%). These numbers are not
+an unbiased final-accuracy estimate because calibration and measurement use the
+same 500 images.
 
 ## C++ INT8 golden parity
 
@@ -107,7 +162,7 @@ cmake --build alexnet/cpp/build
 
 Results:
 
-- 5/5 cross-language parity tests passed with exact equality.
+- 6/6 cross-language parity tests passed with exact equality.
 - 4,096 signed INT8 packed lo/hi product vectors matched PyTorch INT32 products.
 - 2,052 directed/random requantization vectors matched the frozen rounding,
   ReLU and saturation contract.
@@ -116,6 +171,9 @@ Results:
   including odd `M=33` and output tail `N=65`.
 - AlexNet `3x3/s2` MaxPool matched.
 
-This proves operator-level parity. Full trained INT8 AlexNet layer-by-layer
-parity is still pending calibration/export of real INT8 weights, bias,
-multiplier and shift values.
+The trained, calibrated network was also checked on
+`ILSVRC2012_val_00027145.JPEG`. Compiled C++ exactly matched the independent
+Python integer reference at Conv1, Pool1, Conv2, Pool2, Conv3, Conv4, Conv5,
+Pool5, FC6, FC7 and FC8: all eleven mismatch counts were zero. This closes the
+software full-network byte-exact gate; RTL timing/backpressure verification is
+still a later phase.

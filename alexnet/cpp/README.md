@@ -16,8 +16,10 @@ latency. The exception is `skew_ref`, whose only function is cycle alignment.
 - optional ReLU after scaling
 - signed INT8 saturation
 
-Calibration still has to supply the actual per-output bias, multiplier and
-shift. No trained values are hardcoded in this library.
+`calibrate_int8.py` supplies the actual per-output bias, multiplier and shift
+as 16-byte little-endian records (`int32 bias`, `int32 multiplier`, `uint8
+right_shift`, `uint8 relu`, six reserved zero bytes). No trained values are
+hardcoded in this library.
 
 ## Modules
 
@@ -68,6 +70,8 @@ pooling, FC, descriptors/DDR addresses, DMA burst tails, ping/pong ownership,
 local skew timing, postprocess scan order, C ABI wrappers and a small
 end-to-end network.
 
-Full `224x224` vectors should be generated as `.bin + manifest + SHA-256` after
-the Python integer calibration/export path is frozen. Those vectors are data,
-not a second implementation of these operators.
+Full `224x224` vectors are generated as `.bin + manifest + SHA-256` by
+`calibrate_int8.py`. `compare_full_int8_cpp.py` loads the raw model and vector
+files, executes compiled C++ Conv/Pool/FC code, and requires an exact match at
+all eleven captured boundaries. The vectors are data, not a second
+implementation of these operators.

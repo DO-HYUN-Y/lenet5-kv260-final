@@ -1,8 +1,10 @@
 # RTX 3050과 NVIDIA driver 560.94에 맞춘 공식 CUDA 12.6 wheel 저장소
 --index-url https://download.pytorch.org/whl/cu126
+--extra-index-url https://pypi.org/simple
 
 # GPU 학습/추론에 사용하는 버전을 재현 가능하도록 고정한다.
 torch==2.13.0+cu126
 torchvision==0.28.0+cu126
 Pillow==12.3.0
 numpy==2.5.2
+scipy==1.18.1

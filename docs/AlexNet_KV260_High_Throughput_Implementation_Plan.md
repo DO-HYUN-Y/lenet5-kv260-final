@@ -37,6 +37,7 @@ DDR4 model/activation
 10. RS는 SA PE 안이 아니라 activation line/patch feeder에, WS는 URAM/BRAM weight tile 계층에, OS는 PE accumulator에 구현한다.
 11. 기본 AlexNet 성능 수치에는 입력 sparsity 또는 zero skipping 이득을 포함하지 않는다.
 12. DMA/compute overlap은 대기 시간을 숨기는 최적화이고, loop ordering과 on-chip residency는 실제 DDR byte를 줄이는 최적화로 구분한다.
+13. 첫 PTQ calibration은 공식 ILSVRC2012 validation archive와 MLCommons가 고정한 option-1 500장 목록을 사용한다.
 
 ## 1. RTL보다 먼저 고정할 실행 규격
 
@@ -63,6 +64,27 @@ alexnet/alexnet_contract.yaml
 - 모델 및 vector format 버전
 
 다음 항목이 확정되기 전에는 full RTL controller와 주소 맵을 고정하지 않는다.
+
+#### Calibration dataset 결정
+
+초기 PTQ 데이터는 공식 `ILSVRC2012_img_val.tar`에서 MLCommons Inference의
+`cal_image_list_option_1.txt`가 지정한 500장만 추출해 사용한다. AlexNet V1
+checkpoint와 동일한 ImageNet-1K 입력 분포이고, 공개 benchmark가 고정한 파일
+목록이라 임의 seed나 폴더 순서에 따라 결과가 바뀌지 않는다.
+
+고정 식별자는 다음과 같다.
+
+- validation archive: `6,744,924,160 B`, MD5 `29b22e2961454d5413ddabcf34fc5622`
+- MLCommons option-1 list: 500 unique images
+- list SHA-256: `7662247d1d9407d6cb564268f64c5a4a6cf9f1a34fd2e6cdc3b94dcf278b3dc9`
+- selected activation range: sampled absolute-value percentile `100.0` (abs-max)
+- deterministic order: list file order, shuffle 없음
+
+ImageNet 영상은 별도 이용 조건이 있으므로 저장소에는 넣지 않는다. 저장소에는
+다운로드/검증/부분 추출 코드, hash, 생성된 scale 계약만 기록하고 `data/`는 계속
+git ignore한다. 같은 500장 위에서 계산한 정확도는 구현 sanity check로만 사용한다.
+최종 정확도 gate는 calibration에 쓰지 않은 validation image 또는 전체 50,000장으로
+닫는다.
 
 고정한 layer shape와 INT8 weight 크기는 다음과 같다.
 
@@ -793,8 +815,11 @@ Gate:
 현재 진행 상태:
 
 - 완료: torchvision 호환 FP32 모델, 224 입력 전처리 계약, 공식 V1 checkpoint SHA-256, layer shape/MAC smoke test
+- 완료: MLCommons option-1 ImageNet 500장 calibration, 실제 integer INT8 reference, per-layer golden tensor exporter
+- 완료: 10,344개 output channel의 bias/multiplier/right-shift 및 61,090,496 B INT8 weight export
+- 완료: 동일 500장에서 FP32 `58.0/77.6%`, INT8 `56.8/76.6%` Top-1/Top-5 측정
 - 대기: ILSVRC2012 validation 50,000장 Top-1/Top-5 실측
-- 다음: 실제 integer INT8 reference 및 per-layer golden tensor
+- 다음: calibration과 분리된 validation set 정확도 및 전체 layer accumulator 범위 보고서
 
 산출물:
 
@@ -820,8 +845,10 @@ Gate:
   directed/random check가 통과한다.
 - PyTorch 2.13.0과 C++ DLL을 직접 연결한 operator parity에서 packed product,
   requant, dense/grouped Conv, FC, packed SA, MaxPool이 모두 exact-match한다.
-- 실제 calibration multiplier/shift와 Python INT8 per-layer tensor exporter는 아직
-  미정이므로 `Python INT8 == C++` layer별 byte-exact gate는 Phase 1 완료 후 닫는다.
+- 실제 calibration 계수와 pretrained INT8 weight를 적용한 전체 네트워크에서 Conv1,
+  Pool1, Conv2, Pool2, Conv3, Conv4, Conv5, Pool5, FC6, FC7, FC8의 mismatch가 모두 0이다.
+- 전체 계수는 `alexnet/calibration/int8_mlcommons500_contract.json`, 후보 sweep·정확도·
+  parity 요약은 `alexnet/calibration/int8_mlcommons500_results.json`에 고정했다.
 
 산출물:
 

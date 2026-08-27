@@ -27,10 +27,25 @@ int alexnet_golden_conv2d_accumulate(
     int stride_h, int stride_w, int pad_h, int pad_w, int dilation_h,
     int dilation_w, int32_t* output, int output_count);
 
+int alexnet_golden_conv2d_int8(
+    const int8_t* input, int batch, int input_channels, int input_h,
+    int input_w, const int8_t* weights, int output_channels,
+    int input_channels_per_group, int kernel_h, int kernel_w, int groups,
+    int stride_h, int stride_w, int pad_h, int pad_w, int dilation_h,
+    int dilation_w, const int32_t* bias, const int32_t* multiplier,
+    const uint8_t* right_shift, uint8_t relu, int8_t* output,
+    int output_count);
+
 int alexnet_golden_linear_accumulate(const int8_t* input, int m_count,
                                      int k_depth, const int8_t* weights,
                                      int n_count, int32_t* output,
                                      int output_count);
+
+int alexnet_golden_linear_int8(
+    const int8_t* input, int m_count, int k_depth, const int8_t* weights,
+    int n_count, const int32_t* bias, const int32_t* multiplier,
+    const uint8_t* right_shift, uint8_t relu, int8_t* output,
+    int output_count);
 
 int alexnet_golden_maxpool2d(const int8_t* input, int batch, int channels,
                              int input_h, int input_w, int kernel_h,

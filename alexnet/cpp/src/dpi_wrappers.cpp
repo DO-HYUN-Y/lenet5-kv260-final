@@ -33,6 +33,21 @@ std::vector<T> copy_elements(const T* source, std::size_t count) {
   return std::vector<T>(source, source + count);
 }
 
+std::vector<alexnet::golden::RequantParams> copy_requant_params(
+    int channel_count, const int32_t* bias, const int32_t* multiplier,
+    const uint8_t* right_shift, bool relu) {
+  if (bias == nullptr || multiplier == nullptr || right_shift == nullptr) {
+    throw std::invalid_argument("null C ABI requant parameter array");
+  }
+  std::vector<alexnet::golden::RequantParams> params;
+  params.reserve(static_cast<std::size_t>(channel_count));
+  for (int channel = 0; channel < channel_count; ++channel) {
+    params.push_back(alexnet::golden::RequantParams{
+        bias[channel], multiplier[channel], right_shift[channel], relu});
+  }
+  return params;
+}
+
 }  // namespace
 
 extern "C" int alexnet_golden_packed_products(
@@ -155,6 +170,46 @@ extern "C" int alexnet_golden_conv2d_accumulate(
   }
 }
 
+extern "C" int alexnet_golden_conv2d_int8(
+    const int8_t* input, int batch, int input_channels, int input_h,
+    int input_w, const int8_t* weights, int output_channels,
+    int input_channels_per_group, int kernel_h, int kernel_w, int groups,
+    int stride_h, int stride_w, int pad_h, int pad_w, int dilation_h,
+    int dilation_w, const int32_t* bias, const int32_t* multiplier,
+    const uint8_t* right_shift, uint8_t relu, int8_t* output,
+    int output_count) {
+  if (input == nullptr || weights == nullptr || output == nullptr ||
+      output_count <= 0) {
+    return -1;
+  }
+  try {
+    const std::size_t input_count =
+        element_count({batch, input_channels, input_h, input_w});
+    const std::size_t weight_count = element_count(
+        {output_channels, input_channels_per_group, kernel_h, kernel_w});
+    alexnet::golden::TensorI8 input_tensor(
+        batch, input_channels, input_h, input_w,
+        copy_elements(input, input_count));
+    alexnet::golden::ConvWeightsI8 weight_tensor{
+        output_channels, input_channels_per_group, kernel_h, kernel_w,
+        copy_elements(weights, weight_count)};
+    const alexnet::golden::ConvGeometry geometry{
+        kernel_h, kernel_w, stride_h, stride_w, pad_h, pad_w, dilation_h,
+        dilation_w};
+    const auto result = alexnet::golden::conv2d(
+        input_tensor, weight_tensor, {geometry, groups},
+        copy_requant_params(output_channels, bias, multiplier, right_shift,
+                            relu != 0));
+    if (result.size() != static_cast<std::size_t>(output_count)) {
+      return -3;
+    }
+    std::copy(result.data().begin(), result.data().end(), output);
+    return 0;
+  } catch (...) {
+    return -2;
+  }
+}
+
 extern "C" int alexnet_golden_linear_accumulate(
     const int8_t* input, int m_count, int k_depth, const int8_t* weights,
     int n_count, int32_t* output, int output_count) {
@@ -171,6 +226,36 @@ extern "C" int alexnet_golden_linear_accumulate(
         copy_elements(weights, element_count({n_count, k_depth})));
     const auto result =
         alexnet::golden::linear_accumulate(input_matrix, weight_matrix);
+    if (result.size() != static_cast<std::size_t>(output_count)) {
+      return -3;
+    }
+    std::copy(result.data().begin(), result.data().end(), output);
+    return 0;
+  } catch (...) {
+    return -2;
+  }
+}
+
+extern "C" int alexnet_golden_linear_int8(
+    const int8_t* input, int m_count, int k_depth, const int8_t* weights,
+    int n_count, const int32_t* bias, const int32_t* multiplier,
+    const uint8_t* right_shift, uint8_t relu, int8_t* output,
+    int output_count) {
+  if (input == nullptr || weights == nullptr || output == nullptr ||
+      output_count <= 0) {
+    return -1;
+  }
+  try {
+    alexnet::golden::MatrixI8 input_matrix(
+        m_count, k_depth,
+        copy_elements(input, element_count({m_count, k_depth})));
+    alexnet::golden::MatrixI8 weight_matrix(
+        n_count, k_depth,
+        copy_elements(weights, element_count({n_count, k_depth})));
+    const auto result = alexnet::golden::linear(
+        input_matrix, weight_matrix,
+        copy_requant_params(n_count, bias, multiplier, right_shift,
+                            relu != 0));
     if (result.size() != static_cast<std::size_t>(output_count)) {
       return -3;
     }

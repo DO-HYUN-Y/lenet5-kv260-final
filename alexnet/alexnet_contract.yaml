@@ -71,10 +71,35 @@ smoke_verification:
   pretrained_checkpoint_loaded: true
   cuda_smoke_test_passed: true
 
+# 실제 500장 calibration과 INT8 검증 결과. 전체 channel 값은 아래 JSON에 있다.
+int8_calibration:
+  status: frozen_mlcommons500_absmax_v1
+  dataset: ILSVRC2012_validation_MLCommons_option_1
+  image_count: 500
+  calibration_list_sha256: 7662247d1d9407d6cb564268f64c5a4a6cf9f1a34fd2e6cdc3b94dcf278b3dc9
+  ordered_image_set_sha256: 3ac0e8c994678ead04eee6479cae87d1c80c5600c6cd03fae17883f5ef6d9cec
+  activation_absolute_percentile: 100.0
+  weight_quantization: symmetric_int8_per_output_channel
+  activation_quantization: symmetric_int8_per_tensor_layer
+  output_channel_parameter_count: 10344
+  parameter_record_bytes: 16
+  weight_bytes: 61090496
+  parameter_bytes: 165504
+  values_file: calibration/int8_mlcommons500_contract.json
+  values_file_sha256: e2b79df33cb06d4c420004f47b80ca54fda1868f7706a8b8811f0f1477a67d62
+  results_file: calibration/int8_mlcommons500_results.json
+  python_cpp_layer_mismatch_count: 0
+  measured_subset_accuracy_percent:
+    note: same_500_images_as_calibration_not_unbiased_final_accuracy
+    fp32_top1: 58.0
+    fp32_top5: 77.6
+    int8_top1: 56.8
+    int8_top5: 76.6
+    fp32_int8_top1_prediction_agreement: 91.8
+
 # 첫 INT8 C++/RTL operator golden의 산술 및 physical K-order 계약이다.
-# 실제 layer별 multiplier/shift 값과 INT8 정확도는 calibration 후 추가한다.
 int8_operator_contract:
-  status: operator_semantics_frozen_calibration_values_pending
+  status: operator_semantics_and_calibration_values_frozen
   activation: signed_int8
   weight: signed_int8
   zero_point: 0

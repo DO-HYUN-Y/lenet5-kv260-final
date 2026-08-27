@@ -9,6 +9,7 @@ INT32 with no quantization ambiguity.
 from __future__ import annotations
 
 import ctypes
+import itertools
 import os
 from pathlib import Path
 import random
@@ -21,6 +22,7 @@ import torch.nn.functional as functional
 
 INT8_POINTER = ctypes.POINTER(ctypes.c_int8)
 INT32_POINTER = ctypes.POINTER(ctypes.c_int32)
+UINT8_POINTER = ctypes.POINTER(ctypes.c_uint8)
 
 
 def _pointer(tensor: torch.Tensor, pointer_type: type[ctypes._Pointer]):
@@ -139,6 +141,20 @@ class CppGoldenParityTest(unittest.TestCase):
             ctypes.c_int,
         ]
         cls.library.alexnet_golden_packed_os_matmul.restype = ctypes.c_int
+        cls.library.alexnet_golden_conv2d_int8.argtypes = [
+            INT8_POINTER, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,
+            INT8_POINTER, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,
+            ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,
+            ctypes.c_int, ctypes.c_int, INT32_POINTER, INT32_POINTER,
+            UINT8_POINTER, ctypes.c_uint8, INT8_POINTER, ctypes.c_int,
+        ]
+        cls.library.alexnet_golden_conv2d_int8.restype = ctypes.c_int
+        cls.library.alexnet_golden_linear_int8.argtypes = [
+            INT8_POINTER, ctypes.c_int, ctypes.c_int, INT8_POINTER,
+            ctypes.c_int, INT32_POINTER, INT32_POINTER, UINT8_POINTER,
+            ctypes.c_uint8, INT8_POINTER, ctypes.c_int,
+        ]
+        cls.library.alexnet_golden_linear_int8.restype = ctypes.c_int
 
     def test_packed_products_match_pytorch(self) -> None:
         generator = torch.Generator().manual_seed(1729)
@@ -271,6 +287,71 @@ class CppGoldenParityTest(unittest.TestCase):
         )
         self.assertEqual(status, 0)
         torch.testing.assert_close(actual, expected, rtol=0, atol=0)
+
+    @staticmethod
+    def _requantize_channels(
+        accumulators: torch.Tensor,
+        bias: torch.Tensor,
+        multiplier: torch.Tensor,
+        shift: torch.Tensor,
+        relu: bool,
+    ) -> torch.Tensor:
+        expected = torch.empty_like(accumulators, dtype=torch.int8)
+        ranges = [range(size) for size in accumulators.shape]
+        for coordinate in itertools.product(*ranges):
+            channel = coordinate[1]
+            value = (int(accumulators[coordinate]) + int(bias[channel]))
+            value *= int(multiplier[channel])
+            value = _round_half_away(value, int(shift[channel]))
+            if relu:
+                value = max(value, 0)
+            expected[coordinate] = max(-128, min(127, value))
+        return expected
+
+    def test_full_tensor_conv_and_linear_requantize(self) -> None:
+        generator = torch.Generator().manual_seed(600)
+        value = torch.randint(-8, 9, (1, 3, 7, 7), dtype=torch.int8,
+                              generator=generator).contiguous()
+        weight = torch.randint(-8, 9, (4, 3, 3, 3), dtype=torch.int8,
+                               generator=generator).contiguous()
+        bias = torch.tensor([-7, 0, 11, 23], dtype=torch.int32)
+        multiplier = torch.tensor([3, 5, 7, 9], dtype=torch.int32)
+        shift = torch.tensor([4, 5, 6, 7], dtype=torch.uint8)
+        accumulators = functional.conv2d(
+            value.float(), weight.float(), padding=1
+        ).to(torch.int32)
+        expected = self._requantize_channels(
+            accumulators, bias, multiplier, shift, True
+        ).contiguous()
+        actual = torch.empty_like(expected)
+        status = self.library.alexnet_golden_conv2d_int8(
+            _pointer(value, INT8_POINTER), 1, 3, 7, 7,
+            _pointer(weight, INT8_POINTER), 4, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1,
+            _pointer(bias, INT32_POINTER), _pointer(multiplier, INT32_POINTER),
+            _pointer(shift, UINT8_POINTER), 1, _pointer(actual, INT8_POINTER),
+            actual.numel(),
+        )
+        self.assertEqual(status, 0)
+        torch.testing.assert_close(actual, expected, rtol=0, atol=0)
+
+        linear_input = torch.randint(-8, 9, (2, 7), dtype=torch.int8,
+                                     generator=generator).contiguous()
+        linear_weight = torch.randint(-8, 9, (4, 7), dtype=torch.int8,
+                                      generator=generator).contiguous()
+        linear_acc = (linear_input.to(torch.int32) @ linear_weight.to(torch.int32).t())
+        linear_expected = self._requantize_channels(
+            linear_acc, bias, multiplier, shift, False
+        ).contiguous()
+        linear_actual = torch.empty_like(linear_expected)
+        status = self.library.alexnet_golden_linear_int8(
+            _pointer(linear_input, INT8_POINTER), 2, 7,
+            _pointer(linear_weight, INT8_POINTER), 4,
+            _pointer(bias, INT32_POINTER), _pointer(multiplier, INT32_POINTER),
+            _pointer(shift, UINT8_POINTER), 0,
+            _pointer(linear_actual, INT8_POINTER), linear_actual.numel(),
+        )
+        self.assertEqual(status, 0)
+        torch.testing.assert_close(linear_actual, linear_expected, rtol=0, atol=0)
 
 
 if __name__ == "__main__":

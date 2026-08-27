@@ -1,4 +1,4 @@
-# AlexNet FP32 reference
+# AlexNet FP32/INT8 reference
 
 ## Python 초보자가 먼저 볼 순서
 
@@ -7,6 +7,8 @@
 3. `test_model.py`: 구조가 바뀌지 않았는지 자동으로 확인하는 방법
 4. `alexnet_contract.yaml`: Python/C++/RTL이 공통으로 따라야 할 고정 수치
 5. `cpp/README.md`: INT8 모듈별 C++ golden model과 빌드 방법
+6. `calibrate_int8.py`: 실제 영상으로 activation scale을 정하고 RTL parameter를 내보내는 방법
+7. `compare_full_int8_cpp.py`: Python과 C++ 전체 네트워크 tensor를 층별 비교하는 방법
 
 Python 코드에는 각 함수의 역할, tensor shape, 필요한 이유를 한국어 주석으로
 기록했다. 처음에는 `model.py`의 `AlexNet.__init__()`과 `forward()`만 읽고,
@@ -92,3 +94,83 @@ The verified model has 61,100,840 parameters and performs 714,188,480 MAC per
 image, or 1,428,376,960 operations under the project's `1 MAC = 2 OPS`
 convention. The downloaded checkpoint SHA-256 is recorded in
 `alexnet_contract.yaml`.
+
+## INT8 calibration dataset
+
+The reproducible default is the official ILSVRC2012 validation archive plus
+MLCommons Inference calibration option 1. The list fixes exactly 500 filenames;
+its SHA-256 is checked before calibration. This is a good hardware-calibration
+set because it has the same 1,000-class input distribution as the pretrained
+AlexNet and is also used by a public inference benchmark. It is not a claim
+that the ImageNet images are open-source: their separate ImageNet terms still
+apply, and `data/` remains git-ignored.
+
+Download these two official files into `data\imagenet`:
+
+```text
+https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_val.tar
+https://image-net.org/data/ILSVRC/2012/ILSVRC2012_devkit_t12.tar.gz
+```
+
+Then verify the 6.28 GiB validation archive, download and hash-check the
+MLCommons list, and extract only the selected 500 images:
+
+```powershell
+& $alexnetPython -m alexnet.prepare_calibration_data `
+  --archive data\imagenet\ILSVRC2012_img_val.tar
+```
+
+The expected archive byte count is `6,744,924,160`, its MD5 is
+`29b22e2961454d5413ddabcf34fc5622`, and the calibration-list SHA-256 is
+`7662247d1d9407d6cb564268f64c5a4a6cf9f1a34fd2e6cdc3b94dcf278b3dc9`.
+
+## Calibrate, export, and compare the full INT8 network
+
+The calibration command uses signed symmetric INT8 activations, per-output-
+channel symmetric INT8 weights, INT32 bias/accumulation, and one integer
+multiplier/right-shift pair per output channel. It writes raw RTL-ready blobs,
+a manifest with every file hash, and one full-network tensor vector:
+
+```powershell
+& $alexnetPython -m alexnet.calibrate_int8 `
+  --image-dir data\imagenet\calibration_mlcommons_option1 `
+  --calibration-list data\imagenet\cal_image_list_option_1.txt `
+  --devkit data\imagenet\ILSVRC2012_devkit_t12.tar.gz `
+  --output-dir alexnet_output\int8_mlcommons500 `
+  --contract-output alexnet\calibration\int8_mlcommons500_contract.json `
+  --device cuda --batch-size 32 --limit 500 --percentile 100
+```
+
+Build the C++ library and require byte-exact equality at every Conv, Pool and
+FC boundary. Use the vector directory emitted by the calibration command:
+
+```powershell
+cmake --build alexnet\cpp\build --config Release
+& $alexnetPython -m alexnet.compare_full_int8_cpp `
+  --model-manifest alexnet_output\int8_mlcommons500\manifest.json `
+  --vector-dir alexnet_output\int8_mlcommons500\vectors\0000_ILSVRC2012_val_00027145 `
+  --dll alexnet\cpp\build\libalexnet_golden_dpi.dll
+```
+
+Finally, the following command measures FP32 and compiled C++ INT8 top-1/top-5
+on the 500 labeled images. Because the same images supplied the activation
+calibration, this is an implementation check rather than an unbiased final
+accuracy estimate. Final accuracy sign-off still uses a disjoint set or the
+complete 50,000-image validation run.
+
+```powershell
+& $alexnetPython -m alexnet.evaluate_int8_cpp `
+  --model-manifest alexnet_output\int8_mlcommons500\manifest.json `
+  --image-dir data\imagenet\calibration_mlcommons_option1 `
+  --image-list data\imagenet\cal_image_list_option_1.txt `
+  --devkit data\imagenet\ILSVRC2012_devkit_t12.tar.gz `
+  --dll alexnet\cpp\build\libalexnet_golden_dpi.dll --limit 500
+```
+
+The frozen 2026-08-27 run selected abs-max (`--percentile 100`) after a
+50-image comparison against 99.99 and 99.999. On all 500 calibration images,
+FP32 measured 58.0%/77.6% and compiled C++ INT8 measured 56.8%/76.6%
+Top-1/Top-5. The eleven exported Conv/Pool/FC boundaries all matched the Python
+integer reference byte-for-byte. The exact 10,344-channel parameters are in
+`calibration/int8_mlcommons500_contract.json`; the compact evidence record is
+`calibration/int8_mlcommons500_results.json`.

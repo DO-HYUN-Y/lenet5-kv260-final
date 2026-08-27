@@ -1,0 +1,75 @@
+{
+  "format_version": 1,
+  "date": "2026-08-27",
+  "model": "torchvision AlexNet_Weights.IMAGENET1K_V1",
+  "checkpoint_sha256": "7be5be791159472b1fbf3c69796f7cb30dca7ad8466c2df70058c37116cdee02",
+  "dataset": {
+    "name": "ILSVRC2012 validation / MLCommons calibration option 1",
+    "image_count": 500,
+    "list_sha256": "7662247d1d9407d6cb564268f64c5a4a6cf9f1a34fd2e6cdc3b94dcf278b3dc9",
+    "ordered_image_set_sha256": "3ac0e8c994678ead04eee6479cae87d1c80c5600c6cd03fae17883f5ef6d9cec",
+    "archive_md5": "29b22e2961454d5413ddabcf34fc5622",
+    "devkit_md5": "fa75699e90414af021442c21a62c3abf"
+  },
+  "candidate_sweep_first_50_images": [
+    {
+      "absolute_percentile": 99.99,
+      "int8_top1_percent": 48.0,
+      "int8_top5_percent": 64.0,
+      "fp32_top1_agreement_percent": 84.0
+    },
+    {
+      "absolute_percentile": 99.999,
+      "int8_top1_percent": 50.0,
+      "int8_top5_percent": 64.0,
+      "fp32_top1_agreement_percent": 86.0
+    },
+    {
+      "absolute_percentile": 100.0,
+      "int8_top1_percent": 52.0,
+      "int8_top5_percent": 64.0,
+      "fp32_top1_agreement_percent": 90.0
+    }
+  ],
+  "selected_activation_absolute_percentile": 100.0,
+  "export": {
+    "weight_bytes": 61090496,
+    "parameter_bytes": 165504,
+    "output_channel_parameter_count": 10344,
+    "parameter_record_bytes": 16,
+    "model_manifest_sha256": "e21af69c261cc4360ddb748710f2223b2097cd80d4089f8dd3cdfffa6d732cd1",
+    "quantization_contract_sha256": "e2b79df33cb06d4c420004f47b80ca54fda1868f7706a8b8811f0f1477a67d62"
+  },
+  "python_cpp_full_network_parity": {
+    "source_image": "ILSVRC2012_val_00027145.JPEG",
+    "captured_layer_count": 11,
+    "total_mismatch_count": 0,
+    "layers": [
+      "conv1",
+      "pool1",
+      "conv2",
+      "pool2",
+      "conv3",
+      "conv4",
+      "conv5",
+      "pool5",
+      "fc6",
+      "fc7",
+      "fc8"
+    ],
+    "vector_manifest_sha256": "070d62779effde5aa78a2b1fed3e05bbf793520bd896cd9a426f7166f5a9165b",
+    "parity_report_sha256": "e515965cc105e2df258b28d3fc6785172371c77761ba15d4dee98db2c173a7b5"
+  },
+  "accuracy_on_calibration_subset": {
+    "note": "Implementation check on the same images used for activation calibration; not an unbiased final-accuracy estimate.",
+    "image_count": 500,
+    "fp32_top1": {"correct": 290, "percent": 58.0},
+    "fp32_top5": {"correct": 388, "percent": 77.6},
+    "int8_top1": {"correct": 284, "percent": 56.8},
+    "int8_top5": {"correct": 383, "percent": 76.6},
+    "top1_prediction_agreement": {"correct": 459, "percent": 91.8},
+    "top1_drop_percentage_points": 1.2,
+    "top5_drop_percentage_points": 1.0,
+    "accuracy_report_sha256": "61d1d4306d22615302da91e68735c6fcf1684c8ef8c771b97dea291fb1d6df1a"
+  }
+}
