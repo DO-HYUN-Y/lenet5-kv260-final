@@ -400,4 +400,3 @@ RTL 개발이 시작되면 각 모듈의 test script를 `scripts/`에 두고, �
 
 운영체제의 virtual memory/I/O, 알고리즘의 비용 분석, AlexNet 프로젝트의 실제 memory
 traffic 측정을 연결해 이후 gem5/CXL 연구의 기반으로 사용한다.
-
