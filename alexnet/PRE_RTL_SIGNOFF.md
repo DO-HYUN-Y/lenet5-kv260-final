@@ -105,7 +105,25 @@ fanout, congestion, inferred RAM primitive를 저장한다.
 
 Skew는 전체 `M32xN64` wire를 runtime에 바꾸지 않는다. 각 `M8xN8` 안에서만
 고정 delay를 사용하고 상위는 registered activation/weight broadcast tree다. Conv와
-FC의 차이는 descriptor, loop bound, lane mask와 buffer address이고 배선은 동일하다.
+FC의 고정-GEMM baseline은 descriptor, loop bound, lane mask와 buffer address만 바꾸고
+PE 배선은 동일하게 유지한다. 기존 `skew_buf` 자체는 이미 shift-register 구조이며
+standalone routed 48 LUT/238 FF 중 32 LUT가 LUT-memory로 추론됐다. 최대 delay가
+7 cycle이므로 resettable shift(S0)와 data-only SRL+valid flush(S1)는 OOC 결과로만
+선택하고, 무조건 SRL로 다시 쓰지 않는다.
+
+기존 `packed_pe`의 4-bit x 4-stage tag pipeline이 32 PE마다 반복되고 SA의 horizontal
+tag hop도 별도로 존재한다. AlexNet 후보는 `pair_valid`를 step/mask에서 유도하고,
+`reduce_last`와 mask를 row 공통 delay tap으로 정렬해 PE에는 정렬된 control만 넣는다.
+SA는 하나의 logical root issue controller가 K/M/N loop와 holding credit을 소유하되,
+신호는 2/4 partition registered dispatch와 tile-local CE를 거쳐 전달한다. 즉 layer FSM은
+하나지만 1,024 PE에 직접 연결되는 global control net은 만들지 않는다.
+
+Conv/FC operand-role은 별도 OOC 탐색 항목이다. fixed GEMM U0, feeder/local-bank 경계
+선택 U1, 최적화 dual-role D0를 batch 1/8/16에서 비교한다. 기존 routed 수치에서
+dual-mode M8xN8은 4,835 LUT/5,168 FF, Conv-only는 3,672 LUT/4,947 FF이므로 차이는
+1,163 LUT/221 FF다. mode는 어떤 후보에서도 layer 경계에서만 변경하며 PE에 직접
+broadcast하지 않는다. 첫 release baseline은 U0이고 U1/D0는 FC cycle 이득이 추가
+resource, route delay와 power를 상쇄할 때만 채택한다.
 
 64-lane postprocess는 같은 M 위치의 N64 결과를 한 cycle에 처리하여 2,048개 tile
 결과를 32 cycle에 처리한다. 최소 compute 간격인 Conv1 K=363보다 충분히 짧다.

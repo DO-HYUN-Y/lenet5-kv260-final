@@ -144,6 +144,29 @@ pre_rtl_architecture:
   logical_sa_fallback_resources: {local_tile_count: 16, compute_dsp48e2: 512, postprocess_dsp48e2: 64, total_dsp48e2: 576, full_tile_drain_cycles: 16}
   local_sa: {m: 8, n: 8, tile_count: 32}
   compute_dsp48e2: 1024
+  local_skew:
+    structure: fixed_shift_register_delay_per_m8n8_tile
+    existing_standalone_routed: {lut: 48, lut_as_memory: 32, ff: 238, max_delay_cycles: 7}
+    candidates: [s0_resettable_ce_shift, s1_data_srl_valid_tag_ff_flush]
+    selection_gate: choose_only_from_ooc_primitive_resource_and_timing_reports
+  sa_control:
+    root_issue_controller_count: 1
+    owns: [descriptor_latch, k_loop, m_loop, n_loop, tile_start, issue, flush, holding_credit, completion]
+    distribution: registered_two_or_four_partition_tree_then_tile_local_delay_taps_and_ce
+    per_tile_layer_fsm: false
+    direct_global_control_fanout_to_all_pes: forbidden
+    pe_control_simplification: [derive_pair_valid_from_step_and_lane_mask, row_common_reduce_last_delay_tap, row_latched_m_tail_mask, separate_static_n_tail_mask]
+  conv_fc_mode_exploration:
+    baseline: u0_fixed_gemm_no_pe_mode_mux
+    candidates: [u0_fixed_gemm, u1_boundary_select, d0_optimized_dual_role]
+    mode_change_boundary: sa_and_holding_empty_layer_boundary_only
+    direct_mode_broadcast_to_all_pes: forbidden
+    comparison_batches: [1, 8, 16]
+    metrics: [cycles_per_image, lut, ff, worst_route_delay, power]
+    existing_routed_reference:
+      conv_only_m8n8: {lut: 3672, ff: 4947, dsp48e2: 32}
+      lenet_dual_mode_m8n8: {lut: 4835, ff: 5168, dsp48e2: 32}
+      delta_dual_minus_conv_only: {lut: 1163, ff: 221}
   resource_gate:
     device_limits: {lut: 117120, ff: 234240, bram36: 144, uram288: 64, dsp48e2: 1248}
     release_targets: {lut_max: 90000, ff_max: 180000, bram36_max: 125, uram288_max: 56}

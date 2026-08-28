@@ -316,8 +316,10 @@ Conv1 기준 reuse는 다음과 같다.
 
 ### 4.2 Base SA tile과 전체 배열
 
-기본 compute tile은 기존 packed arithmetic 계약을 재사용하되 dual-mode/control을
-제거해 새로 합성할 logical `M8 x N8`이다.
+기본 compute tile은 기존 packed arithmetic 계약을 재사용하되 PE 내부에는
+Conv/FC mode 선택을 두지 않는 logical `M8 x N8`이다. Conv와 FC를 같은 GEMM
+operand 방향으로 실행하는 고정-mode baseline을 먼저 합성하고, 기존 LeNet의
+operand-role swap이 FC utilization에 주는 이득은 별도 dual-mode 후보로 측정한다.
 
 ```text
 physical PE array = 4 packed-spatial rows x 8 output-channel columns
@@ -393,6 +395,30 @@ channel로 사용한다. FC도 같은 operand 방향을 유지하되 M을 batch 
 FC batch 1에서는 M lane utilization이 낮지만, 기능 경로가 단순하고 batch 8/16/32에서
 자연스럽게 weight broadcast와 M-lane utilization을 높일 수 있다.
 
+#### 4.2.2 Conv/FC 이중동작 모드 별도 탐색
+
+기존 RTL 확인 결과 `sa_packed_dual_mode`는 PE마다 Conv/FC를 선택한다. 한 PE에서
+`packed_lo`, `packed_hi`, `common`, `valid`, `mask`, `last` 합계 28 bit의 선택이
+반복되므로 physical 4x8 tile에는 명목상 896개의 1-bit 2:1 선택점이 생긴다. 같은
+K26 routed report에서 Conv-only `M8xN8`은 3,672 LUT/4,947 FF이고 LeNet dual-mode
+경로는 4,835 LUT/5,168 FF다. 두 hierarchy가 완전히 동일하지 않아 차이 전체를
+MUX 비용으로 단정할 수는 없지만, `+1,163 LUT`와 `+221 FF`는 M32 확장 전에 별도
+검증이 필요한 크기다.
+
+다음 세 후보를 같은 clock, constraint, floorplan과 vector로 OOC 비교한다.
+
+| 후보 | 구조 | 판단 기준 |
+|---|---|---|
+| U0 고정 GEMM baseline | Conv/FC 모두 `M x K`와 `K x N`, PE mode MUX 없음 | LUT/Fmax 우선, batch 1/8/16 FC utilization 기록 |
+| U1 경계 선택형 | mode는 layer 시작 때 고정하고 feeder/local operand bank 경계에서만 선택 | PE 내부 MUX 제거 여부와 weight 공급 배선 폭 |
+| D0 최적화 dual-role | 기존 operand-role swap을 유지하되 mode/config를 tile-local register에 고정 | FC cycle 절감이 추가 LUT/route/power를 상쇄하는지 |
+
+U1/D0에서도 mode를 cycle마다 바꾸지 않는다. mode 변경은 SA와 holding bank가 모두
+빈 layer 경계에서만 허용한다. 단순히 `fc_mode`를 1,024개 PE에 broadcast하는 구조는
+금지하고, 선택이 불가피하면 N8/M8 local input bank 앞에서 register한다. 최종 선택은
+FC6/7/8 batch 1/8/16의 `cycles/image`, 전체 LUT, worst route delay와 board power를 함께
+비교한 뒤 고정한다. U0가 resource gate를 통과하면 이를 첫 release baseline으로 둔다.
+
 ### 4.3 Skew와 global broadcast 구조
 
 `M32 x N64` 전체에 하나의 거대한 skew chain을 만들지 않는다. 각 logical
@@ -404,11 +430,52 @@ weight column c delay         = c cycles
 alignment cycle               = issue + k + g + c
 ```
 
+기존 `skew_buf.sv`는 이미 명시적인 shift-register 구조다. standalone routed 결과는
+48 LUT/238 FF이며, 이 중 32 LUT가 LUT-memory로 추론됐다. 따라서 "shift register로
+다시 작성"하는 것 자체가 목표가 아니다. AlexNet local skew에서는 다음 두 구현만
+동일 조건으로 비교한다.
+
+- S0: 현재와 같은 resettable/CE shift chain. reset 직후 모든 data/tag가 0이다.
+- S1: data delay는 reset 없는 SRL 추론 대상으로 두고 validity/tag만 FF로 reset한다.
+  reset 후 최대 skew+DSP latency 동안 output valid를 막아 초기 data 쓰레기를 무시한다.
+
+최대 local delay가 7 cycle이라 절감량이 작으면 S0를 유지한다. `shreg_extract` 또는
+동등한 XPM 지시는 implementation report에서 실제 SRL/LUTRAM primitive가 확인될 때만
+채택한다. 기존 weight-side `weight_valid/depth_last` delay가 산술 경로에 사용되지 않는
+경우에는 assertion tap으로만 남기거나 제거하고, data와 control이 stall에서 같은
+cycle을 유지하는지는 testbench assertion으로 보장한다.
+
 상위 계층에서는 같은 activation stream을 8개 N-group으로 registered tree를 통해
 공유하고, 같은 weight stream을 4개 M-group으로 공유한다. 긴 combinational fanout,
 global clock enable, global skew를 금지하고 partition별 pipeline register와 local CE를
 둔다. timing이 실패하면 2개 또는 4개의 독립 partition으로 나누고 각 partition에
-로컬 buffer/controller를 둔다.
+로컬 buffer와 registered dispatcher를 둔다. partition마다 독립 layer FSM을 복제하지
+않고 root issue controller의 command와 credit만 register해서 전달한다.
+
+SA scheduling은 **하나의 논리적 SA issue controller**가 총괄한다. 이 controller는
+descriptor를 latch하고 K/M/N loop, tile start, issue/flush, holding-bank credit과 완료를
+관리한다. 다만 controller output을 1,024개 PE에 직접 연결하지 않는다. root controller는
+2/4 partition registered dispatch를 거쳐 tile-local delay/tap과 CE로 token을 전달한다.
+partition dispatch와 tile-local tap은 별도의 layer FSM이 아니라 timing 분배기이므로
+controller 개수를 layer나 tile 수만큼 늘리지 않는다.
+
+현재 `packed_pe`에는 `valid + lane_mask[1:0] + depth_last` 4-bit tag가 DSP latency만큼
+4 stage로 PE마다 반복되고, SA에도 같은 tag의 horizontal hop chain이 따로 있다. 첫
+AlexNet PE 후보는 이를 다음과 같이 단순화한다.
+
+- `pair_valid`는 `step_valid && |lane_mask`로 유도해 별도 상태를 제거한다.
+- `reduce_last`는 root K counter에서 한 번 생성하고 local row/column delay tap으로
+  DSP 결과에 정렬한다.
+- M-tail `lane_mask`는 row/tile 경계에 latch하고 변하지 않는 N-tail mask와 분리한다.
+- DSP-latency tag delay를 각 PE 내부가 아니라 tile row별 공통 shift chain의 tap으로
+  만들고, PE에는 정렬된 `mac_valid/reduce_last/mask`만 넣는다.
+- global `en` 대신 partition에서 register된 tile-local CE를 사용한다.
+
+이 변경의 1차 계산상 PE별 4-bit x 4-stage tag 512 FF와 SA horizontal tag 112 FF를
+row 공통 tap chain으로 합칠 수 있다. 실제 절감량은 synthesis 최적화와 배선 복제에
+따라 달라지므로 `control FF`, unique control set, max fanout과 WNS를 OOC report로
+판정한다. accumulator/holding은 결과를 보존해야 하므로 공통 controller로 이동시킨다는
+이유만으로 제거하지 않는다.
 
 SA token/control interface에는 최소한 다음 필드를 둔다.
 
@@ -497,16 +564,20 @@ PE의 27-bit accumulator, reset/control set, holding 구조를 먼저 최적화�
 
 | 순서 | RTL 측정 대상 | 반드시 기록할 값 |
 |---:|---|---|
-| 1 | AlexNet packed PE | DSP/LUT/FF, accumulator mapping, WNS/TNS/WHS, worst path |
-| 2 | local `M8xN8` + skew/holding | DSP/LUT/FF, control set, fanout, 200/225/250 MHz |
+| 1 | AlexNet packed PE | DSP/LUT/FF, accumulator mapping, per-PE tag 제거 전/후, WNS/TNS/WHS, worst path |
+| 2 | local `M8xN8` + skew/holding | S0/S1 SRL 추론, DSP/LUT/FF, control set, fanout, 200/225/250 MHz |
 | 3 | N8 postprocess/router slice | DSP/LUT/LUTRAM/BRAM, FIFO inference, stall Fmax |
 | 4 | 64-lane postprocess + router 8개 | M selector path, credit reduction, congestion |
 | 5 | RS feeder + line/patch memory | RAM primitive 수, read-port replication, II=1 여부 |
 | 6 | weight URAM ping/pong | URAM width/depth fragmentation, 512-bit read timing |
 | 7 | activation A/B + streaming pool | BRAM banking, simultaneous read/write, buffer swap |
-| 8 | layer/tile + buffer ownership controller | LUT/FF, descriptor decode, completion/credit path, max fanout |
+| 8 | root SA issue + layer/tile/buffer ownership controller | LUT/FF, descriptor decode, registered dispatch, completion/credit path, max fanout |
 | 9 | 2/4 partition top | scaled LUT/FF, high-fanout net, route delay, 200 MHz |
 | 10 | full KV260 shell | WNS/TNS/WHS/THS, DRC/CDC, power, 실제 자원 |
+
+U0/U1/D0 Conv/FC 후보는 1~2단계와 별도로 동일한 `M8xN8` wrapper에서 비교하며,
+기존 LeNet dual-mode report와 새 AlexNet fixed-mode report를 섞어 resource 식에 넣지
+않는다. release 식에는 선택된 후보의 post-route 수치만 사용한다.
 
 합성 utilization만으로 통과시키지 않는다. OOC implementation과 full-shell post-route
 결과를 모두 보관하고, worst path의 logic/route delay 비율, 최대 fanout, congestion,
@@ -1058,7 +1129,9 @@ Gate:
 - split-every-cycle OS PE
 - 7-term packed cascade PE
 - 동일 clock/resource/power 비교 보고서
-- LeNet dual-mode를 제거하고 signed-27 accumulator/holding을 적용한 AlexNet 전용 PE
+- signed-27 accumulator/holding과 row 공통 tag tap을 적용한 AlexNet 전용 PE
+- U0 fixed-GEMM/U1 boundary-select/D0 dual-role Conv/FC 비교 보고서
+- S0 resettable shift/S1 data-SRL local skew 비교 보고서
 - PE와 local `M8xN8`의 OOC synth/implementation utilization 및 timing report
 
 Gate:
@@ -1067,6 +1140,8 @@ Gate:
 - post-route 250 MHz 후보 최소 1개
 - DSP packing corner case 전수 또는 충분한 formal/random 검증
 - packed PE당 DSP=1인지와 lo/hi accumulator가 LUT/FF 어디에 배치됐는지 확인
+- PE별 4-stage tag 제거 후 row 공통 tap이 stall/reset/tail에서 bit/cycle-exact
+- Conv/FC mode가 layer 경계에서만 바뀌고 PE direct high-fanout이 없음
 - `M8xN8` provisional gate 약 LUT 2,000/FF 4,000 이하 또는 전체 resource 식으로 동등한 여유 증명
 
 ### Phase 4 — Conv/FC tile engine
@@ -1076,6 +1151,7 @@ Gate:
 - runtime K/M/N descriptor
 - K11/K5/K3, stride/padding-aware M8 line/patch feeder
 - physical `4x8` / logical `M8xN8` local-skew OS base tile
+- 하나의 logical SA issue controller와 2/4 partition registered dispatch/local CE
 - registered broadcast tree로 결합한 candidate `M32xN64` top array
 - INT32 partial-sum 처리
 - N64 channel-stationary 64-lane postprocess와 8개 N8 slice의 AlexNet `3x3/s2` pooling
@@ -1089,6 +1165,8 @@ Gate:
 - FC6 worst-depth test 통과
 - backpressure/stall 주입 test 통과
 - local skew `k_tag/tile_tag` alignment assertion 통과
+- root controller가 K/M/N loop와 holding credit을 단독 소유하고 tile에는 독립 layer FSM이 없음
+- controller/CE/mode의 PE 직접 fanout 없이 partition/tile register stage를 거침
 - Router FIFO 8개가 합계 4 KiB distributed RAM으로 추론되고 packet마다 고정 config를 중복 저장하지 않음
 - Activation A/B, streaming pool, RS/DMA buffer의 실제 BRAM 합계가 125 이하
 - Full-K weight ping/pong과 parameter buffer의 실제 URAM 합계가 56 이하
@@ -1169,13 +1247,14 @@ Gate:
 
 | DUT | Synth/OOC implementation gate | 확장 결정 |
 |---|---|---|
-| packed PE | 1 DSP mapping, LUT/FF, 200/225/250 MHz worst path | accumulator/control 최적화 후보 선택 |
-| `M8xN8` | LUT/FF/DSP, control sets, skew/holding timing | 32개 복제 resource 식 계산 |
+| packed PE | 1 DSP mapping, LUT/FF, per-PE tag 전/후, 200/225/250 MHz worst path | accumulator/row-common-control 후보 선택 |
+| `M8xN8` | LUT/FF/DSP, S0/S1 SRL primitive, control sets, skew/holding timing | 32개 복제 resource 식 계산 |
+| Conv/FC mode U0/U1/D0 | batch 1/8/16 cycle, LUT/FF, operand-route delay, power estimate | fixed GEMM 또는 최적화 dual-role 선택 |
 | N8 postprocess/router | DSP, LUTRAM/BRAM inference, full/stall timing | FIFO storage type와 depth 64 고정 |
 | RS feeder | BRAM/LUTRAM/FF, port replication, sustained token II | 4 M-group 통합 가능 여부 |
 | URAM weight bank | 512-bit read, 72-bit banking/cascade 수, latency | full-K 또는 K-chunk 후보 선택 |
 | Activation A/B + pool | primitive별 BRAM 수, read/write collision, swap | fused Conv+Pool buffer schedule 고정 |
-| layer/tile controller | LUT/FF, descriptor decode, registered completion/credit path | controller 수를 늘리지 않고 ownership 계약 고정 |
+| root SA issue/layer controller | LUT/FF, descriptor decode, partition dispatch, registered completion/credit path | controller 수를 늘리지 않고 ownership 계약 고정 |
 | 2/4 partition | WNS/TNS/WHS/THS, congestion, max fanout | full top 진입 여부 |
 | full shell | 실제 LUT/FF/BRAM/URAM/DSP와 power | M32 또는 M16 release configuration 결정 |
 
