@@ -6,6 +6,7 @@
 - 기준 저장소: `DO-HYUN-Y/lenet5-kv260-final`
 - 현재 상태: 계획 및 수치 검증 단계
 - 설계 우선순위: 정확성 계약 고정 → 처리량 → TOPS/W → 단일 이미지 지연
+- 연계 학습 로드맵: [`2026_September_December_Study_and_AlexNet_Roadmap.md`](2026_September_December_Study_and_AlexNet_Roadmap.md)
 
 ## 0. 결정 요약
 
