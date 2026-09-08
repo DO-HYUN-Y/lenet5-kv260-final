@@ -7,12 +7,16 @@
 #include <string>
 #include <vector>
 
+#include "alexnet_golden/activation_bank_ref.hpp"
+#include "alexnet_golden/activation_pingpong_ref.hpp"
+#include "alexnet_golden/weight_tile_bank_ref.hpp"
 #include "alexnet_golden/alexnet_ref.hpp"
 #include "alexnet_golden/descriptor_ref.hpp"
 #include "alexnet_golden/dpi_wrappers.h"
 #include "alexnet_golden/layout_ref.hpp"
 #include "alexnet_golden/output_router_ref.hpp"
 #include "alexnet_golden/packed_mac_ref.hpp"
+#include "alexnet_golden/partial_sum_bank_ref.hpp"
 #include "alexnet_golden/quant_ref.hpp"
 #include "alexnet_golden/sa_tile_ref.hpp"
 #include "alexnet_golden/skew_ref.hpp"
@@ -488,6 +492,265 @@ void test_output_router() {
          "output-router allowed descriptor change with queued data");
 }
 
+void test_activation_bank() {
+  ag::N8ActivationBankRef bank(4);
+  bank.begin_fill(3, 0x0f, 77);
+  expect_equal(static_cast<int>(bank.state()),
+               static_cast<int>(ag::ActivationBankState::kWriting),
+               "activation bank writing state");
+  bank.write(UINT64_C(0xffffeeee04030201), 0x0f, false);
+  bank.write(UINT64_C(0x8877665508070605), 0x0f, false);
+  bank.write(UINT64_C(0x443322110c0b0a09), 0x0f, true);
+  expect_equal(static_cast<int>(bank.state()),
+               static_cast<int>(ag::ActivationBankState::kReady),
+               "activation bank ready state");
+
+  bool rejected_refill = false;
+  try {
+    bank.begin_fill(1, 0xff, 1);
+  } catch (const std::logic_error&) {
+    rejected_refill = true;
+  }
+  expect(rejected_refill, "activation bank accepted a fill while ready");
+
+  bank.begin_read();
+  const auto first = bank.word(0);
+  const auto last = bank.word(2);
+  expect_equal(first.index, std::size_t{0}, "activation first word index");
+  expect_equal(static_cast<int>(first.values[0]), 1,
+               "activation first word lane zero");
+  expect_equal(static_cast<int>(first.values[4]), 0,
+               "activation masked lane must read zero");
+  expect(!first.last && last.last, "activation last marker mismatch");
+  expect_equal(last.tensor_tag, 77, "activation tensor tag");
+  bank.complete_read();
+  expect_equal(static_cast<int>(bank.state()),
+               static_cast<int>(ag::ActivationBankState::kEmpty),
+               "activation bank release state");
+}
+
+void test_activation_pingpong() {
+  ag::N8ActivationPingPongRef pair(4);
+
+  expect_equal(pair.begin_fill(false, 2, 0xff, 101), 0,
+               "activation ping-pong first fill bank");
+  pair.write(false, UINT64_C(0x0807060504030201), 0xff, false);
+  pair.write(false, UINT64_C(0x1817161514131211), 0xff, true);
+  expect_equal(pair.ready_count(), std::size_t{1},
+               "activation ping-pong first ready count");
+
+  expect_equal(pair.begin_fill(true, 3, 0x0f, 102), 1,
+               "activation ping-pong second fill bank");
+  expect_equal(pair.begin_read(101), 0,
+               "activation ping-pong first read bank");
+  expect_equal(static_cast<int>(pair.bank(0).state()),
+               static_cast<int>(ag::ActivationBankState::kReading),
+               "activation ping-pong concurrent read state");
+  expect_equal(static_cast<int>(pair.bank(1).state()),
+               static_cast<int>(ag::ActivationBankState::kWriting),
+               "activation ping-pong concurrent fill state");
+
+  pair.write(true, UINT64_C(0xffffeeee04030201), 0x0f, false);
+  pair.write(true, UINT64_C(0x8877665508070605), 0x0f, false);
+  pair.write(true, UINT64_C(0x443322110c0b0a09), 0x0f, true);
+  expect_equal(pair.ready_head_tag(), 102,
+               "activation ping-pong ordered ready tag");
+  expect_equal(static_cast<int>(pair.word(1).values[0]), 17,
+               "activation ping-pong first read data");
+  pair.complete_read();
+
+  bool rejected_context = false;
+  try {
+    static_cast<void>(pair.begin_read(103));
+  } catch (const std::logic_error&) {
+    rejected_context = true;
+  }
+  expect(rejected_context,
+         "activation ping-pong accepted a mismatched tensor tag");
+
+  expect_equal(pair.begin_read(102), 1,
+               "activation ping-pong second read bank");
+  expect_equal(pair.begin_fill(false, 1, 0x03, 103), 0,
+               "activation ping-pong bank reuse");
+  pair.write(false, UINT64_C(0xffffffffffff2211), 0x03, true);
+  expect_equal(pair.ready_head_tag(), 103,
+               "activation ping-pong reused-bank ready tag");
+  expect_equal(static_cast<int>(pair.word(2).values[4]), 0,
+               "activation ping-pong pooled tail masking");
+  pair.complete_read();
+
+  expect_equal(pair.begin_read(103), 0,
+               "activation ping-pong reused-bank read order");
+  expect_equal(static_cast<int>(pair.word(0).values[0]), 17,
+               "activation ping-pong reused-bank data");
+  pair.complete_read();
+  expect_equal(pair.ready_count(), std::size_t{0},
+               "activation ping-pong drained ready queue");
+}
+
+void test_activation_dual_segment_pingpong() {
+  ag::N8ActivationDualSegmentPingPongRef pair(4);
+
+  expect_equal(pair.begin_fill(false, 5, 0xff, 201), 0,
+               "dual-segment activation first fill bank");
+  for (int index = 0; index < 5; ++index) {
+    pair.write(false, static_cast<std::uint64_t>(0x10 + index), 0xff,
+               index == 4);
+  }
+  expect_equal(pair.ready_count(), std::size_t{1},
+               "dual-segment activation first ready count");
+
+  expect_equal(pair.begin_fill(true, 8, 0x0f, 202), 1,
+               "dual-segment activation second fill bank");
+  expect_equal(pair.begin_read(201), 0,
+               "dual-segment activation first read bank");
+  for (int index = 0; index < 8; ++index) {
+    pair.write(true, UINT64_C(0xffffeeee00000020) + index, 0x0f,
+               index == 7);
+  }
+
+  expect_equal(static_cast<int>(pair.word(3).values[0]), 0x13,
+               "dual-segment activation segment-0 data");
+  pair.complete_segment0_read();
+  const auto first_segment1 = pair.word(4);
+  expect_equal(first_segment1.index, std::size_t{4},
+               "dual-segment activation global index");
+  expect_equal(static_cast<int>(first_segment1.values[0]), 0x14,
+               "dual-segment activation segment-1 data");
+  expect(first_segment1.last,
+         "dual-segment activation final marker was not restored");
+  pair.complete_read();
+
+  bool rejected_context = false;
+  try {
+    static_cast<void>(pair.begin_read(203));
+  } catch (const std::logic_error&) {
+    rejected_context = true;
+  }
+  expect(rejected_context,
+         "dual-segment activation accepted a mismatched tensor tag");
+
+  expect_equal(pair.begin_read(202), 1,
+               "dual-segment activation second read bank");
+  expect(!pair.word(3).last,
+         "dual-segment activation exposed segment-0 local last");
+  pair.complete_segment0_read();
+  const auto final_word = pair.word(7);
+  expect(final_word.last, "dual-segment activation final last mismatch");
+  expect_equal(static_cast<int>(final_word.values[4]), 0,
+               "dual-segment activation lane masking");
+  pair.complete_read();
+  expect_equal(pair.ready_count(), std::size_t{0},
+               "dual-segment activation final ready count");
+
+  expect_equal(pair.begin_fill(false, 3, 0xff, 203), 0,
+               "dual-segment activation replicated fill bank");
+  for (int index = 0; index < 3; ++index) {
+    pair.write(false, static_cast<std::uint64_t>(0x30 + index), 0xff,
+               index == 2);
+  }
+  expect_equal(pair.begin_read(203), 0,
+               "dual-segment activation replicated read bank");
+  expect_equal(static_cast<int>(pair.word(2).values[0]), 0x32,
+               "dual-segment activation replicated data");
+  expect(pair.word(2).last,
+         "dual-segment activation replicated final marker missing");
+  pair.complete_read();
+  expect_equal(pair.ready_count(), std::size_t{0},
+               "dual-segment activation replicated tensor did not drain");
+}
+
+void test_weight_tile_bank() {
+  ag::N8WeightTileBankRef bank(4);
+  bank.begin_fill(3, 0x0f, 91);
+  bank.write(UINT64_C(0xffffeeee04030201), 0x0f, false);
+  bank.write(UINT64_C(0x8877665508070605), 0x0f, false);
+  bank.write(UINT64_C(0x443322110c0b0a09), 0x0f, true);
+  expect_equal(static_cast<int>(bank.state()),
+               static_cast<int>(ag::WeightTileBankState::kReady),
+               "weight tile ready state");
+
+  bool rejected_context = false;
+  try {
+    bank.begin_replay(3, 0x0f, 92);
+  } catch (const std::invalid_argument&) {
+    rejected_context = true;
+  }
+  expect(rejected_context, "weight tile accepted a mismatched context");
+
+  for (int replay = 0; replay < 2; ++replay) {
+    bank.begin_replay(3, 0x0f, 91);
+    const auto first = bank.word(0);
+    const auto last = bank.word(2);
+    expect_equal(static_cast<int>(first.values[0]), 1,
+                 "weight tile first word lane zero");
+    expect_equal(static_cast<int>(first.values[4]), 0,
+                 "weight tile masked lane must replay zero");
+    expect(!first.last && last.last, "weight tile last marker mismatch");
+    expect_equal(last.context_tag, 91, "weight tile context tag");
+    bank.complete_replay();
+    expect_equal(static_cast<int>(bank.state()),
+                 static_cast<int>(ag::WeightTileBankState::kReady),
+                 "weight tile did not remain resident after replay");
+  }
+  expect_equal(bank.completed_replays(), std::size_t{2},
+               "weight tile replay count");
+  bank.release();
+  expect_equal(static_cast<int>(bank.state()),
+               static_cast<int>(ag::WeightTileBankState::kEmpty),
+               "weight tile release state");
+}
+
+void test_partial_sum_bank() {
+  ag::N8Int32PartialSumBankRef bank(4);
+  const std::array<std::int32_t, 8> first =
+      {10, -20, 30, -40, 500, 600, 700, 800};
+  const std::array<std::int32_t, 8> second =
+      {-3, 5, -7, 11, 1, 2, 3, 4};
+
+  bank.begin_chunk(2, 0x0f, 123, 0, true, false);
+  bank.write(0, first, 0x0f, false);
+  bank.write(1, second, 0x0f, true);
+  expect_equal(static_cast<int>(bank.state()),
+               static_cast<int>(ag::PartialSumBankState::kReady),
+               "partial-sum first chunk ready state");
+
+  bool rejected_context = false;
+  try {
+    bank.begin_chunk(2, 0x0f, 124, 1, false, true);
+  } catch (const std::invalid_argument&) {
+    rejected_context = true;
+  }
+  expect(rejected_context, "partial-sum bank accepted a stale context");
+
+  bank.begin_chunk(2, 0x0f, 123, 1, false, true);
+  bank.write(0, second, 0x0f, false);
+  bank.write(1, first, 0x0f, true);
+  expect_equal(static_cast<int>(bank.state()),
+               static_cast<int>(ag::PartialSumBankState::kEmitting),
+               "partial-sum final chunk emit state");
+  expect_equal(bank.completed_chunks(), std::size_t{2},
+               "partial-sum completed chunk count");
+
+  const auto word0 = bank.word(0);
+  const auto word1 = bank.word(1);
+  expect_equal(word0.accumulators[0], std::int32_t{7},
+               "partial-sum word zero lane zero");
+  expect_equal(word0.accumulators[1], std::int32_t{-15},
+               "partial-sum word zero signed lane");
+  expect_equal(word1.accumulators[2], std::int32_t{23},
+               "partial-sum word one lane two");
+  expect_equal(word1.accumulators[4], std::int32_t{0},
+               "partial-sum masked lane zero");
+  expect(!word0.last && word1.last, "partial-sum output last marker");
+  expect_equal(word1.context_tag, 123, "partial-sum output context tag");
+
+  bank.complete_emit();
+  expect_equal(static_cast<int>(bank.state()),
+               static_cast<int>(ag::PartialSumBankState::kEmpty),
+               "partial-sum emit release state");
+}
+
 void test_linear() {
   ag::MatrixI8 input(2, 3, {1, 2, 3, -1, 0, 2});
   ag::MatrixI8 weights(2, 3, {1, 0, -1, 2, 3, 4});
@@ -640,6 +903,36 @@ void test_dpi_wrappers() {
   expect_equal(alexnet_golden_requantize(-3, 0, 1, 1, 0, &output), 0,
                "DPI requant status");
   expect_equal(static_cast<int>(output), -2, "DPI requant value");
+
+  expect_equal(alexnet_golden_window_m4_reset(5, 6, 3, 3, 1, 1), 0,
+               "DPI M4 window reset");
+  for (int y = 0; y < 5; ++y) {
+    for (int x = 0; x < 6; ++x) {
+      std::uint64_t values = 0;
+      for (int channel = 0; channel < 3; ++channel) {
+        const auto value = static_cast<std::uint8_t>(
+            static_cast<std::int8_t>(y * 31 + x * 7 + channel * 19));
+        values |= static_cast<std::uint64_t>(value) << (channel * 8);
+      }
+      expect_equal(alexnet_golden_window_m4_set_pixel(y, x, values), 0,
+                   "DPI M4 window pixel");
+    }
+  }
+  std::uint32_t packed_activations = 0;
+  std::uint8_t m_lane_mask = 0;
+  std::uint8_t tile_clear = 0;
+  std::uint8_t reduce_last = 0;
+  expect_equal(alexnet_golden_window_m4_token(
+                   0, 4, 2, 0, &packed_activations, &m_lane_mask,
+                   &tile_clear, &reduce_last),
+               0, "DPI M4 window token");
+  expect_equal(static_cast<int>(m_lane_mask), 3, "DPI M4 window tail mask");
+  expect_equal(static_cast<int>(tile_clear), 1,
+               "DPI M4 window tile clear");
+  expect_equal(static_cast<int>(reduce_last), 0,
+               "DPI M4 window first token last flag");
+  expect_equal(static_cast<int>(packed_activations), 0,
+               "DPI M4 window top padding values");
 }
 
 }  // namespace
@@ -651,6 +944,11 @@ int main() {
     test_sa_tile();
     test_window_and_layout();
     test_output_router();
+    test_activation_bank();
+    test_activation_pingpong();
+    test_activation_dual_segment_pingpong();
+    test_weight_tile_bank();
+    test_partial_sum_bank();
     test_conv_and_pool();
     test_linear();
     test_descriptor();

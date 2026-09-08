@@ -1,0 +1,36 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Mon Aug 31 19:59:50 2026
+| Host         : yundodo running 64-bit unknown
+| Command      : report_high_fanout_nets -fanout_greater_than 16 -max_nets 100 -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/n8_maxpool3x3/200mhz/high_fanout.rpt
+| Design       : alexnet_n8_maxpool3x3
+| Device       : xck26
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+High Fan-out Nets Information
+
+1. Summary
+----------
+
++---------------------------+--------+-------------+
+| Net Name                  | Fanout | Driver Type |
++---------------------------+--------+-------------+
+| rst                       |    324 | PORT        |
+| vertical_d2_q             |    131 | LUT3        |
+| m_values[63]_i_1_n_0      |    114 | LUT6        |
+| rd_y_q                    |     93 | LUT4        |
+| rd_y_q_reg_n_0_[0]        |     66 | FDRE        |
+| vertical_d2_q[63]_i_1_n_0 |     64 | LUT4        |
+| frame_fire                |     55 | LUT4        |
+| line_mem_reg_i_68_n_4     |     32 | CARRY8      |
+| line_mem_reg_i_69_n_4     |     32 | CARRY8      |
+| line_mem_reg_i_70_n_4     |     32 | CARRY8      |
+| line_mem_reg_i_71_n_4     |     32 | CARRY8      |
+| max2_return1              |     32 | CARRY8      |
+| line_mem_reg_i_73_n_4     |     32 | CARRY8      |
+| line_mem_reg_i_74_n_4     |     32 | CARRY8      |
+| line_mem_reg_i_75_n_4     |     32 | CARRY8      |
++---------------------------+--------+-------------+
+
+

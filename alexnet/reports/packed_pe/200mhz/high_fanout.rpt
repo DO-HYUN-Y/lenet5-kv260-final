@@ -1,0 +1,27 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Mon Aug 31 12:53:10 2026
+| Host         : yundodo running 64-bit unknown
+| Command      : report_high_fanout_nets -fanout_greater_than 16 -max_nets 100 -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/packed_pe/200mhz/high_fanout.rpt
+| Design       : alexnet_packed_pe
+| Device       : xck26
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+High Fan-out Nets Information
+
+1. Summary
+----------
+
++-----------------------+--------+-------------+
+| Net Name              | Fanout | Driver Type |
++-----------------------+--------+-------------+
+| rst                   |     63 | PORT        |
+| clear                 |     54 | LUT5        |
+| acc_lo_q              |     54 | LUT2        |
+| hold_lo_q             |     54 | LUT4        |
+| product_reg_reg/P[17] |     24 | DSP_OUTPUT  |
+| act_lo[7]             |     23 | PORT        |
++-----------------------+--------+-------------+
+
+

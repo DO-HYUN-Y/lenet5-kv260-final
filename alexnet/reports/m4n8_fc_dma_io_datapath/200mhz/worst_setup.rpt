@@ -1,0 +1,1438 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version      : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date              : Sat Sep  5 16:38:38 2026
+| Host              : yundodo running 64-bit unknown
+| Command           : report_timing -delay_type max -max_paths 20 -sort_by group -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/m4n8_fc_dma_io_datapath/200mhz/worst_setup.rpt
+| Design            : alexnet_m4n8_fc_dma_io_datapath
+| Device            : xck26-sfvc784
+| Speed File        : -2LV  PRODUCTION 1.30 05-15-2022
+| Design State      : Routed
+| Temperature Grade : C
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             0.396ns  (required time - arrival time)
+  Source:                 u_core/u_core/u_issuer/descriptor_rejected_reg/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_core/u_issuer/activation_block_q_reg[0][18]/CE
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.477ns  (logic 0.981ns (21.914%)  route 3.496ns (78.086%))
+  Logic Levels:           8  (LUT3=1 LUT4=1 LUT6=6)
+  Clock Path Skew:        -0.013ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.029ns = ( 5.029 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.042ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=5402, unset)         0.042     0.042    u_core/u_core/u_issuer/clk
+    SLICE_X48Y122        FDRE                                         r  u_core/u_core/u_issuer/descriptor_rejected_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y122        FDRE (Prop_GFF_SLICEL_C_Q)
+                                                      0.114     0.156 f  u_core/u_core/u_issuer/descriptor_rejected_reg/Q
+                         net (fo=3, routed)           0.527     0.683    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/issuer_rejected
+    SLICE_X49Y124        LUT3 (Prop_E6LUT_SLICEL_I0_O)
+                                                      0.152     0.835 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11/O
+                         net (fo=1, routed)           0.097     0.932    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11_n_0
+    SLICE_X49Y124        LUT6 (Prop_G6LUT_SLICEL_I2_O)
+                                                      0.137     1.069 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_5/O
+                         net (fo=18, routed)          0.559     1.629    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/fault
+    SLICE_X48Y125        LUT6 (Prop_A6LUT_SLICEL_I4_O)
+                                                      0.082     1.711 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_lane_mask_q[7]_i_1/O
+                         net (fo=24, routed)          0.573     2.284    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_valid_0
+    SLICE_X49Y126        LUT4 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.150     2.434 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16/O
+                         net (fo=1, routed)           0.148     2.582    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16_n_0
+    SLICE_X49Y126        LUT6 (Prop_B6LUT_SLICEL_I1_O)
+                                                      0.152     2.734 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7/O
+                         net (fo=1, routed)           0.103     2.837    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7_n_0
+    SLICE_X49Y126        LUT6 (Prop_D6LUT_SLICEL_I3_O)
+                                                      0.081     2.918 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_2/O
+                         net (fo=2, routed)           0.402     3.319    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/output_chunk_ready
+    SLICE_X48Y126        LUT6 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.056     3.375 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_1/O
+                         net (fo=115, routed)         0.321     3.697    u_core/u_core/u_issuer/p_0_in24_out
+    SLICE_X48Y118        LUT6 (Prop_G6LUT_SLICEL_I5_O)
+                                                      0.057     3.754 r  u_core/u_core/u_issuer/activation_block_q[0][63]_i_1/O
+                         net (fo=64, routed)          0.765     4.519    u_core/u_core/u_issuer/activation_block_q[0][63]_i_1_n_0
+    SLICE_X51Y115        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[0][18]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=5402, unset)         0.029     5.029    u_core/u_core/u_issuer/clk
+    SLICE_X51Y115        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[0][18]/C
+                         clock pessimism              0.000     5.029    
+                         clock uncertainty           -0.035     4.994    
+    SLICE_X51Y115        FDRE (Setup_DFF_SLICEL_C_CE)
+                                                     -0.079     4.915    u_core/u_core/u_issuer/activation_block_q_reg[0][18]
+  -------------------------------------------------------------------
+                         required time                          4.915    
+                         arrival time                          -4.519    
+  -------------------------------------------------------------------
+                         slack                                  0.396    
+
+Slack (MET) :             0.396ns  (required time - arrival time)
+  Source:                 u_core/u_core/u_issuer/descriptor_rejected_reg/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_core/u_issuer/activation_block_q_reg[0][34]/CE
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.477ns  (logic 0.981ns (21.914%)  route 3.496ns (78.086%))
+  Logic Levels:           8  (LUT3=1 LUT4=1 LUT6=6)
+  Clock Path Skew:        -0.013ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.029ns = ( 5.029 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.042ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=5402, unset)         0.042     0.042    u_core/u_core/u_issuer/clk
+    SLICE_X48Y122        FDRE                                         r  u_core/u_core/u_issuer/descriptor_rejected_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y122        FDRE (Prop_GFF_SLICEL_C_Q)
+                                                      0.114     0.156 f  u_core/u_core/u_issuer/descriptor_rejected_reg/Q
+                         net (fo=3, routed)           0.527     0.683    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/issuer_rejected
+    SLICE_X49Y124        LUT3 (Prop_E6LUT_SLICEL_I0_O)
+                                                      0.152     0.835 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11/O
+                         net (fo=1, routed)           0.097     0.932    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11_n_0
+    SLICE_X49Y124        LUT6 (Prop_G6LUT_SLICEL_I2_O)
+                                                      0.137     1.069 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_5/O
+                         net (fo=18, routed)          0.559     1.629    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/fault
+    SLICE_X48Y125        LUT6 (Prop_A6LUT_SLICEL_I4_O)
+                                                      0.082     1.711 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_lane_mask_q[7]_i_1/O
+                         net (fo=24, routed)          0.573     2.284    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_valid_0
+    SLICE_X49Y126        LUT4 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.150     2.434 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16/O
+                         net (fo=1, routed)           0.148     2.582    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16_n_0
+    SLICE_X49Y126        LUT6 (Prop_B6LUT_SLICEL_I1_O)
+                                                      0.152     2.734 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7/O
+                         net (fo=1, routed)           0.103     2.837    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7_n_0
+    SLICE_X49Y126        LUT6 (Prop_D6LUT_SLICEL_I3_O)
+                                                      0.081     2.918 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_2/O
+                         net (fo=2, routed)           0.402     3.319    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/output_chunk_ready
+    SLICE_X48Y126        LUT6 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.056     3.375 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_1/O
+                         net (fo=115, routed)         0.321     3.697    u_core/u_core/u_issuer/p_0_in24_out
+    SLICE_X48Y118        LUT6 (Prop_G6LUT_SLICEL_I5_O)
+                                                      0.057     3.754 r  u_core/u_core/u_issuer/activation_block_q[0][63]_i_1/O
+                         net (fo=64, routed)          0.765     4.519    u_core/u_core/u_issuer/activation_block_q[0][63]_i_1_n_0
+    SLICE_X51Y115        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[0][34]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=5402, unset)         0.029     5.029    u_core/u_core/u_issuer/clk
+    SLICE_X51Y115        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[0][34]/C
+                         clock pessimism              0.000     5.029    
+                         clock uncertainty           -0.035     4.994    
+    SLICE_X51Y115        FDRE (Setup_CFF_SLICEL_C_CE)
+                                                     -0.079     4.915    u_core/u_core/u_issuer/activation_block_q_reg[0][34]
+  -------------------------------------------------------------------
+                         required time                          4.915    
+                         arrival time                          -4.519    
+  -------------------------------------------------------------------
+                         slack                                  0.396    
+
+Slack (MET) :             0.397ns  (required time - arrival time)
+  Source:                 u_core/u_core/u_issuer/descriptor_rejected_reg/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_core/u_issuer/activation_block_q_reg[0][19]/CE
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.477ns  (logic 0.981ns (21.914%)  route 3.496ns (78.086%))
+  Logic Levels:           8  (LUT3=1 LUT4=1 LUT6=6)
+  Clock Path Skew:        -0.013ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.029ns = ( 5.029 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.042ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=5402, unset)         0.042     0.042    u_core/u_core/u_issuer/clk
+    SLICE_X48Y122        FDRE                                         r  u_core/u_core/u_issuer/descriptor_rejected_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y122        FDRE (Prop_GFF_SLICEL_C_Q)
+                                                      0.114     0.156 f  u_core/u_core/u_issuer/descriptor_rejected_reg/Q
+                         net (fo=3, routed)           0.527     0.683    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/issuer_rejected
+    SLICE_X49Y124        LUT3 (Prop_E6LUT_SLICEL_I0_O)
+                                                      0.152     0.835 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11/O
+                         net (fo=1, routed)           0.097     0.932    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11_n_0
+    SLICE_X49Y124        LUT6 (Prop_G6LUT_SLICEL_I2_O)
+                                                      0.137     1.069 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_5/O
+                         net (fo=18, routed)          0.559     1.629    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/fault
+    SLICE_X48Y125        LUT6 (Prop_A6LUT_SLICEL_I4_O)
+                                                      0.082     1.711 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_lane_mask_q[7]_i_1/O
+                         net (fo=24, routed)          0.573     2.284    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_valid_0
+    SLICE_X49Y126        LUT4 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.150     2.434 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16/O
+                         net (fo=1, routed)           0.148     2.582    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16_n_0
+    SLICE_X49Y126        LUT6 (Prop_B6LUT_SLICEL_I1_O)
+                                                      0.152     2.734 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7/O
+                         net (fo=1, routed)           0.103     2.837    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7_n_0
+    SLICE_X49Y126        LUT6 (Prop_D6LUT_SLICEL_I3_O)
+                                                      0.081     2.918 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_2/O
+                         net (fo=2, routed)           0.402     3.319    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/output_chunk_ready
+    SLICE_X48Y126        LUT6 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.056     3.375 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_1/O
+                         net (fo=115, routed)         0.321     3.697    u_core/u_core/u_issuer/p_0_in24_out
+    SLICE_X48Y118        LUT6 (Prop_G6LUT_SLICEL_I5_O)
+                                                      0.057     3.754 r  u_core/u_core/u_issuer/activation_block_q[0][63]_i_1/O
+                         net (fo=64, routed)          0.765     4.519    u_core/u_core/u_issuer/activation_block_q[0][63]_i_1_n_0
+    SLICE_X51Y115        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[0][19]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=5402, unset)         0.029     5.029    u_core/u_core/u_issuer/clk
+    SLICE_X51Y115        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[0][19]/C
+                         clock pessimism              0.000     5.029    
+                         clock uncertainty           -0.035     4.994    
+    SLICE_X51Y115        FDRE (Setup_DFF2_SLICEL_C_CE)
+                                                     -0.078     4.916    u_core/u_core/u_issuer/activation_block_q_reg[0][19]
+  -------------------------------------------------------------------
+                         required time                          4.916    
+                         arrival time                          -4.519    
+  -------------------------------------------------------------------
+                         slack                                  0.397    
+
+Slack (MET) :             0.397ns  (required time - arrival time)
+  Source:                 u_core/u_core/u_issuer/descriptor_rejected_reg/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_core/u_issuer/activation_block_q_reg[0][35]/CE
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.477ns  (logic 0.981ns (21.914%)  route 3.496ns (78.086%))
+  Logic Levels:           8  (LUT3=1 LUT4=1 LUT6=6)
+  Clock Path Skew:        -0.013ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.029ns = ( 5.029 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.042ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=5402, unset)         0.042     0.042    u_core/u_core/u_issuer/clk
+    SLICE_X48Y122        FDRE                                         r  u_core/u_core/u_issuer/descriptor_rejected_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y122        FDRE (Prop_GFF_SLICEL_C_Q)
+                                                      0.114     0.156 f  u_core/u_core/u_issuer/descriptor_rejected_reg/Q
+                         net (fo=3, routed)           0.527     0.683    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/issuer_rejected
+    SLICE_X49Y124        LUT3 (Prop_E6LUT_SLICEL_I0_O)
+                                                      0.152     0.835 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11/O
+                         net (fo=1, routed)           0.097     0.932    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11_n_0
+    SLICE_X49Y124        LUT6 (Prop_G6LUT_SLICEL_I2_O)
+                                                      0.137     1.069 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_5/O
+                         net (fo=18, routed)          0.559     1.629    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/fault
+    SLICE_X48Y125        LUT6 (Prop_A6LUT_SLICEL_I4_O)
+                                                      0.082     1.711 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_lane_mask_q[7]_i_1/O
+                         net (fo=24, routed)          0.573     2.284    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_valid_0
+    SLICE_X49Y126        LUT4 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.150     2.434 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16/O
+                         net (fo=1, routed)           0.148     2.582    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16_n_0
+    SLICE_X49Y126        LUT6 (Prop_B6LUT_SLICEL_I1_O)
+                                                      0.152     2.734 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7/O
+                         net (fo=1, routed)           0.103     2.837    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7_n_0
+    SLICE_X49Y126        LUT6 (Prop_D6LUT_SLICEL_I3_O)
+                                                      0.081     2.918 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_2/O
+                         net (fo=2, routed)           0.402     3.319    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/output_chunk_ready
+    SLICE_X48Y126        LUT6 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.056     3.375 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_1/O
+                         net (fo=115, routed)         0.321     3.697    u_core/u_core/u_issuer/p_0_in24_out
+    SLICE_X48Y118        LUT6 (Prop_G6LUT_SLICEL_I5_O)
+                                                      0.057     3.754 r  u_core/u_core/u_issuer/activation_block_q[0][63]_i_1/O
+                         net (fo=64, routed)          0.765     4.519    u_core/u_core/u_issuer/activation_block_q[0][63]_i_1_n_0
+    SLICE_X51Y115        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[0][35]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=5402, unset)         0.029     5.029    u_core/u_core/u_issuer/clk
+    SLICE_X51Y115        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[0][35]/C
+                         clock pessimism              0.000     5.029    
+                         clock uncertainty           -0.035     4.994    
+    SLICE_X51Y115        FDRE (Setup_CFF2_SLICEL_C_CE)
+                                                     -0.078     4.916    u_core/u_core/u_issuer/activation_block_q_reg[0][35]
+  -------------------------------------------------------------------
+                         required time                          4.916    
+                         arrival time                          -4.519    
+  -------------------------------------------------------------------
+                         slack                                  0.397    
+
+Slack (MET) :             0.430ns  (required time - arrival time)
+  Source:                 u_core/u_core/u_issuer/descriptor_rejected_reg/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_core/u_issuer/activation_block_q_reg[0][16]/CE
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.442ns  (logic 0.981ns (22.084%)  route 3.461ns (77.916%))
+  Logic Levels:           8  (LUT3=1 LUT4=1 LUT6=6)
+  Clock Path Skew:        -0.013ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.029ns = ( 5.029 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.042ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=5402, unset)         0.042     0.042    u_core/u_core/u_issuer/clk
+    SLICE_X48Y122        FDRE                                         r  u_core/u_core/u_issuer/descriptor_rejected_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y122        FDRE (Prop_GFF_SLICEL_C_Q)
+                                                      0.114     0.156 f  u_core/u_core/u_issuer/descriptor_rejected_reg/Q
+                         net (fo=3, routed)           0.527     0.683    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/issuer_rejected
+    SLICE_X49Y124        LUT3 (Prop_E6LUT_SLICEL_I0_O)
+                                                      0.152     0.835 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11/O
+                         net (fo=1, routed)           0.097     0.932    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11_n_0
+    SLICE_X49Y124        LUT6 (Prop_G6LUT_SLICEL_I2_O)
+                                                      0.137     1.069 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_5/O
+                         net (fo=18, routed)          0.559     1.629    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/fault
+    SLICE_X48Y125        LUT6 (Prop_A6LUT_SLICEL_I4_O)
+                                                      0.082     1.711 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_lane_mask_q[7]_i_1/O
+                         net (fo=24, routed)          0.573     2.284    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_valid_0
+    SLICE_X49Y126        LUT4 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.150     2.434 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16/O
+                         net (fo=1, routed)           0.148     2.582    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16_n_0
+    SLICE_X49Y126        LUT6 (Prop_B6LUT_SLICEL_I1_O)
+                                                      0.152     2.734 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7/O
+                         net (fo=1, routed)           0.103     2.837    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7_n_0
+    SLICE_X49Y126        LUT6 (Prop_D6LUT_SLICEL_I3_O)
+                                                      0.081     2.918 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_2/O
+                         net (fo=2, routed)           0.402     3.319    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/output_chunk_ready
+    SLICE_X48Y126        LUT6 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.056     3.375 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_1/O
+                         net (fo=115, routed)         0.321     3.697    u_core/u_core/u_issuer/p_0_in24_out
+    SLICE_X48Y118        LUT6 (Prop_G6LUT_SLICEL_I5_O)
+                                                      0.057     3.754 r  u_core/u_core/u_issuer/activation_block_q[0][63]_i_1/O
+                         net (fo=64, routed)          0.731     4.484    u_core/u_core/u_issuer/activation_block_q[0][63]_i_1_n_0
+    SLICE_X49Y113        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[0][16]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=5402, unset)         0.029     5.029    u_core/u_core/u_issuer/clk
+    SLICE_X49Y113        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[0][16]/C
+                         clock pessimism              0.000     5.029    
+                         clock uncertainty           -0.035     4.994    
+    SLICE_X49Y113        FDRE (Setup_DFF_SLICEL_C_CE)
+                                                     -0.079     4.915    u_core/u_core/u_issuer/activation_block_q_reg[0][16]
+  -------------------------------------------------------------------
+                         required time                          4.915    
+                         arrival time                          -4.484    
+  -------------------------------------------------------------------
+                         slack                                  0.430    
+
+Slack (MET) :             0.431ns  (required time - arrival time)
+  Source:                 u_core/u_core/u_issuer/descriptor_rejected_reg/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_core/u_issuer/activation_block_q_reg[0][17]/CE
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.442ns  (logic 0.981ns (22.084%)  route 3.461ns (77.916%))
+  Logic Levels:           8  (LUT3=1 LUT4=1 LUT6=6)
+  Clock Path Skew:        -0.013ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.029ns = ( 5.029 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.042ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=5402, unset)         0.042     0.042    u_core/u_core/u_issuer/clk
+    SLICE_X48Y122        FDRE                                         r  u_core/u_core/u_issuer/descriptor_rejected_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y122        FDRE (Prop_GFF_SLICEL_C_Q)
+                                                      0.114     0.156 f  u_core/u_core/u_issuer/descriptor_rejected_reg/Q
+                         net (fo=3, routed)           0.527     0.683    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/issuer_rejected
+    SLICE_X49Y124        LUT3 (Prop_E6LUT_SLICEL_I0_O)
+                                                      0.152     0.835 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11/O
+                         net (fo=1, routed)           0.097     0.932    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11_n_0
+    SLICE_X49Y124        LUT6 (Prop_G6LUT_SLICEL_I2_O)
+                                                      0.137     1.069 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_5/O
+                         net (fo=18, routed)          0.559     1.629    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/fault
+    SLICE_X48Y125        LUT6 (Prop_A6LUT_SLICEL_I4_O)
+                                                      0.082     1.711 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_lane_mask_q[7]_i_1/O
+                         net (fo=24, routed)          0.573     2.284    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_valid_0
+    SLICE_X49Y126        LUT4 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.150     2.434 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16/O
+                         net (fo=1, routed)           0.148     2.582    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16_n_0
+    SLICE_X49Y126        LUT6 (Prop_B6LUT_SLICEL_I1_O)
+                                                      0.152     2.734 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7/O
+                         net (fo=1, routed)           0.103     2.837    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7_n_0
+    SLICE_X49Y126        LUT6 (Prop_D6LUT_SLICEL_I3_O)
+                                                      0.081     2.918 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_2/O
+                         net (fo=2, routed)           0.402     3.319    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/output_chunk_ready
+    SLICE_X48Y126        LUT6 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.056     3.375 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_1/O
+                         net (fo=115, routed)         0.321     3.697    u_core/u_core/u_issuer/p_0_in24_out
+    SLICE_X48Y118        LUT6 (Prop_G6LUT_SLICEL_I5_O)
+                                                      0.057     3.754 r  u_core/u_core/u_issuer/activation_block_q[0][63]_i_1/O
+                         net (fo=64, routed)          0.731     4.484    u_core/u_core/u_issuer/activation_block_q[0][63]_i_1_n_0
+    SLICE_X49Y113        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[0][17]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=5402, unset)         0.029     5.029    u_core/u_core/u_issuer/clk
+    SLICE_X49Y113        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[0][17]/C
+                         clock pessimism              0.000     5.029    
+                         clock uncertainty           -0.035     4.994    
+    SLICE_X49Y113        FDRE (Setup_DFF2_SLICEL_C_CE)
+                                                     -0.078     4.916    u_core/u_core/u_issuer/activation_block_q_reg[0][17]
+  -------------------------------------------------------------------
+                         required time                          4.916    
+                         arrival time                          -4.484    
+  -------------------------------------------------------------------
+                         slack                                  0.431    
+
+Slack (MET) :             0.433ns  (required time - arrival time)
+  Source:                 u_core/u_core/u_issuer/descriptor_rejected_reg/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_core/u_issuer/activation_block_q_reg[2][38]/CE
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.439ns  (logic 1.005ns (22.638%)  route 3.434ns (77.362%))
+  Logic Levels:           8  (LUT3=1 LUT4=1 LUT6=6)
+  Clock Path Skew:        -0.013ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.029ns = ( 5.029 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.042ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=5402, unset)         0.042     0.042    u_core/u_core/u_issuer/clk
+    SLICE_X48Y122        FDRE                                         r  u_core/u_core/u_issuer/descriptor_rejected_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y122        FDRE (Prop_GFF_SLICEL_C_Q)
+                                                      0.114     0.156 f  u_core/u_core/u_issuer/descriptor_rejected_reg/Q
+                         net (fo=3, routed)           0.527     0.683    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/issuer_rejected
+    SLICE_X49Y124        LUT3 (Prop_E6LUT_SLICEL_I0_O)
+                                                      0.152     0.835 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11/O
+                         net (fo=1, routed)           0.097     0.932    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11_n_0
+    SLICE_X49Y124        LUT6 (Prop_G6LUT_SLICEL_I2_O)
+                                                      0.137     1.069 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_5/O
+                         net (fo=18, routed)          0.559     1.629    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/fault
+    SLICE_X48Y125        LUT6 (Prop_A6LUT_SLICEL_I4_O)
+                                                      0.082     1.711 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_lane_mask_q[7]_i_1/O
+                         net (fo=24, routed)          0.573     2.284    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_valid_0
+    SLICE_X49Y126        LUT4 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.150     2.434 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16/O
+                         net (fo=1, routed)           0.148     2.582    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16_n_0
+    SLICE_X49Y126        LUT6 (Prop_B6LUT_SLICEL_I1_O)
+                                                      0.152     2.734 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7/O
+                         net (fo=1, routed)           0.103     2.837    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7_n_0
+    SLICE_X49Y126        LUT6 (Prop_D6LUT_SLICEL_I3_O)
+                                                      0.081     2.918 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_2/O
+                         net (fo=2, routed)           0.402     3.319    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/output_chunk_ready
+    SLICE_X48Y126        LUT6 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.056     3.375 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_1/O
+                         net (fo=115, routed)         0.261     3.637    u_core/u_core/u_issuer/p_0_in24_out
+    SLICE_X48Y121        LUT6 (Prop_C6LUT_SLICEL_I2_O)
+                                                      0.081     3.718 r  u_core/u_core/u_issuer/activation_block_q[2][63]_i_1/O
+                         net (fo=64, routed)          0.764     4.481    u_core/u_core/u_issuer/activation_block_q[2][63]_i_1_n_0
+    SLICE_X50Y111        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[2][38]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=5402, unset)         0.029     5.029    u_core/u_core/u_issuer/clk
+    SLICE_X50Y111        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[2][38]/C
+                         clock pessimism              0.000     5.029    
+                         clock uncertainty           -0.035     4.994    
+    SLICE_X50Y111        FDRE (Setup_DFF_SLICEL_C_CE)
+                                                     -0.079     4.915    u_core/u_core/u_issuer/activation_block_q_reg[2][38]
+  -------------------------------------------------------------------
+                         required time                          4.915    
+                         arrival time                          -4.481    
+  -------------------------------------------------------------------
+                         slack                                  0.433    
+
+Slack (MET) :             0.433ns  (required time - arrival time)
+  Source:                 u_core/u_core/u_issuer/descriptor_rejected_reg/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_core/u_issuer/activation_block_q_reg[2][46]/CE
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.439ns  (logic 1.005ns (22.638%)  route 3.434ns (77.362%))
+  Logic Levels:           8  (LUT3=1 LUT4=1 LUT6=6)
+  Clock Path Skew:        -0.013ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.029ns = ( 5.029 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.042ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=5402, unset)         0.042     0.042    u_core/u_core/u_issuer/clk
+    SLICE_X48Y122        FDRE                                         r  u_core/u_core/u_issuer/descriptor_rejected_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y122        FDRE (Prop_GFF_SLICEL_C_Q)
+                                                      0.114     0.156 f  u_core/u_core/u_issuer/descriptor_rejected_reg/Q
+                         net (fo=3, routed)           0.527     0.683    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/issuer_rejected
+    SLICE_X49Y124        LUT3 (Prop_E6LUT_SLICEL_I0_O)
+                                                      0.152     0.835 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11/O
+                         net (fo=1, routed)           0.097     0.932    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11_n_0
+    SLICE_X49Y124        LUT6 (Prop_G6LUT_SLICEL_I2_O)
+                                                      0.137     1.069 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_5/O
+                         net (fo=18, routed)          0.559     1.629    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/fault
+    SLICE_X48Y125        LUT6 (Prop_A6LUT_SLICEL_I4_O)
+                                                      0.082     1.711 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_lane_mask_q[7]_i_1/O
+                         net (fo=24, routed)          0.573     2.284    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_valid_0
+    SLICE_X49Y126        LUT4 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.150     2.434 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16/O
+                         net (fo=1, routed)           0.148     2.582    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16_n_0
+    SLICE_X49Y126        LUT6 (Prop_B6LUT_SLICEL_I1_O)
+                                                      0.152     2.734 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7/O
+                         net (fo=1, routed)           0.103     2.837    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7_n_0
+    SLICE_X49Y126        LUT6 (Prop_D6LUT_SLICEL_I3_O)
+                                                      0.081     2.918 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_2/O
+                         net (fo=2, routed)           0.402     3.319    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/output_chunk_ready
+    SLICE_X48Y126        LUT6 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.056     3.375 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_1/O
+                         net (fo=115, routed)         0.261     3.637    u_core/u_core/u_issuer/p_0_in24_out
+    SLICE_X48Y121        LUT6 (Prop_C6LUT_SLICEL_I2_O)
+                                                      0.081     3.718 r  u_core/u_core/u_issuer/activation_block_q[2][63]_i_1/O
+                         net (fo=64, routed)          0.764     4.481    u_core/u_core/u_issuer/activation_block_q[2][63]_i_1_n_0
+    SLICE_X50Y111        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[2][46]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=5402, unset)         0.029     5.029    u_core/u_core/u_issuer/clk
+    SLICE_X50Y111        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[2][46]/C
+                         clock pessimism              0.000     5.029    
+                         clock uncertainty           -0.035     4.994    
+    SLICE_X50Y111        FDRE (Setup_CFF_SLICEL_C_CE)
+                                                     -0.079     4.915    u_core/u_core/u_issuer/activation_block_q_reg[2][46]
+  -------------------------------------------------------------------
+                         required time                          4.915    
+                         arrival time                          -4.481    
+  -------------------------------------------------------------------
+                         slack                                  0.433    
+
+Slack (MET) :             0.434ns  (required time - arrival time)
+  Source:                 u_core/u_core/u_issuer/descriptor_rejected_reg/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_core/u_issuer/activation_block_q_reg[0][9]/CE
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.439ns  (logic 0.981ns (22.100%)  route 3.458ns (77.900%))
+  Logic Levels:           8  (LUT3=1 LUT4=1 LUT6=6)
+  Clock Path Skew:        -0.013ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.029ns = ( 5.029 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.042ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=5402, unset)         0.042     0.042    u_core/u_core/u_issuer/clk
+    SLICE_X48Y122        FDRE                                         r  u_core/u_core/u_issuer/descriptor_rejected_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y122        FDRE (Prop_GFF_SLICEL_C_Q)
+                                                      0.114     0.156 f  u_core/u_core/u_issuer/descriptor_rejected_reg/Q
+                         net (fo=3, routed)           0.527     0.683    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/issuer_rejected
+    SLICE_X49Y124        LUT3 (Prop_E6LUT_SLICEL_I0_O)
+                                                      0.152     0.835 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11/O
+                         net (fo=1, routed)           0.097     0.932    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11_n_0
+    SLICE_X49Y124        LUT6 (Prop_G6LUT_SLICEL_I2_O)
+                                                      0.137     1.069 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_5/O
+                         net (fo=18, routed)          0.559     1.629    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/fault
+    SLICE_X48Y125        LUT6 (Prop_A6LUT_SLICEL_I4_O)
+                                                      0.082     1.711 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_lane_mask_q[7]_i_1/O
+                         net (fo=24, routed)          0.573     2.284    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_valid_0
+    SLICE_X49Y126        LUT4 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.150     2.434 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16/O
+                         net (fo=1, routed)           0.148     2.582    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16_n_0
+    SLICE_X49Y126        LUT6 (Prop_B6LUT_SLICEL_I1_O)
+                                                      0.152     2.734 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7/O
+                         net (fo=1, routed)           0.103     2.837    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7_n_0
+    SLICE_X49Y126        LUT6 (Prop_D6LUT_SLICEL_I3_O)
+                                                      0.081     2.918 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_2/O
+                         net (fo=2, routed)           0.402     3.319    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/output_chunk_ready
+    SLICE_X48Y126        LUT6 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.056     3.375 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_1/O
+                         net (fo=115, routed)         0.321     3.697    u_core/u_core/u_issuer/p_0_in24_out
+    SLICE_X48Y118        LUT6 (Prop_G6LUT_SLICEL_I5_O)
+                                                      0.057     3.754 r  u_core/u_core/u_issuer/activation_block_q[0][63]_i_1/O
+                         net (fo=64, routed)          0.727     4.481    u_core/u_core/u_issuer/activation_block_q[0][63]_i_1_n_0
+    SLICE_X50Y113        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[0][9]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=5402, unset)         0.029     5.029    u_core/u_core/u_issuer/clk
+    SLICE_X50Y113        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[0][9]/C
+                         clock pessimism              0.000     5.029    
+                         clock uncertainty           -0.035     4.994    
+    SLICE_X50Y113        FDRE (Setup_HFF2_SLICEL_C_CE)
+                                                     -0.079     4.915    u_core/u_core/u_issuer/activation_block_q_reg[0][9]
+  -------------------------------------------------------------------
+                         required time                          4.915    
+                         arrival time                          -4.481    
+  -------------------------------------------------------------------
+                         slack                                  0.434    
+
+Slack (MET) :             0.434ns  (required time - arrival time)
+  Source:                 u_core/u_core/u_issuer/descriptor_rejected_reg/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_core/u_issuer/activation_block_q_reg[2][39]/CE
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.439ns  (logic 1.005ns (22.638%)  route 3.434ns (77.362%))
+  Logic Levels:           8  (LUT3=1 LUT4=1 LUT6=6)
+  Clock Path Skew:        -0.013ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.029ns = ( 5.029 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.042ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=5402, unset)         0.042     0.042    u_core/u_core/u_issuer/clk
+    SLICE_X48Y122        FDRE                                         r  u_core/u_core/u_issuer/descriptor_rejected_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y122        FDRE (Prop_GFF_SLICEL_C_Q)
+                                                      0.114     0.156 f  u_core/u_core/u_issuer/descriptor_rejected_reg/Q
+                         net (fo=3, routed)           0.527     0.683    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/issuer_rejected
+    SLICE_X49Y124        LUT3 (Prop_E6LUT_SLICEL_I0_O)
+                                                      0.152     0.835 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11/O
+                         net (fo=1, routed)           0.097     0.932    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11_n_0
+    SLICE_X49Y124        LUT6 (Prop_G6LUT_SLICEL_I2_O)
+                                                      0.137     1.069 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_5/O
+                         net (fo=18, routed)          0.559     1.629    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/fault
+    SLICE_X48Y125        LUT6 (Prop_A6LUT_SLICEL_I4_O)
+                                                      0.082     1.711 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_lane_mask_q[7]_i_1/O
+                         net (fo=24, routed)          0.573     2.284    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_valid_0
+    SLICE_X49Y126        LUT4 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.150     2.434 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16/O
+                         net (fo=1, routed)           0.148     2.582    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16_n_0
+    SLICE_X49Y126        LUT6 (Prop_B6LUT_SLICEL_I1_O)
+                                                      0.152     2.734 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7/O
+                         net (fo=1, routed)           0.103     2.837    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7_n_0
+    SLICE_X49Y126        LUT6 (Prop_D6LUT_SLICEL_I3_O)
+                                                      0.081     2.918 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_2/O
+                         net (fo=2, routed)           0.402     3.319    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/output_chunk_ready
+    SLICE_X48Y126        LUT6 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.056     3.375 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_1/O
+                         net (fo=115, routed)         0.261     3.637    u_core/u_core/u_issuer/p_0_in24_out
+    SLICE_X48Y121        LUT6 (Prop_C6LUT_SLICEL_I2_O)
+                                                      0.081     3.718 r  u_core/u_core/u_issuer/activation_block_q[2][63]_i_1/O
+                         net (fo=64, routed)          0.764     4.481    u_core/u_core/u_issuer/activation_block_q[2][63]_i_1_n_0
+    SLICE_X50Y111        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[2][39]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=5402, unset)         0.029     5.029    u_core/u_core/u_issuer/clk
+    SLICE_X50Y111        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[2][39]/C
+                         clock pessimism              0.000     5.029    
+                         clock uncertainty           -0.035     4.994    
+    SLICE_X50Y111        FDRE (Setup_DFF2_SLICEL_C_CE)
+                                                     -0.078     4.916    u_core/u_core/u_issuer/activation_block_q_reg[2][39]
+  -------------------------------------------------------------------
+                         required time                          4.916    
+                         arrival time                          -4.481    
+  -------------------------------------------------------------------
+                         slack                                  0.434    
+
+Slack (MET) :             0.434ns  (required time - arrival time)
+  Source:                 u_core/u_core/u_issuer/descriptor_rejected_reg/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_core/u_issuer/activation_block_q_reg[2][47]/CE
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.439ns  (logic 1.005ns (22.638%)  route 3.434ns (77.362%))
+  Logic Levels:           8  (LUT3=1 LUT4=1 LUT6=6)
+  Clock Path Skew:        -0.013ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.029ns = ( 5.029 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.042ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=5402, unset)         0.042     0.042    u_core/u_core/u_issuer/clk
+    SLICE_X48Y122        FDRE                                         r  u_core/u_core/u_issuer/descriptor_rejected_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y122        FDRE (Prop_GFF_SLICEL_C_Q)
+                                                      0.114     0.156 f  u_core/u_core/u_issuer/descriptor_rejected_reg/Q
+                         net (fo=3, routed)           0.527     0.683    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/issuer_rejected
+    SLICE_X49Y124        LUT3 (Prop_E6LUT_SLICEL_I0_O)
+                                                      0.152     0.835 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11/O
+                         net (fo=1, routed)           0.097     0.932    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11_n_0
+    SLICE_X49Y124        LUT6 (Prop_G6LUT_SLICEL_I2_O)
+                                                      0.137     1.069 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_5/O
+                         net (fo=18, routed)          0.559     1.629    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/fault
+    SLICE_X48Y125        LUT6 (Prop_A6LUT_SLICEL_I4_O)
+                                                      0.082     1.711 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_lane_mask_q[7]_i_1/O
+                         net (fo=24, routed)          0.573     2.284    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_valid_0
+    SLICE_X49Y126        LUT4 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.150     2.434 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16/O
+                         net (fo=1, routed)           0.148     2.582    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16_n_0
+    SLICE_X49Y126        LUT6 (Prop_B6LUT_SLICEL_I1_O)
+                                                      0.152     2.734 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7/O
+                         net (fo=1, routed)           0.103     2.837    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7_n_0
+    SLICE_X49Y126        LUT6 (Prop_D6LUT_SLICEL_I3_O)
+                                                      0.081     2.918 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_2/O
+                         net (fo=2, routed)           0.402     3.319    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/output_chunk_ready
+    SLICE_X48Y126        LUT6 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.056     3.375 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_1/O
+                         net (fo=115, routed)         0.261     3.637    u_core/u_core/u_issuer/p_0_in24_out
+    SLICE_X48Y121        LUT6 (Prop_C6LUT_SLICEL_I2_O)
+                                                      0.081     3.718 r  u_core/u_core/u_issuer/activation_block_q[2][63]_i_1/O
+                         net (fo=64, routed)          0.764     4.481    u_core/u_core/u_issuer/activation_block_q[2][63]_i_1_n_0
+    SLICE_X50Y111        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[2][47]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=5402, unset)         0.029     5.029    u_core/u_core/u_issuer/clk
+    SLICE_X50Y111        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[2][47]/C
+                         clock pessimism              0.000     5.029    
+                         clock uncertainty           -0.035     4.994    
+    SLICE_X50Y111        FDRE (Setup_CFF2_SLICEL_C_CE)
+                                                     -0.078     4.916    u_core/u_core/u_issuer/activation_block_q_reg[2][47]
+  -------------------------------------------------------------------
+                         required time                          4.916    
+                         arrival time                          -4.481    
+  -------------------------------------------------------------------
+                         slack                                  0.434    
+
+Slack (MET) :             0.435ns  (required time - arrival time)
+  Source:                 u_core/u_core/u_issuer/descriptor_rejected_reg/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_core/u_issuer/activation_block_q_reg[2][22]/CE
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.438ns  (logic 1.005ns (22.645%)  route 3.433ns (77.355%))
+  Logic Levels:           8  (LUT3=1 LUT4=1 LUT6=6)
+  Clock Path Skew:        -0.013ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.029ns = ( 5.029 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.042ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=5402, unset)         0.042     0.042    u_core/u_core/u_issuer/clk
+    SLICE_X48Y122        FDRE                                         r  u_core/u_core/u_issuer/descriptor_rejected_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y122        FDRE (Prop_GFF_SLICEL_C_Q)
+                                                      0.114     0.156 f  u_core/u_core/u_issuer/descriptor_rejected_reg/Q
+                         net (fo=3, routed)           0.527     0.683    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/issuer_rejected
+    SLICE_X49Y124        LUT3 (Prop_E6LUT_SLICEL_I0_O)
+                                                      0.152     0.835 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11/O
+                         net (fo=1, routed)           0.097     0.932    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11_n_0
+    SLICE_X49Y124        LUT6 (Prop_G6LUT_SLICEL_I2_O)
+                                                      0.137     1.069 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_5/O
+                         net (fo=18, routed)          0.559     1.629    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/fault
+    SLICE_X48Y125        LUT6 (Prop_A6LUT_SLICEL_I4_O)
+                                                      0.082     1.711 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_lane_mask_q[7]_i_1/O
+                         net (fo=24, routed)          0.573     2.284    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_valid_0
+    SLICE_X49Y126        LUT4 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.150     2.434 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16/O
+                         net (fo=1, routed)           0.148     2.582    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16_n_0
+    SLICE_X49Y126        LUT6 (Prop_B6LUT_SLICEL_I1_O)
+                                                      0.152     2.734 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7/O
+                         net (fo=1, routed)           0.103     2.837    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7_n_0
+    SLICE_X49Y126        LUT6 (Prop_D6LUT_SLICEL_I3_O)
+                                                      0.081     2.918 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_2/O
+                         net (fo=2, routed)           0.402     3.319    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/output_chunk_ready
+    SLICE_X48Y126        LUT6 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.056     3.375 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_1/O
+                         net (fo=115, routed)         0.261     3.637    u_core/u_core/u_issuer/p_0_in24_out
+    SLICE_X48Y121        LUT6 (Prop_C6LUT_SLICEL_I2_O)
+                                                      0.081     3.718 r  u_core/u_core/u_issuer/activation_block_q[2][63]_i_1/O
+                         net (fo=64, routed)          0.762     4.480    u_core/u_core/u_issuer/activation_block_q[2][63]_i_1_n_0
+    SLICE_X49Y111        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[2][22]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=5402, unset)         0.029     5.029    u_core/u_core/u_issuer/clk
+    SLICE_X49Y111        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[2][22]/C
+                         clock pessimism              0.000     5.029    
+                         clock uncertainty           -0.035     4.994    
+    SLICE_X49Y111        FDRE (Setup_DFF_SLICEL_C_CE)
+                                                     -0.079     4.915    u_core/u_core/u_issuer/activation_block_q_reg[2][22]
+  -------------------------------------------------------------------
+                         required time                          4.915    
+                         arrival time                          -4.480    
+  -------------------------------------------------------------------
+                         slack                                  0.435    
+
+Slack (MET) :             0.435ns  (required time - arrival time)
+  Source:                 u_core/u_core/u_issuer/descriptor_rejected_reg/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_core/u_issuer/activation_block_q_reg[2][54]/CE
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.438ns  (logic 1.005ns (22.645%)  route 3.433ns (77.355%))
+  Logic Levels:           8  (LUT3=1 LUT4=1 LUT6=6)
+  Clock Path Skew:        -0.013ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.029ns = ( 5.029 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.042ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=5402, unset)         0.042     0.042    u_core/u_core/u_issuer/clk
+    SLICE_X48Y122        FDRE                                         r  u_core/u_core/u_issuer/descriptor_rejected_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y122        FDRE (Prop_GFF_SLICEL_C_Q)
+                                                      0.114     0.156 f  u_core/u_core/u_issuer/descriptor_rejected_reg/Q
+                         net (fo=3, routed)           0.527     0.683    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/issuer_rejected
+    SLICE_X49Y124        LUT3 (Prop_E6LUT_SLICEL_I0_O)
+                                                      0.152     0.835 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11/O
+                         net (fo=1, routed)           0.097     0.932    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11_n_0
+    SLICE_X49Y124        LUT6 (Prop_G6LUT_SLICEL_I2_O)
+                                                      0.137     1.069 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_5/O
+                         net (fo=18, routed)          0.559     1.629    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/fault
+    SLICE_X48Y125        LUT6 (Prop_A6LUT_SLICEL_I4_O)
+                                                      0.082     1.711 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_lane_mask_q[7]_i_1/O
+                         net (fo=24, routed)          0.573     2.284    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_valid_0
+    SLICE_X49Y126        LUT4 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.150     2.434 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16/O
+                         net (fo=1, routed)           0.148     2.582    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16_n_0
+    SLICE_X49Y126        LUT6 (Prop_B6LUT_SLICEL_I1_O)
+                                                      0.152     2.734 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7/O
+                         net (fo=1, routed)           0.103     2.837    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7_n_0
+    SLICE_X49Y126        LUT6 (Prop_D6LUT_SLICEL_I3_O)
+                                                      0.081     2.918 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_2/O
+                         net (fo=2, routed)           0.402     3.319    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/output_chunk_ready
+    SLICE_X48Y126        LUT6 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.056     3.375 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_1/O
+                         net (fo=115, routed)         0.261     3.637    u_core/u_core/u_issuer/p_0_in24_out
+    SLICE_X48Y121        LUT6 (Prop_C6LUT_SLICEL_I2_O)
+                                                      0.081     3.718 r  u_core/u_core/u_issuer/activation_block_q[2][63]_i_1/O
+                         net (fo=64, routed)          0.762     4.480    u_core/u_core/u_issuer/activation_block_q[2][63]_i_1_n_0
+    SLICE_X49Y111        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[2][54]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=5402, unset)         0.029     5.029    u_core/u_core/u_issuer/clk
+    SLICE_X49Y111        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[2][54]/C
+                         clock pessimism              0.000     5.029    
+                         clock uncertainty           -0.035     4.994    
+    SLICE_X49Y111        FDRE (Setup_CFF_SLICEL_C_CE)
+                                                     -0.079     4.915    u_core/u_core/u_issuer/activation_block_q_reg[2][54]
+  -------------------------------------------------------------------
+                         required time                          4.915    
+                         arrival time                          -4.480    
+  -------------------------------------------------------------------
+                         slack                                  0.435    
+
+Slack (MET) :             0.435ns  (required time - arrival time)
+  Source:                 u_core/u_core/u_issuer/descriptor_rejected_reg/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_core/u_issuer/activation_block_q_reg[2][62]/CE
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.438ns  (logic 1.005ns (22.645%)  route 3.433ns (77.355%))
+  Logic Levels:           8  (LUT3=1 LUT4=1 LUT6=6)
+  Clock Path Skew:        -0.013ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.029ns = ( 5.029 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.042ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=5402, unset)         0.042     0.042    u_core/u_core/u_issuer/clk
+    SLICE_X48Y122        FDRE                                         r  u_core/u_core/u_issuer/descriptor_rejected_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y122        FDRE (Prop_GFF_SLICEL_C_Q)
+                                                      0.114     0.156 f  u_core/u_core/u_issuer/descriptor_rejected_reg/Q
+                         net (fo=3, routed)           0.527     0.683    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/issuer_rejected
+    SLICE_X49Y124        LUT3 (Prop_E6LUT_SLICEL_I0_O)
+                                                      0.152     0.835 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11/O
+                         net (fo=1, routed)           0.097     0.932    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11_n_0
+    SLICE_X49Y124        LUT6 (Prop_G6LUT_SLICEL_I2_O)
+                                                      0.137     1.069 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_5/O
+                         net (fo=18, routed)          0.559     1.629    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/fault
+    SLICE_X48Y125        LUT6 (Prop_A6LUT_SLICEL_I4_O)
+                                                      0.082     1.711 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_lane_mask_q[7]_i_1/O
+                         net (fo=24, routed)          0.573     2.284    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_valid_0
+    SLICE_X49Y126        LUT4 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.150     2.434 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16/O
+                         net (fo=1, routed)           0.148     2.582    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16_n_0
+    SLICE_X49Y126        LUT6 (Prop_B6LUT_SLICEL_I1_O)
+                                                      0.152     2.734 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7/O
+                         net (fo=1, routed)           0.103     2.837    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7_n_0
+    SLICE_X49Y126        LUT6 (Prop_D6LUT_SLICEL_I3_O)
+                                                      0.081     2.918 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_2/O
+                         net (fo=2, routed)           0.402     3.319    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/output_chunk_ready
+    SLICE_X48Y126        LUT6 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.056     3.375 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_1/O
+                         net (fo=115, routed)         0.261     3.637    u_core/u_core/u_issuer/p_0_in24_out
+    SLICE_X48Y121        LUT6 (Prop_C6LUT_SLICEL_I2_O)
+                                                      0.081     3.718 r  u_core/u_core/u_issuer/activation_block_q[2][63]_i_1/O
+                         net (fo=64, routed)          0.762     4.480    u_core/u_core/u_issuer/activation_block_q[2][63]_i_1_n_0
+    SLICE_X49Y111        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[2][62]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=5402, unset)         0.029     5.029    u_core/u_core/u_issuer/clk
+    SLICE_X49Y111        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[2][62]/C
+                         clock pessimism              0.000     5.029    
+                         clock uncertainty           -0.035     4.994    
+    SLICE_X49Y111        FDRE (Setup_BFF_SLICEL_C_CE)
+                                                     -0.079     4.915    u_core/u_core/u_issuer/activation_block_q_reg[2][62]
+  -------------------------------------------------------------------
+                         required time                          4.915    
+                         arrival time                          -4.480    
+  -------------------------------------------------------------------
+                         slack                                  0.435    
+
+Slack (MET) :             0.436ns  (required time - arrival time)
+  Source:                 u_core/u_core/u_issuer/descriptor_rejected_reg/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_core/u_issuer/activation_block_q_reg[2][23]/CE
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.438ns  (logic 1.005ns (22.645%)  route 3.433ns (77.355%))
+  Logic Levels:           8  (LUT3=1 LUT4=1 LUT6=6)
+  Clock Path Skew:        -0.013ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.029ns = ( 5.029 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.042ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=5402, unset)         0.042     0.042    u_core/u_core/u_issuer/clk
+    SLICE_X48Y122        FDRE                                         r  u_core/u_core/u_issuer/descriptor_rejected_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y122        FDRE (Prop_GFF_SLICEL_C_Q)
+                                                      0.114     0.156 f  u_core/u_core/u_issuer/descriptor_rejected_reg/Q
+                         net (fo=3, routed)           0.527     0.683    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/issuer_rejected
+    SLICE_X49Y124        LUT3 (Prop_E6LUT_SLICEL_I0_O)
+                                                      0.152     0.835 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11/O
+                         net (fo=1, routed)           0.097     0.932    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11_n_0
+    SLICE_X49Y124        LUT6 (Prop_G6LUT_SLICEL_I2_O)
+                                                      0.137     1.069 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_5/O
+                         net (fo=18, routed)          0.559     1.629    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/fault
+    SLICE_X48Y125        LUT6 (Prop_A6LUT_SLICEL_I4_O)
+                                                      0.082     1.711 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_lane_mask_q[7]_i_1/O
+                         net (fo=24, routed)          0.573     2.284    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_valid_0
+    SLICE_X49Y126        LUT4 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.150     2.434 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16/O
+                         net (fo=1, routed)           0.148     2.582    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16_n_0
+    SLICE_X49Y126        LUT6 (Prop_B6LUT_SLICEL_I1_O)
+                                                      0.152     2.734 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7/O
+                         net (fo=1, routed)           0.103     2.837    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7_n_0
+    SLICE_X49Y126        LUT6 (Prop_D6LUT_SLICEL_I3_O)
+                                                      0.081     2.918 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_2/O
+                         net (fo=2, routed)           0.402     3.319    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/output_chunk_ready
+    SLICE_X48Y126        LUT6 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.056     3.375 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_1/O
+                         net (fo=115, routed)         0.261     3.637    u_core/u_core/u_issuer/p_0_in24_out
+    SLICE_X48Y121        LUT6 (Prop_C6LUT_SLICEL_I2_O)
+                                                      0.081     3.718 r  u_core/u_core/u_issuer/activation_block_q[2][63]_i_1/O
+                         net (fo=64, routed)          0.762     4.480    u_core/u_core/u_issuer/activation_block_q[2][63]_i_1_n_0
+    SLICE_X49Y111        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[2][23]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=5402, unset)         0.029     5.029    u_core/u_core/u_issuer/clk
+    SLICE_X49Y111        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[2][23]/C
+                         clock pessimism              0.000     5.029    
+                         clock uncertainty           -0.035     4.994    
+    SLICE_X49Y111        FDRE (Setup_DFF2_SLICEL_C_CE)
+                                                     -0.078     4.916    u_core/u_core/u_issuer/activation_block_q_reg[2][23]
+  -------------------------------------------------------------------
+                         required time                          4.916    
+                         arrival time                          -4.480    
+  -------------------------------------------------------------------
+                         slack                                  0.436    
+
+Slack (MET) :             0.436ns  (required time - arrival time)
+  Source:                 u_core/u_core/u_issuer/descriptor_rejected_reg/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_core/u_issuer/activation_block_q_reg[2][55]/CE
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.438ns  (logic 1.005ns (22.645%)  route 3.433ns (77.355%))
+  Logic Levels:           8  (LUT3=1 LUT4=1 LUT6=6)
+  Clock Path Skew:        -0.013ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.029ns = ( 5.029 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.042ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=5402, unset)         0.042     0.042    u_core/u_core/u_issuer/clk
+    SLICE_X48Y122        FDRE                                         r  u_core/u_core/u_issuer/descriptor_rejected_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y122        FDRE (Prop_GFF_SLICEL_C_Q)
+                                                      0.114     0.156 f  u_core/u_core/u_issuer/descriptor_rejected_reg/Q
+                         net (fo=3, routed)           0.527     0.683    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/issuer_rejected
+    SLICE_X49Y124        LUT3 (Prop_E6LUT_SLICEL_I0_O)
+                                                      0.152     0.835 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11/O
+                         net (fo=1, routed)           0.097     0.932    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11_n_0
+    SLICE_X49Y124        LUT6 (Prop_G6LUT_SLICEL_I2_O)
+                                                      0.137     1.069 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_5/O
+                         net (fo=18, routed)          0.559     1.629    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/fault
+    SLICE_X48Y125        LUT6 (Prop_A6LUT_SLICEL_I4_O)
+                                                      0.082     1.711 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_lane_mask_q[7]_i_1/O
+                         net (fo=24, routed)          0.573     2.284    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_valid_0
+    SLICE_X49Y126        LUT4 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.150     2.434 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16/O
+                         net (fo=1, routed)           0.148     2.582    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16_n_0
+    SLICE_X49Y126        LUT6 (Prop_B6LUT_SLICEL_I1_O)
+                                                      0.152     2.734 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7/O
+                         net (fo=1, routed)           0.103     2.837    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7_n_0
+    SLICE_X49Y126        LUT6 (Prop_D6LUT_SLICEL_I3_O)
+                                                      0.081     2.918 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_2/O
+                         net (fo=2, routed)           0.402     3.319    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/output_chunk_ready
+    SLICE_X48Y126        LUT6 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.056     3.375 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_1/O
+                         net (fo=115, routed)         0.261     3.637    u_core/u_core/u_issuer/p_0_in24_out
+    SLICE_X48Y121        LUT6 (Prop_C6LUT_SLICEL_I2_O)
+                                                      0.081     3.718 r  u_core/u_core/u_issuer/activation_block_q[2][63]_i_1/O
+                         net (fo=64, routed)          0.762     4.480    u_core/u_core/u_issuer/activation_block_q[2][63]_i_1_n_0
+    SLICE_X49Y111        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[2][55]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=5402, unset)         0.029     5.029    u_core/u_core/u_issuer/clk
+    SLICE_X49Y111        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[2][55]/C
+                         clock pessimism              0.000     5.029    
+                         clock uncertainty           -0.035     4.994    
+    SLICE_X49Y111        FDRE (Setup_CFF2_SLICEL_C_CE)
+                                                     -0.078     4.916    u_core/u_core/u_issuer/activation_block_q_reg[2][55]
+  -------------------------------------------------------------------
+                         required time                          4.916    
+                         arrival time                          -4.480    
+  -------------------------------------------------------------------
+                         slack                                  0.436    
+
+Slack (MET) :             0.436ns  (required time - arrival time)
+  Source:                 u_core/u_core/u_issuer/descriptor_rejected_reg/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_core/u_issuer/activation_block_q_reg[0][8]/CE
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.437ns  (logic 0.981ns (22.110%)  route 3.456ns (77.890%))
+  Logic Levels:           8  (LUT3=1 LUT4=1 LUT6=6)
+  Clock Path Skew:        -0.013ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.029ns = ( 5.029 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.042ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=5402, unset)         0.042     0.042    u_core/u_core/u_issuer/clk
+    SLICE_X48Y122        FDRE                                         r  u_core/u_core/u_issuer/descriptor_rejected_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y122        FDRE (Prop_GFF_SLICEL_C_Q)
+                                                      0.114     0.156 f  u_core/u_core/u_issuer/descriptor_rejected_reg/Q
+                         net (fo=3, routed)           0.527     0.683    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/issuer_rejected
+    SLICE_X49Y124        LUT3 (Prop_E6LUT_SLICEL_I0_O)
+                                                      0.152     0.835 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11/O
+                         net (fo=1, routed)           0.097     0.932    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11_n_0
+    SLICE_X49Y124        LUT6 (Prop_G6LUT_SLICEL_I2_O)
+                                                      0.137     1.069 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_5/O
+                         net (fo=18, routed)          0.559     1.629    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/fault
+    SLICE_X48Y125        LUT6 (Prop_A6LUT_SLICEL_I4_O)
+                                                      0.082     1.711 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_lane_mask_q[7]_i_1/O
+                         net (fo=24, routed)          0.573     2.284    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_valid_0
+    SLICE_X49Y126        LUT4 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.150     2.434 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16/O
+                         net (fo=1, routed)           0.148     2.582    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16_n_0
+    SLICE_X49Y126        LUT6 (Prop_B6LUT_SLICEL_I1_O)
+                                                      0.152     2.734 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7/O
+                         net (fo=1, routed)           0.103     2.837    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7_n_0
+    SLICE_X49Y126        LUT6 (Prop_D6LUT_SLICEL_I3_O)
+                                                      0.081     2.918 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_2/O
+                         net (fo=2, routed)           0.402     3.319    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/output_chunk_ready
+    SLICE_X48Y126        LUT6 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.056     3.375 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_1/O
+                         net (fo=115, routed)         0.321     3.697    u_core/u_core/u_issuer/p_0_in24_out
+    SLICE_X48Y118        LUT6 (Prop_G6LUT_SLICEL_I5_O)
+                                                      0.057     3.754 r  u_core/u_core/u_issuer/activation_block_q[0][63]_i_1/O
+                         net (fo=64, routed)          0.725     4.479    u_core/u_core/u_issuer/activation_block_q[0][63]_i_1_n_0
+    SLICE_X50Y113        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[0][8]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=5402, unset)         0.029     5.029    u_core/u_core/u_issuer/clk
+    SLICE_X50Y113        FDRE                                         r  u_core/u_core/u_issuer/activation_block_q_reg[0][8]/C
+                         clock pessimism              0.000     5.029    
+                         clock uncertainty           -0.035     4.994    
+    SLICE_X50Y113        FDRE (Setup_HFF_SLICEL_C_CE)
+                                                     -0.079     4.915    u_core/u_core/u_issuer/activation_block_q_reg[0][8]
+  -------------------------------------------------------------------
+                         required time                          4.915    
+                         arrival time                          -4.479    
+  -------------------------------------------------------------------
+                         slack                                  0.436    
+
+Slack (MET) :             0.437ns  (required time - arrival time)
+  Source:                 u_core/u_core/u_issuer/descriptor_rejected_reg/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_core/u_issuer/active_k_reg[4]/CE
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.435ns  (logic 1.149ns (25.907%)  route 3.286ns (74.093%))
+  Logic Levels:           8  (LUT2=1 LUT3=1 LUT4=1 LUT6=5)
+  Clock Path Skew:        -0.013ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.029ns = ( 5.029 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.042ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=5402, unset)         0.042     0.042    u_core/u_core/u_issuer/clk
+    SLICE_X48Y122        FDRE                                         r  u_core/u_core/u_issuer/descriptor_rejected_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y122        FDRE (Prop_GFF_SLICEL_C_Q)
+                                                      0.114     0.156 f  u_core/u_core/u_issuer/descriptor_rejected_reg/Q
+                         net (fo=3, routed)           0.527     0.683    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/issuer_rejected
+    SLICE_X49Y124        LUT3 (Prop_E6LUT_SLICEL_I0_O)
+                                                      0.152     0.835 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11/O
+                         net (fo=1, routed)           0.097     0.932    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11_n_0
+    SLICE_X49Y124        LUT6 (Prop_G6LUT_SLICEL_I2_O)
+                                                      0.137     1.069 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_5/O
+                         net (fo=18, routed)          0.559     1.629    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/fault
+    SLICE_X48Y125        LUT6 (Prop_A6LUT_SLICEL_I4_O)
+                                                      0.082     1.711 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_lane_mask_q[7]_i_1/O
+                         net (fo=24, routed)          0.573     2.284    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_valid_0
+    SLICE_X49Y126        LUT4 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.150     2.434 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16/O
+                         net (fo=1, routed)           0.148     2.582    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16_n_0
+    SLICE_X49Y126        LUT6 (Prop_B6LUT_SLICEL_I1_O)
+                                                      0.152     2.734 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7/O
+                         net (fo=1, routed)           0.103     2.837    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7_n_0
+    SLICE_X49Y126        LUT6 (Prop_D6LUT_SLICEL_I3_O)
+                                                      0.081     2.918 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_2/O
+                         net (fo=2, routed)           0.402     3.319    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/output_chunk_ready
+    SLICE_X48Y126        LUT6 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.056     3.375 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_1/O
+                         net (fo=115, routed)         0.281     3.657    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/FSM_sequential_state_q_reg[1]
+    SLICE_X48Y121        LUT2 (Prop_A6LUT_SLICEL_I0_O)
+                                                      0.225     3.882 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/active_k[9]_i_1/O
+                         net (fo=10, routed)          0.595     4.477    u_core/u_core/u_issuer/E[0]
+    SLICE_X49Y119        FDRE                                         r  u_core/u_core/u_issuer/active_k_reg[4]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=5402, unset)         0.029     5.029    u_core/u_core/u_issuer/clk
+    SLICE_X49Y119        FDRE                                         r  u_core/u_core/u_issuer/active_k_reg[4]/C
+                         clock pessimism              0.000     5.029    
+                         clock uncertainty           -0.035     4.994    
+    SLICE_X49Y119        FDRE (Setup_CFF_SLICEL_C_CE)
+                                                     -0.079     4.915    u_core/u_core/u_issuer/active_k_reg[4]
+  -------------------------------------------------------------------
+                         required time                          4.915    
+                         arrival time                          -4.477    
+  -------------------------------------------------------------------
+                         slack                                  0.437    
+
+Slack (MET) :             0.437ns  (required time - arrival time)
+  Source:                 u_core/u_core/u_issuer/descriptor_rejected_reg/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_core/u_issuer/active_k_reg[5]/CE
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.435ns  (logic 1.149ns (25.907%)  route 3.286ns (74.093%))
+  Logic Levels:           8  (LUT2=1 LUT3=1 LUT4=1 LUT6=5)
+  Clock Path Skew:        -0.013ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.029ns = ( 5.029 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.042ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=5402, unset)         0.042     0.042    u_core/u_core/u_issuer/clk
+    SLICE_X48Y122        FDRE                                         r  u_core/u_core/u_issuer/descriptor_rejected_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y122        FDRE (Prop_GFF_SLICEL_C_Q)
+                                                      0.114     0.156 f  u_core/u_core/u_issuer/descriptor_rejected_reg/Q
+                         net (fo=3, routed)           0.527     0.683    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/issuer_rejected
+    SLICE_X49Y124        LUT3 (Prop_E6LUT_SLICEL_I0_O)
+                                                      0.152     0.835 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11/O
+                         net (fo=1, routed)           0.097     0.932    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11_n_0
+    SLICE_X49Y124        LUT6 (Prop_G6LUT_SLICEL_I2_O)
+                                                      0.137     1.069 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_5/O
+                         net (fo=18, routed)          0.559     1.629    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/fault
+    SLICE_X48Y125        LUT6 (Prop_A6LUT_SLICEL_I4_O)
+                                                      0.082     1.711 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_lane_mask_q[7]_i_1/O
+                         net (fo=24, routed)          0.573     2.284    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_valid_0
+    SLICE_X49Y126        LUT4 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.150     2.434 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16/O
+                         net (fo=1, routed)           0.148     2.582    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16_n_0
+    SLICE_X49Y126        LUT6 (Prop_B6LUT_SLICEL_I1_O)
+                                                      0.152     2.734 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7/O
+                         net (fo=1, routed)           0.103     2.837    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7_n_0
+    SLICE_X49Y126        LUT6 (Prop_D6LUT_SLICEL_I3_O)
+                                                      0.081     2.918 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_2/O
+                         net (fo=2, routed)           0.402     3.319    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/output_chunk_ready
+    SLICE_X48Y126        LUT6 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.056     3.375 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_1/O
+                         net (fo=115, routed)         0.281     3.657    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/FSM_sequential_state_q_reg[1]
+    SLICE_X48Y121        LUT2 (Prop_A6LUT_SLICEL_I0_O)
+                                                      0.225     3.882 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/active_k[9]_i_1/O
+                         net (fo=10, routed)          0.595     4.477    u_core/u_core/u_issuer/E[0]
+    SLICE_X49Y119        FDRE                                         r  u_core/u_core/u_issuer/active_k_reg[5]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=5402, unset)         0.029     5.029    u_core/u_core/u_issuer/clk
+    SLICE_X49Y119        FDRE                                         r  u_core/u_core/u_issuer/active_k_reg[5]/C
+                         clock pessimism              0.000     5.029    
+                         clock uncertainty           -0.035     4.994    
+    SLICE_X49Y119        FDRE (Setup_BFF_SLICEL_C_CE)
+                                                     -0.079     4.915    u_core/u_core/u_issuer/active_k_reg[5]
+  -------------------------------------------------------------------
+                         required time                          4.915    
+                         arrival time                          -4.477    
+  -------------------------------------------------------------------
+                         slack                                  0.437    
+
+Slack (MET) :             0.437ns  (required time - arrival time)
+  Source:                 u_core/u_core/u_issuer/descriptor_rejected_reg/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_core/u_core/u_issuer/active_k_reg[6]/CE
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.435ns  (logic 1.149ns (25.907%)  route 3.286ns (74.093%))
+  Logic Levels:           8  (LUT2=1 LUT3=1 LUT4=1 LUT6=5)
+  Clock Path Skew:        -0.013ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.029ns = ( 5.029 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.042ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=5402, unset)         0.042     0.042    u_core/u_core/u_issuer/clk
+    SLICE_X48Y122        FDRE                                         r  u_core/u_core/u_issuer/descriptor_rejected_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y122        FDRE (Prop_GFF_SLICEL_C_Q)
+                                                      0.114     0.156 f  u_core/u_core/u_issuer/descriptor_rejected_reg/Q
+                         net (fo=3, routed)           0.527     0.683    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/issuer_rejected
+    SLICE_X49Y124        LUT3 (Prop_E6LUT_SLICEL_I0_O)
+                                                      0.152     0.835 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11/O
+                         net (fo=1, routed)           0.097     0.932    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_11_n_0
+    SLICE_X49Y124        LUT6 (Prop_G6LUT_SLICEL_I2_O)
+                                                      0.137     1.069 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_ready_INST_0_i_5/O
+                         net (fo=18, routed)          0.559     1.629    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/fault
+    SLICE_X48Y125        LUT6 (Prop_A6LUT_SLICEL_I4_O)
+                                                      0.082     1.711 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_lane_mask_q[7]_i_1/O
+                         net (fo=24, routed)          0.573     2.284    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/cfg_valid_0
+    SLICE_X49Y126        LUT4 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.150     2.434 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16/O
+                         net (fo=1, routed)           0.148     2.582    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_16_n_0
+    SLICE_X49Y126        LUT6 (Prop_B6LUT_SLICEL_I1_O)
+                                                      0.152     2.734 f  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7/O
+                         net (fo=1, routed)           0.103     2.837    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_7_n_0
+    SLICE_X49Y126        LUT6 (Prop_D6LUT_SLICEL_I3_O)
+                                                      0.081     2.918 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_2/O
+                         net (fo=2, routed)           0.402     3.319    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/output_chunk_ready
+    SLICE_X48Y126        LUT6 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.056     3.375 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/k_count_q[9]_i_1/O
+                         net (fo=115, routed)         0.281     3.657    u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/FSM_sequential_state_q_reg[1]
+    SLICE_X48Y121        LUT2 (Prop_A6LUT_SLICEL_I0_O)
+                                                      0.225     3.882 r  u_core/u_core/u_base/u_output_slice/u_partial_sum_bank/active_k[9]_i_1/O
+                         net (fo=10, routed)          0.595     4.477    u_core/u_core/u_issuer/E[0]
+    SLICE_X49Y119        FDRE                                         r  u_core/u_core/u_issuer/active_k_reg[6]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=5402, unset)         0.029     5.029    u_core/u_core/u_issuer/clk
+    SLICE_X49Y119        FDRE                                         r  u_core/u_core/u_issuer/active_k_reg[6]/C
+                         clock pessimism              0.000     5.029    
+                         clock uncertainty           -0.035     4.994    
+    SLICE_X49Y119        FDRE (Setup_DFF_SLICEL_C_CE)
+                                                     -0.079     4.915    u_core/u_core/u_issuer/active_k_reg[6]
+  -------------------------------------------------------------------
+                         required time                          4.915    
+                         arrival time                          -4.477    
+  -------------------------------------------------------------------
+                         slack                                  0.437    
+
+
+
+

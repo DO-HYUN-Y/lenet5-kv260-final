@@ -1,0 +1,36 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Wed Sep  2 16:09:28 2026
+| Host         : yundodo running 64-bit unknown
+| Command      : report_high_fanout_nets -fanout_greater_than 16 -max_nets 100 -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/n8_activation_pingpong/200mhz/high_fanout.rpt
+| Design       : alexnet_n8_activation_pingpong
+| Device       : xck26
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+High Fan-out Nets Information
+
+1. Summary
+----------
+
++------------------------------+--------+-------------+
+| Net Name                     | Fanout | Driver Type |
++------------------------------+--------+-------------+
+| rst                          |    165 | PORT        |
+| read_active                  |    116 | FDRE        |
+| read_bank                    |    113 | FDRE        |
+| active_fill_is_pooled        |     90 | FDRE        |
+| bank0/reads_issued_q         |     57 | LUT6        |
+| bank1/reads_issued_q         |     57 | LUT6        |
+| bank1/bank_state_reg[1]_1[0] |     53 | LUT6        |
+| bank1/bank_state_reg[1]_0    |     53 | LUT6        |
+| bank0/mem_reg_i_2__0_n_0     |     35 | LUT5        |
+| bank1/mem_reg_i_2_n_0        |     35 | LUT5        |
+| ready_tensor_bank            |     30 | FDRE        |
+| bank1/p_17_in                |     25 | LUT4        |
+| bank1/write_fire             |     24 | LUT6        |
+| bank0/issue_read             |     23 | LUT4        |
+| bank1/mem_read_q             |     23 | LUT4        |
++------------------------------+--------+-------------+
+
+

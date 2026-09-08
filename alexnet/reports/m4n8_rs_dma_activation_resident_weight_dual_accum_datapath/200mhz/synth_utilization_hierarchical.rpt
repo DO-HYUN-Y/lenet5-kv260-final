@@ -1,0 +1,76 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Thu Sep  3 17:56:59 2026
+| Host         : yundodo running 64-bit unknown
+| Command      : report_utilization -hierarchical -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/m4n8_rs_dma_activation_resident_weight_dual_accum_datapath/200mhz/synth_utilization_hierarchical.rpt
+| Design       : alexnet_m4n8_rs_dma_activation_resident_weight_dual_accum_datapath
+| Device       : xck26-sfvc784-2LV-c
+| Speed File   : -2LV
+| Design State : Synthesized
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++------------------------------------------------------------------------+----------------------------------------------------------------+------------+------------+---------+------+------+--------+--------+------+------------+
+|                                Instance                                |                             Module                             | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs | RAMB36 | RAMB18 | URAM | DSP Blocks |
++------------------------------------------------------------------------+----------------------------------------------------------------+------------+------------+---------+------+------+--------+--------+------+------------+
+| alexnet_m4n8_rs_dma_activation_resident_weight_dual_accum_datapath     |                                                          (top) |       7478 |       7341 |      96 |   41 | 5674 |     19 |      0 |    0 |         24 |
+|   (alexnet_m4n8_rs_dma_activation_resident_weight_dual_accum_datapath) |                                                          (top) |          0 |          0 |       0 |    0 |    0 |      0 |      0 |    0 |          0 |
+|   u_datapath                                                           | alexnet_m4n8_rs_activation_resident_weight_dual_accum_datapath |       7305 |       7168 |      96 |   41 | 5424 |     19 |      0 |    0 |         24 |
+|     (u_datapath)                                                       | alexnet_m4n8_rs_activation_resident_weight_dual_accum_datapath |        136 |        136 |       0 |    0 |  306 |      0 |      0 |    0 |          0 |
+|     u_activation                                                       |                    alexnet_n8_activation_dual_segment_pingpong |        756 |        756 |       0 |    0 |  651 |      4 |      0 |    0 |          0 |
+|       (u_activation)                                                   |                    alexnet_n8_activation_dual_segment_pingpong |         52 |         52 |       0 |    0 |   90 |      0 |      0 |    0 |          0 |
+|       segment0                                                         |                                 alexnet_n8_activation_pingpong |        304 |        304 |       0 |    0 |  267 |      2 |      0 |    0 |          0 |
+|         (segment0)                                                     |                                 alexnet_n8_activation_pingpong |         21 |         21 |       0 |    0 |   63 |      0 |      0 |    0 |          0 |
+|         bank0                                                          |                                  alexnet_n8_activation_bank_18 |        123 |        123 |       0 |    0 |  102 |      1 |      0 |    0 |          0 |
+|         bank1                                                          |                                  alexnet_n8_activation_bank_19 |        160 |        160 |       0 |    0 |  102 |      1 |      0 |    0 |          0 |
+|       segment1                                                         |                              alexnet_n8_activation_pingpong_16 |        400 |        400 |       0 |    0 |  294 |      2 |      0 |    0 |          0 |
+|         (segment1)                                                     |                              alexnet_n8_activation_pingpong_16 |         30 |         30 |       0 |    0 |   72 |      0 |      0 |    0 |          0 |
+|         bank0                                                          |                                     alexnet_n8_activation_bank |        183 |        183 |       0 |    0 |  111 |      1 |      0 |    0 |          0 |
+|         bank1                                                          |                                  alexnet_n8_activation_bank_17 |        187 |        187 |       0 |    0 |  111 |      1 |      0 |    0 |          0 |
+|     u_core                                                             |            alexnet_m4n8_rs_resident_weight_dual_accum_datapath |       6413 |       6276 |      96 |   41 | 4467 |     15 |      0 |    0 |         24 |
+|       (u_core)                                                         |            alexnet_m4n8_rs_resident_weight_dual_accum_datapath |         19 |         19 |       0 |    0 |   39 |      0 |      0 |    0 |          0 |
+|       u_accum_base_datapath                                            |                          alexnet_m4n8_dual_accum_base_datapath |       5656 |       5519 |      96 |   41 | 3878 |      8 |      0 |    0 |         24 |
+|         (u_accum_base_datapath)                                        |                          alexnet_m4n8_dual_accum_base_datapath |          3 |          3 |       0 |    0 |   15 |      0 |      0 |    0 |          0 |
+|         u_output_slice                                                 |                        alexnet_m4n8_n8_dual_accum_output_slice |       4222 |       4126 |      96 |    0 | 1663 |      8 |      0 |    0 |          8 |
+|           (u_output_slice)                                             |                        alexnet_m4n8_n8_dual_accum_output_slice |         33 |         33 |       0 |    0 |   76 |      0 |      0 |    0 |          0 |
+|           u_partial_sum_bank_pair                                      |                         alexnet_n8_int32_partial_sum_bank_pair |       1808 |       1808 |       0 |    0 | 1074 |      8 |      0 |    0 |          0 |
+|             (u_partial_sum_bank_pair)                                  |                         alexnet_n8_int32_partial_sum_bank_pair |         25 |         25 |       0 |    0 |   59 |      0 |      0 |    0 |          0 |
+|             g_segment[0].u_bank                                        |                              alexnet_n8_int32_partial_sum_bank |        994 |        994 |       0 |    0 |  515 |      4 |      0 |    0 |          0 |
+|             g_segment[1].u_bank                                        |                           alexnet_n8_int32_partial_sum_bank_15 |        789 |        789 |       0 |    0 |  500 |      4 |      0 |    0 |          0 |
+|           u_requant                                                    |                                             alexnet_n8_requant |       1683 |       1683 |       0 |    0 |  432 |      0 |      0 |    0 |          8 |
+|           u_router                                                     |                                       alexnet_n8_output_router |        190 |         94 |      96 |    0 |   46 |      0 |      0 |    0 |          0 |
+|           u_scanner                                                    |                                    alexnet_m4n8_result_scanner |        508 |        508 |       0 |    0 |   35 |      0 |      0 |    0 |          0 |
+|         u_sa                                                           |                                                alexnet_sa_m4n8 |       1431 |       1390 |       0 |   41 | 2200 |      0 |      0 |    0 |         16 |
+|           (u_sa)                                                       |                                                alexnet_sa_m4n8 |         65 |         24 |       0 |   41 |  368 |      0 |      0 |    0 |          0 |
+|           g_pe_row[0].g_pe_col[0].u_pe                                 |                                              alexnet_packed_pe |         85 |         85 |       0 |    0 |  111 |      0 |      0 |    0 |          1 |
+|           g_pe_row[0].g_pe_col[1].u_pe                                 |                                            alexnet_packed_pe_0 |         85 |         85 |       0 |    0 |  119 |      0 |      0 |    0 |          1 |
+|           g_pe_row[0].g_pe_col[2].u_pe                                 |                                            alexnet_packed_pe_1 |         85 |         85 |       0 |    0 |  111 |      0 |      0 |    0 |          1 |
+|           g_pe_row[0].g_pe_col[3].u_pe                                 |                                            alexnet_packed_pe_2 |         85 |         85 |       0 |    0 |  119 |      0 |      0 |    0 |          1 |
+|           g_pe_row[0].g_pe_col[4].u_pe                                 |                                            alexnet_packed_pe_3 |         86 |         86 |       0 |    0 |  111 |      0 |      0 |    0 |          1 |
+|           g_pe_row[0].g_pe_col[5].u_pe                                 |                                            alexnet_packed_pe_4 |         85 |         85 |       0 |    0 |  119 |      0 |      0 |    0 |          1 |
+|           g_pe_row[0].g_pe_col[6].u_pe                                 |                                            alexnet_packed_pe_5 |         86 |         86 |       0 |    0 |  111 |      0 |      0 |    0 |          1 |
+|           g_pe_row[0].g_pe_col[7].u_pe                                 |                                            alexnet_packed_pe_6 |         85 |         85 |       0 |    0 |  111 |      0 |      0 |    0 |          1 |
+|           g_pe_row[1].g_pe_col[0].u_pe                                 |                                            alexnet_packed_pe_7 |         85 |         85 |       0 |    0 |  119 |      0 |      0 |    0 |          1 |
+|           g_pe_row[1].g_pe_col[1].u_pe                                 |                                            alexnet_packed_pe_8 |         85 |         85 |       0 |    0 |  111 |      0 |      0 |    0 |          1 |
+|           g_pe_row[1].g_pe_col[2].u_pe                                 |                                            alexnet_packed_pe_9 |         85 |         85 |       0 |    0 |  119 |      0 |      0 |    0 |          1 |
+|           g_pe_row[1].g_pe_col[3].u_pe                                 |                                           alexnet_packed_pe_10 |         85 |         85 |       0 |    0 |  111 |      0 |      0 |    0 |          1 |
+|           g_pe_row[1].g_pe_col[4].u_pe                                 |                                           alexnet_packed_pe_11 |         86 |         86 |       0 |    0 |  119 |      0 |      0 |    0 |          1 |
+|           g_pe_row[1].g_pe_col[5].u_pe                                 |                                           alexnet_packed_pe_12 |         85 |         85 |       0 |    0 |  111 |      0 |      0 |    0 |          1 |
+|           g_pe_row[1].g_pe_col[6].u_pe                                 |                                           alexnet_packed_pe_13 |         88 |         88 |       0 |    0 |  119 |      0 |      0 |    0 |          1 |
+|           g_pe_row[1].g_pe_col[7].u_pe                                 |                                           alexnet_packed_pe_14 |         85 |         85 |       0 |    0 |  111 |      0 |      0 |    0 |          1 |
+|       u_feeder                                                         |                                        alexnet_n8_rs_m4_feeder |        575 |        575 |       0 |    0 |  423 |      5 |      0 |    0 |          0 |
+|       u_issue_controller                                               |                               alexnet_m4n8_rs_issue_controller |         30 |         30 |       0 |    0 |   19 |      0 |      0 |    0 |          0 |
+|       u_weight_bank                                                    |                                    alexnet_n8_weight_tile_bank |        133 |        133 |       0 |    0 |  108 |      2 |      0 |    0 |          0 |
+|   u_dma_ingress                                                        |                                         alexnet_n8_dma_ingress |        173 |        173 |       0 |    0 |  250 |      0 |      0 |    0 |          0 |
++------------------------------------------------------------------------+----------------------------------------------------------------+------------+------------+---------+------+------+--------+--------+------+------------+
+
+

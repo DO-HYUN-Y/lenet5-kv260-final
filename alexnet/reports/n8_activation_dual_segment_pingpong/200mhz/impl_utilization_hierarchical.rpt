@@ -1,0 +1,38 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Wed Sep  2 16:38:36 2026
+| Host         : yundodo running 64-bit unknown
+| Command      : report_utilization -hierarchical -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/n8_activation_dual_segment_pingpong/200mhz/impl_utilization_hierarchical.rpt
+| Design       : alexnet_n8_activation_dual_segment_pingpong
+| Device       : xck26-sfvc784-2LV-c
+| Speed File   : -2LV
+| Design State : Routed
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++-------------------------------------------------+----------------------------------+------------+------------+---------+------+-----+--------+--------+------+------------+
+|                     Instance                    |              Module              | Total LUTs | Logic LUTs | LUTRAMs | SRLs | FFs | RAMB36 | RAMB18 | URAM | DSP Blocks |
++-------------------------------------------------+----------------------------------+------------+------------+---------+------+-----+--------+--------+------+------------+
+| alexnet_n8_activation_dual_segment_pingpong     |                            (top) |        662 |        662 |       0 |    0 | 622 |      4 |      0 |    0 |          0 |
+|   (alexnet_n8_activation_dual_segment_pingpong) |                            (top) |          8 |          8 |       0 |    0 |  90 |      0 |      0 |    0 |          0 |
+|   segment0                                      |   alexnet_n8_activation_pingpong |        291 |        291 |       0 |    0 | 257 |      2 |      0 |    0 |          0 |
+|     (segment0)                                  |   alexnet_n8_activation_pingpong |         24 |         24 |       0 |    0 |  53 |      0 |      0 |    0 |          0 |
+|     bank0                                       |     alexnet_n8_activation_bank_2 |        127 |        127 |       0 |    0 | 102 |      1 |      0 |    0 |          0 |
+|     bank1                                       |     alexnet_n8_activation_bank_3 |        142 |        142 |       0 |    0 | 102 |      1 |      0 |    0 |          0 |
+|   segment1                                      | alexnet_n8_activation_pingpong_0 |        364 |        364 |       0 |    0 | 275 |      2 |      0 |    0 |          0 |
+|     (segment1)                                  | alexnet_n8_activation_pingpong_0 |          6 |          6 |       0 |    0 |  53 |      0 |      0 |    0 |          0 |
+|     bank0                                       |       alexnet_n8_activation_bank |        122 |        122 |       0 |    0 | 111 |      1 |      0 |    0 |          0 |
+|     bank1                                       |     alexnet_n8_activation_bank_1 |        239 |        239 |       0 |    0 | 111 |      1 |      0 |    0 |          0 |
++-------------------------------------------------+----------------------------------+------------+------------+---------+------+-----+--------+--------+------+------------+
+* Note: The sum of lower-level cells may be larger than their parent cells total, due to cross-hierarchy LUT combining
+
+

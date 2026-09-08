@@ -96,6 +96,40 @@ int8_calibration:
     int8_top1: 56.8
     int8_top5: 77.0
     fp32_int8_top1_prediction_agreement: 92.8
+  board_ddr_export:
+    status: pass
+    source: torchvision_AlexNet_Weights_IMAGENET1K_V1
+    checkpoint_sha256: 7be5be791159472b1fbf3c69796f7cb30dca7ad8466c2df70058c37116cdee02
+    exporter: export_board_weights.py
+    verifier: verify_board_weights.py
+    output_directory: ../alexnet_output/int8_mlcommons500_board
+    output_is_git_ignored: true
+    contract_layers_matched: 8
+    weight_layout:
+      conv: [layer, output_n8_tile, input_c8_chunk, kernel_y, kernel_x, input_lane, output_n_lane]
+      fc: [layer, output_n8_tile, k, output_n_lane]
+    weight_image:
+      file: weights_board.bin
+      bytes: 61090496
+      sha256: 07e8583d9c18563672ffeb211746dfc432ba5b96d27039d01563d3fb8679ec3d
+      layer_offsets: {conv1: 0, conv2: 23232, conv3: 330432, conv4: 993984, conv5: 1878720, fc6: 2468544, fc7: 40217280, fc8: 56994496}
+    parameter_layout: [layer, output_channel, little_endian_i32_bias, little_endian_i32_multiplier, u8_right_shift, u8_relu, pad6]
+    parameter_image:
+      file: parameters_board.bin
+      bytes: 165504
+      sha256: 0038da71fe9e4fc4454930b8a7f02e36d822e3cd6736388092c1429635c5a2ad
+      layer_offsets: {conv1: 0, conv2: 1024, conv3: 4096, conv4: 10240, conv5: 14336, fc6: 18432, fc7: 83968, fc8: 149504}
+    manifest:
+      file: board_manifest.json
+      sha256: c372517c33e39ab89a3d4ce7c2adbaf17b32edf6294c5eb4929c36b2121dfc7e
+      imagenet_categories: 1000
+      input_scale: 0.020787402400820273
+      fc8_output_scale: 0.3300604932890164
+    blob_base_alignment_bytes: 128
+    layer_transfer_alignment_bytes: 8
+    independent_full_byte_order_verification: pass
+    pass_marker: ALEXNET_BOARD_WEIGHT_VERIFY_PASS
+    physical_board_loaded: true
 
 pre_rtl_validation:
   status: pass
@@ -134,6 +168,2042 @@ int8_operator_contract:
   physical_k_order: [kernel_y, kernel_x, input_channel_in_group]
   weight_tile_order: [output_channel_tile, k, output_channel_lane]
   packed_pe: two_activation_lanes_times_one_common_weight_split_every_cycle
+
+# PRE_RTL_SIGNOFF.md의 M8xN8 후보를 지우지 않고, 첫 RTL 측정 뒤 결정한
+# bring-up 순서를 별도로 기록한다. 기능/수치 계약은 그대로 유지된다.
+rtl_bringup_revision:
+  decision_date_kst: 2026-08-31
+  experiment_clock_mhz: 200
+  experiment_clock_policy: single_frequency_only
+  pe_optimization_status: deferred_while_non_pe_rtl_bringup_continues
+  base_local_sa:
+    logical: {m: 4, n: 8}
+    physical_packed_pe_grid: {rows: 2, columns: 8}
+    compute_dsp48e2: 16
+    n8_boundary_preserved: true
+  one_step_expansion:
+    logical: {m: 8, n: 8}
+    physical_packed_pe_grid: {rows: 4, columns: 8}
+    condition: after_pe_resource_optimization_and_m4n8_integration_gate
+  board_demo_target:
+    input: usb_camera_v4l2_opencv_on_linux_ps
+    ps_preprocess: [resize_shorter_side_256, center_crop_224x224, rgb_normalize, int8_quantize, dma_pack]
+    transport: [ps_ddr, axi_dma_mm2s, pl_alexnet, axi_dma_s2mm]
+    pl_result: final_logits_or_topk_records
+    terminal_output_example: "결과: 강아지 (golden retriever)"
+    required_before_release: [all_conv_pool_layers, fc6_fc7_fc8, root_scheduler, dma_result_egress, kv260_axi_lite_top, linux_camera_runtime, board_accuracy_test]
+  measured_base_local_sa_200mhz:
+    status: routed_timing_pass
+    clb_lut_total: 1408
+    lut_as_logic: 1367
+    lut_as_shift_register: 41
+    flip_flop: 2200
+    dsp48e2: 16
+    wns_ns: 1.881
+    whs_ns: 0.046
+    routing_errors: 0
+  measured_m4n8_result_scanner_200mhz:
+    status: routed_timing_pass
+    clb_lut_total: 407
+    flip_flop: 33
+    dsp48e2: 0
+    wns_ns: 1.874
+    whs_ns: 0.150
+    routing_errors: 0
+  measured_n8_output_router_200mhz:
+    status: routed_timing_pass
+    fifo_depth_packets: 64
+    payload_bits: 64
+    fifo_word_bits: 85
+    static_descriptor_fields_not_duplicated_per_entry: [destination, n_base, n_lane_mask]
+    clb_lut_total: 152
+    lut_as_logic: 54
+    lut_as_distributed_ram: 98
+    flip_flop: 46
+    bram36: 0
+    dsp48e2: 0
+    wns_ns: 2.396
+    whs_ns: 0.097
+    routing_errors: 0
+  measured_n8_requant_200mhz:
+    status: routed_timing_pass
+    lanes: 8
+    pipeline_stages: 5
+    initiation_interval_cycles: 1
+    parameters_stationary_by_n_lane: [bias, multiplier, right_shift, relu]
+    parameter_change_requires_empty_pipeline: true
+    arithmetic_order: [bias_add, signed27x18_multiply, half_away_round_shift, relu, int8_saturation]
+    dsp_internal_registers_used: [areg, breg, dreg, adreg, mreg, preg]
+    clb_lut_total: 1639
+    lut_as_logic: 1639
+    flip_flop: 447
+    bram36: 0
+    dsp48e2: 8
+    wns_ns: 0.940
+    whs_ns: 0.055
+    routing_errors: 0
+  measured_m4n8_n8_output_slice_200mhz:
+    status: routed_timing_pass
+    integration: [m4n8_result_scanner, n8_requant, n8_output_router]
+    atomic_configuration: requant_parameters_and_router_descriptor
+    configuration_change_requires: [scanner_idle, requant_pipeline_empty, router_fifo_empty]
+    pending_configuration_blocks_new_tiles: true
+    pending_configuration_allows_accepted_work_to_drain: true
+    fifo_depth_packets: 64
+    clb_lut_total: 2129
+    lut_as_logic: 2033
+    lut_as_distributed_ram: 96
+    flip_flop: 512
+    bram36: 0
+    dsp48e2: 8
+    wns_ns: 0.798
+    whs_ns: 0.040
+    routing_errors: 0
+  measured_m4n8_base_datapath_200mhz:
+    status: routed_timing_pass
+    integration: [m4n8_sa, m4n8_result_scanner, n8_requant, n8_output_router]
+    pe_rtl_changed: false
+    logical_shape: {m: 4, n: 8}
+    physical_packed_pe_grid: {rows: 2, columns: 8}
+    end_to_end_path: signed_int8_mac_to_tagged_int8_packet
+    fifo_depth_packets: 64
+    clb_lut_total: 3536
+    lut_as_logic: 3399
+    lut_as_distributed_ram: 96
+    lut_as_shift_register: 41
+    flip_flop: 2718
+    bram36: 0
+    dsp48e2: 24
+    wns_ns: 0.745
+    whs_ns: 0.039
+    routing_errors: 0
+    unconstrained_internal_endpoints: 0
+  measured_n8_maxpool3x3_200mhz:
+    status: routed_timing_pass
+    lanes: 8
+    kernel: {h: 3, w: 3}
+    stride: {h: 2, w: 2}
+    padding: {h: 0, w: 0}
+    input_order: raster_pixels_with_eight_n_lanes_per_beat
+    dynamic_input_shapes_tested: [[5, 5], [55, 55], [27, 27], [13, 13], [4, 6]]
+    max_input_width: 55
+    vertical_reuse: one_line_memory_alternates_even_row_and_even_odd_max
+    output_backpressure: full_pipeline_freeze_at_next_output_window
+    clb_lut_total: 425
+    lut_as_logic: 425
+    flip_flop: 389
+    bram36: 1
+    dsp48e2: 0
+    wns_ns: 0.514
+    whs_ns: 0.096
+    routing_errors: 0
+    unconstrained_internal_endpoints: 0
+    drc_violations: 0
+  measured_n8_activation_bank_200mhz:
+    status: routed_timing_pass
+    lanes: 8
+    word_bits: 64
+    depth_words: 512
+    payload_bytes: 4096
+    ownership: [empty, writing, ready, reading, empty]
+    write_sources_normalized: [direct_router_packet_stream, pooled_raster_stream]
+    same_bank_read_write_overlap: forbidden
+    cross_bank_read_write_overlap: allowed_by_independent_instances
+    sequential_layout: [word_index, n_lane]
+    lane_tail_zero_fill: true
+    clb_lut_total: 92
+    lut_as_logic: 92
+    flip_flop: 112
+    bram36: 1
+    dsp48e2: 0
+    wns_ns: 2.220
+    whs_ns: 0.059
+    routing_errors: 0
+    unconstrained_internal_endpoints: 0
+    drc_violations: 0
+  measured_n8_activation_pingpong_200mhz:
+    status: routed_timing_pass
+    lanes: 8
+    word_bits: 64
+    physical_bank_count: 2
+    depth_words_per_bank: 512
+    payload_bytes_per_bank: 4096
+    total_payload_bytes: 8192
+    single_bank_rtl_changed: false
+    write_sources: [direct_router_packet_stream, pooled_raster_stream]
+    fill_source_policy: descriptor_fixed_for_complete_tensor
+    ready_ordering: two_entry_completed_bank_fifo
+    read_start_policy: queue_head_and_tensor_tag_match
+    same_bank_read_write_overlap: forbidden
+    cross_bank_read_write_overlap: true
+    invalid_descriptor_or_word_policy: backpressure_and_sticky_error
+    simulation:
+      transactions: 8
+      words: 1524
+      word_count_boundaries: [1, 17, 55, 169, 256, 511, 512]
+      rejected_tensor_tags: 8
+      blocked_nonowner_source_cycles: 172
+      cross_bank_overlap_cycles: 1023
+      simultaneous_role_swaps: 6
+      max_read_stall: 18
+      seed: 1798999329
+    clb_lut_total: 353
+    lut_as_logic: 353
+    lut_as_distributed_ram: 0
+    lut_as_shift_register: 0
+    flip_flop: 295
+    bram36: 2
+    dsp48e2: 0
+    wns_ns: 1.524
+    whs_ns: 0.064
+    routing_errors: 0
+    fully_routed_nets: 672
+    constrained_setup_hold_endpoints: 1211
+    unconstrained_internal_endpoints: 0
+    drc_violations: 0
+  measured_n8_activation_dual_segment_pingpong_200mhz:
+    status: routed_timing_pass
+    lanes: 8
+    word_bits: 64
+    logical_set_count: 2
+    segments_per_set: 2
+    physical_bank_count: 4
+    segment_depth_words: 512
+    aggregate_capacity_words_per_set: 1024
+    payload_bytes_per_set: 8192
+    total_payload_bytes: 16384
+    global_segment_split: 512
+    supported_word_count_range: [513, 1024]
+    conv2_raster_words: 729
+    conv2_segment_words: [512, 217]
+    child_activation_bank_rtl_changed: false
+    child_activation_pingpong_rtl_changed: false
+    ready_ordering: pair_owned_two_entry_completed_set_fifo
+    read_start_policy: both_segment_heads_match_bank_and_tensor_tag
+    segment_drain_order: [segment0, segment1]
+    same_bank_read_write_overlap: forbidden
+    cross_set_read_write_overlap: true
+    simulation:
+      transactions: 6
+      words: 4157
+      word_count_boundaries: [513, 514, 600, 729, 777, 1024]
+      rejected_tensor_tags: 6
+      blocked_nonowner_source_cycles: 401
+      cross_set_overlap_cycles: 3577
+      simultaneous_role_swaps: 4
+      segment_transitions: 6
+      boundary_stall_cycles: 12
+      max_read_stall: 20
+      seed: 1800117809
+    clb_lut_total: 662
+    lut_as_logic: 662
+    lut_as_distributed_ram: 0
+    lut_as_shift_register: 0
+    flip_flop: 622
+    bram36: 4
+    dsp48e2: 0
+    wns_ns: 1.378
+    whs_ns: 0.055
+    routing_errors: 0
+    fully_routed_nets: 1377
+    constrained_setup_hold_endpoints: 2342
+    unconstrained_internal_endpoints: 0
+    drc_violations: 0
+  measured_n8_rs_m4_feeder_200mhz:
+    status: routed_timing_pass
+    input_lanes: 8
+    logical_output_m: 4
+    input_order: raster_pixels_with_eight_input_channel_lanes_per_beat
+    output_k_order: [kernel_y, kernel_x, input_channel_in_group]
+    supported_modes:
+      - {kernel: 11, stride: 4, padding: 2}
+      - {kernel: 5, stride: 1, padding: 2}
+      - {kernel: 3, stride: 1, padding: 1}
+    row_local_m_groups: true
+    row_tail_zero_fill: true
+    max_input_width: 224
+    max_padded_width: 228
+    retained_ring_rows: 11
+    ring_logical_words: 2508
+    ring_physical_banks: 5
+    ring_bank_words: 512
+    full_frame_storage: false
+    dynamic_shapes_tested:
+      - {input: [16, 16], channels: 3, kernel: 11, stride: 4, padding: 2}
+      - {input: [27, 27], channels: 8, kernel: 5, stride: 1, padding: 2}
+      - {input: [13, 13], channels: 8, kernel: 3, stride: 1, padding: 1}
+      - {input: [224, 224], channels: 3, kernel: 11, stride: 4, padding: 2}
+    clb_lut_total: 590
+    lut_as_logic: 590
+    flip_flop: 423
+    bram36: 5
+    dsp48e2: 0
+    wns_ns: 0.594
+    whs_ns: 0.092
+    routing_errors: 0
+    unconstrained_internal_endpoints: 0
+    drc_violations: 0
+  measured_m4n8_rs_datapath_200mhz:
+    status: routed_timing_pass
+    integration: [n8_rs_m4_feeder, m4n8_rs_issue_controller, m4n8_base_datapath]
+    pe_rtl_changed: false
+    logical_shape: {m: 4, n: 8}
+    physical_packed_pe_grid: {rows: 2, columns: 8}
+    supported_modes:
+      - {kernel: 11, stride: 4, padding: 2}
+      - {kernel: 5, stride: 1, padding: 2}
+      - {kernel: 3, stride: 1, padding: 1}
+    weight_boundary: context_then_n8_lockstep_k_stream
+    weight_context_fields: [k_count, output_y, output_x_base, frame_tag]
+    activation_weight_transfer: atomic_when_both_valid_and_k_metadata_match
+    descriptor_policy: one_tile_until_compute_done
+    frame_policy: one_descriptor_until_full_pipeline_drain
+    simulation:
+      frames: 3
+      tiles: 27
+      k_tokens: 4609
+      output_packets: 88
+      configurations: 3
+      seed: 1901341241
+    clb_lut_total: 4235
+    lut_as_logic: 4098
+    lut_as_distributed_ram: 96
+    lut_as_shift_register: 41
+    flip_flop: 3163
+    bram36: 5
+    dsp48e2: 24
+    wns_ns: 0.339
+    whs_ns: 0.040
+    routing_errors: 0
+    fully_routed_nets: 7520
+    unconstrained_internal_endpoints: 0
+    drc_expected_warnings: [RTSTAT-10]
+  measured_n8_weight_tile_bank_200mhz:
+    status: routed_timing_pass
+    lanes: 8
+    depth_k_words: 968
+    word_bits: 64
+    payload_bits: 61952
+    resident_scope: one_n8_output_tile_by_one_up_to8_input_channel_chunk
+    ownership: [empty, writing, ready, replaying, ready, explicit_release, empty]
+    replay_context_fields: [k_count, n_lane_mask, context_tag]
+    mismatched_context_rejected: true
+    replay_k_generated_internally: true
+    replay_last_generated_internally: true
+    successful_replay_retains_tile: true
+    lane_tail_zero_fill: true
+    full_layer_channel_chunk_accumulation: not_yet_integrated
+    simulation:
+      transactions: 4
+      k_depths: [1, 17, 967, 968]
+      replays: 8
+      replay_words: 2940
+      context_mismatch_attempts: 12
+      max_output_stall_cycles: 19
+      seed: 1798991401
+    clb_lut_total: 109
+    lut_as_logic: 109
+    flip_flop: 132
+    bram36: 2
+    dsp48e2: 0
+    wns_ns: 2.023
+    whs_ns: 0.064
+    routing_errors: 0
+    fully_routed_nets: 230
+    unconstrained_internal_endpoints: 0
+    drc_violations: 0
+  measured_m4n8_rs_resident_weight_datapath_200mhz:
+    status: routed_timing_pass
+    integration: [n8_weight_tile_bank, m4n8_rs_datapath]
+    pe_rtl_changed: false
+    logical_shape: {m: 4, n: 8}
+    physical_packed_pe_grid: {rows: 2, columns: 8}
+    scope: one_up_to8_input_channel_chunk
+    weight_fill_policy: once_per_frame_context
+    spatial_weight_policy: replay_resident_tile_for_each_m_group
+    frame_context_fields: [k_count, n_lane_mask, weight_context_tag]
+    mismatched_frame_context_rejected: true
+    bank_owner_change_while_frame_active: forbidden
+    frame_completion_waits_for_bank_ready: true
+    cross_chunk_int32_accumulation: not_supported_yet
+    simulation:
+      frames: 3
+      tiles: 27
+      weight_fills: 3
+      fill_words: 635
+      replays: 27
+      replay_words: 4609
+      rejected_context_descriptors: 6
+      output_packets: 88
+      configurations: 3
+      max_output_queue_depth: 4
+      seed: 1935232045
+    clb_lut_total: 4359
+    lut_as_logic: 4222
+    lut_as_distributed_ram: 96
+    lut_as_shift_register: 41
+    flip_flop: 3301
+    bram36: 7
+    dsp48e2: 24
+    wns_ns: 0.755
+    whs_ns: 0.035
+    routing_errors: 0
+    fully_routed_nets: 7859
+    unconstrained_internal_endpoints: 0
+    drc_expected_warnings: [RTSTAT-10]
+  measured_n8_int32_partial_sum_bank_200mhz:
+    status: routed_timing_pass
+    lanes: 8
+    accumulator_bits: 32
+    depth_words: 512
+    word_bits: 256
+    payload_bits: 131072
+    payload_bytes: 16384
+    ownership: [empty, ingest_first, ready, ingest_accum, ready, final_chunk, emitting, empty]
+    chunk_policy: [first_replaces, middle_accumulates, final_accumulates_then_emits]
+    descriptor_fields: [word_count, n_lane_mask, context_tag, chunk_index, first_chunk, final_chunk]
+    per_word_fields: [sequential_word_index, n_lane_mask, last]
+    signed_int32_rmw_lanes: 8
+    ingress_words_per_cycle_without_bubbles: 1
+    final_emit_words_per_cycle_without_backpressure: 1
+    invalid_context_or_sequence_reaches_output: false
+    larger_raster_policy: cascade_identical_units
+    alexnet_capacity:
+      conv1_55x55: bypass_cross_chunk_bank_single_input_chunk
+      conv2_27x27: two_units
+      conv3_conv4_conv5_13x13: one_unit
+      maximum_input_channel_chunks: 48
+    simulation:
+      transactions: 5
+      depth_boundaries: [1, 17, 511, 512]
+      maximum_chunks_tested: 48
+      chunks: 65
+      ingress_words: 14815
+      egress_words: 1210
+      rejected_descriptors: 185
+      blocked_out_of_order_words: 65
+      max_output_stall_cycles: 17
+      seed: 1940396493
+    clb_lut_total: 791
+    lut_as_logic: 791
+    flip_flop: 649
+    bram36: 4
+    dsp48e2: 0
+    wns_ns: 0.907
+    whs_ns: 0.055
+    routing_errors: 0
+    fully_routed_nets: 1287
+    unconstrained_internal_endpoints: 0
+    drc_violations: 0
+  measured_m4n8_n8_accum_output_slice_200mhz:
+    status: routed_timing_pass
+    integration: [m4n8_result_scanner, n8_int32_partial_sum_bank, n8_requant, n8_output_router]
+    pe_rtl_changed: false
+    logical_shape: {m: 4, n: 8}
+    partial_sum_bank: {depth_words: 512, word_bits: 256, bram36: 4}
+    chunk_descriptor_fields: [word_count, output_width, n_lane_mask, context_tag, tile_tag_base, chunk_index, first_chunk, final_chunk]
+    raster_policy: complete_segment_beginning_at_x0_per_chunk
+    ingress_metadata_policy: scanner_m_and_tile_tag_checked_then_sequential_bank_index
+    egress_metadata_policy: row_local_m_and_tile_tag_reconstructed_from_output_width_and_base_tag
+    nonfinal_output_packets: forbidden
+    final_output_path: partial_sum_bank_to_requant_to_router
+    one_bank_alexnet_capacity: conv3_conv4_conv5_13x13
+    maximum_input_channel_chunks_tested: 48
+    larger_raster_policy: cascade_identical_units
+    simulation:
+      transactions: 3
+      chunks: 52
+      scanner_tiles: 2518
+      accumulated_words: 8169
+      output_packets: 196
+      rejected_descriptors: 98
+      configurations: 3
+      max_output_queue_depth: 64
+      seed: 1957835237
+    clb_lut_total: 3172
+    lut_as_logic: 3076
+    lut_as_distributed_ram: 96
+    lut_as_shift_register: 0
+    flip_flop: 1157
+    bram36: 4
+    dsp48e2: 8
+    wns_ns: 0.475
+    whs_ns: 0.055
+    routing_errors: 0
+    fully_routed_nets: 4283
+    unconstrained_internal_endpoints: 0
+    drc_expected_warnings: [RTSTAT-10]
+  measured_m4n8_accum_base_datapath_200mhz:
+    status: routed_timing_pass
+    integration: [m4n8_sa, m4n8_n8_accum_output_slice]
+    pe_rtl_changed: false
+    sa_rtl_changed: false
+    logical_shape: {m: 4, n: 8}
+    physical_packed_pe_grid: {rows: 2, columns: 8}
+    end_to_end_path: signed_int8_mac_to_cross_chunk_int32_accum_to_tagged_int8_packet
+    chunk_policy:
+      first: replace_partial_sum_raster
+      continuation: retain_bank_ownership_and_accumulate
+      final: accumulate_then_requantize_and_route
+    tile_policy: standalone_sa_clear_paired_with_one_scanner_descriptor
+    pending_configuration_policy: block_new_first_chunk_but_never_owned_transaction_progress
+    accepted_configuration_shadow: [n_lane_mask]
+    accepted_configuration_shadow_bits: 8
+    partial_sum_bank: {depth_words: 512, word_bits: 256, bram36: 4}
+    one_bank_alexnet_capacity: conv3_conv4_conv5_13x13
+    maximum_input_channel_chunks_tested: 48
+    simulation:
+      transactions: 3
+      chunks: 52
+      compute_tiles: 2554
+      accepted_k_tokens: 2613
+      accumulated_words: 8259
+      output_packets: 226
+      configurations: 3
+      max_output_queue_depth: 64
+      tiles_accepted_while_configuration_pending: 54
+      seed: 1975730756
+    clb_lut_total: 4511
+    lut_as_logic: 4374
+    lut_as_distributed_ram: 96
+    lut_as_shift_register: 41
+    flip_flop: 3329
+    bram36: 4
+    dsp48e2: 24
+    wns_ns: 0.601
+    whs_ns: 0.036
+    routing_errors: 0
+    fully_routed_nets: 7772
+    constrained_setup_hold_endpoints: 16615
+    unconstrained_internal_endpoints: 0
+    drc_expected_warnings: [RTSTAT-10]
+  measured_m4n8_rs_resident_weight_accum_datapath_200mhz:
+    status: routed_timing_pass
+    integration: [n8_rs_m4_feeder, n8_weight_tile_bank, m4n8_rs_issue_controller, m4n8_accum_base_datapath]
+    pe_rtl_changed: false
+    sa_rtl_changed: false
+    feeder_rtl_changed: false
+    logical_shape: {m: 4, n: 8}
+    physical_packed_pe_grid: {rows: 2, columns: 8}
+    scope: multi_input_channel_chunk_one_n8_output_tile
+    chunk_start_policy: atomic_feeder_and_accumulator_descriptor_after_weight_context_match
+    weight_fill_policy: one_resident_tile_per_input_channel_chunk
+    spatial_weight_policy: replay_resident_tile_for_each_m_group
+    chunk_retirement_waits_for: [feeder_done, issue_controller_idle, compute_idle, partial_sum_chunk_done, weight_bank_ready]
+    nonfinal_owner_change_policy: weight_bank_replaceable_partial_sum_bank_retained
+    final_output_policy: accumulated_raster_requantized_and_routed_once
+    pending_configuration_policy: block_new_first_chunk_but_never_owned_transaction_progress
+    bank_breakdown_bram36: {rs_feeder: 5, resident_weight: 2, partial_sum: 4}
+    one_bank_alexnet_capacity: conv3_conv4_conv5_13x13
+    simulation:
+      conv_layer: conv4
+      input_height: 13
+      input_width: 13
+      input_channels_per_chunk: 8
+      kernel: 3
+      k_per_chunk: 72
+      chunks: 48
+      compute_tiles: 2496
+      weight_replays: 2496
+      replay_words: 179712
+      weight_fill_words: 3456
+      source_words: 8112
+      output_packets: 169
+      rejected_context_descriptors: 4
+      configurations: 2
+      max_output_queue_depth: 64
+      chunks_accepted_while_configuration_pending: 47
+      seed: 1923401777
+    clb_lut_total: 5272
+    lut_as_logic: 5135
+    lut_as_distributed_ram: 96
+    lut_as_shift_register: 41
+    flip_flop: 3919
+    bram36: 11
+    dsp48e2: 24
+    wns_ns: 0.479
+    whs_ns: 0.037
+    routing_errors: 0
+    fully_routed_nets: 9517
+    constrained_setup_hold_endpoints: 19018
+    unconstrained_internal_endpoints: 0
+    drc_expected_warnings: [RTSTAT-10]
+  measured_m4n8_rs_resident_weight_dual_accum_datapath_200mhz:
+    status: routed_timing_pass
+    integration: [n8_rs_m4_feeder, n8_weight_tile_bank, m4n8_rs_issue_controller, m4n8_dual_accum_base_datapath]
+    pe_rtl_changed: false
+    sa_rtl_changed: false
+    feeder_rtl_changed: false
+    logical_shape: {m: 4, n: 8}
+    physical_packed_pe_grid: {rows: 2, columns: 8}
+    scope: multi_input_channel_chunk_one_n8_output_tile_conv2
+    partial_sum_segments: 2
+    partial_sum_segment_depth_words: 512
+    aggregate_word_count_range: {minimum: 513, maximum: 1024}
+    segment_split_global_word_index: 512
+    conv2_segment_words: [512, 217]
+    chunk_start_policy: atomic_feeder_and_two_segment_accumulator_descriptor_after_weight_context_match
+    weight_fill_policy: one_resident_tile_per_input_channel_chunk
+    spatial_weight_policy: replay_resident_tile_for_each_m_group
+    chunk_retirement_waits_for: [feeder_done, issue_controller_idle, compute_idle, both_partial_sum_segments_chunk_done, weight_bank_ready]
+    nonfinal_owner_change_policy: weight_bank_replaceable_partial_sum_pair_retained
+    final_output_policy: segment0_then_segment1_as_one_requantized_and_routed_raster
+    pending_configuration_policy: block_new_first_chunk_but_never_owned_transaction_progress
+    bank_breakdown_bram36: {rs_feeder: 5, resident_weight: 2, partial_sum_segment0: 4, partial_sum_segment1: 4}
+    simulation:
+      conv_layer: conv2
+      input_height: 27
+      input_width: 27
+      input_channels_per_chunk: 8
+      kernel: 5
+      k_per_chunk: 200
+      chunks: 12
+      compute_tiles: 2268
+      weight_replays: 2268
+      replay_words: 453600
+      weight_fill_words: 2400
+      source_words: 8748
+      output_packets: 729
+      rejected_context_descriptors: 4
+      configurations: 2
+      max_output_queue_depth: 64
+      chunks_accepted_while_configuration_pending: 11
+      seed: 1926416433
+    clb_lut_total: 6431
+    lut_as_logic: 6294
+    lut_as_distributed_ram: 96
+    lut_as_shift_register: 41
+    flip_flop: 4492
+    bram36: 15
+    dsp48e2: 24
+    wns_ns: 0.382
+    whs_ns: 0.046
+    routing_errors: 0
+    fully_routed_nets: 11290
+    constrained_setup_hold_endpoints: 21080
+    unconstrained_internal_endpoints: 0
+    drc_expected_warnings: [RTSTAT-10]
+  measured_m4n8_rs_activation_resident_weight_dual_accum_datapath_200mhz:
+    status: routed_timing_pass
+    integration: [n8_activation_dual_segment_pingpong, m4n8_rs_resident_weight_dual_accum_datapath]
+    pe_rtl_changed: false
+    sa_rtl_changed: false
+    feeder_rtl_changed: false
+    activation_child_rtl_changed: false
+    compute_child_rtl_changed: false
+    logical_shape: {m: 4, n: 8}
+    physical_packed_pe_grid: {rows: 2, columns: 8}
+    scope: activation_buffered_multi_input_channel_chunk_one_n8_output_tile_conv2
+    activation_sets: 2
+    activation_segments_per_set: 2
+    activation_segment_depth_words: 512
+    activation_capacity_words_per_set: 1024
+    activation_metadata_queue_depth: 2
+    command_buffer_depth: 1
+    command_validation: registered_after_capture
+    activation_segment_split_global_word_index: 512
+    conv2_activation_segment_words: [512, 217]
+    chunk_start_policy: atomic_activation_read_and_compute_launch_after_registered_validation
+    validation_fields: [activation_tensor_tag, activation_word_count_from_input_geometry, activation_lane_mask, resident_weight_k_count, resident_weight_n_lane_mask, resident_weight_context_tag]
+    rejection_policy: pulse_chunk_rejected_without_consuming_activation_or_weight_owner
+    owner_change_policy: activation_child_may_fill_opposite_set_during_active_read_weight_fill_weight_release_and_configuration_blocked_while_command_pending_or_chunk_active
+    chunk_retirement_waits_for: [activation_read_done, compute_chunk_done]
+    bank_breakdown_bram36: {activation_segment0_ab: 2, activation_segment1_ab: 2, rs_feeder: 5, resident_weight: 2, partial_sum_segment0: 4, partial_sum_segment1: 4}
+    simulation:
+      conv_layer: conv2
+      input_height: 27
+      input_width: 27
+      input_channels_per_chunk: 8
+      kernel: 5
+      k_per_chunk: 200
+      chunks: 2
+      activation_words: 1458
+      compute_tiles: 378
+      weight_replays: 378
+      replay_words: 75600
+      weight_fill_words: 400
+      output_packets: 729
+      activation_fill_sources: [direct, pooled]
+      activation_fill_read_overlap_cycles: 893
+      segment_transitions: 2
+      rejected_descriptors: 3
+      max_output_queue_depth: 64
+      seed: 1973602625
+    clb_lut_total: 7338
+    lut_as_logic: 7201
+    lut_as_distributed_ram: 96
+    lut_as_shift_register: 41
+    flip_flop: 5424
+    bram36: 19
+    dsp48e2: 24
+    wns_ns: 0.495
+    whs_ns: 0.046
+    routing_errors: 0
+    fully_routed_nets: 13474
+    constrained_setup_hold_endpoints: 24237
+    unconstrained_internal_endpoints: 0
+    drc_expected_warnings: [RTSTAT-10]
+  measured_n8_dma_ingress_200mhz:
+    status: routed_timing_pass
+    axis_width_bits: 128
+    internal_n8_word_bits: 64
+    destinations: [activation_direct, activation_pooled, resident_weight]
+    descriptor_buffer_depth: 1
+    axis_buffer_depth_beats: 1
+    unpack_order: low_64_bits_then_high_64_bits
+    activation_max_words: 1024
+    weight_max_words: 968
+    descriptor_validation: [destination, nonzero_word_count, destination_capacity, byte_count_equals_words_times_8, eight_byte_alignment, contiguous_nonzero_lane_mask]
+    owner_commit_policy: valid_descriptor_waits_for_selected_owner_invalid_descriptor_rejected_without_owner_consumption
+    axis_tail_policy: full_beat_tkeep_ffff_odd_final_n8_word_tkeep_00ff
+    stream_error_policy: latch_sticky_error_and_drain_descriptor_word_count_future_scheduler_forbids_compute
+    pe_rtl_changed: false
+    sa_rtl_changed: false
+    storage_child_rtl_changed: false
+    simulation:
+      transfers: 4
+      internal_words: 949
+      axis_beats: 476
+      activation_words: 749
+      resident_weight_words: 200
+      rejected_descriptors: 6
+      activation_owner_commits: 3
+      weight_owner_commits: 1
+      owner_wait_cycles: 26
+      maximum_payload_stall_cycles: 3
+      injected_stream_errors: 1
+      seed: 1965855143
+    clb_lut_total: 115
+    lut_as_logic: 115
+    lut_as_distributed_ram: 0
+    lut_as_shift_register: 0
+    flip_flop: 250
+    bram36: 0
+    dsp48e2: 0
+    wns_ns: 1.948
+    whs_ns: 0.100
+    routing_errors: 0
+    fully_routed_nets: 294
+    constrained_setup_hold_endpoints: 1066
+    unconstrained_internal_endpoints: 0
+    drc_violations: 0
+  measured_m4n8_rs_dma_activation_resident_weight_dual_accum_datapath_200mhz:
+    status: routed_timing_pass
+    integration: [axis128_dma_ingress, m4n8_rs_activation_resident_weight_dual_accum_datapath]
+    logical_shape: {m: 4, n: 8}
+    physical_packed_pe_grid: {rows: 2, columns: 8}
+    scope: dma_fed_activation_buffered_multi_input_channel_chunk_one_n8_output_tile_conv2
+    axis_width_bits: 128
+    internal_n8_word_bits: 64
+    dma_destinations: [activation_direct, activation_pooled, resident_weight]
+    dma_owner_policy: activation_descriptor_commits_one_ready_tensor_weight_descriptor_commits_one_resident_tile
+    chunk_start_policy: tagged_activation_and_weight_owners_match_and_composite_protocol_error_clear
+    dma_stream_error_policy: sticky_error_interlocks_chunk_launch_until_software_clear
+    pipeline_idle_policy: compute_datapath_idle_and_dma_ingress_idle
+    pe_rtl_changed: false
+    sa_rtl_changed: false
+    feeder_rtl_changed: false
+    activation_child_rtl_changed: false
+    compute_child_rtl_changed: false
+    dma_child_rtl_changed: false
+    simulation:
+      conv_layer: conv2
+      chunks: 2
+      dma_transfers: 4
+      dma_internal_words: 1858
+      axis_beats: 930
+      activation_words: 1458
+      resident_weight_words: 400
+      compute_tiles: 378
+      weight_replays: 378
+      output_packets: 729
+      activation_fill_sources: [direct, pooled]
+      activation_fill_read_overlap_cycles: 1385
+      segment_transitions: 2
+      rejected_dma_descriptors: 1
+      dma_error_interlock_cycles: 6
+      max_output_queue_depth: 64
+      seed: 1993616153
+    clb_lut_total: 7382
+    lut_as_logic: 7245
+    lut_as_distributed_ram: 96
+    lut_as_shift_register: 41
+    flip_flop: 5674
+    bram36: 19
+    dsp48e2: 24
+    wns_ns: 0.289
+    whs_ns: 0.046
+    routing_errors: 0
+    fully_routed_nets: 13815
+    constrained_setup_hold_endpoints: 25006
+    unconstrained_internal_endpoints: 0
+    drc_expected_warnings: [RTSTAT-10]
+  measured_n8_dma_result_egress_200mhz:
+    status: routed_timing_pass
+    axis_width_bits: 128
+    internal_n8_packet_bits: 64
+    maximum_words: 1024
+    descriptor_buffer_depth: 1
+    packing_buffer_words: 2
+    packing_order: low_64_bits_then_high_64_bits
+    descriptor_validation: [nonzero_word_count, maximum_capacity, byte_count_equals_words_times_8, destination, eight_channel_n_base_alignment, contiguous_nonzero_lane_mask]
+    packet_metadata_validation: [destination, slice, n_base, lane_mask, masked_bytes_zero, monotonic_m_and_tile_tag]
+    axis_tail_policy: full_beat_tkeep_ffff_odd_final_n8_word_tkeep_00ff_zero_high_half
+    metadata_error_policy: latch_sticky_error_and_drain_descriptor_word_count_future_scheduler_forbids_new_chunk
+    completion_tag_policy: retain_first_and_last_tile_tag
+    pe_rtl_changed: false
+    sa_rtl_changed: false
+    router_rtl_changed: false
+    simulation:
+      transfers: 4
+      internal_packets: 763
+      axis_beats: 383
+      rejected_descriptors: 6
+      injected_metadata_error_packets: 6
+      source_backpressure_cycles: 3
+      maximum_axis_stall_cycles: 2
+      seed: 2052266449
+    clb_lut_total: 241
+    lut_as_logic: 241
+    lut_as_distributed_ram: 0
+    lut_as_shift_register: 0
+    flip_flop: 369
+    bram36: 0
+    dsp48e2: 0
+    wns_ns: 1.852
+    whs_ns: 0.055
+    routing_errors: 0
+    fully_routed_nets: 369
+    constrained_setup_hold_endpoints: 1369
+    unconstrained_internal_endpoints: 0
+    drc_violations: 0
+  measured_m4n8_rs_dma_io_activation_resident_weight_dual_accum_datapath_200mhz:
+    status: routed_timing_pass
+    integration: [m4n8_rs_dma_activation_resident_weight_dual_accum_datapath, n8_dma_result_egress]
+    logical_shape: {m: 4, n: 8}
+    physical_packed_pe_grid: {rows: 2, columns: 8}
+    scope: full_axis128_mm2s_compute_s2mm_loop_one_n8_output_tile_conv2
+    input_axis_width_bits: 128
+    output_axis_width_bits: 128
+    internal_n8_word_bits: 64
+    result_descriptor_policy: descriptor_active_before_first_router_packet_consumption
+    result_error_policy: owned_transfer_drains_later_chunk_launch_interlocked_until_software_clear
+    pipeline_idle_policy: compute_and_input_dma_idle_and_result_dma_idle
+    protocol_error_policy: composite_input_compute_and_result_dma_status
+    pe_rtl_changed: false
+    sa_rtl_changed: false
+    feeder_rtl_changed: false
+    storage_child_rtl_changed: false
+    compute_child_rtl_changed: false
+    input_dma_child_rtl_changed: false
+    result_dma_child_rtl_changed: false
+    simulation:
+      conv_layer: conv2
+      chunks: 2
+      input_dma_transfers: 4
+      input_dma_internal_words: 1858
+      input_axis_beats: 930
+      result_dma_transfers: 1
+      result_internal_words: 729
+      result_axis_beats: 365
+      compute_tiles: 378
+      weight_replays: 378
+      activation_fill_read_overlap_cycles: 1361
+      segment_transitions: 2
+      rejected_result_descriptors: 1
+      result_error_interlock_cycles: 6
+      max_output_queue_depth: 64
+      maximum_s2mm_stall_cycles: 397
+      seed: 2067869155
+    clb_lut_total: 7756
+    lut_as_logic: 7619
+    lut_as_distributed_ram: 96
+    lut_as_shift_register: 41
+    flip_flop: 6040
+    bram36: 19
+    dsp48e2: 24
+    wns_ns: 0.290
+    whs_ns: 0.046
+    routing_errors: 0
+    fully_routed_nets: 14284
+    constrained_setup_hold_endpoints: 26256
+    unconstrained_internal_endpoints: 0
+    drc_expected_warnings: [RTSTAT-10]
+  measured_dma_chunk_scheduler_200mhz:
+    status: routed_timing_pass
+    command_slots: 1
+    software_command_registration: complete_command_captured_before_cross_field_validation
+    accept_policy: configured_quiescent_command_boundary_and_both_dma_directions_idle_without_protocol_error
+    buffered_sequence: [activation_dma, stale_weight_release_if_needed, resident_weight_dma, final_result_dma_arm_if_enabled, chunk_launch, weight_release, final_result_completion_if_enabled]
+    conv1_streaming_sequence: [stale_weight_release_if_needed, resident_weight_dma, final_result_dma_arm, chunk_with_direct_activation_stream, weight_release, final_result_completion]
+    streaming_activation_dma_descriptor_skipped: true
+    advancement_policy: downstream_ready_valid_handshake_or_owned_completion_event_only
+    final_chunk_policy: result_dma_transfer_active_before_chunk_launch
+    nonfinal_completion_policy: quiescent_command_boundary_with_accumulator_transaction_open
+    final_completion_policy: result_dma_complete_then_full_pipeline_idle
+    local_rejection_policy: bad_cross_field_relationship_rejected_before_child_request
+    downstream_fault_sources: [input_dma_descriptor_rejected, result_dma_descriptor_rejected, chunk_rejected, composite_protocol_error]
+    fault_recovery_policy: stable_fault_owned_work_drains_clear_both_dma_errors_wait_composite_error_low_then_restart
+    command_fifo_depth: 0
+    payload_storage: none
+    pe_rtl_changed: false
+    sa_rtl_changed: false
+    datapath_rtl_changed: false
+    simulation:
+      commands: 5
+      completed_commands: 3
+      rejected_commands: 2
+      conv1_streaming_commands: 1
+      conv1_result_words: 3025
+      input_descriptors: 6
+      result_descriptors: 2
+      chunks: 3
+      weight_releases: 4
+      input_descriptor_stall_cycles: 15
+      result_descriptor_stall_cycles: 6
+      chunk_stall_cycles: 9
+      recovery_owned_busy_wait_cycles: 4
+      seed: 2085820833
+    clb_lut_total: 135
+    lut_as_logic: 135
+    lut_as_distributed_ram: 0
+    lut_as_shift_register: 0
+    flip_flop: 399
+    bram36: 0
+    dsp48e2: 0
+    wns_ns: 2.123
+    whs_ns: 0.099
+    routing_errors: 0
+    fully_routed_nets: 386
+    constrained_setup_hold_endpoints: 1551
+    unconstrained_internal_endpoints: 0
+    drc_violations: 0
+  measured_m4n8_rs_dma_scheduled_io_datapath_200mhz:
+    status: routed_timing_pass
+    integration: [dma_chunk_scheduler, m4n8_rs_dma_io_activation_resident_weight_dual_accum_datapath]
+    logical_shape: {m: 4, n: 8}
+    physical_packed_pe_grid: {rows: 2, columns: 8}
+    scope: one_software_command_boundary_over_full_axis128_mm2s_compute_s2mm_loop
+    command_slots: 1
+    manual_dma_chunk_weight_control_ports: false
+    scheduler_is_only_control_owner: true
+    scheduler_owned_requests: [activation_dma_descriptor, weight_dma_descriptor, final_result_dma_descriptor, weight_release, chunk_launch]
+    input_axis_width_bits: 128
+    output_axis_width_bits: 128
+    internal_n8_word_bits: 64
+    command_accept_policy: configured_quiescent_command_boundary_and_both_dma_directions_idle_without_datapath_protocol_error
+    nonfinal_completion_policy: chunk_quiescent_with_accumulator_transaction_open_for_next_command
+    final_completion_policy: result_transfer_complete_and_full_datapath_pipeline_idle
+    protocol_error_policy: composite_datapath_error_or_scheduler_fault_without_scheduler_feedback
+    pe_rtl_changed: false
+    sa_rtl_changed: false
+    feeder_rtl_changed: false
+    storage_child_rtl_changed: false
+    compute_child_rtl_changed: false
+    input_dma_child_rtl_changed: false
+    result_dma_child_rtl_changed: false
+    simulation:
+      conv_layer: conv2
+      software_commands: 4
+      completed_commands: 2
+      rejected_commands: 2
+      input_dma_transfers: 4
+      input_dma_internal_words: 1858
+      input_axis_beats: 930
+      result_dma_transfers: 1
+      result_internal_words: 729
+      result_axis_beats: 365
+      compute_chunks: 2
+      compute_tiles: 378
+      weight_replays: 378
+      activation_segment_transitions: 2
+      rejected_input_descriptors: 1
+      fault_clears: 2
+      max_output_queue_depth: 64
+      maximum_s2mm_stall_cycles: 397
+      seed: 2103593495
+    clb_lut_total: 7775
+    lut_as_logic: 7638
+    lut_as_distributed_ram: 96
+    lut_as_shift_register: 41
+    flip_flop: 6440
+    bram36: 19
+    dsp48e2: 24
+    wns_ns: 0.375
+    whs_ns: 0.046
+    routing_errors: 0
+    fully_routed_nets: 14766
+    constrained_setup_hold_endpoints: 27532
+    unconstrained_internal_endpoints: 0
+    drc_expected_warnings: [RTSTAT-10]
+  measured_n8_fc_m4_issuer_200mhz:
+    status: routed_timing_pass
+    scope: n8_activation_transpose_and_resident_weight_replay_to_m4xn8_tile_issue
+    logical_shape: {m: 4, n: 8}
+    activation_input_word_bits: 64
+    activation_input_layout: [k_block, m_position, k_lane]
+    activation_block_register_words_max: 4
+    activation_k_lanes_per_word: 8
+    weight_input_layout: [k, n_lane]
+    descriptor_fields: [k_count, m_count, n_lane_mask, activation_tensor_tag, weight_context_tag, tile_tag]
+    descriptor_rejection_policy: invalid_shape_rejected_before_activation_weight_or_tile_owner_request
+    source_error_policy: latch_protocol_error_and_drain_owned_descriptor_deterministically
+    weight_replay_policy: exactly_one_resident_replay_per_descriptor
+    k_chunk_policy: parent_splits_full_fc_k_to_fit_resident_weight_bank
+    resident_weight_k_words_max: 968
+    full_fc_k_counts: {fc6: 9216, fc7: 4096, fc8: 4096}
+    tail_support: {m: true, n_low_contiguous_mask: true, k_partial_n8_block: true}
+    pe_rtl_changed: false
+    sa_rtl_changed: false
+    bram_payload_storage: false
+    simulation:
+      descriptors: 5
+      completed_descriptors: 4
+      rejected_descriptors: 1
+      weight_replays: 4
+      activation_words: 494
+      tiles: 4
+      k_tokens: 994
+      maximum_k_chunk_tested: 968
+      replay_stall_cycles: 2
+      activation_stall_cycles: 2061
+      tile_stall_cycles: 1
+      issue_stall_cycles: 328
+      source_metadata_errors: 2
+      seed: 2133940937
+    clb_lut_total: 353
+    lut_as_logic: 353
+    lut_as_distributed_ram: 0
+    lut_as_shift_register: 0
+    flip_flop: 440
+    bram36: 0
+    dsp48e2: 0
+    wns_ns: 1.982
+    whs_ns: 0.098
+    routing_errors: 0
+    fully_routed_nets: 526
+    constrained_setup_hold_endpoints: 807
+    unconstrained_internal_endpoints: 0
+    drc_violations: 0
+
+  measured_m4n8_fc_resident_weight_accum_datapath_200mhz:
+    status: routed_timing_pass
+    scope: one_fc_m_group_n8_output_tile_with_explicit_k_chunks
+    logical_shape: {m: 4, n: 8}
+    physical_shape: {packed_pe_rows: 2, n: 8}
+    resident_weight_depth_words: 968
+    partial_sum_depth_words: 512
+    activation_stream_layout: [chunk_local_k_block, m_position, k_lane]
+    activation_stream_buffer_connected: false
+    pool5_flattening_connected: false
+    dma_connected: false
+    full_layer_geometry_connected: false
+    board_top_connected: false
+    descriptor_policy: registered_validate_before_atomic_issuer_and_accumulator_launch
+    rejection_policy: no_child_side_effects_correctable_retry
+    continuation_identity: [m_count, n_lane_mask, context_tag, tile_tag, next_chunk_index]
+    weight_owner_policy: explicit_release_refill_between_chunks_descriptor_wins_over_release
+    configuration_policy: final_drain_only_pending_configuration_does_not_block_continuation
+    nonfinal_completion: partial_sum_retained_no_int8_output
+    final_completion: issuer_and_accumulator_done_and_all_output_packets_transferred
+    source_fault_policy: sticky_until_reset_drain_owned_chunk_report_failed_discard_results
+    intermediate_accumulation: signed_int32
+    final_requant_post_bias_range: signed_int27_frozen_contract
+    pe_rtl_changed: false
+    sa_rtl_changed: false
+    issuer_rtl_changed: false
+    child_storage_rtl_changed: false
+    simulation:
+      full_k_output_tile_cases:
+        - {k: 9216, m: 4, n: 8, chunks: 10}
+        - {k: 4096, m: 3, n: 5, chunks: 5}
+        - {k: 4096, m: 1, n: 1, chunks: 5}
+        - {k: 17, m: 2, n: 2, chunk_k_counts: [10, 7]}
+      descriptors: 40
+      completed_chunks: 23
+      rejected_chunks: 15
+      failed_chunks: 2
+      completed_transactions: 5
+      weight_replays: 25
+      k_tokens: 17451
+      activation_words: 6672
+      weight_words: 17451
+      scanned_partial_sum_words: 70
+      final_int32_words: 14
+      output_int8_words_including_discarded_fault_case: 14
+      output_stall_cycles: 244
+      ce_stall_cycles: 4256
+      blocked_owner_change_checks: 33523
+      maximum_router_queue_depth: 4
+      intermediate_signed27_overflow_then_cancellation: true
+      source_fault_final_and_nonfinal_quarantine: true
+      reset_recovery: true
+      seed: 1178819095
+    clb_lut_total: 4814
+    lut_as_logic: 4677
+    lut_as_distributed_ram: 96
+    lut_as_shift_register: 41
+    flip_flop: 4029
+    bram36: 6
+    dsp48e2: 24
+    wns_ns: 0.576
+    whs_ns: 0.032
+    routing_errors: 0
+    fully_routed_nets: 8782
+    constrained_setup_hold_endpoints: 18937
+    unconstrained_internal_endpoints: 0
+    drc_expected_warnings: [RTSTAT-10]
+
+  measured_m4n8_fc_activation_resident_weight_accum_datapath_200mhz:
+    status: routed_timing_pass
+    scope: one_activation_buffered_fc_m_group_n8_output_tile_with_explicit_k_chunks
+    logical_shape: {m: 4, n: 8}
+    activation_depth_words: 512
+    activation_words_per_chunk_max: 484
+    activation_word_count_rule: ceil_k_div_8_times_m
+    activation_fill_descriptor: [k_count, m_count, tensor_tag]
+    activation_physical_layout: [chunk_local_k_block, m_position, k_lane]
+    activation_physical_word_bits: 64
+    activation_fill_mask: 255
+    activation_padding_policy: every_unused_k_lane_zero_in_each_last_block_m_word
+    activation_read_policy: consuming_read_after_inner_fc_validation_and_activation_demand
+    activation_read_mask: reconstructed_from_k_m_and_read_index
+    activation_rejection_policy: preserve_ready_bank_on_outer_and_inner_compute_rejection
+    activation_bad_fill_policy: sticky_fault_drain_declared_count_quarantine_until_reset
+    activation_read_fault_policy: drain_owned_chunk_report_failed_discard_final_results
+    activation_pingpong: false
+    dma_connected: false
+    pool5_flattening_connected: false
+    full_layer_geometry_connected: false
+    board_top_connected: false
+    linux_camera_runtime_connected: false
+    pe_rtl_changed: false
+    sa_rtl_changed: false
+    issuer_rtl_changed: false
+    activation_bank_rtl_changed: false
+    resident_fc_datapath_rtl_changed: false
+    final_completion: activation_read_done_and_inner_fc_output_drain
+    simulation:
+      full_k_lengths_tested: [9216, 4096]
+      k_tail_lengths_tested: [1, 2, 3, 4, 5, 6, 7]
+      minimum_k_tested: 1
+      maximum_activation_words: 484
+      descriptors: 51
+      completed_chunks: 31
+      rejected_chunks: 18
+      failed_chunks: 2
+      completed_transactions: 13
+      activation_fills: 43
+      completed_activation_fills: 33
+      rejected_activation_fills: 4
+      failed_activation_fills: 6
+      activation_reads: 33
+      activation_read_words: 6714
+      reconstructed_tail_words: 33
+      weight_replays: 33
+      k_tokens: 17536
+      activation_write_words_including_bad_fills: 6750
+      weight_words: 17536
+      scanned_partial_sum_words: 93
+      final_int32_words: 37
+      output_int8_words_including_discarded_fault_case: 37
+      output_stall_cycles: 572
+      activation_read_stall_cycles: 21774
+      ce_stall_cycles: 4450
+      blocked_owner_change_checks: 30426
+      maximum_router_queue_depth: 4
+      reset_recovery: true
+      seed: 1178812738
+    clb_lut_total: 5071
+    lut_as_logic: 4934
+    lut_as_distributed_ram: 96
+    lut_as_shift_register: 41
+    flip_flop: 4371
+    bram36: 7
+    dsp48e2: 24
+    wns_ns: 0.500
+    whs_ns: 0.034
+    routing_errors: 0
+    fully_routed_nets: 9460
+    constrained_setup_hold_endpoints: 20132
+    unconstrained_internal_endpoints: 0
+    drc_expected_warnings: [RTSTAT-10]
+
+  measured_m4n8_fc_dma_io_datapath_200mhz:
+    status: routed_timing_pass
+    scope: axis_mm2s_to_buffered_fc_output_tile_to_axis_s2mm
+    logical_shape: {m: 4, n: 8}
+    axis_width_bits: 128
+    serialized_input_compute_ownership: true
+    input_descriptor_fields: [destination, word_count, byte_count, lane_mask, tag, k_count, m_count]
+    activation_destination: 0
+    activation_word_count_rule: ceil_k_div_8_times_m
+    activation_lane_mask: 255
+    activation_padding_policy: zero_every_unused_k_lane
+    weight_destination: 2
+    weight_word_count_rule: k_count
+    weight_descriptor_m_count: 0
+    byte_count_rule: eight_times_word_count
+    unsupported_destinations: [1, 3]
+    descriptor_rejection_policy: reject_shape_or_nonempty_owner_before_child_commit_correctable_retry
+    result_descriptor_policy: automatic_m_word_descriptor_after_validated_final_activation_read_starts
+    nonfinal_result_descriptor: false
+    completion_policy: nonfinal_core_retire_final_core_retire_and_last_axis_sink_handshake
+    raw_result_transfer_done_includes_faulted_transfers: true
+    fault_policy: sticky_until_reset_drain_owned_count_report_failure_block_new_owners
+    actual_axi_dma_ip_instantiated: false
+    ddr_write_completion_verified: false
+    runtime_n8_placement_connected: false
+    full_layer_geometry_connected: false
+    pool5_flattening_connected: false
+    board_top_connected: false
+    linux_camera_runtime_connected: false
+    pe_rtl_changed: false
+    sa_rtl_changed: false
+    child_fc_datapath_rtl_changed: false
+    dma_adapter_rtl_changed: false
+    simulation:
+      full_k_lengths_tested: [9216, 4096]
+      m_counts_tested: [1, 2, 3, 4]
+      k_tail_lengths_tested: [1, 2, 3, 4, 5, 6, 7]
+      maximum_activation_words: 484
+      descriptors: 53
+      completed_chunks: 31
+      rejected_chunks: 19
+      failed_chunks: 3
+      completed_transactions: 13
+      dma_commands: 97
+      dma_completed_transfers: 68
+      dma_rejected_descriptors: 22
+      dma_failed_transfers: 7
+      mm2s_axis_beats: 12166
+      result_transfers_including_faulted: 15
+      s2mm_axis_beats: 23
+      s2mm_words_including_discarded_fault_cases: 40
+      odd_mm2s_transfers: 20
+      odd_s2mm_transfers: 6
+      weight_replays: 34
+      k_tokens: 17543
+      activation_write_words: 6741
+      weight_write_words: 17570
+      scanned_partial_sum_words: 96
+      output_stall_cycles: 602
+      activation_read_stall_cycles: 21837
+      ce_stall_cycles: 4516
+      blocked_owner_change_checks: 30185
+      core_retired_while_s2mm_stalled_cycles: 266
+      maximum_router_queue_depth: 2
+      registered_descriptor_pin_change_test: true
+      reset_recovery: true
+      seed: 1178813517
+    clb_lut_total: 5534
+    lut_as_logic: 5397
+    lut_as_distributed_ram: 96
+    lut_as_shift_register: 41
+    flip_flop: 5108
+    bram36: 7
+    dsp48e2: 24
+    wns_ns: 0.396
+    whs_ns: 0.044
+    routing_errors: 0
+    fully_routed_nets: 10545
+    constrained_setup_hold_endpoints: 22299
+    unconstrained_internal_endpoints: 0
+    drc_expected_warnings: [RTSTAT-10]
+    drc_nonfatal_mapping_warnings: [DPOP-3]
+    requant_routed_mapping_inspection:
+      preg_zero_lane: 7
+      downstream_fdre_endpoints: 45
+      other_lanes_preg: 1
+
+  measured_m4n8_fc_dma_runtime_placement_200mhz:
+    status: routed_timing_pass
+    scope: configurable_logical_n8_output_position_on_one_fc_sa
+    logical_shape: {m: 4, n: 8}
+    runtime_parameter: RUNTIME_SLICE_INDEX
+    runtime_parameter_default: false
+    measured_runtime_parameter: true
+    config_input: cfg_slice_index
+    config_input_bits: 3
+    config_acceptance: cfg_valid_and_cfg_ready_at_fully_idle_transaction_boundary
+    n64_base_alignment: 64
+    n_base_rule: accepted_n64_base_plus_eight_times_accepted_slice
+    egress_slice_meaning: logical_n8_position_not_physical_sa_replication
+    positions_supported: [0, 1, 2, 3, 4, 5, 6, 7]
+    router_and_result_descriptor_share_accepted_placement: true
+    placement_stable_through_partial_sums_and_final_axis_stall: true
+    static_mode_ignores_new_input: true
+    other_wrapper_paths: fixed_slice_mode
+    fifo_payload_widened: false
+    sa_instances: 1
+    pe_rtl_changed: false
+    sa_rtl_changed: false
+    requant_rtl_changed: false
+    dma_adapter_rtl_changed: false
+    runtime_n8_placement_connected: true
+    full_layer_geometry_connected: false
+    pool5_flattening_connected: false
+    actual_axi_dma_ip_instantiated: false
+    ddr_write_completion_verified: false
+    board_top_connected: false
+    linux_camera_runtime_connected: false
+    simulation:
+      router_modes_tested: [fixed, runtime]
+      router_cpp_oracle: independent_fixed_slice_oracle_recreated_only_at_empty_config_boundary
+      router_n64_bases: [960, 65472]
+      router_maximum_n8_base: 65528
+      router_checked_cycles: {fixed: 343, runtime: 354}
+      router_checked_packets_per_mode: 130
+      router_blocked_config_checks_per_mode: 113
+      fc_positions_observed_mask: 255
+      fc_full_n64_sweep_base: 256
+      fc8_last_n8_base: 992
+      fc_full_k_lengths_tested: [9216, 4096]
+      fc_m_counts_tested: [1, 2, 3, 4]
+      fc_descriptors: 70
+      fc_completed_chunks: 48
+      fc_rejected_chunks: 19
+      fc_failed_chunks: 3
+      fc_completed_transactions: 22
+      dma_commands: 131
+      dma_completed_transfers: 102
+      dma_rejected_descriptors: 22
+      dma_failed_transfers: 7
+      mm2s_axis_beats: 12276
+      result_transfers_including_faulted: 24
+      s2mm_axis_beats: 36
+      s2mm_words_including_discarded_fault_cases: 61
+      odd_mm2s_transfers: 33
+      odd_s2mm_transfers: 11
+      weight_replays: 51
+      k_tokens: 17688
+      activation_write_words: 6803
+      weight_write_words: 17715
+      scanned_partial_sum_words: 137
+      pending_placement_config_checks: 960
+      core_retired_while_s2mm_stalled_cycles: 460
+      live_config_placement_pins_poisoned: true
+      maximum_activation_words: 484
+      maximum_router_queue_depth: 2
+      output_stall_cycles: 970
+      activation_read_stall_cycles: 21628
+      ce_stall_cycles: 4250
+      blocked_owner_change_checks: 30936
+      reset_recovery: true
+      static_fc_dma_original_pass_counters_preserved: true
+      affected_child_shared_path_regressions_passed: 7
+      seed: 1178813517
+    clb_lut_total: 5540
+    lut_as_logic: 5403
+    lut_as_distributed_ram: 96
+    lut_as_shift_register: 41
+    flip_flop: 5075
+    bram36: 7
+    dsp48e2: 24
+    wns_ns: 0.539
+    whs_ns: 0.046
+    routing_errors: 0
+    fully_routed_nets: 10532
+    constrained_setup_hold_endpoints: 22250
+    unconstrained_internal_endpoints: 0
+    drc_expected_warnings: [RTSTAT-10]
+    drc_nonfatal_mapping_warnings: []
+    report_directory: reports/m4n8_fc_dma_runtime_placement/200mhz
+
+  measured_fc_layer_controller_200mhz:
+    status: routed_timing_pass
+    scope: one_full_fc_layer_logical_service_scheduler
+    layers: [6, 7, 8]
+    job_fields: [layer_id, m_count, job_tag]
+    m_range: [1, 4]
+    schedule: n8_outer_k_chunk_inner
+    k_chunk_max: 968
+    layer_geometry:
+      fc6: {k: 9216, n: 4096, n8_tiles: 512, chunks_per_tile: 10, final_k: 504}
+      fc7: {k: 4096, n: 4096, n8_tiles: 512, chunks_per_tile: 5, final_k: 224}
+      fc8: {k: 4096, n: 1000, n8_tiles: 125, chunks_per_tile: 5, final_k: 224}
+    external_services: [per_n8_parameters, logical_read_to_packed_axis, result_receive_and_commit]
+    parameter_response_validation: [layer_id, job_tag, n_base, frozen_multiplier_range, frozen_shift_range]
+    parameter_payload_registered: true
+    activation_layout: k_block_m_k_lane_zero_padded
+    weight_layout: k_n_lane
+    activation_refilled_per_n8_k_chunk: true
+    result_request_before_final_chunk: true
+    completion_requires: [clean_core_chunk_and_transaction_retire, last_axis_sink_handshake, matching_external_result_commit, empty_weight_bank]
+    invalid_job_policy: correctable_rejection_without_child_ownership
+    fault_policy: sticky_until_joint_reset_cancel_unaccepted_requests_allow_owned_stream_drain_discard_output
+    failure_pulse_certifies_dma_drain: false
+    response_timeout_implemented: false
+    ddr_addresses_generated: false
+    axi_dma_ip_instantiated: false
+    root_graph_controller: false
+    sa_instances: 0
+    simulation:
+      downstream_model: behavioral_geometry_and_completion_model_not_sa
+      complete_jobs: [{layer: 6, m: 4}, {layer: 7, m: 3}, {layer: 8, m: 1}, {layer: 8, m: 2}]
+      successful_job_chunks: 8930
+      rejected_jobs: 6
+      failure_cases: 14
+      parameter_configs_including_failed_jobs: 1277
+      dma_commands_including_failed_jobs: 17890
+      chunks_including_failed_jobs: 8945
+      k_tokens_including_failed_jobs: 7852032
+      result_requests_including_failed_jobs: 1277
+      configuration_stall_cycles: 3831
+      read_request_stall_cycles: 35780
+      delayed_result_commit_checks: 7744
+      registered_job_and_parameter_capture: true
+      tag_wrap_tested: true
+      stale_weight_release_tested: true
+      early_and_late_result_commit_tested: true
+      separated_core_completion_pulses_tested: true
+      joint_reset_recovery: true
+    clb_lut_total: 418
+    lut_as_logic: 418
+    lut_as_distributed_ram: 0
+    lut_as_shift_register: 0
+    flip_flop: 577
+    bram36: 0
+    dsp48e2: 0
+    wns_ns: 1.026
+    whs_ns: 0.090
+    fully_routed_nets: 377
+    constrained_setup_hold_endpoints: 2512
+    routing_errors: 0
+    unconstrained_internal_endpoints: 0
+    drc_violations: 0
+
+  measured_m4n8_fc_layer_datapath_200mhz:
+    status: routed_timing_pass
+    scope: fc_layer_controller_with_one_runtime_placement_fc_dma_datapath
+    logical_shape: {m: 4, n: 8}
+    sa_instances: 1
+    pe_rtl_changed: false
+    sa_rtl_changed: false
+    child_fc_dma_rtl_changed: false
+    runtime_n8_placement_connected: true
+    full_fc_layer_geometry_connected: true
+    pool5_flattening_connected: false
+    physical_ddr_address_service_connected: false
+    actual_axi_dma_ip_instantiated: false
+    actual_ddr_write_completion_verified: false
+    root_graph_controller_connected: false
+    board_top_connected: false
+    linux_camera_runtime_connected: false
+    trained_model_accuracy_tested: false
+    simulation:
+      full_numerical_layer: {layer: 8, k: 4096, n: 1000, m: 1, n8_tiles: 125, chunks: 625, k_tokens: 512000}
+      input_data: synthetic
+      oracle: independent_scalar_dense_reduction_plus_cpp_dpi_dot_product_and_requant
+      checked_boundaries: [each_sa_operand, final_int32_accumulator, routed_int8_coordinates, packed_result_axis]
+      full_fc6_fc7_numerical_integration_tested: false
+      failure_cases: [malformed_activation_mm2s_m3, mismatched_result_completion_tag_m3]
+      clean_layers: 1
+      failed_jobs: 2
+      total_chunks_including_failed_jobs: 630
+      total_k_tokens_including_failed_jobs: 516096
+      total_input_transfers: 1261
+      total_mm2s_beats: 291250
+      result_transfers_including_failed_jobs: 126
+      result_n8_words_including_failed_jobs: 128
+      s2mm_beats: 127
+      parameter_tiles: 127
+      output_stall_cycles: 3701
+      ce_stall_cycles: 128805
+      delayed_result_commit_checks: 2396
+      mm2s_error_drain_before_reset: true
+      reset_then_full_layer_success: true
+      parameter_pins_poisoned_after_acceptance: true
+      seed: 1178815577
+    clb_lut_total: 5820
+    lut_as_logic: 5683
+    lut_as_distributed_ram: 96
+    lut_as_shift_register: 41
+    flip_flop: 4897
+    bram36: 7
+    dsp48e2: 24
+    wns_ns: 0.497
+    whs_ns: 0.046
+    fully_routed_nets: 10401
+    constrained_setup_hold_endpoints: 21634
+    routing_errors: 0
+    unconstrained_internal_endpoints: 0
+    drc_expected_warnings: [RTSTAT-10]
+    drc_nonfatal_mapping_warnings: []
+    comparison_note: internal_debug_counters_not_exported_and_fc_geometry_fixed_so_ff_delta_is_not_controller_cost
+
+  measured_m4n8_shared_compute_top_200mhz:
+    status: routed_timing_pass
+    scope: combined_conv_fc_compute_service_not_board_top
+    logical_shape: {m: 4, n: 8}
+    physical_shape: 2x8_packed_pe
+    sa_instances: 1
+    dsp_split: {packed_mac: 16, requant: 8}
+    pe_rtl_changed: false
+    sa_rtl_changed: false
+    requant_rtl_changed: false
+    frontends: [row_stationary_conv_command_path, fc6_fc7_fc8_layer_path]
+    shared_components: [m4n8_sa, result_scanner, int32_partial_sum_bank, n8_requant, output_router]
+    separate_frontend_storage: [conv_activation, conv_weight, fc_activation, fc_weight]
+    partial_sum_depth_words: 4096
+    conv1_direct_activation_stream_connected: true
+    conv1_input_words: 50176
+    conv1_output_words: 3025
+    owner_modes: [conv, fc]
+    owner_change_requires_explicit_drained_release: true
+    release_blocks_on: [compute, partial_sum, result_axis, fc_layer, fc_external_result_commit]
+    shared_compute_reset_between_clean_owners: false
+    inactive_frontend_work_masked: true
+    default_standalone_wrapper_mode_preserved: true
+    full_graph_sequencer_connected: false
+    pooling_connected: false
+    pool5_flatten_connected: false
+    physical_ddr_address_service_connected: false
+    axi_mm_or_axi_lite_shell_connected: false
+    board_top_connected: false
+    linux_camera_runtime_connected: false
+    trained_model_accuracy_tested: false
+    simulation:
+      owner_order: [conv, fc8]
+      reset_between_conv_and_clean_fc8: false
+      conv: {chunks: 2, output_words: 729, spatial_tiles: 378}
+      conv1_direct_stream: {input_words: 50176, k: 363, output_words: 3025, numerically_checked: true}
+      conv1_scheduler: {activation_dma_descriptors: 0, result_words: 3025, pass: true}
+      fc8: {m: 1, k: 4096, n: 1000, n8_tiles: 125, chunks: 625, k_tokens: 512000}
+      fc8_oracle: cpp_dense_dot_product_and_requant
+      fc8_scores_checked: 1000
+      fc_negative_cases: [malformed_activation_mm2s_m3, mismatched_result_completion_tag_m3]
+      blocked_early_release_cycles: 1792298
+      resident_partial_sum_release_checks: 2
+      delayed_fc_commit_release_checks: 3912
+      clean_handoffs: 1
+      pass_marker: ALEXNET_M4N8_SHARED_COMPUTE_TOP_TEST_PASSED
+    clb_lut_total: 9063
+    lut_as_logic: 8926
+    lut_as_distributed_ram: 96
+    lut_as_shift_register: 41
+    flip_flop: 7721
+    bram36: 42
+    dsp48e2: 24
+    wns_ns: 0.017
+    whs_ns: 0.046
+    tns_ns: 0.000
+    ths_ns: 0.000
+    fully_routed_nets: 16557
+    constrained_setup_hold_endpoints: 31978
+    routing_errors: 0
+    unconstrained_internal_endpoints: 0
+    drc_expected_warnings: [DPOP-3, RTSTAT-10]
+    report_directory: reports/m4n8_shared_compute_top/200mhz
+
+  measured_graph_controller_200mhz:
+    status: routed_timing_pass
+    scope: logical_conv1_through_fc8_root_sequencer_not_connected_top
+    layer_order: [conv1, conv2, conv3, conv4, conv5, fc6, fc7, fc8]
+    shared_owner_order: [conv, fc]
+    shared_owner_acquisitions: 2
+    completed_conv_layers: 5
+    completed_fc_layers: 3
+    mismatched_completion_metadata_fault_test: stable_protocol_fault
+    pooling_flags: [pool1, pool2, pool5]
+    conv1_direct_activation_streaming: true
+    pool5_flatten_flag: true
+    clb_lut_total: 94
+    lut_as_logic: 94
+    flip_flop: 38
+    bram36: 0
+    dsp48e2: 0
+    wns_ns: 2.051
+    whs_ns: 0.089
+    routing_errors: 0
+    drc_violations: 0
+    report_directory: reports/graph_controller/200mhz
+
+  measured_pool5_fc6_flatten_reader_200mhz:
+    status: routed_timing_pass
+    scope: pool5_n8_tile_major_to_fc6_channel_major_gather_not_connected_top
+    pool5_shape: [256, 6, 6]
+    scalar_count: 9216
+    n8_word_count: 1152
+    fc6_chunks: 10
+    max_chunk_scalars: 968
+    address_decode_setup_cycles: 2
+    live_address_walk: registered_sequential_coordinates
+    clb_lut_total: 311
+    lut_as_logic: 311
+    flip_flop: 291
+    bram36: 0
+    dsp48e2: 0
+    wns_ns: 0.843
+    whs_ns: 0.064
+    routing_errors: 0
+    drc_violations: 0
+    report_directory: reports/pool5_fc6_flatten_reader/200mhz
+
+  measured_m4n8_graph_compute_top_200mhz:
+    status: routed_timing_pass
+    scope: conv1_fc8_graph_control_and_shared_compute_logical_services_not_board_top
+    logical_shape: {m: 4, n: 8}
+    physical_shape: 2x8_packed_pe
+    sa_instances: 1
+    controller_instances: {graph: 1, conv_layer: 1, fc_layer: 1}
+    layer_order: [conv1, conv2, conv3, conv4, conv5, fc6, fc7, fc8]
+    shared_owner_order: [conv, fc]
+    conv_schedule:
+      output_n8_tiles: 144
+      commands: 3912
+      raw_output_words: 60624
+      order: n8_tile_major_then_input_chunk
+      accumulator_context_retained_until_final_input_chunk: true
+      layer_completion_waits_for_external_result_pool_commit: true
+      conv1_direct_activation_streaming: true
+    integration:
+      graph_controller_to_conv_layer_controller: true
+      conv_layer_controller_to_real_rs_command_port: true
+      graph_controller_to_real_fc_layer_job_port: true
+      graph_owner_to_real_shared_compute_owner: true
+      shared_compute_connected: true
+      pooling_storage_connected: false
+      pool5_flatten_injection_connected: false
+      physical_ddr_address_generation_connected: false
+      axi_mm_or_axi_lite_shell_connected: false
+      board_top_connected: false
+      linux_camera_runtime_connected: false
+    simulation:
+      kind: full_graph_control_with_abstract_command_and_fc_completions
+      conv_layers: 5
+      conv_n8_tiles: 144
+      conv_commands: 3912
+      conv_layer_commits: 5
+      fc_layers: 3
+      owner_acquisitions: 2
+      owner_releases: 2
+      conv_command_metadata_fault_test: stable_protocol_fault
+      full_trained_model_numerical_graph_tested: false
+      conv_controller_pass_marker: ALEXNET_CONV_LAYER_CONTROLLER_TEST_PASSED
+      orchestrator_pass_marker: ALEXNET_GRAPH_COMPUTE_ORCHESTRATOR_TEST_PASSED
+    hierarchical_resources:
+      shared_compute: {clb_lut: 8416, flip_flop: 6773, bram36: 42, dsp48e2: 24}
+      graph_compute_orchestrator: {clb_lut: 367, flip_flop: 582, bram36: 0, dsp48e2: 0}
+      conv_layer_controller: {clb_lut: 300, flip_flop: 544, bram36: 0, dsp48e2: 0}
+      graph_controller: {clb_lut: 67, flip_flop: 38, bram36: 0, dsp48e2: 0}
+    clb_lut_total: 8878
+    lut_as_logic: 8741
+    lut_as_distributed_ram: 96
+    lut_as_shift_register: 41
+    flip_flop: 7355
+    bram36: 42
+    dsp48e2: 24
+    wns_ns: 0.008
+    whs_ns: 0.031
+    tns_ns: 0.000
+    ths_ns: 0.000
+    fully_routed_nets: 16124
+    constrained_setup_hold_endpoints: 30574
+    routing_errors: 0
+    unconstrained_internal_endpoints: 0
+    drc_expected_warnings: [RTSTAT-10]
+    report_directory: reports/m4n8_graph_compute_top/200mhz
+
+  measured_conv_fc_data_service_200mhz:
+    status: routed_timing_pass
+    scope: conv_pool_storage_stream_pool5_cache_and_fc6_flatten_injection
+    maxpool_instances: 1
+    pool_or_bypass_layers: [conv1_pool, conv2_pool, conv3_bypass, conv4_bypass, conv5_pool]
+    raw_conv_words_per_graph: 60624
+    stored_conv_words_per_graph: 24560
+    pool5_shape: [256, 6, 6]
+    pool5_n8_words: 1152
+    pool5_scalars: 9216
+    pool5_cache:
+      logical_bits: 73728
+      physical_shape: 512x144
+      input_gearbox: 128_to_144_low_first
+      bram36: 2
+    fc6_flatten_chunks: 10
+    simulation:
+      all_layer_contracts_pass: true
+      conv5_to_pool5_to_fc6_numerical_pass: true
+      pass_marker: ALEXNET_CONV_FC_DATA_SERVICE_TEST_PASSED
+    clb_lut_total: 2049
+    flip_flop: 1546
+    bram36: 3
+    dsp48e2: 0
+    wns_ns: 0.348
+    whs_ns: 0.055
+    routing_errors: 0
+    report_directory: reports/conv_fc_data_service/200mhz
+
+  measured_ddr_address_planner_200mhz:
+    status: routed_timing_pass
+    scope: programmable_base_fixed_alexnet_physical_ddr_descriptors
+    descriptor_cases_checked: 21893
+    accepted_descriptors: 21892
+    rejected_descriptors: 1
+    protected_internal_paths: [conv1_direct_activation_stream, fc6_pool5_flatten]
+    weight_blob_bytes: 61090496
+    parameter_blob_bytes: 165504
+    address_arithmetic: constant_shift_add_no_dsp
+    pipeline_stages: 2
+    clb_lut_total: 921
+    flip_flop: 344
+    bram36: 0
+    dsp48e2: 0
+    wns_ns: 0.372
+    whs_ns: 0.055
+    routing_errors: 0
+    report_directory: reports/ddr_address_planner/200mhz
+
+  measured_m4n8_graph_data_top_200mhz:
+    status: routed_timing_pass
+    scope: conv1_fc8_graph_compute_pool_storage_pool5_fc6_data_plane
+    logical_shape: {m: 4, n: 8}
+    physical_shape: 2x8_packed_pe
+    integration:
+      graph_compute_connected: true
+      maxpool_bypass_service_connected: true
+      common_external_storage_axis_connected: true
+      pool5_two_bram_cache_connected: true
+      pool5_fc6_flatten_injection_connected: true
+      conv_result_service_armed_before_first_command: true
+      early_result_completion_latched: true
+      physical_ddr_address_generation_connected: false
+      dma_descriptor_arbitration_connected: false
+      axi_mm_or_axi_lite_shell_connected: false
+      board_top_connected: false
+      linux_camera_runtime_connected: false
+      trained_model_accuracy_tested: false
+    instances:
+      shared_sa: 1
+      graph_controller: 1
+      maxpool: 1
+      pool5_cache: 1
+      fc6_flatten_reader: 1
+    clb_lut_total: 10938
+    lut_as_logic: 10801
+    lut_as_distributed_ram: 96
+    lut_as_shift_register: 41
+    flip_flop: 8899
+    bram36: 45
+    dsp48e2: 24
+    wns_ns: 0.098
+    whs_ns: 0.046
+    tns_ns: 0.000
+    ths_ns: 0.000
+    fully_routed_nets: 19330
+    constrained_setup_hold_endpoints: 35436
+    routing_errors: 0
+    drc_expected_warnings: [DPOP-3, RTSTAT-10]
+    pe_rtl_changed: false
+    sa_rtl_changed: false
+    report_directory: reports/m4n8_graph_data_top/200mhz
+
+  measured_parameter_record_loader_200mhz:
+    status: routed_timing_pass
+    scope: one_n8_parameter_tile_from_eight_axis128_records
+    record_format: little_endian_i32_i32_u8_u8_pad6
+    records_per_tile: 8
+    record_bytes: 16
+    tile_bytes: 128
+    checked_fields: [full_tkeep, exact_tlast, zero_padding, signed_int18_multiplier_fit, right_shift_range, layer_relu_policy]
+    simulation: {tiles: 3, completed: 2, rejected: 1, records: 24, backpressure_stable: true}
+    clb_lut_total: 50
+    flip_flop: 588
+    bram36: 0
+    dsp48e2: 0
+    wns_ns: 1.942
+    whs_ns: 0.109
+    tns_ns: 0.000
+    ths_ns: 0.000
+    report_directory: reports/parameter_record_loader/200mhz
+
+  measured_m4n8_graph_dma_top_200mhz:
+    status: routed_timing_pass
+    scope: full_graph_post_pool_storage_to_one_axi_dma_csr_and_axis_boundary
+    integration:
+      graph_data_top_connected: true
+      physical_ddr_address_generation_connected: true
+      dma_descriptor_arbitration_connected: true
+      parameter_mm2s_router_and_loader_connected: true
+      post_pool_s2mm_tile_scheduler_connected: true
+      axi_dma_simple_mode_control_master_connected: true
+      axi_lite_ps_control_slave_connected: false
+      physical_axi_dma_ip_block_design_connected: false
+      board_top_connected: false
+      linux_camera_runtime_connected: false
+      trained_model_accuracy_tested: false
+    descriptor_sources: [conv_activation, conv_weight, conv_parameter, conv_result, fc_activation_weight, fc_parameter, fc_result]
+    conv_storage_schedule: {layers: 5, n8_tiles: 144, stored_n8_words: 24560, physical_s2mm_descriptors: 144}
+    parameter_record_format: little_endian_i32_i32_u8_u8_pad6
+    dma_address_width_bits: 32
+    dma_alignment_bytes: 8
+    axi_dma_mm2s_dre_required: true
+    axi_dma_s2mm_dre_required: true
+    dma_alignment_simulation: {clock_mhz: 200, alexnet_8_byte_mm2s_pass: true, alexnet_8_byte_s2mm_pass: true, legacy_default_16_byte_preserved: true}
+    clb_lut_total: 12266
+    flip_flop: 9946
+    bram36: 45
+    dsp48e2: 24
+    wns_ns: 0.088
+    whs_ns: 0.046
+    tns_ns: 0.000
+    ths_ns: 0.000
+    fully_routed_nets: 21883
+    routing_errors: 0
+    drc_expected_warnings: [RTSTAT-10]
+    pe_rtl_changed: false
+    sa_rtl_changed: false
+    report_directory: reports/m4n8_graph_dma_top/200mhz
+
+  measured_m4n8_accelerator_top_200mhz:
+    status: routed_timing_pass
+    scope: reusable_software_controlled_pl_ip_before_kv260_block_design
+    integration:
+      graph_dma_top_connected: true
+      ps_control_axi_lite_slave_connected: true
+      one_entry_pending_job_mailbox: true
+      atomic_pending_and_active_configuration_snapshots: true
+      sticky_w1c_completion_and_error_status: true
+      interrupt_output_connected: true
+      camera_n8_axis_width_bits: 64
+      dma_payload_axis_width_bits: 128
+      axi_dma_control_master_width_bits: 32
+      physical_axi_dma_ip_block_design_connected: false
+      zynqmp_ps_connected: false
+      board_clock_reset_connected: false
+      board_top_connected: false
+      bitstream_generated: false
+      linux_camera_runtime_connected: false
+      trained_model_accuracy_tested: false
+    control_register_map: CONTROL_REGISTERS.md
+    software_register_header: software/include/alexnet_accelerator_regs.h
+    supported_control_operations: [submit, clear_sticky_status, cancel_pending]
+    submit_validation: [one_pending_slot, no_live_core_fault, all_bases_128_byte_aligned, all_bases_below_4gib]
+    simulation:
+      independent_aw_w_ordering: true
+      read_write_response_backpressure: true
+      byte_strobes: true
+      pending_active_snapshot_isolation: true
+      queue_full_rejection: true
+      invalid_configuration_rejection: true
+      sticky_status_w1c: true
+      irq_behavior: true
+      pass_marker: ALEXNET_AXI_LITE_REGS_TEST_PASSED
+    instances: {shared_sa: 1, axi_lite_control_bank: 1, graph_dma_top: 1, axi_dma_simple_master: 1}
+    clb_lut_total: 12730
+    flip_flop: 11503
+    bram36: 45
+    dsp48e2: 24
+    wns_ns: 0.021
+    whs_ns: 0.036
+    tns_ns: 0.000
+    ths_ns: 0.000
+    fully_routed_nets: 23821
+    constrained_setup_hold_endpoints: 42981
+    routing_errors: 0
+    drc_expected_warnings: [RTSTAT-10]
+    pe_rtl_changed: false
+    sa_rtl_changed: false
+    report_directory: reports/m4n8_accelerator_top/200mhz
+
+  measured_m4n8_kv260_board_top_200mhz:
+    status: frame_cache_bitstream_routed_timing_pass_pending_optimized_board_measurement
+    scope: full_kv260_ps_pl_shell_with_prior_non_cache_board_runtime_baseline
+    board_part: xilinx.com:kv260_som:part0:1.4
+    part: xck26-sfvc784-2LV-c
+    top: system_wrapper
+    integration:
+      accelerator_ip_packaged: true
+      camera_adapter_ip_packaged: true
+      zynqmp_ps_connected: true
+      board_clock_reset_connected: true
+      one_clock_domain: true
+      ps_pl0_input_mhz: 99.999001
+      clock_target_mhz: 200
+      clock_generator: clk_wiz_200_mmcm
+      clock_actual_mhz: 199.998002
+      fabric_reset_source: clk_wiz_200_locked
+      external_reset_inactive_value: 1
+      auxiliary_reset_inactive_value: 1
+      physical_main_axi_dma_ip_connected: true
+      main_dma_mode: simple_mm2s_and_s2mm
+      main_dma_axis_width_bits: 128
+      main_dma_mm2s_dre: true
+      main_dma_s2mm_dre: true
+      physical_camera_axi_dma_ip_connected: true
+      camera_dma_owner: ps_linux
+      camera_dma_mode: simple_mm2s_only
+      camera_dma_axis_width_bits: 64
+      camera_rgbx_axis_adapter_connected: true
+      ddr_hp0_data_width_bits: 128
+      control_and_memory_smartconnect_connected: true
+      pl_to_ps_irq_sources: 5
+      board_top_connected: true
+      bitstream_generated: true
+      bitstream_bearing_xsa_generated: true
+      trained_weight_board_images_generated: true
+      trained_weight_board_images_loaded: true
+      physical_board_connected_ssh: true
+      source_and_weight_files_deployed: true
+      target_kernel_driver_built: true
+      usb_camera_detected: true
+      physical_board_programmed: true
+      device_tree_overlay_applied: true
+      target_kernel_driver_loaded: true
+      device_node_created: true
+      coherent_dma_mmap_tested: true
+      board_csr_inspection_tested: true
+      physical_board_functionally_tested: true
+      linux_camera_runtime_connected: true
+      trained_model_accuracy_tested: true
+      camera_to_terminal_classification_tested: true
+    ps_control_addresses:
+      accelerator: "0xA0000000"
+      main_dma: "0xA0010000"
+      camera_dma: "0xA0020000"
+    dma_ddr_low_range: {base: "0x00000000", high: "0x7FFFFFFF"}
+    irq_bit_order: [accelerator, main_mm2s, main_s2mm, camera_mm2s, camera_format_error]
+    camera_buffer:
+      preprocessed_shape_hwc: [224, 224, 3]
+      pixels: 50176
+      ddr_word_bytes_per_pixel: 8
+      total_bytes: 401408
+      byte_order: [signed_int8_channel0, signed_int8_channel1, signed_int8_channel2, zero_pad3, zero_pad4, zero_pad5, zero_pad6, zero_pad7]
+      dma_input_tkeep: "0xFF"
+      accelerator_output_tkeep: "0x07"
+      exact_tlast_checked: true
+      sticky_format_error: true
+    camera_frame_replay:
+      status: full_board_routed_timing_pass_pending_optimized_board_run
+      implementation: rtl/integration/alexnet_camera_frame_replay.sv
+      frame_words: 50176
+      replay_count: 8
+      storage: {uram288: 13, ram_style: ultra}
+      output_pipeline_stages: 2
+      sustained_words_per_cycle: 1
+      camera_dma_launches_before: 8
+      camera_dma_launches_after: 1
+      camera_ddr_bytes_before: 3211264
+      camera_ddr_bytes_after: 401408
+      camera_ddr_bytes_removed: 2809856
+      malformed_frame_faults: [bad_lane_mask, early_tlast, missing_tlast]
+      pass_marker: ALEXNET_CAMERA_FRAME_REPLAY_SIM_PASS
+      pe_rtl_changed: false
+      sa_rtl_changed: false
+    camera_adapter_simulation:
+      clock_mhz: 200
+      backpressure_stable: true
+      bad_tkeep_checked: true
+      early_tlast_checked: true
+      pass_marker: ALEXNET_CAMERA_RGBX_AXIS_ADAPTER_SIM_PASS
+    linux_runtime_source:
+      status: baseline_camera_classification_pass_optimized_firmware_pending_sudo_load
+      driver: software/driver/alexnet_board.c
+      runtime: software/runtime/alexnet_camera_demo.py
+      device: /dev/alexnet_board
+      coherent_dma_bytes: 61767680
+      coherent_dma_used_bytes: 61766656
+      coherent_dma_tail_padding_bytes: 1024
+      coherent_dma_below_4g_required: true
+      cma_recommendation_bytes: 134217728
+      ps_pl0_input_clock_min_hz: 90000000
+      ps_pl0_input_clock_max_hz: 110000000
+      fabric_clock_metadata_hz: 199998002
+      fabric_clock_tolerance_hz: 5000
+      supported_inputs: [saved_image, usb_camera_v4l2_opencv]
+      preprocessing: [resize_short_side_256, center_crop_224, bgr_to_rgb, imagenet_normalize, signed_int8_quantize, rgbx8_pack]
+      output: signed_int8_fc8_1000_argmax_topk_korean_coarse_label
+      ioctl_c_python_abi_match: true
+      host_contract_tests: 4
+      host_contract_test_status: pass
+      target_contract_tests: 4
+      target_contract_test_status: pass
+      target_driver_build_status: pass
+      board_inspect_status: pass
+      board_inspect_marker: ALEXNET_KV260_BOARD_INSPECT_PASS
+      inspected_id: "0x414C0100"
+      inspected_build_config: "0x040800C8"
+      inspected_pl_input_clock_hz: 99999999
+      inspected_fabric_clock_hz: 199998002
+      board_execution_tested: true
+      baseline_saved_image_inference_tested: true
+      baseline_usb_camera_inference_tested: true
+      baseline_camera_terminal_classification: dog
+      baseline_camera_latency_ms: 504.9
+      baseline_frames_per_second: 1.9806
+      baseline_effective_gmac_per_second: 1.4145
+      baseline_effective_gops: 2.829
+      baseline_effective_tops: 0.002829
+      optimized_firmware_copied_and_hash_verified: true
+      optimized_firmware_loaded: false
+    timing_fix:
+      initial_full_board_wns_ns: -0.314
+      critical_path: partial_sum_bram_read_to_int32_add_to_bram_write
+      changed_module: rtl/memory/alexnet_n8_int32_partial_sum_bank.sv
+      change: explicit_rmw_read_pipeline_stage
+      throughput_words_per_cycle_preserved: 1
+      pe_rtl_changed: false
+      sa_rtl_changed: false
+      direct_regressions_passed: [n8_int32_partial_sum_bank, m4n8_n8_accum_output_slice, m4n8_fc_layer_datapath, m4n8_rs_dma_scheduled_io_datapath]
+      partial_sum_bank_ooc_wns_ns: 1.123
+    board_clock_reset_fix:
+      stock_ps_pl0_mhz: 99.999001
+      internal_fabric_clock_hz: 199998002
+      generator: clk_wiz_200_mmcm
+      reset_release_requires_clock_lock: true
+      active_low_external_and_auxiliary_resets_tied_inactive: true
+      pe_rtl_changed: false
+      sa_rtl_changed: false
+    implementation_timing_closure:
+      first_corrected_board_top_wns_ns: -0.028
+      rejected_artifact_directory: stages/01_kv260_m4n8/build/rejected
+      previous_strategy: Performance_ExploreWithRemap
+      frame_cache_initial_wns_ns: -0.072
+      final_strategy: Performance_ExplorePostRoutePhysOpt
+      final_wns_ns: 0.035
+      final_whs_ns: 0.010
+    clb_lut_total: 21390
+    clb_lut_available: 117120
+    clb_lut_percent: 18.26
+    flip_flop: 22844
+    flip_flop_available: 234240
+    flip_flop_percent: 9.75
+    block_ram_tiles: 52
+    ramb36e2: 50
+    ramb18e2: 4
+    block_ram_tiles_available: 144
+    block_ram_percent: 36.11
+    uram: 13
+    uram_available: 64
+    uram_percent: 20.31
+    mmcm: 1
+    dsp48e2: 24
+    dsp48e2_available: 1248
+    dsp48e2_percent: 1.92
+    wns_ns: 0.035
+    whs_ns: 0.010
+    tns_ns: 0.000
+    ths_ns: 0.000
+    constrained_setup_hold_endpoints: 84721
+    fully_routed_nets: 46063
+    routing_errors: 0
+    drc_errors: 0
+    drc_critical_warnings: 0
+    drc_advisory_warnings: {REQP-1731: 8, REQP-1732: 8, REQP-1934: 3, REQP-1935: 5, RTSTAT-10: 1}
+    vectorless_power_estimate_w: 3.020
+    arithmetic_peak_tops: 0.0128
+    vectorless_peak_tops_per_w: 0.00424
+    artifacts:
+      bitstream: stages/01_kv260_m4n8/build/output/alexnet_m4n8_kv260.bit
+      bitstream_sha256: 263074dd529177627f88823020eb9435ff569f9f5f38d195e67293ae938d4078
+      hardware_platform: stages/01_kv260_m4n8/build/output/alexnet_m4n8_kv260.xsa
+      hardware_platform_sha256: c0063ce180e443a11d05bb507862084d04379f0f0f1dd563f519c6ae058e858f
+      fpga_manager_bitstream: software/build/firmware/alexnet_m4n8_kv260.bit.bin
+      fpga_manager_bitstream_sha256: 7b0884f1875602942752b69fd203b105f32b2193ce82df87a47e9c3bd337c3ae
+      device_tree_overlay: software/build/firmware/alexnet_m4n8_kv260.dtbo
+      device_tree_overlay_sha256: d33ca5572e3f746a18ce80e6e2c01e827a0ca058d11b37a5603973bd32c433e8
+      report_directory: stages/01_kv260_m4n8/build/reports
+      stage_readme: stages/01_kv260_m4n8/README.md
 
 pre_rtl_architecture:
   board: kria_kv260_k26

@@ -1,0 +1,48 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Mon Aug 31 13:22:44 2026
+| Host         : yundodo running 64-bit unknown
+| Command      : report_drc -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/n8_router/200mhz/drc.rpt
+| Design       : alexnet_n8_output_router
+| Device       : xck26-sfvc784-2LV-c
+| Speed File   : -2LV
+| Design State : Fully Routed
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Report DRC
+
+Table of Contents
+-----------------
+1. REPORT SUMMARY
+2. REPORT DETAILS
+
+1. REPORT SUMMARY
+-----------------
+            Netlist: alexnet_n8_output_router
+          Floorplan: design_1
+      Design limits: <entire design considered>
+           Ruledeck: default
+             Max violations: <unlimited>
+             Violations found: 1
++-----------+----------+-------------------+------------+
+| Rule      | Severity | Description       | Violations |
++-----------+----------+-------------------+------------+
+| RTSTAT-10 | Warning  | No routable loads | 1          |
++-----------+----------+-------------------+------------+
+
+2. REPORT DETAILS
+-----------------
+RTSTAT-10#1 Warning
+No routable loads  
+114 net(s) have no routable loads. The problem bus(es) and/or net(s) are fifo_mem_reg_0_63_0_6/DOA, fifo_mem_reg_0_63_0_6/DOB,
+fifo_mem_reg_0_63_14_20/DOA, fifo_mem_reg_0_63_21_27/DOA,
+fifo_mem_reg_0_63_28_34/DOA, fifo_mem_reg_0_63_28_34/DOB,
+fifo_mem_reg_0_63_35_41/DOA, fifo_mem_reg_0_63_42_48/DOA,
+fifo_mem_reg_0_63_49_55/DOA, fifo_mem_reg_0_63_56_62/DOA,
+fifo_mem_reg_0_63_63_69/DOA, fifo_mem_reg_0_63_63_69/DOB,
+fifo_mem_reg_0_63_70_76/DOA, fifo_mem_reg_0_63_77_83/DOA,
+fifo_mem_reg_0_63_7_13/DOA (the first 15 of 91 listed nets/buses).
+Related violations: <none>
+
+

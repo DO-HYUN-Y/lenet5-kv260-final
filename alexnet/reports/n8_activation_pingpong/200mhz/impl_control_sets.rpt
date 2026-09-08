@@ -1,0 +1,99 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Wed Sep  2 16:09:28 2026
+| Host         : yundodo running 64-bit unknown
+| Command      : report_control_sets -verbose -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/n8_activation_pingpong/200mhz/impl_control_sets.rpt
+| Design       : alexnet_n8_activation_pingpong
+| Device       : xck26
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Control Set Information
+
+Table of Contents
+-----------------
+1. Summary
+2. Histogram
+3. Flip-Flop Distribution
+4. Detailed Control Set Information
+
+1. Summary
+----------
+
++----------------------------------------------------------+-------+
+|                          Status                          | Count |
++----------------------------------------------------------+-------+
+| Total control sets                                       |    21 |
+|    Minimum number of control sets                        |    21 |
+|    Addition due to synthesis replication                 |     0 |
+|    Addition due to physical synthesis replication        |     0 |
+| Unused register locations in slices containing registers |    37 |
++----------------------------------------------------------+-------+
+* Control sets can be merged at opt_design using control_set_merge or merge_equivalent_drivers
+** Run report_qor_suggestions for automated merging and remapping suggestions
+
+
+2. Histogram
+------------
+
++--------------------+-------+
+|       Fanout       | Count |
++--------------------+-------+
+| Total control sets |    21 |
+| >= 0 to < 4        |     3 |
+| >= 4 to < 6        |     1 |
+| >= 6 to < 8        |     0 |
+| >= 8 to < 10       |     3 |
+| >= 10 to < 12      |     7 |
+| >= 12 to < 14      |     0 |
+| >= 14 to < 16      |     0 |
+| >= 16              |     7 |
++--------------------+-------+
+* Control sets can be remapped at either synth_design or opt_design
+
+
+3. Flip-Flop Distribution
+-------------------------
+
++--------------+-----------------------+------------------------+-----------------+--------------+
+| Clock Enable | Synchronous Set/Reset | Asynchronous Set/Reset | Total Registers | Total Slices |
++--------------+-----------------------+------------------------+-----------------+--------------+
+| No           | No                    | No                     |               4 |            4 |
+| No           | No                    | Yes                    |               0 |            0 |
+| No           | Yes                   | No                     |               8 |            6 |
+| Yes          | No                    | No                     |               4 |            2 |
+| Yes          | No                    | Yes                    |               0 |            0 |
+| Yes          | Yes                   | No                     |             279 |           46 |
++--------------+-----------------------+------------------------+-----------------+--------------+
+
+
+4. Detailed Control Set Information
+-----------------------------------
+
++--------------+------------------------------------+-----------------------------------+------------------+----------------+--------------+
+| Clock Signal |            Enable Signal           |          Set/Reset Signal         | Slice Load Count | Bel Load Count | Bels / Slice |
++--------------+------------------------------------+-----------------------------------+------------------+----------------+--------------+
+|  clk         | bank0/bank_state                   |                                   |                1 |              2 |         2.00 |
+|  clk         | bank1/read_start_valid[0]          | rst                               |                1 |              2 |         2.00 |
+|  clk         | bank1/bank_state[1]_i_1_n_0        |                                   |                1 |              2 |         2.00 |
+|  clk         |                                    |                                   |                4 |              4 |         1.00 |
+|  clk         |                                    | rst                               |                6 |              8 |         1.33 |
+|  clk         | bank1/write_addr_q[8]_i_2_n_0      | bank1/reads_issued_q              |                3 |              9 |         3.00 |
+|  clk         | bank1/E[0]                         | bank0/reads_issued_q              |                2 |              9 |         4.50 |
+|  clk         | bank1/reads_issued_q[9]_i_1__0_n_0 | bank1/reads_issued_q              |                4 |             10 |         2.50 |
+|  clk         | bank1/write_fire                   | bank1/words_written[9]_i_1_n_0    |                4 |             10 |         2.50 |
+|  clk         | bank1/direct_valid_1[0]            | bank1/SR[0]                       |                3 |             10 |         3.33 |
+|  clk         | bank0/issue_read                   | rst                               |                5 |             10 |         2.00 |
+|  clk         | bank0/reads_issued_q[9]_i_1_n_0    | bank0/reads_issued_q              |                4 |             10 |         2.50 |
+|  clk         | bank0/write_fire                   | bank0/words_written[9]_i_1__0_n_0 |                4 |             10 |         2.50 |
+|  clk         | bank1/mem_read_q                   | rst                               |                4 |             10 |         2.50 |
+|  clk         | bank1/bank_state_reg[1]_1[0]       | rst                               |                4 |             16 |         4.00 |
+|  clk         | bank1/bank_state_reg[1]_0          | rst                               |                4 |             16 |         4.00 |
+|  clk         | bank1/p_17_in                      | rst                               |                6 |             21 |         3.50 |
+|  clk         | bank1/mem_reg_i_2_n_0              | rst                               |                8 |             34 |         4.25 |
+|  clk         | bank1/bank_state_reg[1]_1[0]       | bank0/reads_issued_q              |                7 |             34 |         4.86 |
+|  clk         | bank1/bank_state_reg[1]_0          | bank1/reads_issued_q              |                6 |             34 |         5.67 |
+|  clk         | bank0/mem_reg_i_2__0_n_0           | rst                               |                8 |             34 |         4.25 |
++--------------+------------------------------------+-----------------------------------+------------------+----------------+--------------+
+
+

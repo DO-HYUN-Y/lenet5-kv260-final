@@ -1,0 +1,149 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Wed Sep  2 09:59:46 2026
+| Host         : yundodo running 64-bit unknown
+| Command      : report_control_sets -verbose -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/m4n8_accum_base_datapath/200mhz/synth_control_sets.rpt
+| Design       : alexnet_m4n8_accum_base_datapath
+| Device       : xck26
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Control Set Information
+
+Table of Contents
+-----------------
+1. Summary
+2. Histogram
+3. Flip-Flop Distribution
+4. Detailed Control Set Information
+
+1. Summary
+----------
+
++----------------------------------------------------------+-------+
+|                          Status                          | Count |
++----------------------------------------------------------+-------+
+| Total control sets                                       |    71 |
+|    Minimum number of control sets                        |    71 |
+|    Addition due to synthesis replication                 |     0 |
+|    Addition due to physical synthesis replication        |     0 |
+| Unused register locations in slices containing registers |    87 |
++----------------------------------------------------------+-------+
+* Control sets can be merged at opt_design using control_set_merge or merge_equivalent_drivers
+** Run report_qor_suggestions for automated merging and remapping suggestions
+
+
+2. Histogram
+------------
+
++--------------------+-------+
+|       Fanout       | Count |
++--------------------+-------+
+| Total control sets |    71 |
+| >= 0 to < 4        |     1 |
+| >= 4 to < 6        |     2 |
+| >= 6 to < 8        |    11 |
+| >= 8 to < 10       |     5 |
+| >= 10 to < 12      |     2 |
+| >= 12 to < 14      |     0 |
+| >= 14 to < 16      |     0 |
+| >= 16              |    50 |
++--------------------+-------+
+* Control sets can be remapped at either synth_design or opt_design
+
+
+3. Flip-Flop Distribution
+-------------------------
+
++--------------+-----------------------+------------------------+-----------------+--------------+
+| Clock Enable | Synchronous Set/Reset | Asynchronous Set/Reset | Total Registers | Total Slices |
++--------------+-----------------------+------------------------+-----------------+--------------+
+| No           | No                    | No                     |              38 |            0 |
+| No           | No                    | Yes                    |               0 |            0 |
+| No           | Yes                   | No                     |               9 |            0 |
+| Yes          | No                    | No                     |              41 |            0 |
+| Yes          | No                    | Yes                    |               0 |            0 |
+| Yes          | Yes                   | No                     |            3241 |            0 |
++--------------+-----------------------+------------------------+-----------------+--------------+
+
+
+4. Detailed Control Set Information
+-----------------------------------
+
++--------------+-------------------------------------------------------------------+-------------------------------------------------------------+------------------+----------------+--------------+
+| Clock Signal |                           Enable Signal                           |                       Set/Reset Signal                      | Slice Load Count | Bel Load Count | Bels / Slice |
++--------------+-------------------------------------------------------------------+-------------------------------------------------------------+------------------+----------------+--------------+
+|  clk         | u_output_slice/u_partial_sum_bank/bank_state[2]_i_2_n_0           | u_output_slice/u_partial_sum_bank/emit_reads_issued_q       |                0 |              3 |           NA |
+|  clk         | u_output_slice/u_scanner/scan_m_q[1]_i_1_n_0                      | rst                                                         |                0 |              5 |           NA |
+|  clk         | u_output_slice/u_router/advance                                   | rst                                                         |                0 |              5 |           NA |
+|  clk         | u_output_slice/u_router/p_0_in_0[1]                               | rst                                                         |                0 |              6 |           NA |
+|  clk         | u_output_slice/u_router/p_0_in_0[0]                               | rst                                                         |                0 |              6 |           NA |
+|  clk         | u_output_slice/u_router/count_q[6]_i_1_n_0                        | rst                                                         |                0 |              7 |           NA |
+|  clk         | u_output_slice/u_router/lane_mask_q                               | u_output_slice/u_requant/values_q[42]                       |                0 |              7 |           NA |
+|  clk         | u_output_slice/u_router/lane_mask_q                               | u_output_slice/u_requant/values_q[21]                       |                0 |              7 |           NA |
+|  clk         | u_output_slice/u_router/lane_mask_q                               | u_output_slice/u_requant/values_q[14]                       |                0 |              7 |           NA |
+|  clk         | u_output_slice/u_router/lane_mask_q                               | u_output_slice/u_requant/values_q[35]                       |                0 |              7 |           NA |
+|  clk         | u_output_slice/u_router/lane_mask_q                               | u_output_slice/u_requant/values_q[28]                       |                0 |              7 |           NA |
+|  clk         | u_output_slice/u_router/lane_mask_q                               | u_output_slice/u_requant/values_q[56]                       |                0 |              7 |           NA |
+|  clk         | u_output_slice/u_router/lane_mask_q                               | u_output_slice/u_requant/values_q[0]                        |                0 |              7 |           NA |
+|  clk         | u_output_slice/u_router/lane_mask_q                               | u_output_slice/u_requant/values_q[49]                       |                0 |              7 |           NA |
+|  clk         | u_output_slice/u_scanner/p_38_in                                  | u_output_slice/u_partial_sum_bank/rst_0[0]                  |                0 |              8 |           NA |
+|  clk         | u_output_slice/u_partial_sum_bank/next_chunk_index[7]_i_1_n_0     | u_output_slice/u_partial_sum_bank/emit_reads_issued_q       |                0 |              8 |           NA |
+|  clk         | u_output_slice/u_partial_sum_bank/p_35_in                         | u_output_slice/u_partial_sum_bank/SR[0]                     |                0 |              8 |           NA |
+|  clk         | u_output_slice/u_partial_sum_bank/tile_active_q_reg               | rst                                                         |                0 |              8 |           NA |
+|  clk         |                                                                   | rst                                                         |                0 |              9 |           NA |
+|  clk         | u_output_slice/u_partial_sum_bank/emit_reads_issued_q[9]_i_1_n_0  | u_output_slice/u_partial_sum_bank/emit_reads_issued_q       |                0 |             10 |           NA |
+|  clk         | u_output_slice/u_scanner/p_38_in                                  | u_output_slice/u_partial_sum_bank/words_accepted[9]_i_1_n_0 |                0 |             10 |           NA |
+|  clk         | u_output_slice/u_partial_sum_bank/configured_q_reg[0]             | rst                                                         |                0 |             16 |           NA |
+|  clk         | u_output_slice/u_partial_sum_bank/chunk_final_0[0]                | rst                                                         |                0 |             16 |           NA |
+|  clk         | u_output_slice/u_partial_sum_bank/chunk_first_1[0]                | u_output_slice/u_partial_sum_bank/rst_2[0]                  |                0 |             24 |           NA |
+|  clk         | u_output_slice/u_router/CEP                                       | rst                                                         |                0 |             26 |           NA |
+|  clk         | u_output_slice/u_router/CEAD                                      | rst                                                         |                0 |             26 |           NA |
+|  clk         | u_output_slice/u_router/CEM                                       | rst                                                         |                0 |             26 |           NA |
+|  clk         | u_output_slice/u_router/lane_mask_q                               | rst                                                         |                0 |             26 |           NA |
+|  clk         | u_output_slice/u_router/configured_q0                             | rst                                                         |                0 |             27 |           NA |
+|  clk         | u_output_slice/u_partial_sum_bank/E[0]                            | rst                                                         |                0 |             27 |           NA |
+|  clk         | u_output_slice/u_partial_sum_bank/resident_n_lane_mask[7]_i_1_n_0 | u_output_slice/u_partial_sum_bank/emit_reads_issued_q       |                0 |             34 |           NA |
+|  clk         |                                                                   |                                                             |                0 |             38 |           NA |
+|  clk         | u_sa/g_pe_row[1].g_pe_col[2].u_pe/acc_lo_q                        | u_sa/g_pe_row[1].g_pe_col[2].u_pe/acc_hi_q[26]_i_1__4_n_0   |                0 |             54 |           NA |
+|  clk         | u_sa/g_pe_row[1].g_pe_col[1].u_pe/acc_lo_q                        | u_sa/g_pe_row[1].g_pe_col[1].u_pe/acc_hi_q[26]_i_1__2_n_0   |                0 |             54 |           NA |
+|  clk         | u_sa/g_pe_row[0].g_pe_col[0].u_pe/acc_lo_q                        | u_sa/g_pe_row[0].g_pe_col[0].u_pe/clear                     |                0 |             54 |           NA |
+|  clk         | u_sa/g_pe_row[1].g_pe_col[0].u_pe/acc_lo_q                        | u_sa/g_pe_row[1].g_pe_col[0].u_pe/acc_hi_q[26]_i_1__0_n_0   |                0 |             54 |           NA |
+|  clk         | u_sa/g_pe_row[1].g_pe_col[5].u_pe/acc_lo_q                        | u_sa/g_pe_row[1].g_pe_col[5].u_pe/acc_hi_q[26]_i_1__10_n_0  |                0 |             54 |           NA |
+|  clk         | u_sa/g_pe_row[1].g_pe_col[6].u_pe/acc_lo_q                        | u_sa/g_pe_row[1].g_pe_col[6].u_pe/acc_hi_q[26]_i_1__12_n_0  |                0 |             54 |           NA |
+|  clk         | u_sa/g_pe_row[0].g_pe_col[7].u_pe/acc_lo_q                        | u_sa/g_pe_row[0].g_pe_col[7].u_pe/acc_hi_q[26]_i_1__13_n_0  |                0 |             54 |           NA |
+|  clk         | u_sa/g_pe_row[0].g_pe_col[1].u_pe/acc_lo_q                        | u_sa/g_pe_row[0].g_pe_col[1].u_pe/acc_hi_q[26]_i_1__1_n_0   |                0 |             54 |           NA |
+|  clk         | u_sa/g_pe_row[1].g_pe_col[3].u_pe/acc_lo_q                        | u_sa/g_pe_row[1].g_pe_col[3].u_pe/acc_hi_q[26]_i_1__6_n_0   |                0 |             54 |           NA |
+|  clk         | u_sa/g_pe_row[0].g_pe_col[2].u_pe/acc_lo_q                        | u_sa/g_pe_row[0].g_pe_col[2].u_pe/acc_hi_q[26]_i_1__3_n_0   |                0 |             54 |           NA |
+|  clk         | u_sa/g_pe_row[0].g_pe_col[5].u_pe/acc_lo_q                        | u_sa/g_pe_row[0].g_pe_col[5].u_pe/acc_hi_q[26]_i_1__9_n_0   |                0 |             54 |           NA |
+|  clk         | u_sa/g_pe_row[0].g_pe_col[6].u_pe/acc_lo_q                        | u_sa/g_pe_row[0].g_pe_col[6].u_pe/acc_hi_q[26]_i_1__11_n_0  |                0 |             54 |           NA |
+|  clk         | u_sa/g_pe_row[1].g_pe_col[4].u_pe/acc_lo_q                        | u_sa/g_pe_row[1].g_pe_col[4].u_pe/acc_hi_q[26]_i_1__8_n_0   |                0 |             54 |           NA |
+|  clk         | u_sa/g_pe_row[0].g_pe_col[4].u_pe/acc_lo_q                        | u_sa/g_pe_row[0].g_pe_col[4].u_pe/acc_hi_q[26]_i_1__7_n_0   |                0 |             54 |           NA |
+|  clk         | u_sa/g_pe_row[1].g_pe_col[7].u_pe/acc_lo_q                        | u_sa/g_pe_row[1].g_pe_col[7].u_pe/acc_hi_q[26]_i_1__14_n_0  |                0 |             54 |           NA |
+|  clk         | u_sa/g_pe_row[0].g_pe_col[3].u_pe/acc_lo_q                        | u_sa/g_pe_row[0].g_pe_col[3].u_pe/acc_hi_q[26]_i_1__5_n_0   |                0 |             54 |           NA |
+|  clk         | u_sa/g_pe_row[1].g_pe_col[2].u_pe/hold_lo_q                       | rst                                                         |                0 |             56 |           NA |
+|  clk         | u_sa/g_pe_row[0].g_pe_col[1].u_pe/hold_lo_q                       | rst                                                         |                0 |             56 |           NA |
+|  clk         | u_sa/g_pe_row[0].g_pe_col[3].u_pe/hold_lo_q                       | rst                                                         |                0 |             56 |           NA |
+|  clk         | u_sa/g_pe_row[1].g_pe_col[0].u_pe/hold_lo_q                       | rst                                                         |                0 |             56 |           NA |
+|  clk         | u_sa/g_pe_row[1].g_pe_col[4].u_pe/hold_lo_q                       | rst                                                         |                0 |             56 |           NA |
+|  clk         | u_sa/g_pe_row[0].g_pe_col[2].u_pe/hold_lo_q                       | rst                                                         |                0 |             56 |           NA |
+|  clk         | u_sa/g_pe_row[0].g_pe_col[0].u_pe/hold_lo_q                       | rst                                                         |                0 |             56 |           NA |
+|  clk         | u_sa/g_pe_row[1].g_pe_col[5].u_pe/hold_lo_q                       | rst                                                         |                0 |             56 |           NA |
+|  clk         | u_sa/g_pe_row[1].g_pe_col[6].u_pe/hold_lo_q                       | rst                                                         |                0 |             56 |           NA |
+|  clk         | u_sa/g_pe_row[1].g_pe_col[1].u_pe/hold_lo_q                       | rst                                                         |                0 |             56 |           NA |
+|  clk         | u_sa/g_pe_row[0].g_pe_col[6].u_pe/hold_lo_q                       | rst                                                         |                0 |             56 |           NA |
+|  clk         | u_sa/g_pe_row[1].g_pe_col[7].u_pe/hold_lo_q                       | rst                                                         |                0 |             56 |           NA |
+|  clk         | u_sa/g_pe_row[0].g_pe_col[5].u_pe/hold_lo_q                       | rst                                                         |                0 |             56 |           NA |
+|  clk         | u_sa/g_pe_row[1].g_pe_col[3].u_pe/hold_lo_q                       | rst                                                         |                0 |             56 |           NA |
+|  clk         | u_sa/g_pe_row[0].g_pe_col[7].u_pe/hold_lo_q                       | rst                                                         |                0 |             56 |           NA |
+|  clk         | u_sa/g_pe_row[0].g_pe_col[4].u_pe/hold_lo_q                       | rst                                                         |                0 |             56 |           NA |
+|  clk         | u_output_slice/u_requant/configured_q_i_1__0_n_0                  | rst                                                         |                0 |             57 |           NA |
+|  clk         | ce                                                                |                                                             |                0 |             82 |           NA |
+|  clk         | u_output_slice/u_router/valid_q_reg[4]                            |                                                             |                0 |             96 |           NA |
+|  clk         | u_output_slice/u_router/valid_q_reg[2][0]                         | rst                                                         |                0 |            202 |           NA |
+|  clk         | u_output_slice/u_partial_sum_bank/egress_word_q[250]_i_1_n_0      | rst                                                         |                0 |            225 |           NA |
+|  clk         | u_output_slice/u_partial_sum_bank/rmw_pending_q                   | rst                                                         |                0 |            226 |           NA |
+|  clk         | ce                                                                | rst                                                         |                0 |            383 |           NA |
++--------------+-------------------------------------------------------------------+-------------------------------------------------------------+------------------+----------------+--------------+
+
+

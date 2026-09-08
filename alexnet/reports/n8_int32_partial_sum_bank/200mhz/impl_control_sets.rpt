@@ -1,0 +1,89 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Mon Sep  7 00:40:00 2026
+| Host         : yundodo running 64-bit unknown
+| Command      : report_control_sets -verbose -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/n8_int32_partial_sum_bank/200mhz/impl_control_sets.rpt
+| Design       : alexnet_n8_int32_partial_sum_bank
+| Device       : xck26
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Control Set Information
+
+Table of Contents
+-----------------
+1. Summary
+2. Histogram
+3. Flip-Flop Distribution
+4. Detailed Control Set Information
+
+1. Summary
+----------
+
++----------------------------------------------------------+-------+
+|                          Status                          | Count |
++----------------------------------------------------------+-------+
+| Total control sets                                       |    11 |
+|    Minimum number of control sets                        |    11 |
+|    Addition due to synthesis replication                 |     0 |
+|    Addition due to physical synthesis replication        |     0 |
+| Unused register locations in slices containing registers |    18 |
++----------------------------------------------------------+-------+
+* Control sets can be merged at opt_design using control_set_merge or merge_equivalent_drivers
+** Run report_qor_suggestions for automated merging and remapping suggestions
+
+
+2. Histogram
+------------
+
++--------------------+-------+
+|       Fanout       | Count |
++--------------------+-------+
+| Total control sets |    11 |
+| >= 0 to < 4        |     1 |
+| >= 4 to < 6        |     1 |
+| >= 6 to < 8        |     0 |
+| >= 8 to < 10       |     1 |
+| >= 10 to < 12      |     3 |
+| >= 12 to < 14      |     0 |
+| >= 14 to < 16      |     0 |
+| >= 16              |     5 |
++--------------------+-------+
+* Control sets can be remapped at either synth_design or opt_design
+
+
+3. Flip-Flop Distribution
+-------------------------
+
++--------------+-----------------------+------------------------+-----------------+--------------+
+| Clock Enable | Synchronous Set/Reset | Asynchronous Set/Reset | Total Registers | Total Slices |
++--------------+-----------------------+------------------------+-----------------+--------------+
+| No           | No                    | No                     |               8 |            4 |
+| No           | No                    | Yes                    |               0 |            0 |
+| No           | Yes                   | No                     |               4 |            4 |
+| Yes          | No                    | No                     |               0 |            0 |
+| Yes          | No                    | Yes                    |               0 |            0 |
+| Yes          | Yes                   | No                     |            1162 |          145 |
++--------------+-----------------------+------------------------+-----------------+--------------+
+
+
+4. Detailed Control Set Information
+-----------------------------------
+
++--------------+--------------------------------+---------------------------+------------------+----------------+--------------+
+| Clock Signal |          Enable Signal         |      Set/Reset Signal     | Slice Load Count | Bel Load Count | Bels / Slice |
++--------------+--------------------------------+---------------------------+------------------+----------------+--------------+
+|  clk         | bank_state[2]_i_2_n_0          | emit_reads_issued_q       |                1 |              3 |         3.00 |
+|  clk         |                                | rst                       |                4 |              4 |         1.00 |
+|  clk         |                                |                           |                4 |              8 |         2.00 |
+|  clk         | emit_read_pending_q10_out      | rst                       |                4 |             10 |         2.50 |
+|  clk         | emit_reads_issued_q[9]_i_1_n_0 | emit_reads_issued_q       |                3 |             10 |         3.33 |
+|  clk         | p_38_in                        | words_accepted[9]_i_1_n_0 |                3 |             10 |         3.33 |
+|  clk         | next_chunk_index[7]_i_1_n_0    | emit_reads_issued_q       |                4 |             17 |         4.25 |
+|  clk         | resident_word_count[9]_i_1_n_0 | emit_reads_issued_q       |                7 |             34 |         4.86 |
+|  clk         | rmw_pending_q24_out            | rst                       |               53 |            266 |         5.02 |
+|  clk         | egress_word_q[31]_i_1_n_0      | rst                       |               83 |            290 |         3.49 |
+|  clk         | rmw_read_pipe_q_reg0           | rst                       |              114 |            522 |         4.58 |
++--------------+--------------------------------+---------------------------+------------------+----------------+--------------+
+
+

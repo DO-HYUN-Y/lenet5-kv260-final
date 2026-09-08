@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(ALEXNET_GOLDEN_SOURCES
+    src/activation_bank_ref.cpp
+    src/activation_pingpong_ref.cpp
     src/alexnet_ref.cpp
     src/conv2d_ref.cpp
     src/descriptor_ref.cpp
@@ -14,13 +16,16 @@ set(ALEXNET_GOLDEN_SOURCES
     src/maxpool_ref.cpp
     src/output_router_ref.cpp
     src/packed_mac_ref.cpp
+    src/partial_sum_bank_ref.cpp
     src/quant_ref.cpp
     src/sa_tile_ref.cpp
     src/skew_ref.cpp
-    src/window_ref.cpp)
+    src/window_ref.cpp
+    src/weight_tile_bank_ref.cpp)
 
 add_library(alexnet_golden STATIC ${ALEXNET_GOLDEN_SOURCES})
 target_include_directories(alexnet_golden PUBLIC include)
+set_target_properties(alexnet_golden PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 add_library(alexnet_golden_dpi SHARED src/dpi_wrappers.cpp)
 target_include_directories(alexnet_golden_dpi PUBLIC include)

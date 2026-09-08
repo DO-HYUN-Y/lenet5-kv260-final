@@ -1,0 +1,121 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Tue Sep  1 10:43:10 2026
+| Host         : yundodo running 64-bit unknown
+| Command      : report_high_fanout_nets -fanout_greater_than 16 -max_nets 100 -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/m4n8_rs_resident_weight_datapath/200mhz/high_fanout.rpt
+| Design       : alexnet_m4n8_rs_resident_weight_datapath
+| Device       : xck26
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+High Fan-out Nets Information
+
+1. Summary
+----------
+
++------------------------------------------------------------------------------------------+--------+-------------+
+| Net Name                                                                                 | Fanout | Driver Type |
++------------------------------------------------------------------------------------------+--------+-------------+
+| rst                                                                                      |   2137 | PORT        |
+| ce                                                                                       |    652 | PORT        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[1]_0[1]              |    251 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_router/valid_q_reg[2][0]                  |    202 | LUT2        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_requant/right_shift_q_reg[6]_113[0]       |    139 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_requant/right_shift_q_reg[5]_112[0]       |    139 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_requant/right_shift_q_reg[4]_111[0]       |    139 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_requant/right_shift_q_reg[0]_104[0]       |    139 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_requant/right_shift_q_reg[3]_110[0]       |    139 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_requant/right_shift_q_reg[7]_114[0]       |    139 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_requant/right_shift_q_reg[2]_109[0]       |    139 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_requant/right_shift_q_reg[1]_108[0]       |    139 | FDRE        |
+| u_rs_datapath/u_feeder/read_bank_select_q__0[2]                                          |    128 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_requant/right_shift_q_reg[4]_111[1]       |    121 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_requant/right_shift_q_reg[6]_113[1]       |    121 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_requant/right_shift_q_reg[5]_112[1]       |    121 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_requant/right_shift_q_reg[3]_110[1]       |    121 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_requant/right_shift_q_reg[0]_104[1]       |    121 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_requant/right_shift_q_reg[7]_114[1]       |    121 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_requant/right_shift_q_reg[2]_109[1]       |    121 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_requant/right_shift_q_reg[1]_108[1]       |    121 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]_0[0]              |    117 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[1]_0[0]              |    114 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_router/write_ptr_q_reg[0]                 |    114 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_router/write_ptr_q_reg[1]                 |    113 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_requant/right_shift_q_reg[6]_113[2]       |    112 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_requant/right_shift_q_reg[4]_111[2]       |    112 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_requant/right_shift_q_reg[7]_114[2]       |    112 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_requant/right_shift_q_reg[5]_112[2]       |    112 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_router/write_ptr_q_reg[2]                 |    112 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_requant/right_shift_q_reg[3]_110[2]       |    112 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_requant/right_shift_q_reg[0]_104[2]       |    112 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_requant/right_shift_q_reg[1]_108[2]       |    112 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_requant/right_shift_q_reg[2]_109[2]       |    112 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_router/write_ptr_q_reg[3]                 |    111 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_router/write_ptr_q_reg[4]                 |    110 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_router/write_ptr_q_reg[5]                 |    109 | FDRE        |
+| u_rs_datapath/u_feeder/frame_fire_0                                                      |     99 | LUT5        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_router/fifo_mem_reg_0_63_63_69_i_2_n_0    |     96 | LUT6        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_router/lane_mask_q                        |     90 | LUT2        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_router/read_ptr_q_reg[0]                  |     90 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_router/read_ptr_q_reg[1]                  |     89 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_router/read_ptr_q_reg[2]                  |     88 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_router/read_ptr_q_reg[3]                  |     87 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_router/read_ptr_q_reg[4]                  |     86 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_router/read_ptr_q_reg[5]                  |     85 | FDRE        |
+| u_rs_datapath/u_feeder/read_m_q_reg_n_0_[0]                                              |     82 | FDRE        |
+| u_rs_datapath/u_base_datapath/u_output_slice/u_requant/configured_q_i_1_n_0              |     73 | LUT6        |
+| u_rs_datapath/u_feeder/emit_ic_q_reg_n_0_[0]                                             |     70 | FDRE        |
+| u_rs_datapath/u_feeder/emit_ic_q_reg_n_0_[1]                                             |     69 | FDRE        |
+| u_rs_datapath/u_feeder/s_ready_INST_0_i_1_n_0                                            |     67 | LUT6        |
+| u_rs_datapath/u_feeder/pixel_q[1][63]_i_2_n_0                                            |     64 | LUT6        |
+| u_rs_datapath/u_feeder/read_bank_select_q__0[0]                                          |     64 | FDRE        |
+| u_rs_datapath/u_feeder/read_bank_select_q__0[1]                                          |     64 | FDRE        |
+| u_rs_datapath/u_feeder/pixel_q[0][63]_i_1_n_0                                            |     64 | LUT5        |
+| u_rs_datapath/u_feeder/pixel_q[0][63]_i_2_n_0                                            |     64 | LUT6        |
+| u_rs_datapath/u_feeder/pixel_q[1][63]_i_1_n_0                                            |     64 | LUT5        |
+| u_rs_datapath/u_feeder/pixel_q[2][63]_i_1_n_0                                            |     64 | LUT6        |
+| u_rs_datapath/u_feeder/pixel_q[2][63]_i_2_n_0                                            |     64 | LUT6        |
+| u_rs_datapath/u_feeder/pixel_q[3][63]_i_1_n_0                                            |     64 | LUT6        |
+| u_rs_datapath/u_feeder/pixel_q[3][63]_i_2_n_0                                            |     64 | LUT6        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[0].u_pe/E[0]                     |     57 | LUT4        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[2].u_pe/E[0]                     |     57 | LUT4        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[3].u_pe/E[0]                     |     57 | LUT4        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[1].u_pe/E[0]                     |     57 | LUT4        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[2].u_pe/E[0]                     |     57 | LUT4        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[1].u_pe/E[0]                     |     57 | LUT4        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[3].u_pe/E[0]                     |     57 | LUT4        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[4].u_pe/E[0]                     |     57 | LUT4        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[6].u_pe/E[0]                     |     57 | LUT4        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[7].u_pe/E[0]                     |     57 | LUT4        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[7].u_pe/E[0]                     |     57 | LUT4        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[6].u_pe/E[0]                     |     57 | LUT4        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/E[0]                     |     57 | LUT4        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[4].u_pe/E[0]                     |     57 | LUT4        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[0].u_pe/E[0]                     |     57 | LUT4        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[5].u_pe/E[0]                     |     57 | LUT4        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[4].u_pe/acc_lo_q                 |     54 | LUT2        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[4].u_pe/acc_hi_q[26]_i_1__4_n_0  |     54 | LUT5        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/acc_hi_q[26]_i_1__13_n_0 |     54 | LUT5        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/acc_lo_q                 |     54 | LUT2        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[6].u_pe/acc_lo_q                 |     54 | LUT2        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[7].u_pe/acc_hi_q[26]_i_1__7_n_0  |     54 | LUT5        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[6].u_pe/acc_lo_q                 |     54 | LUT2        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[1].u_pe/acc_hi_q[26]_i_1__1_n_0  |     54 | LUT5        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[2].u_pe/acc_hi_q[26]_i_1__2_n_0  |     54 | LUT5        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[2].u_pe/acc_lo_q                 |     54 | LUT2        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[6].u_pe/acc_hi_q[26]_i_1__6_n_0  |     54 | LUT5        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[5].u_pe/acc_lo_q                 |     54 | LUT2        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[5].u_pe/acc_hi_q[26]_i_1__5_n_0  |     54 | LUT5        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[4].u_pe/acc_lo_q                 |     54 | LUT2        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[3].u_pe/acc_lo_q                 |     54 | LUT2        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[3].u_pe/acc_hi_q[26]_i_1__3_n_0  |     54 | LUT5        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[3].u_pe/acc_lo_q                 |     54 | LUT2        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[4].u_pe/acc_hi_q[26]_i_1__12_n_0 |     54 | LUT5        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[6].u_pe/acc_hi_q[26]_i_1__14_n_0 |     54 | LUT5        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[0].u_pe/clear                    |     54 | LUT5        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[0].u_pe/acc_lo_q                 |     54 | LUT2        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[2].u_pe/acc_lo_q                 |     54 | LUT2        |
+| u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[7].u_pe/acc_lo_q                 |     54 | LUT2        |
++------------------------------------------------------------------------------------------+--------+-------------+
+
+

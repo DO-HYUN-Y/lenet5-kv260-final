@@ -1,0 +1,28 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Tue Sep  1 10:30:23 2026
+| Host         : yundodo running 64-bit unknown
+| Command      : report_utilization -hierarchical -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/n8_weight_tile_bank/200mhz/synth_utilization_hierarchical.rpt
+| Design       : alexnet_n8_weight_tile_bank
+| Device       : xck26-sfvc784-2LV-c
+| Speed File   : -2LV
+| Design State : Synthesized
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++-----------------------------+--------+------------+------------+---------+------+-----+--------+--------+------+------------+
+|           Instance          | Module | Total LUTs | Logic LUTs | LUTRAMs | SRLs | FFs | RAMB36 | RAMB18 | URAM | DSP Blocks |
++-----------------------------+--------+------------+------------+---------+------+-----+--------+--------+------+------------+
+| alexnet_n8_weight_tile_bank |  (top) |        113 |        113 |       0 |    0 | 132 |      2 |      0 |    0 |          0 |
++-----------------------------+--------+------------+------------+---------+------+-----+--------+--------+------+------------+
+
+

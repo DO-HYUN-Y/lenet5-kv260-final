@@ -1,0 +1,121 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Tue Sep  1 17:54:24 2026
+| Host         : yundodo running 64-bit unknown
+| Command      : report_high_fanout_nets -fanout_greater_than 16 -max_nets 100 -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/m4n8_n8_accum_output_slice/200mhz/high_fanout.rpt
+| Design       : alexnet_m4n8_n8_accum_output_slice
+| Device       : xck26
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+High Fan-out Nets Information
+
+1. Summary
+----------
+
++-----------------------------------------------------+--------+-------------+
+| Net Name                                            | Fanout | Driver Type |
++-----------------------------------------------------+--------+-------------+
+| rst                                                 |   1052 | PORT        |
+| u_scanner/busy_q_reg_1                              |    269 | LUT6        |
+| u_scanner/scan_m_q[1]_i_3_n_0                       |    268 | LUT2        |
+| u_partial_sum_bank/rmw_pending_q                    |    266 | LUT4        |
+| u_partial_sum_bank/bank_state1__0                   |    266 | LUT4        |
+| u_partial_sum_bank/egress_word_q[250]_i_1_n_0       |    226 | LUT2        |
+| u_router/valid_q_reg[2][0]                          |    202 | LUT2        |
+| u_requant/right_shift_q_reg[5]_8[0]                 |    139 | FDRE        |
+| u_requant/right_shift_q_reg[6]_9[0]                 |    139 | FDRE        |
+| u_requant/right_shift_q_reg[4]_7[0]                 |    139 | FDRE        |
+| u_requant/right_shift_q_reg[3]_6[0]                 |    139 | FDRE        |
+| u_requant/right_shift_q_reg[2]_5[0]                 |    139 | FDRE        |
+| u_requant/right_shift_q_reg[1]_4[0]                 |    139 | FDRE        |
+| u_requant/right_shift_q_reg[0]_0[0]                 |    139 | FDRE        |
+| u_requant/right_shift_q_reg[7]_10[0]                |    139 | FDRE        |
+| u_requant/right_shift_q_reg[5]_8[1]                 |    121 | FDRE        |
+| u_requant/right_shift_q_reg[0]_0[1]                 |    121 | FDRE        |
+| u_requant/right_shift_q_reg[7]_10[1]                |    121 | FDRE        |
+| u_requant/right_shift_q_reg[6]_9[1]                 |    121 | FDRE        |
+| u_requant/right_shift_q_reg[1]_4[1]                 |    121 | FDRE        |
+| u_requant/right_shift_q_reg[4]_7[1]                 |    121 | FDRE        |
+| u_requant/right_shift_q_reg[2]_5[1]                 |    121 | FDRE        |
+| u_requant/right_shift_q_reg[3]_6[1]                 |    121 | FDRE        |
+| u_scanner/scan_m_q[1]_i_4_n_0                       |    120 | LUT2        |
+| u_router/write_ptr_q_reg[0]                         |    114 | FDRE        |
+| u_router/write_ptr_q_reg[1]                         |    113 | FDRE        |
+| u_requant/right_shift_q_reg[0]_0[2]                 |    112 | FDRE        |
+| u_requant/right_shift_q_reg[6]_9[2]                 |    112 | FDRE        |
+| u_requant/right_shift_q_reg[7]_10[2]                |    112 | FDRE        |
+| u_router/write_ptr_q_reg[2]                         |    112 | FDRE        |
+| u_requant/right_shift_q_reg[3]_6[2]                 |    112 | FDRE        |
+| u_requant/right_shift_q_reg[4]_7[2]                 |    112 | FDRE        |
+| u_requant/right_shift_q_reg[1]_4[2]                 |    112 | FDRE        |
+| u_requant/right_shift_q_reg[5]_8[2]                 |    112 | FDRE        |
+| u_requant/right_shift_q_reg[2]_5[2]                 |    112 | FDRE        |
+| u_scanner/rmw_input_word_q[86]_i_3_n_0              |    111 | LUT2        |
+| u_router/write_ptr_q_reg[3]                         |    111 | FDRE        |
+| u_router/write_ptr_q_reg[4]                         |    110 | FDRE        |
+| u_router/write_ptr_q_reg[5]                         |    109 | FDRE        |
+| u_scanner/scan_m_q_reg[1]_rep__1_n_0                |     98 | FDRE        |
+| u_router/fifo_mem_reg_0_63_63_69_i_2_n_0            |     96 | LUT6        |
+| u_router/read_ptr_q_reg[0]                          |     90 | FDRE        |
+| u_router/lane_mask_q                                |     90 | LUT2        |
+| u_router/read_ptr_q_reg[1]                          |     89 | FDRE        |
+| u_scanner/rmw_input_word_q[255]_i_5_n_0             |     89 | LUT2        |
+| u_router/read_ptr_q_reg[2]                          |     88 | FDRE        |
+| u_scanner/scan_m_q_reg[0]_rep__0_n_0                |     88 | FDRE        |
+| u_router/read_ptr_q_reg[3]                          |     87 | FDRE        |
+| u_router/read_ptr_q_reg[4]                          |     86 | FDRE        |
+| u_router/read_ptr_q_reg[5]                          |     85 | FDRE        |
+| u_scanner/scan_m_q[1]_rep_i_2_n_0                   |     84 | LUT2        |
+| u_scanner/scanner_m[0]                              |     74 | FDRE        |
+| u_requant/configured_q_i_1_n_0                      |     73 | LUT6        |
+| u_scanner/scan_m_q_reg[1]_rep_n_0                   |     72 | FDRE        |
+| u_scanner/rmw_input_word_q[161]_i_3_n_0             |     64 | LUT2        |
+| u_scanner/scan_m_q_reg[0]_rep__1_n_0                |     64 | FDRE        |
+| u_scanner/scan_m_q_reg[1]_rep__0_n_0                |     64 | FDRE        |
+| u_scanner/rmw_input_word_q[170]_i_3_n_0             |     64 | LUT2        |
+| u_partial_sum_bank/emit_reads_issued_q              |     59 | LUT3        |
+| u_requant/rounded_q_reg[7][45]_i_1_n_11             |     53 | CARRY8      |
+| u_requant/p_1_in_19[21]                             |     53 | CARRY8      |
+| u_requant/rounded_q_reg[5][45]_i_1_n_11             |     53 | CARRY8      |
+| u_requant/rounded_q_reg[4][45]_i_1_n_11             |     53 | CARRY8      |
+| u_requant/rounded_q_reg[3][45]_i_1_n_11             |     53 | CARRY8      |
+| u_requant/rounded_q_reg[2][45]_i_1_n_11             |     53 | CARRY8      |
+| u_requant/rounded_q_reg[6][45]_i_1_n_11             |     53 | CARRY8      |
+| u_scanner/scan_m_q_reg[0]_rep_n_0                   |     53 | FDRE        |
+| u_requant/rounded_q_reg[1][45]_i_1_n_11             |     53 | CARRY8      |
+| u_requant/rounded_q_reg_n_0_[7][45]                 |     52 | FDRE        |
+| u_requant/rounded_q_reg_n_0_[6][45]                 |     52 | FDRE        |
+| u_requant/rounded_q_reg_n_0_[5][45]                 |     52 | FDRE        |
+| u_requant/rounded_q_reg_n_0_[4][45]                 |     52 | FDRE        |
+| u_requant/rounded_q_reg_n_0_[0][45]                 |     52 | FDRE        |
+| u_requant/rounded_q_reg_n_0_[1][45]                 |     52 | FDRE        |
+| u_requant/rounded_q_reg_n_0_[2][45]                 |     52 | FDRE        |
+| u_requant/rounded_q_reg_n_0_[3][45]                 |     52 | FDRE        |
+| u_scanner/p_38_in                                   |     51 | LUT6        |
+| u_scanner/scanner_m[1]                              |     49 | FDRE        |
+| u_router/CEM                                        |     42 | LUT2        |
+| u_partial_sum_bank/resident_n_lane_mask_reg[7]_0[7] |     38 | FDRE        |
+| u_partial_sum_bank/resident_n_lane_mask_reg[7]_0[6] |     38 | FDRE        |
+| u_partial_sum_bank/resident_n_lane_mask_reg[7]_0[2] |     36 | FDRE        |
+| u_partial_sum_bank/resident_n_lane_mask_reg[7]_0[0] |     36 | FDRE        |
+| u_partial_sum_bank/resident_n_lane_mask_reg[7]_0[5] |     36 | FDRE        |
+| u_partial_sum_bank/resident_n_lane_mask_reg[7]_0[3] |     36 | FDRE        |
+| u_partial_sum_bank/resident_n_lane_mask_reg[7]_0[1] |     36 | FDRE        |
+| u_partial_sum_bank/resident_n_lane_mask_reg[7]_0[4] |     36 | FDRE        |
+| u_partial_sum_bank/resident_n_lane_mask[7]_i_1_n_0  |     34 | LUT4        |
+| u_router/advance                                    |     34 | LUT5        |
+| u_router/CEAD                                       |     34 | LUT2        |
+| u_router/CEP                                        |     34 | LUT2        |
+| u_partial_sum_bank/Q[0]                             |     33 | FDRE        |
+| u_scanner/rmw_input_word_q[159]_i_2_n_0             |     32 | LUT6        |
+| u_scanner/rmw_input_word_q[127]_i_2_n_0             |     32 | LUT6        |
+| u_scanner/rmw_input_word_q[31]_i_2_n_0              |     32 | LUT6        |
+| u_partial_sum_bank/p_28_in                          |     32 | LUT1        |
+| u_scanner/rmw_input_word_q[191]_i_2_n_0             |     32 | LUT6        |
+| u_scanner/rmw_input_word_q[223]_i_2_n_0             |     32 | LUT6        |
+| u_scanner/rmw_input_word_q[255]_i_3_n_0             |     32 | LUT6        |
+| u_scanner/rmw_input_word_q[95]_i_2_n_0              |     32 | LUT6        |
++-----------------------------------------------------+--------+-------------+
+
+

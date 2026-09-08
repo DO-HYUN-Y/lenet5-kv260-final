@@ -1,0 +1,4 @@
+all:
+{
+    [destination_device = pl] alexnet_m4n8_kv260.bit
+}

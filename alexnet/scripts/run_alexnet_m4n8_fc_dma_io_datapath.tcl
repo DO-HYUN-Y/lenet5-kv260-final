@@ -1,0 +1,69 @@
+set alexnet_root [file normalize [file join [file dirname [info script]] ..]]
+if {![info exists fc_runtime_placement]} { set fc_runtime_placement 0 }
+set sim_top tb_alexnet_m4n8_fc_dma_io_datapath
+set sim_name m4n8_fc_dma_io_datapath_sim
+if {$fc_runtime_placement} {
+  set sim_top tb_alexnet_m4n8_fc_dma_runtime_placement
+  set sim_name m4n8_fc_dma_runtime_placement_sim
+}
+set out_dir [file join $alexnet_root build $sim_name]
+set cpp_build [file join $alexnet_root cpp build]
+file mkdir $out_dir
+
+set clean_host_env [list env -u LD_LIBRARY_PATH -u LD_PRELOAD]
+set system_cxx_runtime /usr/lib/libstdc++.so.6
+if {![file exists $system_cxx_runtime]} {
+  error "system C++ runtime not found at $system_cxx_runtime"
+}
+set simulator_library_path "$cpp_build:$env(LD_LIBRARY_PATH)"
+set simulator_env [list env LD_PRELOAD=$system_cxx_runtime \
+    LD_LIBRARY_PATH=$simulator_library_path]
+
+exec {*}$clean_host_env cmake \
+    -S [file join $alexnet_root cpp] -B $cpp_build -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release
+exec {*}$clean_host_env cmake --build $cpp_build --parallel
+exec {*}$clean_host_env ctest --test-dir $cpp_build --output-on-failure
+
+cd $out_dir
+exec {*}$simulator_env xvlog -sv -d SIMULATION \
+    [file join $alexnet_root rtl packed_mac alexnet_packed_pe.sv] \
+    [file join $alexnet_root rtl sa alexnet_sa_m4n8.sv] \
+    [file join $alexnet_root rtl result alexnet_m4n8_result_scanner.sv] \
+    [file join $alexnet_root rtl memory \
+        alexnet_n8_int32_partial_sum_bank.sv] \
+    [file join $alexnet_root rtl postprocess alexnet_n8_requant.sv] \
+    [file join $alexnet_root rtl result alexnet_n8_output_router.sv] \
+    [file join $alexnet_root rtl integration \
+        alexnet_m4n8_n8_accum_output_slice.sv] \
+    [file join $alexnet_root rtl integration \
+        alexnet_m4n8_accum_base_datapath.sv] \
+    [file join $alexnet_root rtl memory alexnet_n8_weight_tile_bank.sv] \
+    [file join $alexnet_root rtl feeder alexnet_n8_fc_m4_issuer.sv] \
+    [file join $alexnet_root rtl memory alexnet_n8_activation_bank.sv] \
+    [file join $alexnet_root rtl integration alexnet_m4n8_fc_resident_weight_accum_datapath.sv] \
+    [file join $alexnet_root rtl dma alexnet_n8_dma_ingress.sv] \
+    [file join $alexnet_root rtl dma alexnet_n8_dma_result_egress.sv] \
+    [file join $alexnet_root rtl integration alexnet_m4n8_fc_activation_resident_weight_accum_datapath.sv] \
+    [file join $alexnet_root rtl integration alexnet_m4n8_fc_dma_io_datapath.sv] \
+    [file join $alexnet_root tb tb_alexnet_m4n8_fc_dma_io_datapath.sv] \
+    [file join $alexnet_root tb tb_alexnet_m4n8_fc_dma_runtime_placement.sv]
+exec {*}$simulator_env xelab $sim_top \
+    -sv_root $cpp_build -sv_lib libalexnet_golden_dpi
+exec {*}$simulator_env xsim $sim_top -runall
+
+set log_path [file join $out_dir xsim.log]
+set log_file [open $log_path r]
+set log_text [read $log_file]
+close $log_file
+if {![string match "*ALEXNET_M4N8_FC_DMA_IO_DATAPATH_TEST_PASSED*" \
+        $log_text] ||
+    [string match "*Fatal:*" $log_text] ||
+    [string match "*ERROR:*" $log_text]} {
+  error "AlexNet FC DMA simulation failed; see $log_path"
+}
+if {$fc_runtime_placement && ![string match \
+    "*ALEXNET_M4N8_FC_DMA_RUNTIME_PLACEMENT_TEST_PASSED*" $log_text]} {
+  error "AlexNet FC runtime placement coverage failed; see $log_path"
+}
+puts "ALEXNET_M4N8_FC_DMA_IO_DATAPATH_DPI_PASS"

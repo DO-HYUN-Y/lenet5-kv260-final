@@ -36,10 +36,14 @@ hardcoded in this library.
 | `linear_ref` | batch x K by N x K fully connected reference |
 | `layout_ref` | NCHW bytes, K-major N tiles, DMA bursts, ping/pong ownership, N64/M32 postprocess scanner |
 | `output_router_ref` | eight independent N8/64-bit routers, descriptor tags, FIFO and ready/valid cycle behavior |
+| `activation_bank_ref` | N8 activation-bank ownership, lane-tail masking, sequential fill/read data |
+| `activation_pingpong_ref` | Ordered activation A/B ownership, direct/pooled source binding, tag matching, cross-bank overlap, and fixed two-segment composition |
+| `weight_tile_bank_ref` | Resident N8 weight-tile fill, context-matched repeatable K replay, and release ownership |
+| `partial_sum_bank_ref` | N8 signed-INT32 first/continuation/final channel-chunk accumulation and ordered emit ownership |
 | `descriptor_ref` | runtime K/M/N derivation, tile schedule and DDR address calculation |
 | `skew_ref` | local M8xN8 activation/weight delay chains and tag timing |
 | `alexnet_ref` | five Conv, three Pool and three FC operators connected end-to-end |
-| `dpi_wrappers` | scalar and tensor C ABI entry points for SV DPI and Python parity tests |
+| `dpi_wrappers` | scalar/tensor C ABI entry points for SV DPI and Python parity tests, including cached M4 window-token queries |
 
 `conv2d_ref` and `descriptor_ref` support `groups > 1`. The currently frozen
 `alexnet_contract.yaml` still selects the torchvision `groups=1` model; support
@@ -71,8 +75,8 @@ The test executable checks product corner cases and deterministic random packed
 MACs, quantization, K-major window/weight order, dense/grouped convolution,
 pooling, FC, descriptors/DDR addresses, DMA burst tails, ping/pong ownership,
 local skew timing, 64-lane postprocess scan/tail/stall order, eight N8 output
-routers including full-FIFO turnover and independent backpressure, C ABI wrappers
-and a small end-to-end network.
+routers including full-FIFO turnover and independent backpressure, the cached
+M4 window DPI wrapper, C ABI wrappers, and a small end-to-end network.
 
 Full `224x224` vectors are generated as `.bin + manifest + SHA-256` by
 `calibrate_int8.py`. `compare_full_int8_cpp.py` loads the raw model and vector

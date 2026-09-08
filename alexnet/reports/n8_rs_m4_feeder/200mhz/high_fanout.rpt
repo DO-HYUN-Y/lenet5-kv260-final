@@ -1,0 +1,60 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Tue Sep  1 08:57:07 2026
+| Host         : yundodo running 64-bit unknown
+| Command      : report_high_fanout_nets -fanout_greater_than 16 -max_nets 100 -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/n8_rs_m4_feeder/200mhz/high_fanout.rpt
+| Design       : alexnet_n8_rs_m4_feeder
+| Device       : xck26
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+High Fan-out Nets Information
+
+1. Summary
+----------
+
++----------------------------------+--------+-------------+
+| Net Name                         | Fanout | Driver Type |
++----------------------------------+--------+-------------+
+| rst                              |    139 | PORT        |
+| read_bank_select_q__0[2]         |    128 | FDRE        |
+| frame_fire                       |     92 | LUT4        |
+| read_m_q_reg_n_0_[0]             |     82 | FDRE        |
+| m_input_channel[0]               |     71 | FDRE        |
+| m_input_channel[1]               |     70 | FDRE        |
+| s_ready_INST_0_i_1_n_0           |     67 | LUT6        |
+| pixel_q[1][63]_i_2_n_0           |     64 | LUT6        |
+| pixel_q[3][63]_i_2_n_0           |     64 | LUT6        |
+| read_bank_select_q__0[1]         |     64 | FDRE        |
+| read_bank_select_q__0[0]         |     64 | FDRE        |
+| pixel_q[0][63]_i_1_n_0           |     64 | LUT6        |
+| pixel_q[0][63]_i_2_n_0           |     64 | LUT6        |
+| pixel_q[1][63]_i_1_n_0           |     64 | LUT6        |
+| pixel_q[2][63]_i_1_n_0           |     64 | LUT6        |
+| pixel_q[2][63]_i_2_n_0           |     64 | LUT6        |
+| pixel_q[3][63]_i_1_n_0           |     64 | LUT6        |
+| state_q[2]                       |     38 | FDRE        |
+| m_act_lo[0][7]_INST_0_i_1_n_0    |     32 | LUT3        |
+| state_q[1]                       |     32 | FDRE        |
+| g_ring_bank[0].mem_reg_i_116_n_0 |     31 | LUT3        |
+| state_q[0]                       |     31 | FDRE        |
+| m_output_x[2]                    |     29 | FDRE        |
+| kernel_q_reg_n_0_[0]             |     26 | FDRE        |
+| output_w_q[7]_i_15_n_0           |     24 | LUT3        |
+| emit_ky_q_reg_n_0_[0]            |     24 | FDRE        |
+| m_output_x[3]                    |     24 | FDRE        |
+| stride_q_reg_n_0_[2]             |     22 | FDRE        |
+| stride_q_reg_n_0_[0]             |     22 | FDRE        |
+| stride_q_reg_n_0_[1]             |     22 | FDRE        |
+| m_output_x[5]                    |     22 | FDRE        |
+| kernel_q_reg_n_0_[1]             |     21 | FDRE        |
+| frame_padding[0]                 |     21 | PORT        |
+| m_output_x[4]                    |     21 | FDRE        |
+| group_count_q[2]_i_9_n_0         |     21 | LUT6        |
+| frame_padding[2]                 |     20 | PORT        |
+| frame_padding[1]                 |     19 | PORT        |
+| scan_x_q[0]                      |     17 | FDRE        |
+| kernel_q_reg_n_0_[2]             |     17 | FDRE        |
++----------------------------------+--------+-------------+
+
+

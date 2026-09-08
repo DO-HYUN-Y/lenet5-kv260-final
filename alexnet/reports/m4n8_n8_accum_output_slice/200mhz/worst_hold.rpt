@@ -1,0 +1,886 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version      : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date              : Tue Sep  1 17:54:24 2026
+| Host              : yundodo running 64-bit unknown
+| Command           : report_timing -delay_type min -max_paths 20 -sort_by group -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/m4n8_n8_accum_output_slice/200mhz/worst_hold.rpt
+| Design            : alexnet_m4n8_n8_accum_output_slice
+| Device            : xck26-sfvc784
+| Speed File        : -2LV  PRODUCTION 1.30 05-15-2022
+| Design State      : Routed
+| Temperature Grade : C
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             0.055ns  (arrival time - required time)
+  Source:                 u_requant/m_q_reg[0][1]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_requant/m_q_reg[1][1]/D
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Slow Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.171ns  (logic 0.112ns (65.497%)  route 0.059ns (34.503%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.013ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.029ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.029     0.029    u_requant/clk
+    SLICE_X50Y179        FDRE                                         r  u_requant/m_q_reg[0][1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X50Y179        FDRE (Prop_HFF_SLICEL_C_Q)
+                                                      0.112     0.141 r  u_requant/m_q_reg[0][1]/Q
+                         net (fo=1, routed)           0.059     0.200    u_requant/m_q_reg[0]_11[1]
+    SLICE_X50Y179        FDRE                                         r  u_requant/m_q_reg[1][1]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.042     0.042    u_requant/clk
+    SLICE_X50Y179        FDRE                                         r  u_requant/m_q_reg[1][1]/C
+                         clock pessimism              0.000     0.042    
+    SLICE_X50Y179        FDRE (Hold_HFF2_SLICEL_C_D)
+                                                      0.103     0.145    u_requant/m_q_reg[1][1]
+  -------------------------------------------------------------------
+                         required time                         -0.145    
+                         arrival time                           0.200    
+  -------------------------------------------------------------------
+                         slack                                  0.055    
+
+Slack (MET) :             0.057ns  (arrival time - required time)
+  Source:                 u_partial_sum_bank/egress_n_lane_mask_reg[4]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_requant/lane_mask_q_reg[0][4]/D
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Slow Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.173ns  (logic 0.112ns (64.714%)  route 0.061ns (35.286%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.013ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.029ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.029     0.029    u_partial_sum_bank/clk
+    SLICE_X49Y157        FDRE                                         r  u_partial_sum_bank/egress_n_lane_mask_reg[4]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X49Y157        FDRE (Prop_HFF_SLICEL_C_Q)
+                                                      0.112     0.141 r  u_partial_sum_bank/egress_n_lane_mask_reg[4]/Q
+                         net (fo=2, routed)           0.061     0.202    u_requant/D[4]
+    SLICE_X49Y157        FDRE                                         r  u_requant/lane_mask_q_reg[0][4]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.042     0.042    u_requant/clk
+    SLICE_X49Y157        FDRE                                         r  u_requant/lane_mask_q_reg[0][4]/C
+                         clock pessimism              0.000     0.042    
+    SLICE_X49Y157        FDRE (Hold_HFF2_SLICEL_C_D)
+                                                      0.103     0.145    u_requant/lane_mask_q_reg[0][4]
+  -------------------------------------------------------------------
+                         required time                         -0.145    
+                         arrival time                           0.202    
+  -------------------------------------------------------------------
+                         slack                                  0.057    
+
+Slack (MET) :             0.074ns  (arrival time - required time)
+  Source:                 u_requant/tile_tag_q_reg[4][2]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_router/fifo_mem_reg_0_63_63_69/RAMD/I
+                            (rising edge-triggered cell RAMD64E clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.178ns  (logic 0.083ns (46.629%)  route 0.095ns (53.371%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.043ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.057ns
+    Source Clock Delay      (SCD):    0.014ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.014     0.014    u_requant/clk
+    SLICE_X50Y180        FDRE                                         r  u_requant/tile_tag_q_reg[4][2]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X50Y180        FDRE (Prop_FFF_SLICEL_C_Q)
+                                                      0.083     0.097 r  u_requant/tile_tag_q_reg[4][2]/Q
+                         net (fo=1, routed)           0.095     0.192    u_router/fifo_mem_reg_0_63_63_69/DID
+    SLICE_X53Y180        RAMD64E                                      r  u_router/fifo_mem_reg_0_63_63_69/RAMD/I
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.057     0.057    u_router/fifo_mem_reg_0_63_63_69/WCLK
+    SLICE_X53Y180        RAMD64E                                      r  u_router/fifo_mem_reg_0_63_63_69/RAMD/CLK
+                         clock pessimism              0.000     0.057    
+    SLICE_X53Y180        RAMD64E (Hold_D6LUT_SLICEM_CLK_I)
+                                                      0.061     0.118    u_router/fifo_mem_reg_0_63_63_69/RAMD
+  -------------------------------------------------------------------
+                         required time                         -0.118    
+                         arrival time                           0.192    
+  -------------------------------------------------------------------
+                         slack                                  0.074    
+
+Slack (MET) :             0.077ns  (arrival time - required time)
+  Source:                 u_requant/tile_tag_q_reg[4][1]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_router/fifo_mem_reg_0_63_63_69/RAMC/I
+                            (rising edge-triggered cell RAMD64E clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.181ns  (logic 0.085ns (46.961%)  route 0.096ns (53.039%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.043ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.057ns
+    Source Clock Delay      (SCD):    0.014ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.014     0.014    u_requant/clk
+    SLICE_X50Y180        FDRE                                         r  u_requant/tile_tag_q_reg[4][1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X50Y180        FDRE (Prop_EFF2_SLICEL_C_Q)
+                                                      0.085     0.099 r  u_requant/tile_tag_q_reg[4][1]/Q
+                         net (fo=1, routed)           0.096     0.195    u_router/fifo_mem_reg_0_63_63_69/DIC
+    SLICE_X53Y180        RAMD64E                                      r  u_router/fifo_mem_reg_0_63_63_69/RAMC/I
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.057     0.057    u_router/fifo_mem_reg_0_63_63_69/WCLK
+    SLICE_X53Y180        RAMD64E                                      r  u_router/fifo_mem_reg_0_63_63_69/RAMC/CLK
+                         clock pessimism              0.000     0.057    
+    SLICE_X53Y180        RAMD64E (Hold_C6LUT_SLICEM_CLK_I)
+                                                      0.061     0.118    u_router/fifo_mem_reg_0_63_63_69/RAMC
+  -------------------------------------------------------------------
+                         required time                         -0.118    
+                         arrival time                           0.195    
+  -------------------------------------------------------------------
+                         slack                                  0.077    
+
+Slack (MET) :             0.077ns  (arrival time - required time)
+  Source:                 u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[10]
+                            (rising edge-triggered cell DSP_M_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.156ns  (logic 0.156ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_MULTIPLIER=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.034     0.034    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_PREADD_DATA                              r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X12Y48       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_AD_DATA[9])
+                                                      0.083     0.117 r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/AD_DATA[9]
+                         net (fo=1, routed)           0.000     0.117    u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA.AD_DATA<9>
+    DSP48E2_X12Y48       DSP_MULTIPLIER (Prop_DSP_MULTIPLIER_DSP48E2_AD_DATA[9]_U[10])
+                                                      0.073     0.190 r  u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER_INST/U[10]
+                         net (fo=1, routed)           0.000     0.190    u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER.U<10>
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[10]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.042     0.042    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X12Y48       DSP_M_DATA (Hold_DSP_M_DATA_DSP48E2_CLK_U[10])
+                                                      0.071     0.113    u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.113    
+                         arrival time                           0.190    
+  -------------------------------------------------------------------
+                         slack                                  0.077    
+
+Slack (MET) :             0.077ns  (arrival time - required time)
+  Source:                 u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[11]
+                            (rising edge-triggered cell DSP_M_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.156ns  (logic 0.156ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_MULTIPLIER=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.034     0.034    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_PREADD_DATA                              r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X12Y48       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_AD_DATA[10])
+                                                      0.083     0.117 r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/AD_DATA[10]
+                         net (fo=1, routed)           0.000     0.117    u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA.AD_DATA<10>
+    DSP48E2_X12Y48       DSP_MULTIPLIER (Prop_DSP_MULTIPLIER_DSP48E2_AD_DATA[10]_U[11])
+                                                      0.073     0.190 r  u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER_INST/U[11]
+                         net (fo=1, routed)           0.000     0.190    u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER.U<11>
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[11]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.042     0.042    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X12Y48       DSP_M_DATA (Hold_DSP_M_DATA_DSP48E2_CLK_U[11])
+                                                      0.071     0.113    u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.113    
+                         arrival time                           0.190    
+  -------------------------------------------------------------------
+                         slack                                  0.077    
+
+Slack (MET) :             0.077ns  (arrival time - required time)
+  Source:                 u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[12]
+                            (rising edge-triggered cell DSP_M_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.156ns  (logic 0.156ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_MULTIPLIER=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.034     0.034    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_PREADD_DATA                              r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X12Y48       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_AD_DATA[11])
+                                                      0.083     0.117 r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/AD_DATA[11]
+                         net (fo=1, routed)           0.000     0.117    u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA.AD_DATA<11>
+    DSP48E2_X12Y48       DSP_MULTIPLIER (Prop_DSP_MULTIPLIER_DSP48E2_AD_DATA[11]_U[12])
+                                                      0.073     0.190 r  u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER_INST/U[12]
+                         net (fo=1, routed)           0.000     0.190    u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER.U<12>
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[12]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.042     0.042    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X12Y48       DSP_M_DATA (Hold_DSP_M_DATA_DSP48E2_CLK_U[12])
+                                                      0.071     0.113    u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.113    
+                         arrival time                           0.190    
+  -------------------------------------------------------------------
+                         slack                                  0.077    
+
+Slack (MET) :             0.077ns  (arrival time - required time)
+  Source:                 u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[13]
+                            (rising edge-triggered cell DSP_M_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.156ns  (logic 0.156ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_MULTIPLIER=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.034     0.034    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_PREADD_DATA                              r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X12Y48       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_AD_DATA[12])
+                                                      0.083     0.117 r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/AD_DATA[12]
+                         net (fo=1, routed)           0.000     0.117    u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA.AD_DATA<12>
+    DSP48E2_X12Y48       DSP_MULTIPLIER (Prop_DSP_MULTIPLIER_DSP48E2_AD_DATA[12]_U[13])
+                                                      0.073     0.190 r  u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER_INST/U[13]
+                         net (fo=1, routed)           0.000     0.190    u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER.U<13>
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[13]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.042     0.042    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X12Y48       DSP_M_DATA (Hold_DSP_M_DATA_DSP48E2_CLK_U[13])
+                                                      0.071     0.113    u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.113    
+                         arrival time                           0.190    
+  -------------------------------------------------------------------
+                         slack                                  0.077    
+
+Slack (MET) :             0.077ns  (arrival time - required time)
+  Source:                 u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[14]
+                            (rising edge-triggered cell DSP_M_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.156ns  (logic 0.156ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_MULTIPLIER=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.034     0.034    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_PREADD_DATA                              r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X12Y48       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_AD_DATA[13])
+                                                      0.083     0.117 r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/AD_DATA[13]
+                         net (fo=1, routed)           0.000     0.117    u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA.AD_DATA<13>
+    DSP48E2_X12Y48       DSP_MULTIPLIER (Prop_DSP_MULTIPLIER_DSP48E2_AD_DATA[13]_U[14])
+                                                      0.073     0.190 r  u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER_INST/U[14]
+                         net (fo=1, routed)           0.000     0.190    u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER.U<14>
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[14]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.042     0.042    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X12Y48       DSP_M_DATA (Hold_DSP_M_DATA_DSP48E2_CLK_U[14])
+                                                      0.071     0.113    u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.113    
+                         arrival time                           0.190    
+  -------------------------------------------------------------------
+                         slack                                  0.077    
+
+Slack (MET) :             0.077ns  (arrival time - required time)
+  Source:                 u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[15]
+                            (rising edge-triggered cell DSP_M_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.156ns  (logic 0.156ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_MULTIPLIER=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.034     0.034    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_PREADD_DATA                              r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X12Y48       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_AD_DATA[14])
+                                                      0.083     0.117 r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/AD_DATA[14]
+                         net (fo=1, routed)           0.000     0.117    u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA.AD_DATA<14>
+    DSP48E2_X12Y48       DSP_MULTIPLIER (Prop_DSP_MULTIPLIER_DSP48E2_AD_DATA[14]_U[15])
+                                                      0.073     0.190 r  u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER_INST/U[15]
+                         net (fo=1, routed)           0.000     0.190    u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER.U<15>
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[15]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.042     0.042    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X12Y48       DSP_M_DATA (Hold_DSP_M_DATA_DSP48E2_CLK_U[15])
+                                                      0.071     0.113    u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.113    
+                         arrival time                           0.190    
+  -------------------------------------------------------------------
+                         slack                                  0.077    
+
+Slack (MET) :             0.077ns  (arrival time - required time)
+  Source:                 u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[16]
+                            (rising edge-triggered cell DSP_M_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.156ns  (logic 0.156ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_MULTIPLIER=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.034     0.034    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_PREADD_DATA                              r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X12Y48       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_AD_DATA[15])
+                                                      0.083     0.117 r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/AD_DATA[15]
+                         net (fo=1, routed)           0.000     0.117    u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA.AD_DATA<15>
+    DSP48E2_X12Y48       DSP_MULTIPLIER (Prop_DSP_MULTIPLIER_DSP48E2_AD_DATA[15]_U[16])
+                                                      0.073     0.190 r  u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER_INST/U[16]
+                         net (fo=1, routed)           0.000     0.190    u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER.U<16>
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[16]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.042     0.042    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X12Y48       DSP_M_DATA (Hold_DSP_M_DATA_DSP48E2_CLK_U[16])
+                                                      0.071     0.113    u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.113    
+                         arrival time                           0.190    
+  -------------------------------------------------------------------
+                         slack                                  0.077    
+
+Slack (MET) :             0.077ns  (arrival time - required time)
+  Source:                 u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[17]
+                            (rising edge-triggered cell DSP_M_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.156ns  (logic 0.156ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_MULTIPLIER=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.034     0.034    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_PREADD_DATA                              r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X12Y48       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_AD_DATA[16])
+                                                      0.083     0.117 r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/AD_DATA[16]
+                         net (fo=1, routed)           0.000     0.117    u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA.AD_DATA<16>
+    DSP48E2_X12Y48       DSP_MULTIPLIER (Prop_DSP_MULTIPLIER_DSP48E2_AD_DATA[16]_U[17])
+                                                      0.073     0.190 r  u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER_INST/U[17]
+                         net (fo=1, routed)           0.000     0.190    u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER.U<17>
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[17]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.042     0.042    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X12Y48       DSP_M_DATA (Hold_DSP_M_DATA_DSP48E2_CLK_U[17])
+                                                      0.071     0.113    u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.113    
+                         arrival time                           0.190    
+  -------------------------------------------------------------------
+                         slack                                  0.077    
+
+Slack (MET) :             0.077ns  (arrival time - required time)
+  Source:                 u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[18]
+                            (rising edge-triggered cell DSP_M_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.156ns  (logic 0.156ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_MULTIPLIER=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.034     0.034    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_PREADD_DATA                              r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X12Y48       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_AD_DATA[17])
+                                                      0.083     0.117 r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/AD_DATA[17]
+                         net (fo=1, routed)           0.000     0.117    u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA.AD_DATA<17>
+    DSP48E2_X12Y48       DSP_MULTIPLIER (Prop_DSP_MULTIPLIER_DSP48E2_AD_DATA[17]_U[18])
+                                                      0.073     0.190 r  u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER_INST/U[18]
+                         net (fo=1, routed)           0.000     0.190    u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER.U<18>
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[18]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.042     0.042    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X12Y48       DSP_M_DATA (Hold_DSP_M_DATA_DSP48E2_CLK_U[18])
+                                                      0.071     0.113    u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.113    
+                         arrival time                           0.190    
+  -------------------------------------------------------------------
+                         slack                                  0.077    
+
+Slack (MET) :             0.077ns  (arrival time - required time)
+  Source:                 u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[19]
+                            (rising edge-triggered cell DSP_M_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.156ns  (logic 0.156ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_MULTIPLIER=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.034     0.034    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_PREADD_DATA                              r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X12Y48       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_AD_DATA[18])
+                                                      0.083     0.117 r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/AD_DATA[18]
+                         net (fo=1, routed)           0.000     0.117    u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA.AD_DATA<18>
+    DSP48E2_X12Y48       DSP_MULTIPLIER (Prop_DSP_MULTIPLIER_DSP48E2_AD_DATA[18]_U[19])
+                                                      0.073     0.190 r  u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER_INST/U[19]
+                         net (fo=1, routed)           0.000     0.190    u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER.U<19>
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[19]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.042     0.042    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X12Y48       DSP_M_DATA (Hold_DSP_M_DATA_DSP48E2_CLK_U[19])
+                                                      0.071     0.113    u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.113    
+                         arrival time                           0.190    
+  -------------------------------------------------------------------
+                         slack                                  0.077    
+
+Slack (MET) :             0.077ns  (arrival time - required time)
+  Source:                 u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[1]
+                            (rising edge-triggered cell DSP_M_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.156ns  (logic 0.156ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_MULTIPLIER=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.034     0.034    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_PREADD_DATA                              r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X12Y48       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_AD_DATA[1])
+                                                      0.083     0.117 r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/AD_DATA[1]
+                         net (fo=1, routed)           0.000     0.117    u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA.AD_DATA<1>
+    DSP48E2_X12Y48       DSP_MULTIPLIER (Prop_DSP_MULTIPLIER_DSP48E2_AD_DATA[1]_U[1])
+                                                      0.073     0.190 r  u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER_INST/U[1]
+                         net (fo=1, routed)           0.000     0.190    u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER.U<1>
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[1]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.042     0.042    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X12Y48       DSP_M_DATA (Hold_DSP_M_DATA_DSP48E2_CLK_U[1])
+                                                      0.071     0.113    u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.113    
+                         arrival time                           0.190    
+  -------------------------------------------------------------------
+                         slack                                  0.077    
+
+Slack (MET) :             0.077ns  (arrival time - required time)
+  Source:                 u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[20]
+                            (rising edge-triggered cell DSP_M_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.156ns  (logic 0.156ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_MULTIPLIER=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.034     0.034    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_PREADD_DATA                              r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X12Y48       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_AD_DATA[19])
+                                                      0.083     0.117 r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/AD_DATA[19]
+                         net (fo=1, routed)           0.000     0.117    u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA.AD_DATA<19>
+    DSP48E2_X12Y48       DSP_MULTIPLIER (Prop_DSP_MULTIPLIER_DSP48E2_AD_DATA[19]_U[20])
+                                                      0.073     0.190 r  u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER_INST/U[20]
+                         net (fo=1, routed)           0.000     0.190    u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER.U<20>
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[20]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.042     0.042    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X12Y48       DSP_M_DATA (Hold_DSP_M_DATA_DSP48E2_CLK_U[20])
+                                                      0.071     0.113    u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.113    
+                         arrival time                           0.190    
+  -------------------------------------------------------------------
+                         slack                                  0.077    
+
+Slack (MET) :             0.077ns  (arrival time - required time)
+  Source:                 u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[21]
+                            (rising edge-triggered cell DSP_M_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.156ns  (logic 0.156ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_MULTIPLIER=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.034     0.034    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_PREADD_DATA                              r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X12Y48       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_AD_DATA[20])
+                                                      0.083     0.117 r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/AD_DATA[20]
+                         net (fo=1, routed)           0.000     0.117    u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA.AD_DATA<20>
+    DSP48E2_X12Y48       DSP_MULTIPLIER (Prop_DSP_MULTIPLIER_DSP48E2_AD_DATA[20]_U[21])
+                                                      0.073     0.190 r  u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER_INST/U[21]
+                         net (fo=1, routed)           0.000     0.190    u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER.U<21>
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[21]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.042     0.042    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X12Y48       DSP_M_DATA (Hold_DSP_M_DATA_DSP48E2_CLK_U[21])
+                                                      0.071     0.113    u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.113    
+                         arrival time                           0.190    
+  -------------------------------------------------------------------
+                         slack                                  0.077    
+
+Slack (MET) :             0.077ns  (arrival time - required time)
+  Source:                 u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[22]
+                            (rising edge-triggered cell DSP_M_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.156ns  (logic 0.156ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_MULTIPLIER=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.034     0.034    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_PREADD_DATA                              r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X12Y48       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_AD_DATA[21])
+                                                      0.083     0.117 r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/AD_DATA[21]
+                         net (fo=1, routed)           0.000     0.117    u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA.AD_DATA<21>
+    DSP48E2_X12Y48       DSP_MULTIPLIER (Prop_DSP_MULTIPLIER_DSP48E2_AD_DATA[21]_U[22])
+                                                      0.073     0.190 r  u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER_INST/U[22]
+                         net (fo=1, routed)           0.000     0.190    u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER.U<22>
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[22]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.042     0.042    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X12Y48       DSP_M_DATA (Hold_DSP_M_DATA_DSP48E2_CLK_U[22])
+                                                      0.071     0.113    u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.113    
+                         arrival time                           0.190    
+  -------------------------------------------------------------------
+                         slack                                  0.077    
+
+Slack (MET) :             0.077ns  (arrival time - required time)
+  Source:                 u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[23]
+                            (rising edge-triggered cell DSP_M_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.156ns  (logic 0.156ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_MULTIPLIER=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.034     0.034    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_PREADD_DATA                              r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X12Y48       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_AD_DATA[22])
+                                                      0.083     0.117 r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/AD_DATA[22]
+                         net (fo=1, routed)           0.000     0.117    u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA.AD_DATA<22>
+    DSP48E2_X12Y48       DSP_MULTIPLIER (Prop_DSP_MULTIPLIER_DSP48E2_AD_DATA[22]_U[23])
+                                                      0.073     0.190 r  u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER_INST/U[23]
+                         net (fo=1, routed)           0.000     0.190    u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER.U<23>
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[23]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.042     0.042    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X12Y48       DSP_M_DATA (Hold_DSP_M_DATA_DSP48E2_CLK_U[23])
+                                                      0.071     0.113    u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.113    
+                         arrival time                           0.190    
+  -------------------------------------------------------------------
+                         slack                                  0.077    
+
+Slack (MET) :             0.077ns  (arrival time - required time)
+  Source:                 u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[24]
+                            (rising edge-triggered cell DSP_M_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.156ns  (logic 0.156ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (DSP_MULTIPLIER=1)
+  Clock Path Skew:        0.008ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.042ns
+    Source Clock Delay      (SCD):    0.034ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.034     0.034    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_PREADD_DATA                              r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48E2_X12Y48       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_AD_DATA[23])
+                                                      0.083     0.117 r  u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA_INST/AD_DATA[23]
+                         net (fo=1, routed)           0.000     0.117    u_requant/product_pipe_q_reg[0]/DSP_PREADD_DATA.AD_DATA<23>
+    DSP48E2_X12Y48       DSP_MULTIPLIER (Prop_DSP_MULTIPLIER_DSP48E2_AD_DATA[23]_U[24])
+                                                      0.073     0.190 r  u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER_INST/U[24]
+                         net (fo=1, routed)           0.000     0.190    u_requant/product_pipe_q_reg[0]/DSP_MULTIPLIER.U<24>
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/U[24]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=1308, unset)         0.042     0.042    u_requant/product_pipe_q_reg[0]/CLK
+    DSP48E2_X12Y48       DSP_M_DATA                                   r  u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST/CLK
+                         clock pessimism              0.000     0.042    
+    DSP48E2_X12Y48       DSP_M_DATA (Hold_DSP_M_DATA_DSP48E2_CLK_U[24])
+                                                      0.071     0.113    u_requant/product_pipe_q_reg[0]/DSP_M_DATA_INST
+  -------------------------------------------------------------------
+                         required time                         -0.113    
+                         arrival time                           0.190    
+  -------------------------------------------------------------------
+                         slack                                  0.077    
+
+
+
+

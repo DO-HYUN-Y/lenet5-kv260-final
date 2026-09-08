@@ -1,0 +1,1207 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version      : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date              : Tue Sep  1 10:43:10 2026
+| Host              : yundodo running 64-bit unknown
+| Command           : report_timing -delay_type max -max_paths 20 -sort_by group -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/m4n8_rs_resident_weight_datapath/200mhz/worst_setup.rpt
+| Design            : alexnet_m4n8_rs_resident_weight_datapath
+| Device            : xck26-sfvc784
+| Speed File        : -2LV  PRODUCTION 1.30 05-15-2022
+| Design State      : Routed
+| Temperature Grade : C
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             0.755ns  (required time - arrival time)
+  Source:                 u_rs_datapath/u_base_datapath/u_output_slice/u_requant/valid_q_reg[3]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[7]/DSP_PREADD_DATA_INST/RSTD
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        3.891ns  (logic 0.923ns (23.720%)  route 2.968ns (76.280%))
+  Logic Levels:           7  (LUT2=1 LUT4=1 LUT5=3 LUT6=2)
+  Clock Path Skew:        0.013ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.055ns = ( 5.055 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.042ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3595, unset)         0.042     0.042    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/clk
+    SLICE_X44Y42         FDRE                                         r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/valid_q_reg[3]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X44Y42         FDRE (Prop_FFF2_SLICEL_C_Q)
+                                                      0.117     0.159 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/valid_q_reg[3]/Q
+                         net (fo=20, routed)          0.263     0.422    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/Q[3]
+    SLICE_X44Y42         LUT5 (Prop_G6LUT_SLICEL_I1_O)
+                                                      0.226     0.648 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/cfg_ready_INST_0_i_2/O
+                         net (fo=1, routed)           0.443     1.091    u_rs_datapath/u_feeder/idle0
+    SLICE_X41Y29         LUT6 (Prop_D6LUT_SLICEM_I3_O)
+                                                      0.134     1.225 f  u_rs_datapath/u_feeder/cfg_ready_INST_0_i_1/O
+                         net (fo=1, routed)           0.139     1.364    u_rs_datapath/u_base_datapath/u_output_slice/u_router/cfg_ready
+    SLICE_X41Y29         LUT5 (Prop_C6LUT_SLICEM_I1_O)
+                                                      0.080     1.444 f  u_rs_datapath/u_base_datapath/u_output_slice/u_router/cfg_ready_INST_0/O
+                         net (fo=8, routed)           0.277     1.721    u_rs_datapath/u_base_datapath/u_output_slice/u_router/tile_active_q_reg
+    SLICE_X41Y36         LUT2 (Prop_B6LUT_SLICEM_I1_O)
+                                                      0.082     1.803 f  u_rs_datapath/u_base_datapath/u_output_slice/u_router/configured_n_lane_mask_q[7]_i_1/O
+                         net (fo=35, routed)          0.203     2.006    u_rs_datapath/u_base_datapath/u_output_slice/u_router/E[0]
+    SLICE_X40Y38         LUT5 (Prop_D5LUT_SLICEM_I3_O)
+                                                      0.091     2.097 r  u_rs_datapath/u_base_datapath/u_output_slice/u_router/valid_q[4]_i_1/O
+                         net (fo=35, routed)          0.242     2.339    u_rs_datapath/u_base_datapath/u_output_slice/u_router/advance
+    SLICE_X42Y37         LUT6 (Prop_H6LUT_SLICEL_I0_O)
+                                                      0.058     2.397 r  u_rs_datapath/u_base_datapath/u_output_slice/u_router/valid_q[0]_i_2/O
+                         net (fo=15, routed)          0.477     2.874    u_rs_datapath/u_base_datapath/u_output_slice/u_router/configured_q_reg_1[0]
+    SLICE_X43Y48         LUT4 (Prop_D5LUT_SLICEM_I0_O)
+                                                      0.135     3.009 r  u_rs_datapath/u_base_datapath/u_output_slice/u_router/product_pipe_q_reg[7]_i_1/O
+                         net (fo=1, routed)           0.924     3.933    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[7]/RSTD
+    DSP48E2_X12Y23       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[7]/DSP_PREADD_DATA_INST/RSTD
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=3595, unset)         0.055     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[7]/CLK
+    DSP48E2_X12Y23       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[7]/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     5.055    
+                         clock uncertainty           -0.035     5.020    
+    DSP48E2_X12Y23       DSP_PREADD_DATA (Setup_DSP_PREADD_DATA_DSP48E2_CLK_RSTD)
+                                                     -0.331     4.689    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[7]/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                          4.689    
+                         arrival time                          -3.933    
+  -------------------------------------------------------------------
+                         slack                                  0.755    
+
+Slack (MET) :             0.841ns  (required time - arrival time)
+  Source:                 u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[0]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.171ns  (logic 1.568ns (37.595%)  route 2.603ns (62.405%))
+  Logic Levels:           4  (DSP_PREADD=1 DSP_PREADD_DATA=1 LUT3=1 LUT6=1)
+  Clock Path Skew:        0.012ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.055ns = ( 5.055 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.043ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3595, unset)         0.043     0.043    u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/clk
+    SLICE_X38Y34         FDRE                                         r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X38Y34         FDRE (Prop_HFF_SLICEM_C_Q)
+                                                      0.114     0.157 r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/Q
+                         net (fo=117, routed)         1.480     1.637    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_2_1[0]
+    SLICE_X50Y41         LUT6 (Prop_E6LUT_SLICEL_I2_O)
+                                                      0.187     1.824 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56/O
+                         net (fo=1, routed)           0.540     2.364    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56_n_0
+    SLICE_X47Y45         LUT3 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.224     2.588 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_28/O
+                         net (fo=1, routed)           0.583     3.171    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/D[0]
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_DIN[0]_D_DATA[0])
+                                                      0.348     3.519 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/D_DATA[0]
+                         net (fo=1, routed)           0.000     3.519    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA.D_DATA<0>
+    DSP48E2_X11Y20       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[0]_AD[0])
+                                                      0.695     4.214 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_INST/AD[0]
+                         net (fo=1, routed)           0.000     4.214    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD.AD<0>
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[0]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=3595, unset)         0.055     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/CLK
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     5.055    
+                         clock uncertainty           -0.035     5.020    
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Setup_DSP_PREADD_DATA_DSP48E2_CLK_AD[0])
+                                                      0.035     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                          5.055    
+                         arrival time                          -4.214    
+  -------------------------------------------------------------------
+                         slack                                  0.841    
+
+Slack (MET) :             0.841ns  (required time - arrival time)
+  Source:                 u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[10]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.171ns  (logic 1.568ns (37.595%)  route 2.603ns (62.405%))
+  Logic Levels:           4  (DSP_PREADD=1 DSP_PREADD_DATA=1 LUT3=1 LUT6=1)
+  Clock Path Skew:        0.012ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.055ns = ( 5.055 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.043ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3595, unset)         0.043     0.043    u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/clk
+    SLICE_X38Y34         FDRE                                         r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X38Y34         FDRE (Prop_HFF_SLICEM_C_Q)
+                                                      0.114     0.157 r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/Q
+                         net (fo=117, routed)         1.480     1.637    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_2_1[0]
+    SLICE_X50Y41         LUT6 (Prop_E6LUT_SLICEL_I2_O)
+                                                      0.187     1.824 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56/O
+                         net (fo=1, routed)           0.540     2.364    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56_n_0
+    SLICE_X47Y45         LUT3 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.224     2.588 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_28/O
+                         net (fo=1, routed)           0.583     3.171    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/D[0]
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_DIN[0]_D_DATA[0])
+                                                      0.348     3.519 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/D_DATA[0]
+                         net (fo=1, routed)           0.000     3.519    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA.D_DATA<0>
+    DSP48E2_X11Y20       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[0]_AD[10])
+                                                      0.695     4.214 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_INST/AD[10]
+                         net (fo=1, routed)           0.000     4.214    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD.AD<10>
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[10]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=3595, unset)         0.055     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/CLK
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     5.055    
+                         clock uncertainty           -0.035     5.020    
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Setup_DSP_PREADD_DATA_DSP48E2_CLK_AD[10])
+                                                      0.035     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                          5.055    
+                         arrival time                          -4.214    
+  -------------------------------------------------------------------
+                         slack                                  0.841    
+
+Slack (MET) :             0.841ns  (required time - arrival time)
+  Source:                 u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[11]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.171ns  (logic 1.568ns (37.595%)  route 2.603ns (62.405%))
+  Logic Levels:           4  (DSP_PREADD=1 DSP_PREADD_DATA=1 LUT3=1 LUT6=1)
+  Clock Path Skew:        0.012ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.055ns = ( 5.055 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.043ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3595, unset)         0.043     0.043    u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/clk
+    SLICE_X38Y34         FDRE                                         r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X38Y34         FDRE (Prop_HFF_SLICEM_C_Q)
+                                                      0.114     0.157 r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/Q
+                         net (fo=117, routed)         1.480     1.637    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_2_1[0]
+    SLICE_X50Y41         LUT6 (Prop_E6LUT_SLICEL_I2_O)
+                                                      0.187     1.824 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56/O
+                         net (fo=1, routed)           0.540     2.364    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56_n_0
+    SLICE_X47Y45         LUT3 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.224     2.588 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_28/O
+                         net (fo=1, routed)           0.583     3.171    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/D[0]
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_DIN[0]_D_DATA[0])
+                                                      0.348     3.519 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/D_DATA[0]
+                         net (fo=1, routed)           0.000     3.519    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA.D_DATA<0>
+    DSP48E2_X11Y20       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[0]_AD[11])
+                                                      0.695     4.214 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_INST/AD[11]
+                         net (fo=1, routed)           0.000     4.214    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD.AD<11>
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[11]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=3595, unset)         0.055     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/CLK
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     5.055    
+                         clock uncertainty           -0.035     5.020    
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Setup_DSP_PREADD_DATA_DSP48E2_CLK_AD[11])
+                                                      0.035     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                          5.055    
+                         arrival time                          -4.214    
+  -------------------------------------------------------------------
+                         slack                                  0.841    
+
+Slack (MET) :             0.841ns  (required time - arrival time)
+  Source:                 u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[12]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.171ns  (logic 1.568ns (37.595%)  route 2.603ns (62.405%))
+  Logic Levels:           4  (DSP_PREADD=1 DSP_PREADD_DATA=1 LUT3=1 LUT6=1)
+  Clock Path Skew:        0.012ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.055ns = ( 5.055 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.043ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3595, unset)         0.043     0.043    u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/clk
+    SLICE_X38Y34         FDRE                                         r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X38Y34         FDRE (Prop_HFF_SLICEM_C_Q)
+                                                      0.114     0.157 r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/Q
+                         net (fo=117, routed)         1.480     1.637    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_2_1[0]
+    SLICE_X50Y41         LUT6 (Prop_E6LUT_SLICEL_I2_O)
+                                                      0.187     1.824 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56/O
+                         net (fo=1, routed)           0.540     2.364    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56_n_0
+    SLICE_X47Y45         LUT3 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.224     2.588 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_28/O
+                         net (fo=1, routed)           0.583     3.171    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/D[0]
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_DIN[0]_D_DATA[0])
+                                                      0.348     3.519 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/D_DATA[0]
+                         net (fo=1, routed)           0.000     3.519    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA.D_DATA<0>
+    DSP48E2_X11Y20       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[0]_AD[12])
+                                                      0.695     4.214 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_INST/AD[12]
+                         net (fo=1, routed)           0.000     4.214    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD.AD<12>
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[12]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=3595, unset)         0.055     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/CLK
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     5.055    
+                         clock uncertainty           -0.035     5.020    
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Setup_DSP_PREADD_DATA_DSP48E2_CLK_AD[12])
+                                                      0.035     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                          5.055    
+                         arrival time                          -4.214    
+  -------------------------------------------------------------------
+                         slack                                  0.841    
+
+Slack (MET) :             0.841ns  (required time - arrival time)
+  Source:                 u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[13]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.171ns  (logic 1.568ns (37.595%)  route 2.603ns (62.405%))
+  Logic Levels:           4  (DSP_PREADD=1 DSP_PREADD_DATA=1 LUT3=1 LUT6=1)
+  Clock Path Skew:        0.012ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.055ns = ( 5.055 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.043ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3595, unset)         0.043     0.043    u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/clk
+    SLICE_X38Y34         FDRE                                         r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X38Y34         FDRE (Prop_HFF_SLICEM_C_Q)
+                                                      0.114     0.157 r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/Q
+                         net (fo=117, routed)         1.480     1.637    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_2_1[0]
+    SLICE_X50Y41         LUT6 (Prop_E6LUT_SLICEL_I2_O)
+                                                      0.187     1.824 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56/O
+                         net (fo=1, routed)           0.540     2.364    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56_n_0
+    SLICE_X47Y45         LUT3 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.224     2.588 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_28/O
+                         net (fo=1, routed)           0.583     3.171    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/D[0]
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_DIN[0]_D_DATA[0])
+                                                      0.348     3.519 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/D_DATA[0]
+                         net (fo=1, routed)           0.000     3.519    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA.D_DATA<0>
+    DSP48E2_X11Y20       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[0]_AD[13])
+                                                      0.695     4.214 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_INST/AD[13]
+                         net (fo=1, routed)           0.000     4.214    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD.AD<13>
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[13]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=3595, unset)         0.055     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/CLK
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     5.055    
+                         clock uncertainty           -0.035     5.020    
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Setup_DSP_PREADD_DATA_DSP48E2_CLK_AD[13])
+                                                      0.035     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                          5.055    
+                         arrival time                          -4.214    
+  -------------------------------------------------------------------
+                         slack                                  0.841    
+
+Slack (MET) :             0.841ns  (required time - arrival time)
+  Source:                 u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[14]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.171ns  (logic 1.568ns (37.595%)  route 2.603ns (62.405%))
+  Logic Levels:           4  (DSP_PREADD=1 DSP_PREADD_DATA=1 LUT3=1 LUT6=1)
+  Clock Path Skew:        0.012ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.055ns = ( 5.055 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.043ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3595, unset)         0.043     0.043    u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/clk
+    SLICE_X38Y34         FDRE                                         r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X38Y34         FDRE (Prop_HFF_SLICEM_C_Q)
+                                                      0.114     0.157 r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/Q
+                         net (fo=117, routed)         1.480     1.637    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_2_1[0]
+    SLICE_X50Y41         LUT6 (Prop_E6LUT_SLICEL_I2_O)
+                                                      0.187     1.824 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56/O
+                         net (fo=1, routed)           0.540     2.364    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56_n_0
+    SLICE_X47Y45         LUT3 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.224     2.588 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_28/O
+                         net (fo=1, routed)           0.583     3.171    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/D[0]
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_DIN[0]_D_DATA[0])
+                                                      0.348     3.519 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/D_DATA[0]
+                         net (fo=1, routed)           0.000     3.519    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA.D_DATA<0>
+    DSP48E2_X11Y20       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[0]_AD[14])
+                                                      0.695     4.214 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_INST/AD[14]
+                         net (fo=1, routed)           0.000     4.214    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD.AD<14>
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[14]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=3595, unset)         0.055     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/CLK
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     5.055    
+                         clock uncertainty           -0.035     5.020    
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Setup_DSP_PREADD_DATA_DSP48E2_CLK_AD[14])
+                                                      0.035     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                          5.055    
+                         arrival time                          -4.214    
+  -------------------------------------------------------------------
+                         slack                                  0.841    
+
+Slack (MET) :             0.841ns  (required time - arrival time)
+  Source:                 u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[15]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.171ns  (logic 1.568ns (37.595%)  route 2.603ns (62.405%))
+  Logic Levels:           4  (DSP_PREADD=1 DSP_PREADD_DATA=1 LUT3=1 LUT6=1)
+  Clock Path Skew:        0.012ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.055ns = ( 5.055 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.043ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3595, unset)         0.043     0.043    u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/clk
+    SLICE_X38Y34         FDRE                                         r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X38Y34         FDRE (Prop_HFF_SLICEM_C_Q)
+                                                      0.114     0.157 r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/Q
+                         net (fo=117, routed)         1.480     1.637    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_2_1[0]
+    SLICE_X50Y41         LUT6 (Prop_E6LUT_SLICEL_I2_O)
+                                                      0.187     1.824 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56/O
+                         net (fo=1, routed)           0.540     2.364    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56_n_0
+    SLICE_X47Y45         LUT3 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.224     2.588 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_28/O
+                         net (fo=1, routed)           0.583     3.171    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/D[0]
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_DIN[0]_D_DATA[0])
+                                                      0.348     3.519 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/D_DATA[0]
+                         net (fo=1, routed)           0.000     3.519    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA.D_DATA<0>
+    DSP48E2_X11Y20       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[0]_AD[15])
+                                                      0.695     4.214 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_INST/AD[15]
+                         net (fo=1, routed)           0.000     4.214    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD.AD<15>
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[15]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=3595, unset)         0.055     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/CLK
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     5.055    
+                         clock uncertainty           -0.035     5.020    
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Setup_DSP_PREADD_DATA_DSP48E2_CLK_AD[15])
+                                                      0.035     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                          5.055    
+                         arrival time                          -4.214    
+  -------------------------------------------------------------------
+                         slack                                  0.841    
+
+Slack (MET) :             0.841ns  (required time - arrival time)
+  Source:                 u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[16]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.171ns  (logic 1.568ns (37.595%)  route 2.603ns (62.405%))
+  Logic Levels:           4  (DSP_PREADD=1 DSP_PREADD_DATA=1 LUT3=1 LUT6=1)
+  Clock Path Skew:        0.012ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.055ns = ( 5.055 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.043ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3595, unset)         0.043     0.043    u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/clk
+    SLICE_X38Y34         FDRE                                         r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X38Y34         FDRE (Prop_HFF_SLICEM_C_Q)
+                                                      0.114     0.157 r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/Q
+                         net (fo=117, routed)         1.480     1.637    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_2_1[0]
+    SLICE_X50Y41         LUT6 (Prop_E6LUT_SLICEL_I2_O)
+                                                      0.187     1.824 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56/O
+                         net (fo=1, routed)           0.540     2.364    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56_n_0
+    SLICE_X47Y45         LUT3 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.224     2.588 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_28/O
+                         net (fo=1, routed)           0.583     3.171    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/D[0]
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_DIN[0]_D_DATA[0])
+                                                      0.348     3.519 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/D_DATA[0]
+                         net (fo=1, routed)           0.000     3.519    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA.D_DATA<0>
+    DSP48E2_X11Y20       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[0]_AD[16])
+                                                      0.695     4.214 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_INST/AD[16]
+                         net (fo=1, routed)           0.000     4.214    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD.AD<16>
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[16]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=3595, unset)         0.055     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/CLK
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     5.055    
+                         clock uncertainty           -0.035     5.020    
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Setup_DSP_PREADD_DATA_DSP48E2_CLK_AD[16])
+                                                      0.035     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                          5.055    
+                         arrival time                          -4.214    
+  -------------------------------------------------------------------
+                         slack                                  0.841    
+
+Slack (MET) :             0.841ns  (required time - arrival time)
+  Source:                 u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[17]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.171ns  (logic 1.568ns (37.595%)  route 2.603ns (62.405%))
+  Logic Levels:           4  (DSP_PREADD=1 DSP_PREADD_DATA=1 LUT3=1 LUT6=1)
+  Clock Path Skew:        0.012ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.055ns = ( 5.055 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.043ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3595, unset)         0.043     0.043    u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/clk
+    SLICE_X38Y34         FDRE                                         r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X38Y34         FDRE (Prop_HFF_SLICEM_C_Q)
+                                                      0.114     0.157 r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/Q
+                         net (fo=117, routed)         1.480     1.637    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_2_1[0]
+    SLICE_X50Y41         LUT6 (Prop_E6LUT_SLICEL_I2_O)
+                                                      0.187     1.824 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56/O
+                         net (fo=1, routed)           0.540     2.364    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56_n_0
+    SLICE_X47Y45         LUT3 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.224     2.588 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_28/O
+                         net (fo=1, routed)           0.583     3.171    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/D[0]
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_DIN[0]_D_DATA[0])
+                                                      0.348     3.519 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/D_DATA[0]
+                         net (fo=1, routed)           0.000     3.519    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA.D_DATA<0>
+    DSP48E2_X11Y20       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[0]_AD[17])
+                                                      0.695     4.214 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_INST/AD[17]
+                         net (fo=1, routed)           0.000     4.214    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD.AD<17>
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[17]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=3595, unset)         0.055     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/CLK
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     5.055    
+                         clock uncertainty           -0.035     5.020    
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Setup_DSP_PREADD_DATA_DSP48E2_CLK_AD[17])
+                                                      0.035     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                          5.055    
+                         arrival time                          -4.214    
+  -------------------------------------------------------------------
+                         slack                                  0.841    
+
+Slack (MET) :             0.841ns  (required time - arrival time)
+  Source:                 u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[18]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.171ns  (logic 1.568ns (37.595%)  route 2.603ns (62.405%))
+  Logic Levels:           4  (DSP_PREADD=1 DSP_PREADD_DATA=1 LUT3=1 LUT6=1)
+  Clock Path Skew:        0.012ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.055ns = ( 5.055 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.043ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3595, unset)         0.043     0.043    u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/clk
+    SLICE_X38Y34         FDRE                                         r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X38Y34         FDRE (Prop_HFF_SLICEM_C_Q)
+                                                      0.114     0.157 r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/Q
+                         net (fo=117, routed)         1.480     1.637    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_2_1[0]
+    SLICE_X50Y41         LUT6 (Prop_E6LUT_SLICEL_I2_O)
+                                                      0.187     1.824 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56/O
+                         net (fo=1, routed)           0.540     2.364    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56_n_0
+    SLICE_X47Y45         LUT3 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.224     2.588 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_28/O
+                         net (fo=1, routed)           0.583     3.171    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/D[0]
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_DIN[0]_D_DATA[0])
+                                                      0.348     3.519 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/D_DATA[0]
+                         net (fo=1, routed)           0.000     3.519    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA.D_DATA<0>
+    DSP48E2_X11Y20       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[0]_AD[18])
+                                                      0.695     4.214 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_INST/AD[18]
+                         net (fo=1, routed)           0.000     4.214    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD.AD<18>
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[18]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=3595, unset)         0.055     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/CLK
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     5.055    
+                         clock uncertainty           -0.035     5.020    
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Setup_DSP_PREADD_DATA_DSP48E2_CLK_AD[18])
+                                                      0.035     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                          5.055    
+                         arrival time                          -4.214    
+  -------------------------------------------------------------------
+                         slack                                  0.841    
+
+Slack (MET) :             0.841ns  (required time - arrival time)
+  Source:                 u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[19]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.171ns  (logic 1.568ns (37.595%)  route 2.603ns (62.405%))
+  Logic Levels:           4  (DSP_PREADD=1 DSP_PREADD_DATA=1 LUT3=1 LUT6=1)
+  Clock Path Skew:        0.012ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.055ns = ( 5.055 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.043ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3595, unset)         0.043     0.043    u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/clk
+    SLICE_X38Y34         FDRE                                         r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X38Y34         FDRE (Prop_HFF_SLICEM_C_Q)
+                                                      0.114     0.157 r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/Q
+                         net (fo=117, routed)         1.480     1.637    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_2_1[0]
+    SLICE_X50Y41         LUT6 (Prop_E6LUT_SLICEL_I2_O)
+                                                      0.187     1.824 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56/O
+                         net (fo=1, routed)           0.540     2.364    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56_n_0
+    SLICE_X47Y45         LUT3 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.224     2.588 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_28/O
+                         net (fo=1, routed)           0.583     3.171    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/D[0]
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_DIN[0]_D_DATA[0])
+                                                      0.348     3.519 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/D_DATA[0]
+                         net (fo=1, routed)           0.000     3.519    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA.D_DATA<0>
+    DSP48E2_X11Y20       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[0]_AD[19])
+                                                      0.695     4.214 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_INST/AD[19]
+                         net (fo=1, routed)           0.000     4.214    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD.AD<19>
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[19]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=3595, unset)         0.055     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/CLK
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     5.055    
+                         clock uncertainty           -0.035     5.020    
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Setup_DSP_PREADD_DATA_DSP48E2_CLK_AD[19])
+                                                      0.035     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                          5.055    
+                         arrival time                          -4.214    
+  -------------------------------------------------------------------
+                         slack                                  0.841    
+
+Slack (MET) :             0.841ns  (required time - arrival time)
+  Source:                 u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[1]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.171ns  (logic 1.568ns (37.595%)  route 2.603ns (62.405%))
+  Logic Levels:           4  (DSP_PREADD=1 DSP_PREADD_DATA=1 LUT3=1 LUT6=1)
+  Clock Path Skew:        0.012ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.055ns = ( 5.055 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.043ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3595, unset)         0.043     0.043    u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/clk
+    SLICE_X38Y34         FDRE                                         r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X38Y34         FDRE (Prop_HFF_SLICEM_C_Q)
+                                                      0.114     0.157 r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/Q
+                         net (fo=117, routed)         1.480     1.637    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_2_1[0]
+    SLICE_X50Y41         LUT6 (Prop_E6LUT_SLICEL_I2_O)
+                                                      0.187     1.824 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56/O
+                         net (fo=1, routed)           0.540     2.364    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56_n_0
+    SLICE_X47Y45         LUT3 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.224     2.588 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_28/O
+                         net (fo=1, routed)           0.583     3.171    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/D[0]
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_DIN[0]_D_DATA[0])
+                                                      0.348     3.519 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/D_DATA[0]
+                         net (fo=1, routed)           0.000     3.519    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA.D_DATA<0>
+    DSP48E2_X11Y20       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[0]_AD[1])
+                                                      0.695     4.214 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_INST/AD[1]
+                         net (fo=1, routed)           0.000     4.214    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD.AD<1>
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[1]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=3595, unset)         0.055     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/CLK
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     5.055    
+                         clock uncertainty           -0.035     5.020    
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Setup_DSP_PREADD_DATA_DSP48E2_CLK_AD[1])
+                                                      0.035     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                          5.055    
+                         arrival time                          -4.214    
+  -------------------------------------------------------------------
+                         slack                                  0.841    
+
+Slack (MET) :             0.841ns  (required time - arrival time)
+  Source:                 u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[20]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.171ns  (logic 1.568ns (37.595%)  route 2.603ns (62.405%))
+  Logic Levels:           4  (DSP_PREADD=1 DSP_PREADD_DATA=1 LUT3=1 LUT6=1)
+  Clock Path Skew:        0.012ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.055ns = ( 5.055 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.043ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3595, unset)         0.043     0.043    u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/clk
+    SLICE_X38Y34         FDRE                                         r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X38Y34         FDRE (Prop_HFF_SLICEM_C_Q)
+                                                      0.114     0.157 r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/Q
+                         net (fo=117, routed)         1.480     1.637    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_2_1[0]
+    SLICE_X50Y41         LUT6 (Prop_E6LUT_SLICEL_I2_O)
+                                                      0.187     1.824 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56/O
+                         net (fo=1, routed)           0.540     2.364    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56_n_0
+    SLICE_X47Y45         LUT3 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.224     2.588 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_28/O
+                         net (fo=1, routed)           0.583     3.171    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/D[0]
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_DIN[0]_D_DATA[0])
+                                                      0.348     3.519 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/D_DATA[0]
+                         net (fo=1, routed)           0.000     3.519    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA.D_DATA<0>
+    DSP48E2_X11Y20       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[0]_AD[20])
+                                                      0.695     4.214 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_INST/AD[20]
+                         net (fo=1, routed)           0.000     4.214    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD.AD<20>
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[20]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=3595, unset)         0.055     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/CLK
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     5.055    
+                         clock uncertainty           -0.035     5.020    
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Setup_DSP_PREADD_DATA_DSP48E2_CLK_AD[20])
+                                                      0.035     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                          5.055    
+                         arrival time                          -4.214    
+  -------------------------------------------------------------------
+                         slack                                  0.841    
+
+Slack (MET) :             0.841ns  (required time - arrival time)
+  Source:                 u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[21]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.171ns  (logic 1.568ns (37.595%)  route 2.603ns (62.405%))
+  Logic Levels:           4  (DSP_PREADD=1 DSP_PREADD_DATA=1 LUT3=1 LUT6=1)
+  Clock Path Skew:        0.012ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.055ns = ( 5.055 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.043ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3595, unset)         0.043     0.043    u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/clk
+    SLICE_X38Y34         FDRE                                         r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X38Y34         FDRE (Prop_HFF_SLICEM_C_Q)
+                                                      0.114     0.157 r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/Q
+                         net (fo=117, routed)         1.480     1.637    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_2_1[0]
+    SLICE_X50Y41         LUT6 (Prop_E6LUT_SLICEL_I2_O)
+                                                      0.187     1.824 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56/O
+                         net (fo=1, routed)           0.540     2.364    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56_n_0
+    SLICE_X47Y45         LUT3 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.224     2.588 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_28/O
+                         net (fo=1, routed)           0.583     3.171    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/D[0]
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_DIN[0]_D_DATA[0])
+                                                      0.348     3.519 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/D_DATA[0]
+                         net (fo=1, routed)           0.000     3.519    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA.D_DATA<0>
+    DSP48E2_X11Y20       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[0]_AD[21])
+                                                      0.695     4.214 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_INST/AD[21]
+                         net (fo=1, routed)           0.000     4.214    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD.AD<21>
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[21]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=3595, unset)         0.055     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/CLK
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     5.055    
+                         clock uncertainty           -0.035     5.020    
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Setup_DSP_PREADD_DATA_DSP48E2_CLK_AD[21])
+                                                      0.035     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                          5.055    
+                         arrival time                          -4.214    
+  -------------------------------------------------------------------
+                         slack                                  0.841    
+
+Slack (MET) :             0.841ns  (required time - arrival time)
+  Source:                 u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[22]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.171ns  (logic 1.568ns (37.595%)  route 2.603ns (62.405%))
+  Logic Levels:           4  (DSP_PREADD=1 DSP_PREADD_DATA=1 LUT3=1 LUT6=1)
+  Clock Path Skew:        0.012ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.055ns = ( 5.055 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.043ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3595, unset)         0.043     0.043    u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/clk
+    SLICE_X38Y34         FDRE                                         r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X38Y34         FDRE (Prop_HFF_SLICEM_C_Q)
+                                                      0.114     0.157 r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/Q
+                         net (fo=117, routed)         1.480     1.637    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_2_1[0]
+    SLICE_X50Y41         LUT6 (Prop_E6LUT_SLICEL_I2_O)
+                                                      0.187     1.824 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56/O
+                         net (fo=1, routed)           0.540     2.364    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56_n_0
+    SLICE_X47Y45         LUT3 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.224     2.588 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_28/O
+                         net (fo=1, routed)           0.583     3.171    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/D[0]
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_DIN[0]_D_DATA[0])
+                                                      0.348     3.519 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/D_DATA[0]
+                         net (fo=1, routed)           0.000     3.519    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA.D_DATA<0>
+    DSP48E2_X11Y20       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[0]_AD[22])
+                                                      0.695     4.214 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_INST/AD[22]
+                         net (fo=1, routed)           0.000     4.214    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD.AD<22>
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[22]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=3595, unset)         0.055     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/CLK
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     5.055    
+                         clock uncertainty           -0.035     5.020    
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Setup_DSP_PREADD_DATA_DSP48E2_CLK_AD[22])
+                                                      0.035     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                          5.055    
+                         arrival time                          -4.214    
+  -------------------------------------------------------------------
+                         slack                                  0.841    
+
+Slack (MET) :             0.841ns  (required time - arrival time)
+  Source:                 u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[23]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.171ns  (logic 1.568ns (37.595%)  route 2.603ns (62.405%))
+  Logic Levels:           4  (DSP_PREADD=1 DSP_PREADD_DATA=1 LUT3=1 LUT6=1)
+  Clock Path Skew:        0.012ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.055ns = ( 5.055 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.043ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3595, unset)         0.043     0.043    u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/clk
+    SLICE_X38Y34         FDRE                                         r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X38Y34         FDRE (Prop_HFF_SLICEM_C_Q)
+                                                      0.114     0.157 r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/Q
+                         net (fo=117, routed)         1.480     1.637    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_2_1[0]
+    SLICE_X50Y41         LUT6 (Prop_E6LUT_SLICEL_I2_O)
+                                                      0.187     1.824 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56/O
+                         net (fo=1, routed)           0.540     2.364    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56_n_0
+    SLICE_X47Y45         LUT3 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.224     2.588 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_28/O
+                         net (fo=1, routed)           0.583     3.171    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/D[0]
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_DIN[0]_D_DATA[0])
+                                                      0.348     3.519 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/D_DATA[0]
+                         net (fo=1, routed)           0.000     3.519    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA.D_DATA<0>
+    DSP48E2_X11Y20       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[0]_AD[23])
+                                                      0.695     4.214 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_INST/AD[23]
+                         net (fo=1, routed)           0.000     4.214    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD.AD<23>
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[23]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=3595, unset)         0.055     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/CLK
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     5.055    
+                         clock uncertainty           -0.035     5.020    
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Setup_DSP_PREADD_DATA_DSP48E2_CLK_AD[23])
+                                                      0.035     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                          5.055    
+                         arrival time                          -4.214    
+  -------------------------------------------------------------------
+                         slack                                  0.841    
+
+Slack (MET) :             0.841ns  (required time - arrival time)
+  Source:                 u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[24]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.171ns  (logic 1.568ns (37.595%)  route 2.603ns (62.405%))
+  Logic Levels:           4  (DSP_PREADD=1 DSP_PREADD_DATA=1 LUT3=1 LUT6=1)
+  Clock Path Skew:        0.012ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.055ns = ( 5.055 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.043ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3595, unset)         0.043     0.043    u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/clk
+    SLICE_X38Y34         FDRE                                         r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X38Y34         FDRE (Prop_HFF_SLICEM_C_Q)
+                                                      0.114     0.157 r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/Q
+                         net (fo=117, routed)         1.480     1.637    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_2_1[0]
+    SLICE_X50Y41         LUT6 (Prop_E6LUT_SLICEL_I2_O)
+                                                      0.187     1.824 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56/O
+                         net (fo=1, routed)           0.540     2.364    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56_n_0
+    SLICE_X47Y45         LUT3 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.224     2.588 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_28/O
+                         net (fo=1, routed)           0.583     3.171    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/D[0]
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_DIN[0]_D_DATA[0])
+                                                      0.348     3.519 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/D_DATA[0]
+                         net (fo=1, routed)           0.000     3.519    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA.D_DATA<0>
+    DSP48E2_X11Y20       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[0]_AD[24])
+                                                      0.695     4.214 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_INST/AD[24]
+                         net (fo=1, routed)           0.000     4.214    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD.AD<24>
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[24]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=3595, unset)         0.055     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/CLK
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     5.055    
+                         clock uncertainty           -0.035     5.020    
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Setup_DSP_PREADD_DATA_DSP48E2_CLK_AD[24])
+                                                      0.035     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                          5.055    
+                         arrival time                          -4.214    
+  -------------------------------------------------------------------
+                         slack                                  0.841    
+
+Slack (MET) :             0.841ns  (required time - arrival time)
+  Source:                 u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[25]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.171ns  (logic 1.568ns (37.595%)  route 2.603ns (62.405%))
+  Logic Levels:           4  (DSP_PREADD=1 DSP_PREADD_DATA=1 LUT3=1 LUT6=1)
+  Clock Path Skew:        0.012ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.055ns = ( 5.055 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.043ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3595, unset)         0.043     0.043    u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/clk
+    SLICE_X38Y34         FDRE                                         r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X38Y34         FDRE (Prop_HFF_SLICEM_C_Q)
+                                                      0.114     0.157 r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/Q
+                         net (fo=117, routed)         1.480     1.637    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_2_1[0]
+    SLICE_X50Y41         LUT6 (Prop_E6LUT_SLICEL_I2_O)
+                                                      0.187     1.824 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56/O
+                         net (fo=1, routed)           0.540     2.364    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56_n_0
+    SLICE_X47Y45         LUT3 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.224     2.588 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_28/O
+                         net (fo=1, routed)           0.583     3.171    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/D[0]
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_DIN[0]_D_DATA[0])
+                                                      0.348     3.519 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/D_DATA[0]
+                         net (fo=1, routed)           0.000     3.519    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA.D_DATA<0>
+    DSP48E2_X11Y20       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[0]_AD[25])
+                                                      0.695     4.214 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_INST/AD[25]
+                         net (fo=1, routed)           0.000     4.214    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD.AD<25>
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[25]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=3595, unset)         0.055     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/CLK
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     5.055    
+                         clock uncertainty           -0.035     5.020    
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Setup_DSP_PREADD_DATA_DSP48E2_CLK_AD[25])
+                                                      0.035     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                          5.055    
+                         arrival time                          -4.214    
+  -------------------------------------------------------------------
+                         slack                                  0.841    
+
+Slack (MET) :             0.841ns  (required time - arrival time)
+  Source:                 u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[26]
+                            (rising edge-triggered cell DSP_PREADD_DATA clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.171ns  (logic 1.568ns (37.595%)  route 2.603ns (62.405%))
+  Logic Levels:           4  (DSP_PREADD=1 DSP_PREADD_DATA=1 LUT3=1 LUT6=1)
+  Clock Path Skew:        0.012ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.055ns = ( 5.055 - 5.000 ) 
+    Source Clock Delay      (SCD):    0.043ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3595, unset)         0.043     0.043    u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/clk
+    SLICE_X38Y34         FDRE                                         r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X38Y34         FDRE (Prop_HFF_SLICEM_C_Q)
+                                                      0.114     0.157 r  u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q_reg[0]/Q
+                         net (fo=117, routed)         1.480     1.637    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_2_1[0]
+    SLICE_X50Y41         LUT6 (Prop_E6LUT_SLICEL_I2_O)
+                                                      0.187     1.824 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56/O
+                         net (fo=1, routed)           0.540     2.364    u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_56_n_0
+    SLICE_X47Y45         LUT3 (Prop_F6LUT_SLICEL_I2_O)
+                                                      0.224     2.588 f  u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/product_pipe_q_reg[5]_i_28/O
+                         net (fo=1, routed)           0.583     3.171    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/D[0]
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_DIN[0]_D_DATA[0])
+                                                      0.348     3.519 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/D_DATA[0]
+                         net (fo=1, routed)           0.000     3.519    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA.D_DATA<0>
+    DSP48E2_X11Y20       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[0]_AD[26])
+                                                      0.695     4.214 r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_INST/AD[26]
+                         net (fo=1, routed)           0.000     4.214    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD.AD<26>
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/AD[26]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.000     5.000 r  
+                                                      0.000     5.000 r  clk (IN)
+                         net (fo=3595, unset)         0.055     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/CLK
+    DSP48E2_X11Y20       DSP_PREADD_DATA                              r  u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST/CLK
+                         clock pessimism              0.000     5.055    
+                         clock uncertainty           -0.035     5.020    
+    DSP48E2_X11Y20       DSP_PREADD_DATA (Setup_DSP_PREADD_DATA_DSP48E2_CLK_AD[26])
+                                                      0.035     5.055    u_rs_datapath/u_base_datapath/u_output_slice/u_requant/product_pipe_q_reg[5]/DSP_PREADD_DATA_INST
+  -------------------------------------------------------------------
+                         required time                          5.055    
+                         arrival time                          -4.214    
+  -------------------------------------------------------------------
+                         slack                                  0.841    
+
+
+
+

@@ -10,6 +10,10 @@ module axi_dma_simple_master #(
   parameter int DMA_LEN_W = 26,
   parameter logic [AXI_ADDR_W-1:0] DMA_BASE_ADDR = 32'ha001_0000,
   parameter int POLL_INTERVAL = 4,
+  // Keep the LeNet-compatible 16-byte default. AlexNet selects 8 because
+  // FC8 emits one signed INT64/N8 result per descriptor and its DMA IP enables
+  // the data realignment engines (DRE).
+  parameter int DMA_ALIGNMENT_BYTES = 16,
   parameter logic [31:0] DEFAULT_TIMEOUT = 32'd10_000_000
 ) (
   input  logic                  clk,
@@ -56,6 +60,7 @@ module axi_dma_simple_master #(
   localparam logic [31:0] DMA_CONTROL_VALUE = 32'h0000_5001;
   localparam logic [31:0] DMA_STATUS_CLEAR  = 32'h0000_7000;
   localparam logic [31:0] DMA_ERROR_MASK    = 32'h0000_4770;
+  localparam logic [31:0] DMA_ALIGNMENT_MASK = DMA_ALIGNMENT_BYTES - 1;
   localparam int POLL_COUNT_W =
       (POLL_INTERVAL <= 1) ? 1 : $clog2(POLL_INTERVAL);
 
@@ -215,7 +220,7 @@ module axi_dma_simple_master #(
                       ? DEFAULT_TIMEOUT : cmd_timeout_cycles;
               active_cycles_r <= 32'd0;
               last_status_r <= 32'd0;
-              if ((cmd_buffer_addr[3:0] != 4'd0) ||
+              if (((cmd_buffer_addr & DMA_ALIGNMENT_MASK) != 0) ||
                   (cmd_length_bytes == '0)) begin
                 state_r <= ST_ERROR;
                 error_r <= 1'b1;

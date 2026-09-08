@@ -1,0 +1,122 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Wed Sep  2 16:38:11 2026
+| Host         : yundodo running 64-bit unknown
+| Command      : report_control_sets -verbose -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/n8_activation_dual_segment_pingpong/200mhz/synth_control_sets.rpt
+| Design       : alexnet_n8_activation_dual_segment_pingpong
+| Device       : xck26
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Control Set Information
+
+Table of Contents
+-----------------
+1. Summary
+2. Histogram
+3. Flip-Flop Distribution
+4. Detailed Control Set Information
+
+1. Summary
+----------
+
++----------------------------------------------------------+-------+
+|                          Status                          | Count |
++----------------------------------------------------------+-------+
+| Total control sets                                       |    44 |
+|    Minimum number of control sets                        |    44 |
+|    Addition due to synthesis replication                 |     0 |
+|    Addition due to physical synthesis replication        |     0 |
+| Unused register locations in slices containing registers |    86 |
++----------------------------------------------------------+-------+
+* Control sets can be merged at opt_design using control_set_merge or merge_equivalent_drivers
+** Run report_qor_suggestions for automated merging and remapping suggestions
+
+
+2. Histogram
+------------
+
++--------------------+-------+
+|       Fanout       | Count |
++--------------------+-------+
+| Total control sets |    44 |
+| >= 0 to < 4        |     8 |
+| >= 4 to < 6        |     0 |
+| >= 6 to < 8        |     0 |
+| >= 8 to < 10       |     4 |
+| >= 10 to < 12      |    16 |
+| >= 12 to < 14      |     1 |
+| >= 14 to < 16      |     0 |
+| >= 16              |    15 |
++--------------------+-------+
+* Control sets can be remapped at either synth_design or opt_design
+
+
+3. Flip-Flop Distribution
+-------------------------
+
++--------------+-----------------------+------------------------+-----------------+--------------+
+| Clock Enable | Synchronous Set/Reset | Asynchronous Set/Reset | Total Registers | Total Slices |
++--------------+-----------------------+------------------------+-----------------+--------------+
+| No           | No                    | No                     |              11 |            0 |
+| No           | No                    | Yes                    |               0 |            0 |
+| No           | Yes                   | No                     |              13 |            0 |
+| Yes          | No                    | No                     |               8 |            0 |
+| Yes          | No                    | Yes                    |               0 |            0 |
+| Yes          | Yes                   | No                     |             590 |            0 |
++--------------+-----------------------+------------------------+-----------------+--------------+
+
+
+4. Detailed Control Set Information
+-----------------------------------
+
++--------------+--------------------------------------------------+--------------------------------------------+------------------+----------------+--------------+
+| Clock Signal |                   Enable Signal                  |              Set/Reset Signal              | Slice Load Count | Bel Load Count | Bels / Slice |
++--------------+--------------------------------------------------+--------------------------------------------+------------------+----------------+--------------+
+|  clk         | segment1/bank1/bank_state[1]_i_1__1_n_0          |                                            |                0 |              2 |           NA |
+|  clk         | segment0/bank0/read_start_valid[0]               | rst                                        |                0 |              2 |           NA |
+|  clk         | segment1/bank0/bank_state                        |                                            |                0 |              2 |           NA |
+|  clk         | segment0/bank0/bank_state                        |                                            |                0 |              2 |           NA |
+|  clk         | segment0/read_start_valid_2[0]                   | rst                                        |                0 |              2 |           NA |
+|  clk         | segment0/bank1/bank_state[1]_i_1_n_0             |                                            |                0 |              2 |           NA |
+|  clk         | segment0/read_start_valid_1[0]                   | rst                                        |                0 |              2 |           NA |
+|  clk         | segment0/bank1/read_start_valid_0                | rst                                        |                0 |              3 |           NA |
+|  clk         | segment0/bank1/write_addr_q[8]_i_2_n_0           | segment0/bank1/reads_issued_q_0            |                0 |              9 |           NA |
+|  clk         | segment1/bank0/write_addr_q[8]_i_2__2_n_0        | segment1/bank0/reads_issued_q              |                0 |              9 |           NA |
+|  clk         | segment1/bank1/write_addr_q[8]_i_2__1_n_0        | segment1/bank1/reads_issued_q              |                0 |              9 |           NA |
+|  clk         | segment0/bank0/write_addr_q[8]_i_2__0_n_0        | segment0/bank0/reads_issued_q              |                0 |              9 |           NA |
+|  clk         | segment1/bank0/fill_bank_q_reg_2[0]              | segment1/bank0/SR[0]                       |                0 |             10 |           NA |
+|  clk         | segment0/bank0/ready_bank0_q_reg_0               | segment1/bank0/reads_issued_q              |                0 |             10 |           NA |
+|  clk         | segment1/bank0/E[0]                              | rst                                        |                0 |             10 |           NA |
+|  clk         | segment1/bank0/write_fire                        | segment1/bank0/words_written[9]_i_1_n_0    |                0 |             10 |           NA |
+|  clk         | segment0/bank1/bank_state_reg[1]_1               | segment1/bank1/reads_issued_q              |                0 |             10 |           NA |
+|  clk         | segment0/bank0/bank_state_reg[1]_2[0]            | segment1/bank0/SR[0]                       |                0 |             10 |           NA |
+|  clk         | segment0/bank0/reads_issued_q[9]_i_1__0_n_0      | segment0/bank0/reads_issued_q              |                0 |             10 |           NA |
+|  clk         | segment0/bank0/issue_read_0                      | rst                                        |                0 |             10 |           NA |
+|  clk         | segment1/bank1/write_fire                        | segment1/bank1/words_written[9]_i_1__1_n_0 |                0 |             10 |           NA |
+|  clk         | segment0/bank0/write_fire                        | segment0/bank1/SR[0]                       |                0 |             10 |           NA |
+|  clk         | segment0/bank1/reads_issued_q[9]_i_1__2_n_0      | segment0/bank1/reads_issued_q_0            |                0 |             10 |           NA |
+|  clk         | segment1/bank1/E[0]                              | rst                                        |                0 |             10 |           NA |
+|  clk         | segment0/bank1/write_fire                        | segment0/bank1/words_written[9]_i_1__2_n_0 |                0 |             10 |           NA |
+|  clk         | segment0/bank1/mem_read_q_1                      | rst                                        |                0 |             10 |           NA |
+|  clk         |                                                  |                                            |                0 |             11 |           NA |
+|  clk         | segment0/bank0/fill_words_accepted_q_reg[7]_0[0] | segment1/bank0/SR[0]                       |                0 |             11 |           NA |
+|  clk         |                                                  | rst                                        |                0 |             13 |           NA |
+|  clk         | segment0/bank0/bank_state_reg[0]_0[0]            | rst                                        |                0 |             16 |           NA |
+|  clk         | segment1/bank0/bank_state_reg[1]_0               | rst                                        |                0 |             16 |           NA |
+|  clk         | segment1/bank0/bank1_tensor_tag_q                | rst                                        |                0 |             16 |           NA |
+|  clk         | segment0/bank0/E[0]                              | rst                                        |                0 |             16 |           NA |
+|  clk         | segment0/E[0]                                    | rst                                        |                0 |             17 |           NA |
+|  clk         | segment0/ready_count_q_reg[1]_0[0]               | rst                                        |                0 |             17 |           NA |
+|  clk         | segment0/bank0/bank_state_reg[0]_0[0]            | segment0/bank1/reads_issued_q_0            |                0 |             25 |           NA |
+|  clk         | segment0/bank0/E[0]                              | segment0/bank0/reads_issued_q              |                0 |             25 |           NA |
+|  clk         | segment1/bank1/mem_reg_i_3__2_n_0                | rst                                        |                0 |             34 |           NA |
+|  clk         | segment1/bank0/mem_reg_i_3__1_n_0                | rst                                        |                0 |             34 |           NA |
+|  clk         | segment1/bank0/bank_state_reg[1]_0               | segment1/bank0/reads_issued_q              |                0 |             34 |           NA |
+|  clk         | segment1/bank0/bank1_tensor_tag_q                | segment1/bank1/reads_issued_q              |                0 |             34 |           NA |
+|  clk         | segment0/bank1/mem_reg_i_3_n_0                   | rst                                        |                0 |             34 |           NA |
+|  clk         | segment0/bank0/mem_reg_i_3__0_n_0                | rst                                        |                0 |             34 |           NA |
+|  clk         | segment1/bank0/fill_valid_0                      | rst                                        |                0 |             42 |           NA |
++--------------+--------------------------------------------------+--------------------------------------------+------------------+----------------+--------------+
+
+

@@ -1,0 +1,101 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Mon Aug 31 19:11:38 2026
+| Host         : yundodo running 64-bit unknown
+| Command      : report_control_sets -verbose -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/m4n8_n8_output_slice/200mhz/impl_control_sets.rpt
+| Design       : alexnet_m4n8_n8_output_slice
+| Device       : xck26
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Control Set Information
+
+Table of Contents
+-----------------
+1. Summary
+2. Histogram
+3. Flip-Flop Distribution
+4. Detailed Control Set Information
+
+1. Summary
+----------
+
++----------------------------------------------------------+-------+
+|                          Status                          | Count |
++----------------------------------------------------------+-------+
+| Total control sets                                       |    23 |
+|    Minimum number of control sets                        |    23 |
+|    Addition due to synthesis replication                 |     0 |
+|    Addition due to physical synthesis replication        |     0 |
+| Unused register locations in slices containing registers |    32 |
++----------------------------------------------------------+-------+
+* Control sets can be merged at opt_design using control_set_merge or merge_equivalent_drivers
+** Run report_qor_suggestions for automated merging and remapping suggestions
+
+
+2. Histogram
+------------
+
++--------------------+-------+
+|       Fanout       | Count |
++--------------------+-------+
+| Total control sets |    23 |
+| >= 0 to < 4        |     0 |
+| >= 4 to < 6        |     2 |
+| >= 6 to < 8        |    11 |
+| >= 8 to < 10       |     0 |
+| >= 10 to < 12      |     1 |
+| >= 12 to < 14      |     0 |
+| >= 14 to < 16      |     0 |
+| >= 16              |     9 |
++--------------------+-------+
+* Control sets can be remapped at either synth_design or opt_design
+
+
+3. Flip-Flop Distribution
+-------------------------
+
++--------------+-----------------------+------------------------+-----------------+--------------+
+| Clock Enable | Synchronous Set/Reset | Asynchronous Set/Reset | Total Registers | Total Slices |
++--------------+-----------------------+------------------------+-----------------+--------------+
+| No           | No                    | No                     |              11 |            9 |
+| No           | No                    | Yes                    |               0 |            0 |
+| No           | Yes                   | No                     |               0 |            0 |
+| Yes          | No                    | No                     |               0 |            0 |
+| Yes          | No                    | Yes                    |               0 |            0 |
+| Yes          | Yes                   | No                     |             501 |          141 |
++--------------+-----------------------+------------------------+-----------------+--------------+
+
+
+4. Detailed Control Set Information
+-----------------------------------
+
++--------------+------------------------------------------+------------------------+------------------+----------------+--------------+
+| Clock Signal |               Enable Signal              |    Set/Reset Signal    | Slice Load Count | Bel Load Count | Bels / Slice |
++--------------+------------------------------------------+------------------------+------------------+----------------+--------------+
+|  clk         | u_scanner/scan_m_q[1]_i_1_n_0            | rst                    |                1 |              4 |         4.00 |
+|  clk         | u_router/advance                         | rst                    |                3 |              5 |         1.67 |
+|  clk         | u_router/p_0_in_1[0]                     | rst                    |                3 |              6 |         2.00 |
+|  clk         | u_router/p_0_in_1[1]                     | rst                    |                1 |              6 |         6.00 |
+|  clk         | u_router/count_q[6]_i_1_n_0              | rst                    |                2 |              7 |         3.50 |
+|  clk         | u_router/E[0]                            | u_requant/values_q[28] |                2 |              7 |         3.50 |
+|  clk         | u_router/E[0]                            | u_requant/values_q[49] |                2 |              7 |         3.50 |
+|  clk         | u_router/E[0]                            | u_requant/values_q[14] |                2 |              7 |         3.50 |
+|  clk         | u_router/E[0]                            | u_requant/values_q[35] |                2 |              7 |         3.50 |
+|  clk         | u_router/E[0]                            | u_requant/values_q[0]  |                3 |              7 |         2.33 |
+|  clk         | u_router/E[0]                            | u_requant/values_q[42] |                3 |              7 |         2.33 |
+|  clk         | u_router/E[0]                            | u_requant/values_q[56] |                3 |              7 |         2.33 |
+|  clk         | u_router/E[0]                            | u_requant/values_q[21] |                3 |              7 |         2.33 |
+|  clk         |                                          |                        |                9 |             11 |         1.22 |
+|  clk         | u_router/CEAD                            | rst                    |               15 |             26 |         1.73 |
+|  clk         | u_router/CEM                             | rst                    |               15 |             26 |         1.73 |
+|  clk         | u_router/E[0]                            | rst                    |               17 |             26 |         1.53 |
+|  clk         | u_router/CEP                             | rst                    |               17 |             26 |         1.53 |
+|  clk         | u_scanner/m_count_q[2]_i_1_n_0           | rst                    |               11 |             27 |         2.45 |
+|  clk         | u_router/configured_q0                   | rst                    |                3 |             27 |         9.00 |
+|  clk         | u_requant/configured_q_i_1_n_0           | rst                    |               34 |             57 |         1.68 |
+|  clk         | u_router/fifo_mem_reg_0_63_63_69_i_2_n_0 |                        |               12 |             96 |         8.00 |
+|  clk         | u_router/valid_q_reg[2][0]               | rst                    |               68 |            202 |         2.97 |
++--------------+------------------------------------------+------------------------+------------------+----------------+--------------+
+
+

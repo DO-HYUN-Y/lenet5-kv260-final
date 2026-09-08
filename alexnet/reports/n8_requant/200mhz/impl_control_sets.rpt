@@ -1,0 +1,94 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Mon Aug 31 13:36:45 2026
+| Host         : yundodo running 64-bit unknown
+| Command      : report_control_sets -verbose -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/n8_requant/200mhz/impl_control_sets.rpt
+| Design       : alexnet_n8_requant
+| Device       : xck26
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Control Set Information
+
+Table of Contents
+-----------------
+1. Summary
+2. Histogram
+3. Flip-Flop Distribution
+4. Detailed Control Set Information
+
+1. Summary
+----------
+
++----------------------------------------------------------+-------+
+|                          Status                          | Count |
++----------------------------------------------------------+-------+
+| Total control sets                                       |    16 |
+|    Minimum number of control sets                        |    16 |
+|    Addition due to synthesis replication                 |     0 |
+|    Addition due to physical synthesis replication        |     0 |
+| Unused register locations in slices containing registers |    29 |
++----------------------------------------------------------+-------+
+* Control sets can be merged at opt_design using control_set_merge or merge_equivalent_drivers
+** Run report_qor_suggestions for automated merging and remapping suggestions
+
+
+2. Histogram
+------------
+
++--------------------+-------+
+|       Fanout       | Count |
++--------------------+-------+
+| Total control sets |    16 |
+| >= 0 to < 4        |     0 |
+| >= 4 to < 6        |     1 |
+| >= 6 to < 8        |     8 |
+| >= 8 to < 10       |     1 |
+| >= 10 to < 12      |     0 |
+| >= 12 to < 14      |     0 |
+| >= 14 to < 16      |     0 |
+| >= 16              |     6 |
++--------------------+-------+
+* Control sets can be remapped at either synth_design or opt_design
+
+
+3. Flip-Flop Distribution
+-------------------------
+
++--------------+-----------------------+------------------------+-----------------+--------------+
+| Clock Enable | Synchronous Set/Reset | Asynchronous Set/Reset | Total Registers | Total Slices |
++--------------+-----------------------+------------------------+-----------------+--------------+
+| No           | No                    | No                     |               8 |            8 |
+| No           | No                    | Yes                    |               0 |            0 |
+| No           | Yes                   | No                     |               0 |            0 |
+| Yes          | No                    | No                     |               0 |            0 |
+| Yes          | No                    | Yes                    |               0 |            0 |
+| Yes          | Yes                   | No                     |             439 |          131 |
++--------------+-----------------------+------------------------+-----------------+--------------+
+
+
+4. Detailed Control Set Information
+-----------------------------------
+
++--------------+-------------------------------+------------------+------------------+----------------+--------------+
+| Clock Signal |         Enable Signal         | Set/Reset Signal | Slice Load Count | Bel Load Count | Bels / Slice |
++--------------+-------------------------------+------------------+------------------+----------------+--------------+
+|  clk         | advance                       | rst              |                3 |              5 |         1.67 |
+|  clk         | lane_mask_q                   | values_q[62]     |                3 |              7 |         2.33 |
+|  clk         | lane_mask_q                   | values_q[38]     |                4 |              7 |         1.75 |
+|  clk         | lane_mask_q                   | values_q[54]     |                3 |              7 |         2.33 |
+|  clk         | lane_mask_q                   | values_q[46]     |                3 |              7 |         2.33 |
+|  clk         | lane_mask_q                   | values_q[30]     |                2 |              7 |         3.50 |
+|  clk         | lane_mask_q                   | values_q[22]     |                2 |              7 |         3.50 |
+|  clk         | lane_mask_q                   | values_q[6]      |                3 |              7 |         2.33 |
+|  clk         | lane_mask_q                   | values_q[14]     |                2 |              7 |         3.50 |
+|  clk         |                               |                  |                8 |              8 |         1.00 |
+|  clk         | lane_mask_q                   | rst              |               22 |             29 |         1.32 |
+|  clk         | product_pipe_q_reg[0]_i_3_n_0 | rst              |               21 |             29 |         1.38 |
+|  clk         | product_pipe_q_reg[0]_i_2_n_0 | rst              |               21 |             29 |         1.38 |
+|  clk         | product_pipe_q_reg[0]_i_1_n_0 | rst              |               21 |             29 |         1.38 |
+|  clk         | configured_q_i_1_n_0          | rst              |               32 |             57 |         1.78 |
+|  clk         | rounded_q[0][45]_i_1_n_0      | rst              |               81 |            205 |         2.53 |
++--------------+-------------------------------+------------------+------------------+----------------+--------------+
+
+

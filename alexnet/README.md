@@ -10,6 +10,14 @@
 6. `calibrate_int8.py`: 실제 영상으로 activation scale을 정하고 RTL parameter를 내보내는 방법
 7. `compare_full_int8_cpp.py`: Python과 C++ 전체 네트워크 tensor를 층별 비교하는 방법
 8. `PRE_RTL_SIGNOFF.md`: 최종 SA/buffer/numeric/zero-skip 결정과 RTL 진입 gate
+9. `RTL_STATUS.md`: 현재 200 MHz RTL 통합·검증 상태와 다음 보드 단계
+10. `CONTROL_REGISTERS.md`: KV260 PS가 사용할 AXI-Lite 제어 레지스터 ABI
+11. `stages/01_kv260_m4n8/README.md`: 합성·배치배선·bitstream까지 완료된
+    KV260 보드 Top과 카메라 DDR 입력 형식
+12. `export_board_weights.py`: 공식 checkpoint에서 동결된 INT8 값을 복원하고
+    KV260 DDR 전송 순서로 가중치·파라미터를 묶는 방법
+13. `software/README.md`: PS 100 MHz 입력/MMCM 200 MHz 확인, coherent DDR, 저장 이미지 및 USB
+    카메라 입력, FC8 터미널 출력을 담당하는 Linux 런타임
 
 Python 코드에는 각 함수의 역할, tensor shape, 필요한 이유를 한국어 주석으로
 기록했다. 처음에는 `model.py`의 `AlexNet.__init__()`과 `forward()`만 읽고,
@@ -176,6 +184,34 @@ Top-1/Top-5. The eleven exported Conv/Pool/FC boundaries all matched the Python
 integer reference byte-for-byte. The exact 10,344-channel parameters are in
 `calibration/int8_mlcommons500_contract.json`; the compact evidence record is
 `calibration/int8_mlcommons500_results.json`.
+
+## Recreate the KV260 board-weight images
+
+The large generated blobs are intentionally git-ignored. They can be recreated
+without the licensed ImageNet images because the frozen calibration contract
+already contains the activation scales and every expected layer hash. This
+command downloads the official torchvision checkpoint when it is not already
+in the PyTorch cache, checks its full SHA-256, rebuilds all eight INT8 layers,
+and packs the bytes in the exact RTL DDR order:
+
+```sh
+python -m alexnet.export_board_weights
+python -m alexnet.verify_board_weights
+```
+
+The output directory is `alexnet_output/int8_mlcommons500_board/`. The current
+verified images are:
+
+- `weights_board.bin`: 61,090,496 bytes, SHA-256
+  `07e8583d9c18563672ffeb211746dfc432ba5b96d27039d01563d3fb8679ec3d`;
+- `parameters_board.bin`: 165,504 bytes, SHA-256
+  `0038da71fe9e4fc4454930b8a7f02e36d822e3cd6736388092c1429635c5a2ad`.
+
+`board_manifest.json` records every layer offset and hash. The verifier
+independently reconstructs all 61,090,496 packed weight bytes from the logical
+OIHW/NK files and also checks the complete parameter concatenation. Blob base
+addresses supplied by Linux must be 128-byte aligned; individual layer offsets
+and transfers are eight-byte aligned and are supported by the main DMA DRE.
 
 ## Pre-RTL sign-off dataset and profiler
 

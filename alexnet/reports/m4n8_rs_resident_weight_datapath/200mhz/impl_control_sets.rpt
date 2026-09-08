@@ -1,0 +1,168 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Tue Sep  1 10:43:10 2026
+| Host         : yundodo running 64-bit unknown
+| Command      : report_control_sets -verbose -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/m4n8_rs_resident_weight_datapath/200mhz/impl_control_sets.rpt
+| Design       : alexnet_m4n8_rs_resident_weight_datapath
+| Device       : xck26
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Control Set Information
+
+Table of Contents
+-----------------
+1. Summary
+2. Histogram
+3. Flip-Flop Distribution
+4. Detailed Control Set Information
+
+1. Summary
+----------
+
++----------------------------------------------------------+-------+
+|                          Status                          | Count |
++----------------------------------------------------------+-------+
+| Total control sets                                       |    90 |
+|    Minimum number of control sets                        |    90 |
+|    Addition due to synthesis replication                 |     0 |
+|    Addition due to physical synthesis replication        |     0 |
+| Unused register locations in slices containing registers |   103 |
++----------------------------------------------------------+-------+
+* Control sets can be merged at opt_design using control_set_merge or merge_equivalent_drivers
+** Run report_qor_suggestions for automated merging and remapping suggestions
+
+
+2. Histogram
+------------
+
++--------------------+-------+
+|       Fanout       | Count |
++--------------------+-------+
+| Total control sets |    90 |
+| >= 0 to < 4        |     9 |
+| >= 4 to < 6        |     3 |
+| >= 6 to < 8        |    14 |
+| >= 8 to < 10       |     5 |
+| >= 10 to < 12      |     6 |
+| >= 12 to < 14      |     0 |
+| >= 14 to < 16      |     0 |
+| >= 16              |    53 |
++--------------------+-------+
+* Control sets can be remapped at either synth_design or opt_design
+
+
+3. Flip-Flop Distribution
+-------------------------
+
++--------------+-----------------------+------------------------+-----------------+--------------+
+| Clock Enable | Synchronous Set/Reset | Asynchronous Set/Reset | Total Registers | Total Slices |
++--------------+-----------------------+------------------------+-----------------+--------------+
+| No           | No                    | No                     |              36 |           22 |
+| No           | No                    | Yes                    |               0 |            0 |
+| No           | Yes                   | No                     |              13 |           10 |
+| Yes          | No                    | No                     |              50 |           17 |
+| Yes          | No                    | Yes                    |               0 |            0 |
+| Yes          | Yes                   | No                     |            3202 |          568 |
++--------------+-----------------------+------------------------+-----------------+--------------+
+
+
+4. Detailed Control Set Information
+-----------------------------------
+
++--------------+----------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+------------------+----------------+--------------+
+| Clock Signal |                                      Enable Signal                                     |                                     Set/Reset Signal                                     | Slice Load Count | Bel Load Count | Bels / Slice |
++--------------+----------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+------------------+----------------+--------------+
+|  clk         | u_rs_datapath/u_feeder/CEC                                                             |                                                                                          |                1 |              2 |         2.00 |
+|  clk         | u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/bank_state_reg[0][0]            | rst                                                                                      |                1 |              2 |         2.00 |
+|  clk         | u_weight_bank/bank_state[1]_i_1_n_0                                                    |                                                                                          |                1 |              2 |         2.00 |
+|  clk         |                                                                                        | u_rs_datapath/u_issue_controller/feeder_done_seen_q                                      |                1 |              2 |         2.00 |
+|  clk         |                                                                                        | u_rs_datapath/u_base_datapath/u_output_slice/u_router/write_addr_q__0                    |                2 |              2 |         1.00 |
+|  clk         | u_rs_datapath/u_feeder/state_q[1]_i_1_n_0                                              |                                                                                          |                1 |              2 |         2.00 |
+|  clk         | u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/scan_m_q[1]_i_1_n_0             | rst                                                                                      |                2 |              3 |         1.50 |
+|  clk         | u_rs_datapath/u_feeder/read_m_q[2]_i_1_n_0                                             |                                                                                          |                1 |              3 |         3.00 |
+|  clk         | u_rs_datapath/u_feeder/g_ring_bank[0].mem_reg_i_1_n_0                                  | rst                                                                                      |                1 |              3 |         3.00 |
+|  clk         | u_rs_datapath/u_feeder/CEB2                                                            | u_rs_datapath/u_feeder/write_ring_row_q[3]_i_1_n_0                                       |                1 |              4 |         4.00 |
+|  clk         | u_rs_datapath/u_feeder/emit_k_q                                                        | u_rs_datapath/u_feeder/emit_ic_q[3]_i_1_n_0                                              |                1 |              4 |         4.00 |
+|  clk         | u_rs_datapath/u_base_datapath/u_output_slice/u_router/advance                          | rst                                                                                      |                2 |              5 |         2.50 |
+|  clk         | u_rs_datapath/u_feeder/CEC                                                             | u_rs_datapath/u_feeder/scan_x_q[5]_i_1_n_0                                               |                2 |              6 |         3.00 |
+|  clk         | u_rs_datapath/u_base_datapath/u_output_slice/u_router/p_0_in_1[0]                      | rst                                                                                      |                2 |              6 |         3.00 |
+|  clk         | u_rs_datapath/u_base_datapath/u_output_slice/u_router/DI[0]                            | rst                                                                                      |                1 |              6 |         6.00 |
+|  clk         | u_rs_datapath/u_feeder/group_x_q[7]_i_2_n_0                                            | u_rs_datapath/u_feeder/group_x_q[7]_i_1_n_0                                              |                1 |              6 |         6.00 |
+|  clk         | u_rs_datapath/u_base_datapath/u_output_slice/u_router/lane_mask_q                      | u_rs_datapath/u_base_datapath/u_output_slice/u_requant/values_q[35]                      |                4 |              7 |         1.75 |
+|  clk         | u_rs_datapath/u_base_datapath/u_output_slice/u_router/lane_mask_q                      | u_rs_datapath/u_base_datapath/u_output_slice/u_requant/values_q[56]                      |                2 |              7 |         3.50 |
+|  clk         | u_rs_datapath/u_base_datapath/u_output_slice/u_router/lane_mask_q                      | u_rs_datapath/u_base_datapath/u_output_slice/u_requant/values_q[0]                       |                2 |              7 |         3.50 |
+|  clk         | u_rs_datapath/u_base_datapath/u_output_slice/u_router/lane_mask_q                      | u_rs_datapath/u_base_datapath/u_output_slice/u_requant/values_q[28]                      |                3 |              7 |         2.33 |
+|  clk         | u_rs_datapath/u_base_datapath/u_output_slice/u_router/lane_mask_q                      | u_rs_datapath/u_base_datapath/u_output_slice/u_requant/values_q[14]                      |                2 |              7 |         3.50 |
+|  clk         | u_rs_datapath/u_base_datapath/u_output_slice/u_router/lane_mask_q                      | u_rs_datapath/u_base_datapath/u_output_slice/u_requant/values_q[21]                      |                2 |              7 |         3.50 |
+|  clk         | u_rs_datapath/u_base_datapath/u_output_slice/u_router/lane_mask_q                      | u_rs_datapath/u_base_datapath/u_output_slice/u_requant/values_q[49]                      |                4 |              7 |         1.75 |
+|  clk         | u_rs_datapath/u_base_datapath/u_output_slice/u_router/lane_mask_q                      | u_rs_datapath/u_base_datapath/u_output_slice/u_requant/values_q[42]                      |                3 |              7 |         2.33 |
+|  clk         | u_rs_datapath/u_feeder/group_count_q[2]_i_1_n_0                                        | rst                                                                                      |                2 |              7 |         3.50 |
+|  clk         | u_rs_datapath/u_base_datapath/u_output_slice/u_router/count_q[6]_i_1_n_0               | rst                                                                                      |                2 |              7 |         3.50 |
+|  clk         | u_rs_datapath/u_feeder/emit_kx_q[7]_i_2_n_0                                            | u_rs_datapath/u_feeder/emit_kx_q[7]_i_1_n_0                                              |                2 |              8 |         4.00 |
+|  clk         | u_rs_datapath/u_feeder/group_y_q[7]_i_1_n_0                                            | rst                                                                                      |                2 |              8 |         4.00 |
+|  clk         | u_rs_datapath/u_feeder/emit_ky_q[7]_i_2_n_0                                            | u_rs_datapath/u_feeder/emit_ky_q[7]_i_1_n_0                                              |                3 |              8 |         2.67 |
+|  clk         | u_rs_datapath/u_feeder/write_ring_row_q                                                | rst                                                                                      |                3 |              8 |         2.67 |
+|  clk         |                                                                                        | rst                                                                                      |                8 |              9 |         1.12 |
+|  clk         | u_weight_bank/write_addr_q[9]_i_1_n_0                                                  | u_rs_datapath/u_base_datapath/u_output_slice/u_router/write_addr_q__0                    |                3 |             10 |         3.33 |
+|  clk         | u_rs_datapath/u_feeder/emit_k_q                                                        | u_rs_datapath/u_feeder/emit_k_q[9]_i_1_n_0                                               |                2 |             10 |         5.00 |
+|  clk         | u_weight_bank/reads_issued_q[0]_i_2_n_0                                                | u_rs_datapath/u_base_datapath/u_output_slice/u_router/rst_0                              |                3 |             10 |         3.33 |
+|  clk         | u_weight_bank/write_fire                                                               | u_weight_bank/words_written[9]_i_1_n_0                                                   |                3 |             10 |         3.33 |
+|  clk         | u_rs_datapath/u_feeder/E[0]                                                            | rst                                                                                      |                4 |             11 |         2.75 |
+|  clk         | u_weight_bank/issue_read                                                               | rst                                                                                      |                4 |             11 |         2.75 |
+|  clk         | u_rs_datapath/u_base_datapath/u_output_slice/u_router/FSM_sequential_state_q_reg[0][0] | rst                                                                                      |                4 |             16 |         4.00 |
+|  clk         | u_weight_bank/bank_state19_out                                                         | rst                                                                                      |                3 |             16 |         5.33 |
+|  clk         | u_rs_datapath/u_base_datapath/u_output_slice/u_router/CEAD                             | rst                                                                                      |               15 |             26 |         1.73 |
+|  clk         | u_rs_datapath/u_base_datapath/u_output_slice/u_router/CEP                              | rst                                                                                      |               14 |             26 |         1.86 |
+|  clk         | u_rs_datapath/u_base_datapath/u_output_slice/u_router/frame_active_reg                 | rst                                                                                      |                4 |             26 |         6.50 |
+|  clk         | u_rs_datapath/u_base_datapath/u_output_slice/u_router/CEM                              | rst                                                                                      |               13 |             26 |         2.00 |
+|  clk         | u_rs_datapath/u_base_datapath/u_output_slice/u_router/lane_mask_q                      | rst                                                                                      |               13 |             26 |         2.00 |
+|  clk         | u_rs_datapath/u_base_datapath/u_output_slice/u_router/E[0]                             | rst                                                                                      |                8 |             27 |         3.38 |
+|  clk         | u_rs_datapath/u_base_datapath/u_output_slice/u_scanner/E[0]                            | rst                                                                                      |                9 |             28 |         3.11 |
+|  clk         | u_weight_bank/fill_fire                                                                | u_rs_datapath/u_base_datapath/u_output_slice/u_router/write_addr_q__0                    |                7 |             34 |         4.86 |
+|  clk         |                                                                                        |                                                                                          |               22 |             36 |         1.64 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[0].u_pe/acc_lo_q               | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[0].u_pe/acc_hi_q[26]_i_1__8_n_0  |                8 |             54 |         6.75 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[1].u_pe/acc_lo_q               | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[1].u_pe/acc_hi_q[26]_i_1__1_n_0  |                8 |             54 |         6.75 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[1].u_pe/acc_lo_q               | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[1].u_pe/acc_hi_q[26]_i_1__9_n_0  |                8 |             54 |         6.75 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[2].u_pe/acc_lo_q               | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[2].u_pe/acc_hi_q[26]_i_1__10_n_0 |                8 |             54 |         6.75 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[7].u_pe/acc_lo_q               | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[7].u_pe/acc_hi_q[26]_i_1__7_n_0  |                8 |             54 |         6.75 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[6].u_pe/acc_lo_q               | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[6].u_pe/acc_hi_q[26]_i_1__14_n_0 |                8 |             54 |         6.75 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[2].u_pe/acc_lo_q               | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[2].u_pe/acc_hi_q[26]_i_1__2_n_0  |                8 |             54 |         6.75 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[5].u_pe/acc_lo_q               | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[5].u_pe/acc_hi_q[26]_i_1__5_n_0  |                8 |             54 |         6.75 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[4].u_pe/acc_lo_q               | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[4].u_pe/acc_hi_q[26]_i_1__4_n_0  |                8 |             54 |         6.75 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[6].u_pe/acc_lo_q               | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[6].u_pe/acc_hi_q[26]_i_1__6_n_0  |                8 |             54 |         6.75 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/acc_lo_q               | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/acc_hi_q[26]_i_1__13_n_0 |                8 |             54 |         6.75 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[3].u_pe/acc_lo_q               | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[3].u_pe/acc_hi_q[26]_i_1__11_n_0 |                8 |             54 |         6.75 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[4].u_pe/acc_lo_q               | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[4].u_pe/acc_hi_q[26]_i_1__12_n_0 |                8 |             54 |         6.75 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[3].u_pe/acc_lo_q               | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[3].u_pe/acc_hi_q[26]_i_1__3_n_0  |                8 |             54 |         6.75 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[0].u_pe/acc_lo_q               | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[0].u_pe/clear                    |                8 |             54 |         6.75 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[7].u_pe/acc_lo_q               | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[7].u_pe/acc_hi_q[26]_i_1__0_n_0  |                8 |             54 |         6.75 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[6].u_pe/E[0]                   | rst                                                                                      |               13 |             56 |         4.31 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[4].u_pe/E[0]                   | rst                                                                                      |               14 |             56 |         4.00 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[0].u_pe/E[0]                   | rst                                                                                      |               11 |             56 |         5.09 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[6].u_pe/E[0]                   | rst                                                                                      |               15 |             56 |         3.73 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[2].u_pe/E[0]                   | rst                                                                                      |               17 |             56 |         3.29 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[0].u_pe/E[0]                   | rst                                                                                      |               12 |             56 |         4.67 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[7].u_pe/E[0]                   | rst                                                                                      |               13 |             56 |         4.31 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[4].u_pe/E[0]                   | rst                                                                                      |               11 |             56 |         5.09 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[3].u_pe/E[0]                   | rst                                                                                      |               16 |             56 |         3.50 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[2].u_pe/E[0]                   | rst                                                                                      |               14 |             56 |         4.00 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[1].u_pe/E[0]                   | rst                                                                                      |               17 |             56 |         3.29 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[7].u_pe/E[0]                   | rst                                                                                      |               12 |             56 |         4.67 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[0].g_pe_col[5].u_pe/E[0]                   | rst                                                                                      |               12 |             56 |         4.67 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[1].u_pe/E[0]                   | rst                                                                                      |               12 |             56 |         4.67 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[3].u_pe/E[0]                   | rst                                                                                      |               17 |             56 |         3.29 |
+|  clk         | u_rs_datapath/u_base_datapath/u_sa/g_pe_row[1].g_pe_col[5].u_pe/E[0]                   | rst                                                                                      |               17 |             56 |         3.29 |
+|  clk         | u_rs_datapath/u_base_datapath/u_output_slice/u_requant/configured_q_i_1_n_0            | rst                                                                                      |               36 |             57 |         1.58 |
+|  clk         | u_rs_datapath/u_feeder/pixel_q[3][63]_i_2_n_0                                          | u_rs_datapath/u_feeder/pixel_q[3][63]_i_1_n_0                                            |                9 |             64 |         7.11 |
+|  clk         | u_rs_datapath/u_feeder/pixel_q[2][63]_i_2_n_0                                          | u_rs_datapath/u_feeder/pixel_q[2][63]_i_1_n_0                                            |                9 |             64 |         7.11 |
+|  clk         | u_rs_datapath/u_feeder/pixel_q[0][63]_i_2_n_0                                          | u_rs_datapath/u_feeder/pixel_q[0][63]_i_1_n_0                                            |               11 |             64 |         5.82 |
+|  clk         | u_rs_datapath/u_feeder/pixel_q[1][63]_i_2_n_0                                          | u_rs_datapath/u_feeder/pixel_q[1][63]_i_1_n_0                                            |               10 |             64 |         6.40 |
+|  clk         | ce                                                                                     |                                                                                          |               21 |             82 |         3.90 |
+|  clk         | u_rs_datapath/u_feeder/frame_fire_0                                                    | rst                                                                                      |               26 |             84 |         3.23 |
+|  clk         | u_rs_datapath/u_base_datapath/u_output_slice/u_router/fifo_mem_reg_0_63_63_69_i_2_n_0  |                                                                                          |               12 |             96 |         8.00 |
+|  clk         | u_rs_datapath/u_base_datapath/u_output_slice/u_router/valid_q_reg[2][0]                | rst                                                                                      |               72 |            202 |         2.81 |
+|  clk         | ce                                                                                     | rst                                                                                      |              118 |            383 |         3.25 |
++--------------+----------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+------------------+----------------+--------------+
+
+

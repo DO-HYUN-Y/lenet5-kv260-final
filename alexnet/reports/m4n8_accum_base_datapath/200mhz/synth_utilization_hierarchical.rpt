@@ -1,0 +1,53 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Wed Sep  2 09:59:37 2026
+| Host         : yundodo running 64-bit unknown
+| Command      : report_utilization -hierarchical -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/m4n8_accum_base_datapath/200mhz/synth_utilization_hierarchical.rpt
+| Design       : alexnet_m4n8_accum_base_datapath
+| Device       : xck26-sfvc784-2LV-c
+| Speed File   : -2LV
+| Design State : Synthesized
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++--------------------------------------+------------------------------------+------------+------------+---------+------+------+--------+--------+------+------------+
+|               Instance               |               Module               | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs | RAMB36 | RAMB18 | URAM | DSP Blocks |
++--------------------------------------+------------------------------------+------------+------------+---------+------+------+--------+--------+------+------------+
+| alexnet_m4n8_accum_base_datapath     |                              (top) |       4555 |       4418 |      96 |   41 | 3329 |      4 |      0 |    0 |         24 |
+|   (alexnet_m4n8_accum_base_datapath) |                              (top) |         97 |          1 |      96 |    0 |   15 |      0 |      0 |    0 |          0 |
+|   u_output_slice                     | alexnet_m4n8_n8_accum_output_slice |       3010 |       3010 |       0 |    0 | 1114 |      4 |      0 |    0 |          8 |
+|     (u_output_slice)                 | alexnet_m4n8_n8_accum_output_slice |         29 |         29 |       0 |    0 |   76 |      0 |      0 |    0 |          0 |
+|     u_partial_sum_bank               |  alexnet_n8_int32_partial_sum_bank |        743 |        743 |       0 |    0 |  526 |      4 |      0 |    0 |          0 |
+|     u_requant                        |                 alexnet_n8_requant |       1682 |       1682 |       0 |    0 |  432 |      0 |      0 |    0 |          8 |
+|     u_router                         |           alexnet_n8_output_router |         66 |         66 |       0 |    0 |   46 |      0 |      0 |    0 |          0 |
+|     u_scanner                        |        alexnet_m4n8_result_scanner |        490 |        490 |       0 |    0 |   34 |      0 |      0 |    0 |          0 |
+|   u_sa                               |                    alexnet_sa_m4n8 |       1448 |       1407 |       0 |   41 | 2200 |      0 |      0 |    0 |         16 |
+|     (u_sa)                           |                    alexnet_sa_m4n8 |         66 |         25 |       0 |   41 |  368 |      0 |      0 |    0 |          0 |
+|     g_pe_row[0].g_pe_col[0].u_pe     |                  alexnet_packed_pe |         86 |         86 |       0 |    0 |  111 |      0 |      0 |    0 |          1 |
+|     g_pe_row[0].g_pe_col[1].u_pe     |                alexnet_packed_pe_0 |         86 |         86 |       0 |    0 |  119 |      0 |      0 |    0 |          1 |
+|     g_pe_row[0].g_pe_col[2].u_pe     |                alexnet_packed_pe_1 |         86 |         86 |       0 |    0 |  111 |      0 |      0 |    0 |          1 |
+|     g_pe_row[0].g_pe_col[3].u_pe     |                alexnet_packed_pe_2 |         86 |         86 |       0 |    0 |  119 |      0 |      0 |    0 |          1 |
+|     g_pe_row[0].g_pe_col[4].u_pe     |                alexnet_packed_pe_3 |         87 |         87 |       0 |    0 |  111 |      0 |      0 |    0 |          1 |
+|     g_pe_row[0].g_pe_col[5].u_pe     |                alexnet_packed_pe_4 |         86 |         86 |       0 |    0 |  119 |      0 |      0 |    0 |          1 |
+|     g_pe_row[0].g_pe_col[6].u_pe     |                alexnet_packed_pe_5 |         87 |         87 |       0 |    0 |  111 |      0 |      0 |    0 |          1 |
+|     g_pe_row[0].g_pe_col[7].u_pe     |                alexnet_packed_pe_6 |         86 |         86 |       0 |    0 |  111 |      0 |      0 |    0 |          1 |
+|     g_pe_row[1].g_pe_col[0].u_pe     |                alexnet_packed_pe_7 |         86 |         86 |       0 |    0 |  119 |      0 |      0 |    0 |          1 |
+|     g_pe_row[1].g_pe_col[1].u_pe     |                alexnet_packed_pe_8 |         86 |         86 |       0 |    0 |  111 |      0 |      0 |    0 |          1 |
+|     g_pe_row[1].g_pe_col[2].u_pe     |                alexnet_packed_pe_9 |         86 |         86 |       0 |    0 |  119 |      0 |      0 |    0 |          1 |
+|     g_pe_row[1].g_pe_col[3].u_pe     |               alexnet_packed_pe_10 |         86 |         86 |       0 |    0 |  111 |      0 |      0 |    0 |          1 |
+|     g_pe_row[1].g_pe_col[4].u_pe     |               alexnet_packed_pe_11 |         87 |         87 |       0 |    0 |  119 |      0 |      0 |    0 |          1 |
+|     g_pe_row[1].g_pe_col[5].u_pe     |               alexnet_packed_pe_12 |         86 |         86 |       0 |    0 |  111 |      0 |      0 |    0 |          1 |
+|     g_pe_row[1].g_pe_col[6].u_pe     |               alexnet_packed_pe_13 |         89 |         89 |       0 |    0 |  119 |      0 |      0 |    0 |          1 |
+|     g_pe_row[1].g_pe_col[7].u_pe     |               alexnet_packed_pe_14 |         86 |         86 |       0 |    0 |  111 |      0 |      0 |    0 |          1 |
++--------------------------------------+------------------------------------+------------+------------+---------+------+------+--------+--------+------+------------+
+
+

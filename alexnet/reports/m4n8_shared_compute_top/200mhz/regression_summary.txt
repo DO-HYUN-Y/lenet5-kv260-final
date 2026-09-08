@@ -1,0 +1,39 @@
+AlexNet combined Conv/FC shared-compute checkpoint
+frequency_mhz=200
+clock_period_ns=5.000
+part=xck26-sfvc784-2LV-c
+scope=combined_compute_service_not_board_top
+sa_instances=1
+packed_mac_dsp48e2=16
+requant_dsp48e2=8
+total_dsp48e2=24
+pe_rtl_changed=false
+sa_rtl_changed=false
+shared_compute_reset_between_clean_owners=false
+full_graph_sequencer=false
+pool_and_flatten_connected=false
+axi_mm_ps_camera_connected=false
+
+simulation:
+ALEXNET_M4N8_RS_DMA_SCHEDULED_IO_DATAPATH_TEST_PASSED commands=4 completed=2 rejected=2 input_dma_transfers=4 input_dma_words=1858 input_axis_beats=930 result_dma_transfers=1 result_words=729 result_axis_beats=365 chunks=2 tiles=378 replays=378 transitions=2 input_descriptor_rejects=1 fault_clears=2 maxq=64 max_s2mm_stall=396 seed=2103593495
+FC8_FULL_NUMERICAL_PASS n=1000 k=4096 m=1 tiles=125 chunks=625 k_tokens=512000
+ALEXNET_M4N8_FC_LAYER_DATAPATH_TEST_PASSED full_fc8_layers=1 failures=2 chunks=630 k_tokens=516096 input_transfers=1261 mm2s_beats=291250 result_transfers=126 result_words=128 s2mm_beats=127 parameter_tiles=127 output_stalls=3686 ce_stalls=129113 commit_wait_checks=2396 seed=1178815577
+ALEXNET_M4N8_SHARED_COMPUTE_TOP_TEST_PASSED sa_instances=1 conv_chunks=2 full_fc8=1 clean_handoffs=1 blocked_release_cycles=1792298 partial_sum_wait_cycles=2 fc_commit_wait_cycles=3912
+
+implementation:
+clb_lut_total=8809
+lut_as_logic=8672
+lut_as_distributed_ram=96
+lut_as_shift_register=41
+flip_flop=7642
+bram36e2=21
+dsp48e2=24
+wns_ns=0.036
+tns_ns=0.000
+whs_ns=0.031
+ths_ns=0.000
+fully_routed_nets=16420
+routing_errors=0
+setup_hold_endpoints=31173
+unconstrained_internal_endpoints=0
+drc_expected_warnings=RTSTAT-10
