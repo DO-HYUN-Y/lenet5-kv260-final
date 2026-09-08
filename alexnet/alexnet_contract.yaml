@@ -2007,7 +2007,7 @@ rtl_bringup_revision:
     report_directory: reports/m4n8_accelerator_top/200mhz
 
   measured_m4n8_kv260_board_top_200mhz:
-    status: frame_cache_bitstream_routed_timing_pass_pending_optimized_board_measurement
+    status: frame_cache_board_runtime_and_200mhz_timing_pass
     scope: full_kv260_ps_pl_shell_with_prior_non_cache_board_runtime_baseline
     board_part: xilinx.com:kv260_som:part0:1.4
     part: xck26-sfvc784-2LV-c
@@ -2074,7 +2074,7 @@ rtl_bringup_revision:
       exact_tlast_checked: true
       sticky_format_error: true
     camera_frame_replay:
-      status: full_board_routed_timing_pass_pending_optimized_board_run
+      status: full_board_routed_timing_and_camera_runtime_pass
       implementation: rtl/integration/alexnet_camera_frame_replay.sv
       frame_words: 50176
       replay_count: 8
@@ -2097,7 +2097,7 @@ rtl_bringup_revision:
       early_tlast_checked: true
       pass_marker: ALEXNET_CAMERA_RGBX_AXIS_ADAPTER_SIM_PASS
     linux_runtime_source:
-      status: baseline_camera_classification_pass_optimized_firmware_pending_sudo_load
+      status: optimized_camera_classification_and_power_measurement_pass
       driver: software/driver/alexnet_board.c
       runtime: software/runtime/alexnet_camera_demo.py
       device: /dev/alexnet_board
@@ -2135,7 +2135,27 @@ rtl_bringup_revision:
       baseline_effective_gops: 2.829
       baseline_effective_tops: 0.002829
       optimized_firmware_copied_and_hash_verified: true
-      optimized_firmware_loaded: false
+      optimized_firmware_loaded: true
+      optimized_board_execution_tested: true
+      optimized_camera_completed_frames: 15
+      optimized_camera_mean_latency_ms: 502.2267
+      optimized_camera_min_latency_ms: 501.8
+      optimized_camera_max_latency_ms: 502.8
+      optimized_frames_per_second: 1.9911
+      optimized_effective_gmac_per_second: 1.4220
+      optimized_effective_gops: 2.8441
+      optimized_effective_tops: 0.0028441
+      baseline_to_optimized_latency_reduction_ms: 2.6733
+      baseline_to_optimized_latency_reduction_percent: 0.5295
+      baseline_to_optimized_throughput_gain_percent: 0.5323
+      active_board_power_samples: 40
+      active_board_power_sample_interval_ms: 200
+      active_board_power_average_w: 3.7895
+      active_board_power_min_w: 3.64
+      active_board_power_max_w: 4.42
+      active_board_effective_tops_per_w: 0.0007505
+      active_board_energy_per_inference_j: 1.9032
+      post_interrupt_recovery_inference_latency_ms: 502.5
     timing_fix:
       initial_full_board_wns_ns: -0.314
       critical_path: partial_sum_bram_read_to_int32_add_to_bram_write

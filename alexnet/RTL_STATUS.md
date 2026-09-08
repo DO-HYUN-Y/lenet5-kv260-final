@@ -1653,8 +1653,15 @@ recorded in the stage README.
 Vectorless power is 3.020 W, so the unchanged arithmetic peak is 0.0128 TOPS
 and 0.00424 peak TOPS/W. The optimization targets effective throughput and
 energy per classified image by removing redundant DDR work; it does not claim
-a larger compute peak. The optimized firmware was packaged, hash-verified, and
-copied to the KV260. Loading it still requires the board user's `sudo`
-password, so the new end-to-end latency and TOPS/W remain to be measured. PE
-optimization and the one M8xN8 expansion remain later steps; all implementation
-experiments stay at 200 MHz.
+a larger compute peak.
+
+The optimized firmware was loaded on the KV260 and completed 15 consecutive
+USB-camera classifications. Mean/min/max PL round-trip latency was
+502.227/501.8/502.8 ms, corresponding to 1.9911 frame/s, 1.4220 GMAC/s, and
+2.8441 GOPS (0.002844 TOPS). Relative to the 504.9 ms baseline, latency fell
+2.673 ms (0.529%) and throughput rose 0.532%. Forty 200 ms board-power samples
+during continuous inference averaged 3.7895 W (3.64..4.42 W), giving 0.0007505
+effective TOPS/W and 1.9032 J per inference for the complete board. A subsequent
+one-shot inference after interrupting the continuous loop also completed in
+502.5 ms. PE optimization and the one M8xN8 expansion remain later steps; all
+implementation experiments stay at 200 MHz.

@@ -24,8 +24,9 @@ This software has passed its four contract tests on both the host and KV260.
 The preceding non-cache release passed coherent DMA/CSR inspection, saved-image
 inference, and live USB-camera dog classification. The frame-cache update
 removes seven camera DMA launches/waits per inference and has a timing-clean
-200 MHz bitstream. That new firmware is copied to the board and hash-verified,
-but must still be loaded with `sudo` before its new latency is measured.
+200 MHz bitstream. The new firmware is loaded and passed 15 consecutive live
+camera classifications at 502.227 ms mean PL round-trip latency, followed by a
+successful one-shot inference after the continuous loop was interrupted.
 
 ## Coherent DDR layout
 

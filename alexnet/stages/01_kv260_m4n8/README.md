@@ -159,6 +159,8 @@ now occur only after timing, routing, and DRC sign-off.
 The preceding non-cache release already passed physical FPGA loading, Linux
 driver operation, trained saved-image inference, and USB-camera-to-terminal dog
 classification. Its camera-frame baseline was 504.9 ms (1.9806 frame/s,
-0.002829 effective TOPS). The optimized artifacts above are copied to the board
-and hash-verified, but loading them still requires the board user's `sudo`
-password. Therefore the new latency and effective TOPS/W are not claimed yet.
+0.002829 effective TOPS). The frame-cache firmware then completed 15 consecutive
+camera classifications at 502.227 ms mean PL round-trip latency: 1.9911 frame/s,
+1.4220 GMAC/s, and 0.002844 effective TOPS. This is a 0.532% throughput gain.
+Forty board-power samples during continuous inference averaged 3.7895 W, giving
+0.0007505 effective TOPS/W and 1.9032 J per inference for the complete board.
