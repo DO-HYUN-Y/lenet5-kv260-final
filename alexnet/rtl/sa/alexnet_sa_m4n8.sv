@@ -211,9 +211,10 @@ module alexnet_sa_m4n8 #(
 
 `ifndef SYNTHESIS
   initial begin
-    if (PHYS_ROWS != 2 || COLS != 8 || DSP_LATENCY != 4)
+    if ((PHYS_ROWS != 2 && PHYS_ROWS != 4) ||
+        COLS != 8 || DSP_LATENCY != 4)
       $fatal(1,
-             "M4xN8 base tile is frozen at PHYS_ROWS=2 COLS=8 DSP_LATENCY=4");
+             "AlexNet SA supports PHYS_ROWS=2/4, COLS=8, DSP_LATENCY=4");
   end
 
   always_ff @(posedge clk) begin

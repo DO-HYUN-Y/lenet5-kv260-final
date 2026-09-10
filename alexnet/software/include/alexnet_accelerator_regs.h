@@ -74,7 +74,7 @@
 #define ALEXNET_IRQ_ENABLE_ERROR       (1u << 1)
 
 #define ALEXNET_EXPECTED_ID            0x414c0100u
-#define ALEXNET_EXPECTED_BUILD_CONFIG  0x040800c8u
+#define ALEXNET_EXPECTED_BUILD_CONFIG  0x080800c8u
 
 /* Xilinx AXI DMA simple-mode MM2S registers used for the camera stream. */
 #define ALEXNET_AXIDMA_MM2S_DMACR      0x00u

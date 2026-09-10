@@ -5,6 +5,9 @@
 // tile descriptors, channel-chunk ownership, and the accumulator-aware output
 // slice from signed INT8 K issue through final tagged INT8 packets.
 module alexnet_m4n8_accum_base_datapath #(
+    parameter int PHYS_ROWS = 2,
+    parameter int M_GROUP = 2 * PHYS_ROWS,
+    parameter int M_COUNT_W = $clog2(M_GROUP + 1),
     parameter int SLICE_INDEX = 0,
     parameter int FIFO_DEPTH = 64,
     parameter int BANK_DEPTH = 512,
@@ -44,15 +47,15 @@ module alexnet_m4n8_accum_base_datapath #(
 
     input  logic tile_start_valid,
     output logic tile_start_ready,
-    input  logic [2:0] tile_m_count,
+    input  logic [M_COUNT_W-1:0] tile_m_count,
     input  logic [7:0] tile_n_lane_mask,
     input  logic [TILE_TAG_W-1:0] tile_tag,
 
     input  logic issue_valid,
     output logic issue_ready,
     input  logic issue_last,
-    input  logic signed [7:0] issue_act_lo [0:1],
-    input  logic signed [7:0] issue_act_hi [0:1],
+    input  logic signed [7:0] issue_act_lo [0:PHYS_ROWS-1],
+    input  logic signed [7:0] issue_act_hi [0:PHYS_ROWS-1],
     input  logic signed [7:0] issue_weight [0:7],
 
     output logic egress_valid,
@@ -81,7 +84,7 @@ module alexnet_m4n8_accum_base_datapath #(
 
   logic tile_active_q;
   logic issue_open_q;
-  logic [1:0] m_lane_mask_q [0:1];
+  logic [1:0] m_lane_mask_q [0:PHYS_ROWS-1];
   logic tile_start_fire;
   logic issue_fire;
   logic cfg_fire;
@@ -89,11 +92,11 @@ module alexnet_m4n8_accum_base_datapath #(
   logic [7:0] cfg_lane_mask_q;
   logic [7:0] output_cfg_lane_mask;
 
-  logic sa_result_valid [0:1][0:7];
-  logic sa_result_ready [0:1][0:7];
-  logic signed [31:0] sa_result_lo [0:1][0:7];
-  logic signed [31:0] sa_result_hi [0:1][0:7];
-  logic [1:0] sa_result_lane_mask [0:1][0:7];
+  logic sa_result_valid [0:PHYS_ROWS-1][0:7];
+  logic sa_result_ready [0:PHYS_ROWS-1][0:7];
+  logic signed [31:0] sa_result_lo [0:PHYS_ROWS-1][0:7];
+  logic signed [31:0] sa_result_hi [0:PHYS_ROWS-1][0:7];
+  logic [1:0] sa_result_lane_mask [0:PHYS_ROWS-1][0:7];
 
   logic output_cfg_ready;
   logic output_chunk_valid;
@@ -147,8 +150,8 @@ module alexnet_m4n8_accum_base_datapath #(
     if (rst) begin
       tile_active_q <= 1'b0;
       issue_open_q <= 1'b0;
-      m_lane_mask_q[0] <= '0;
-      m_lane_mask_q[1] <= '0;
+      for (int g = 0; g < PHYS_ROWS; g++)
+        m_lane_mask_q[g] <= '0;
       tile_done <= 1'b0;
       cfg_lane_mask_q <= '0;
     end else begin
@@ -160,11 +163,14 @@ module alexnet_m4n8_accum_base_datapath #(
       if (tile_start_fire) begin
         tile_active_q <= 1'b1;
         issue_open_q <= 1'b1;
-        m_lane_mask_q[0] <= (tile_m_count == 1) ? 2'b01 : 2'b11;
-        if (tile_m_count <= 2)
-          m_lane_mask_q[1] <= 2'b00;
-        else
-          m_lane_mask_q[1] <= (tile_m_count == 3) ? 2'b01 : 2'b11;
+        for (int g = 0; g < PHYS_ROWS; g++) begin
+          if (tile_m_count <= 2*g)
+            m_lane_mask_q[g] <= 2'b00;
+          else if (tile_m_count == 2*g + 1)
+            m_lane_mask_q[g] <= 2'b01;
+          else
+            m_lane_mask_q[g] <= 2'b11;
+        end
       end
 
       if (issue_fire && issue_last)
@@ -178,7 +184,9 @@ module alexnet_m4n8_accum_base_datapath #(
     end
   end
 
-  alexnet_sa_m4n8 u_sa (
+  alexnet_sa_m4n8 #(
+      .PHYS_ROWS(PHYS_ROWS)
+  ) u_sa (
       .clk(clk),
       .rst(rst),
       .ce(ce),
@@ -197,6 +205,7 @@ module alexnet_m4n8_accum_base_datapath #(
   );
 
   alexnet_m4n8_n8_accum_output_slice #(
+      .PHYS_ROWS(PHYS_ROWS),
       .SLICE_INDEX(SLICE_INDEX),
       .RUNTIME_SLICE_INDEX(RUNTIME_SLICE_INDEX),
       .FIFO_DEPTH(FIFO_DEPTH),

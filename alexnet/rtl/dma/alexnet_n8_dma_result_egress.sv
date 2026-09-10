@@ -8,6 +8,7 @@
 // counted transfer still drains so software can recover without wedging the
 // result router.
 module alexnet_n8_dma_result_egress #(
+    parameter int M_GROUP = 4,
     parameter int AXIS_W = 128,
     parameter int AXIS_BYTES = AXIS_W / 8,
     parameter int COUNT_W = 11,
@@ -196,7 +197,7 @@ module alexnet_n8_dma_result_egress #(
           (packet_m == 0 &&
            packet_tile_tag == active_first_tile_tag_q) :
           ((packet_tile_tag == previous_packet_tile_tag_q &&
-            previous_packet_m_q < 3 &&
+            previous_packet_m_q < M_GROUP - 1 &&
             packet_m == previous_packet_m_q + 1'b1) ||
            (packet_tile_tag == previous_packet_tile_tag_q + 1'b1 &&
             packet_m == 0));
@@ -351,6 +352,8 @@ module alexnet_n8_dma_result_egress #(
       $fatal(1, "AlexNet N8 DMA result egress requires 128-bit AXIS");
     if (MAX_WORDS > (1 << COUNT_W) - 1)
       $fatal(1, "AlexNet N8 DMA result count width is too small");
+    if (M_GROUP != 4 && M_GROUP != 8)
+      $fatal(1, "AlexNet N8 DMA result egress supports M4 or M8 order");
   end
 
   always_ff @(posedge clk) begin

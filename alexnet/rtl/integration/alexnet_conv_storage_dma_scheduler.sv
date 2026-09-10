@@ -65,7 +65,7 @@ module alexnet_conv_storage_dma_scheduler (
   logic [2:0] layer_id_q;
   logic [15:0] layer_tag_q;
   logic [5:0] tile_count_q, tile_index_q;
-  logic [12:0] tile_words_q;
+  logic [12:0] tile_words_q, words_remaining_q;
   logic [15:0] tile_bytes_q, bytes_seen_q;
   logic fault_q, layer_error_q;
   logic layer_start_fire, request_fire, axis_fire, completion_fire;
@@ -74,7 +74,7 @@ module alexnet_conv_storage_dma_scheduler (
   logic completion_fields_valid;
   logic [4:0] beat_bytes;
   logic [16:0] next_bytes;
-  integer keep_index;
+  logic stream_beat_fields_valid;
 
   function automatic logic [5:0] fixed_tile_count(input logic [2:0] id);
     case (id)
@@ -106,11 +106,18 @@ module alexnet_conv_storage_dma_scheduler (
     endcase
   endfunction
 
-  always_comb begin
-    beat_bytes = 0;
-    for (keep_index = 0; keep_index < 16; keep_index = keep_index + 1)
-      beat_bytes = beat_bytes + storage_axis_tkeep[keep_index];
-  end
+  // Every stored activation is one complete 64-bit word.  Describing the
+  // 128-bit stream in words avoids putting a 16-input popcount, a byte
+  // accumulator, and three compares on the sticky-fault path.
+  assign beat_bytes = storage_axis_tkeep == 16'hffff ? 5'd16 :
+                      storage_axis_tkeep == 16'h00ff ? 5'd8 : 5'd0;
+  assign stream_beat_fields_valid =
+      (words_remaining_q > 13'd2 && !storage_axis_tlast &&
+       storage_axis_tkeep == 16'hffff) ||
+      (words_remaining_q == 13'd2 && storage_axis_tlast &&
+       storage_axis_tkeep == 16'hffff) ||
+      (words_remaining_q == 13'd1 && storage_axis_tlast &&
+       storage_axis_tkeep == 16'h00ff);
 
   assign start_fields_valid = layer_start_id >= 1 && layer_start_id <= 5 &&
       layer_start_word_count == fixed_layer_words(layer_start_id) &&
@@ -165,6 +172,7 @@ module alexnet_conv_storage_dma_scheduler (
       tile_count_q <= 0;
       tile_index_q <= 0;
       tile_words_q <= 0;
+      words_remaining_q <= 0;
       tile_bytes_q <= 0;
       bytes_seen_q <= 0;
       fault_q <= 1'b0;
@@ -191,24 +199,23 @@ module alexnet_conv_storage_dma_scheduler (
 
       if (request_fire) begin
         bytes_seen_q <= 0;
+        words_remaining_q <= tile_words_q;
         state_q <= ST_STREAM;
       end
 
       if (axis_fire) begin
         bytes_seen_q <= next_bytes[15:0];
-        if (next_bytes > {1'b0, tile_bytes_q} ||
-            (storage_axis_tlast &&
-             next_bytes != {1'b0, tile_bytes_q}) ||
-            (!storage_axis_tlast &&
-             next_bytes >= {1'b0, tile_bytes_q})) begin
+        if (!stream_beat_fields_valid) begin
           fault_q <= 1'b1;
           layer_error_q <= 1'b1;
         end
         if (storage_axis_tlast) begin
-          if (next_bytes == {1'b0, tile_bytes_q})
+          if (stream_beat_fields_valid)
             state_q <= ST_WAIT_COMPLETION;
           else
             state_q <= ST_LAYER_COMPLETE;
+        end else if (stream_beat_fields_valid) begin
+          words_remaining_q <= words_remaining_q - 13'd2;
         end
       end
 

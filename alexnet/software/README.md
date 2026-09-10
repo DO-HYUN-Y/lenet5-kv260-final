@@ -1,7 +1,7 @@
 # KV260 AlexNet Linux runtime
 
 This directory contains the first board-runtime boundary for the routed
-200 MHz M4xN8 bitstream. It is designed for polling bring-up first; IRQ-driven
+200 MHz M8xN8 bitstream. It is designed for polling bring-up first; IRQ-driven
 operation can follow after one saved image completes correctly.
 
 ## What is implemented
@@ -21,12 +21,11 @@ operation can follow after one saved image completes correctly.
   compiles the overlay.
 
 This software has passed its four contract tests on both the host and KV260.
-The preceding non-cache release passed coherent DMA/CSR inspection, saved-image
-inference, and live USB-camera dog classification. The frame-cache update
-removes seven camera DMA launches/waits per inference and has a timing-clean
-200 MHz bitstream. The new firmware is loaded and passed 15 consecutive live
-camera classifications at 502.227 ms mean PL round-trip latency, followed by a
-successful one-shot inference after the continuous loop was interrupted.
+The deployed M4 frame-cache firmware passed coherent DMA/CSR inspection,
+saved-image inference, and 15 consecutive live USB-camera classifications at
+502.227 ms mean PL round-trip latency. The current M8 firmware has a
+timing-clean 200 MHz bitstream but has not yet been deployed and measured on
+the physical board.
 
 ## Coherent DDR layout
 
@@ -91,7 +90,7 @@ bitstream/overlay, probes the driver, and creates `/dev/alexnet_board`. Use
    metadata 199,998,002 Hz, then create `/dev/alexnet_board`. The accelerator,
    DMAs, and AXI interconnect run from the internal MMCM fabric clock, not
    directly from PL0.
-4. Before installing or opening a camera, verify the board ID, M4xN8/200 build
+4. Before installing or opening a camera, verify the board ID, M8xN8/200 build
    word, clock, and status:
 
 ```sh

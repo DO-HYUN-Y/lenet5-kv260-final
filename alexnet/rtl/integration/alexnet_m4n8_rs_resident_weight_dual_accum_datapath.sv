@@ -9,6 +9,9 @@
 // chunk.
 module alexnet_m4n8_rs_resident_weight_dual_accum_datapath #(
     parameter bit EXTERNAL_COMPUTE = 1'b0,
+    parameter int PHYS_ROWS = 2,
+    parameter int M_GROUP = 2 * PHYS_ROWS,
+    parameter int M_COUNT_W = $clog2(M_GROUP + 1),
     parameter int SLICE_INDEX = 0,
     parameter int FIFO_DEPTH = 64,
     parameter int MAX_INPUT_WIDTH = 224,
@@ -134,14 +137,14 @@ module alexnet_m4n8_rs_resident_weight_dual_accum_datapath #(
     output logic shared_chunk_final,
     output logic shared_tile_start_valid,
     input logic shared_tile_start_ready,
-    output logic [2:0] shared_tile_m_count,
+    output logic [M_COUNT_W-1:0] shared_tile_m_count,
     output logic [7:0] shared_tile_n_lane_mask,
     output logic [15:0] shared_tile_tag,
     output logic shared_issue_valid,
     input logic shared_issue_ready,
     output logic shared_issue_last,
-    output logic signed [7:0] shared_issue_act_lo [0:1],
-    output logic signed [7:0] shared_issue_act_hi [0:1],
+    output logic signed [7:0] shared_issue_act_lo [0:PHYS_ROWS-1],
+    output logic signed [7:0] shared_issue_act_hi [0:PHYS_ROWS-1],
     output logic signed [7:0] shared_issue_weight [0:7],
     input logic shared_egress_valid,
     output logic shared_egress_ready,
@@ -200,14 +203,14 @@ module alexnet_m4n8_rs_resident_weight_dual_accum_datapath #(
 
   logic feeder_m_valid;
   logic feeder_m_ready;
-  logic signed [7:0] feeder_act_lo [0:1];
-  logic signed [7:0] feeder_act_hi [0:1];
-  logic [1:0] feeder_m_lane_mask [0:1];
+  logic signed [7:0] feeder_act_lo [0:PHYS_ROWS-1];
+  logic signed [7:0] feeder_act_hi [0:PHYS_ROWS-1];
+  logic [1:0] feeder_m_lane_mask [0:PHYS_ROWS-1];
   logic feeder_tile_clear;
   logic feeder_reduce_last;
   logic [K_INDEX_W-1:0] feeder_k;
   logic [3:0] feeder_input_channel;
-  logic [2:0] feeder_m_count;
+  logic [M_COUNT_W-1:0] feeder_m_count;
   logic [DIM_W-1:0] feeder_output_y;
   logic [DIM_W-1:0] feeder_output_x;
   logic [TILE_TAG_W-1:0] feeder_frame_tag;
@@ -218,7 +221,7 @@ module alexnet_m4n8_rs_resident_weight_dual_accum_datapath #(
   logic controller_weight_tile_valid;
   logic controller_weight_tile_ready;
   logic [15:0] controller_weight_tile_index;
-  logic [2:0] controller_weight_tile_m_count;
+  logic [M_COUNT_W-1:0] controller_weight_tile_m_count;
   logic [DIM_W-1:0] controller_weight_tile_output_y;
   logic [DIM_W-1:0] controller_weight_tile_output_x;
   logic [TILE_TAG_W-1:0] controller_weight_tile_tag;
@@ -233,14 +236,14 @@ module alexnet_m4n8_rs_resident_weight_dual_accum_datapath #(
 
   logic base_tile_start_valid;
   logic base_tile_start_ready;
-  logic [2:0] base_tile_m_count;
+  logic [M_COUNT_W-1:0] base_tile_m_count;
   logic [7:0] base_tile_n_lane_mask;
   logic [TILE_TAG_W-1:0] base_tile_tag;
   logic base_issue_valid;
   logic base_issue_ready;
   logic base_issue_last;
-  logic signed [7:0] base_issue_act_lo [0:1];
-  logic signed [7:0] base_issue_act_hi [0:1];
+  logic signed [7:0] base_issue_act_lo [0:PHYS_ROWS-1];
+  logic signed [7:0] base_issue_act_hi [0:PHYS_ROWS-1];
   logic signed [7:0] base_issue_weight [0:7];
   logic base_tile_done;
   logic base_datapath_idle;
@@ -347,6 +350,7 @@ module alexnet_m4n8_rs_resident_weight_dual_accum_datapath #(
   end
 
   alexnet_n8_rs_m4_feeder #(
+      .PHYS_ROWS(PHYS_ROWS),
       .MAX_INPUT_WIDTH(MAX_INPUT_WIDTH),
       .DIM_W(DIM_W),
       .K_INDEX_W(K_INDEX_W),
@@ -387,6 +391,7 @@ module alexnet_m4n8_rs_resident_weight_dual_accum_datapath #(
   );
 
   alexnet_m4n8_rs_issue_controller #(
+      .PHYS_ROWS(PHYS_ROWS),
       .DIM_W(DIM_W),
       .K_INDEX_W(K_INDEX_W),
       .TILE_TAG_W(TILE_TAG_W)

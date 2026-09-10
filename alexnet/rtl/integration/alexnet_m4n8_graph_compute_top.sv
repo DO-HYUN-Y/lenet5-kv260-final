@@ -280,7 +280,9 @@ module alexnet_m4n8_graph_compute_top (
       .*
   );
 
-  alexnet_m4n8_shared_compute_top u_compute (
+  alexnet_m4n8_shared_compute_top #(
+      .PHYS_ROWS(4)
+  ) u_compute (
       .fault(compute_fault),
       .rs_cfg_bias(rs_cfg_bias),
       .rs_cfg_multiplier(rs_cfg_multiplier),

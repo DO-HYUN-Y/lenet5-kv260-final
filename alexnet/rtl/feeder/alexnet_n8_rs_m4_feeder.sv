@@ -14,6 +14,10 @@
 // from the ring memory, so source and output stalls cannot overwrite a live
 // window.
 module alexnet_n8_rs_m4_feeder #(
+    parameter int PHYS_ROWS = 2,
+    parameter int M_GROUP = 2 * PHYS_ROWS,
+    parameter int M_COUNT_W = $clog2(M_GROUP + 1),
+    parameter int READ_COPIES = PHYS_ROWS == 4 ? M_GROUP : 1,
     parameter int MAX_INPUT_WIDTH = 224,
     parameter int MAX_KERNEL = 11,
     parameter int MAX_PADDING = 2,
@@ -42,14 +46,14 @@ module alexnet_n8_rs_m4_feeder #(
 
     output logic m_valid,
     input  logic m_ready,
-    output logic signed [7:0] m_act_lo [0:1],
-    output logic signed [7:0] m_act_hi [0:1],
-    output logic [1:0] m_lane_mask [0:1],
+    output logic signed [7:0] m_act_lo [0:PHYS_ROWS-1],
+    output logic signed [7:0] m_act_hi [0:PHYS_ROWS-1],
+    output logic [1:0] m_lane_mask [0:PHYS_ROWS-1],
     output logic m_tile_clear,
     output logic m_reduce_last,
     output logic [K_INDEX_W-1:0] m_k,
     output logic [3:0] m_input_channel,
-    output logic [2:0] m_count,
+    output logic [M_COUNT_W-1:0] m_count,
     output logic [DIM_W-1:0] m_output_y,
     output logic [DIM_W-1:0] m_output_x,
     output logic [FRAME_TAG_W-1:0] m_frame_tag,
@@ -97,7 +101,7 @@ module alexnet_n8_rs_m4_feeder #(
 
   logic [DIM_W-1:0] group_y_q;
   logic [DIM_W-1:0] group_x_q;
-  logic [2:0] group_count_q;
+  logic [M_COUNT_W-1:0] group_count_q;
   logic group_pending_q;
   logic [RING_ROW_W-1:0] endpoint_ring_row_q;
 
@@ -105,10 +109,10 @@ module alexnet_n8_rs_m4_feeder #(
   logic [DIM_W-1:0] emit_kx_q;
   logic [3:0] emit_ic_q;
   logic [K_INDEX_W-1:0] emit_k_q;
-  logic [2:0] read_m_q;
-  logic [63:0] pixel_q [0:3];
-  logic [63:0] ring_bank_read_q [0:RING_BANKS-1];
-  logic [RING_BANK_W-1:0] read_bank_select_q;
+  logic [M_COUNT_W-1:0] read_m_q;
+  logic [63:0] pixel_q [0:M_GROUP-1];
+  logic [63:0] ring_bank_read_q [0:READ_COPIES-1][0:RING_BANKS-1];
+  logic [RING_BANK_W-1:0] read_bank_select_q [0:READ_COPIES-1];
 
   logic scan_inside;
   logic scan_step;
@@ -116,18 +120,18 @@ module alexnet_n8_rs_m4_feeder #(
   logic frame_fire;
   logic last_scan_position;
   logic at_group_endpoint;
-  logic [2:0] next_group_count;
+  logic [M_COUNT_W-1:0] next_group_count;
   logic [DIM_W-1:0] endpoint_y;
   logic [DIM_W-1:0] endpoint_x;
   logic [RING_ADDR_W-1:0] write_addr;
-  logic [RING_ADDR_W-1:0] read_addr;
+  logic [RING_ADDR_W-1:0] read_addr [0:READ_COPIES-1];
   logic [RING_BANK_W-1:0] write_bank;
-  logic [RING_BANK_W-1:0] read_bank;
+  logic [RING_BANK_W-1:0] read_bank [0:READ_COPIES-1];
   logic [8:0] write_bank_addr;
-  logic [8:0] read_bank_addr;
+  logic [8:0] read_bank_addr [0:READ_COPIES-1];
   logic [RING_ROW_W:0] read_ring_row_sum;
   logic [RING_ROW_W-1:0] read_ring_row;
-  logic [DIM_W-1:0] read_x;
+  logic [DIM_W-1:0] read_x [0:READ_COPIES-1];
   logic [63:0] scan_values_masked;
   logic [3:0] expected_lane_count;
   logic [7:0] expected_lane_mask;
@@ -149,8 +153,8 @@ module alexnet_n8_rs_m4_feeder #(
                               (scan_x_q == padded_w_q - 1'b1);
 
   always_comb begin
-    if (output_w_q - group_x_q >= 4)
-      next_group_count = 3'd4;
+    if (output_w_q - group_x_q >= M_GROUP)
+      next_group_count = M_COUNT_W'(M_GROUP);
     else
       next_group_count = output_w_q - group_x_q;
 
@@ -187,42 +191,59 @@ module alexnet_n8_rs_m4_feeder #(
     else
       read_ring_row = read_ring_row_sum[RING_ROW_W-1:0];
 
-    if (stride_q == 4)
-      read_x = (group_x_q << 2) + (read_m_q << 2) + emit_kx_q;
-    else
-      read_x = group_x_q + read_m_q + emit_kx_q;
+    for (int copy = 0; copy < READ_COPIES; copy++) begin
+      if (stride_q == 4) begin
+        if (READ_COPIES == 1)
+          read_x[copy] = (group_x_q << 2) + (read_m_q << 2) + emit_kx_q;
+        else
+          read_x[copy] = (group_x_q << 2) + (copy << 2) + emit_kx_q;
+      end else begin
+        if (READ_COPIES == 1)
+          read_x[copy] = group_x_q + read_m_q + emit_kx_q;
+        else
+          read_x[copy] = group_x_q + copy + emit_kx_q;
+      end
+    end
   end
 
-  assign read_addr = read_ring_row * MAX_PADDED_WIDTH + read_x;
   assign write_bank = write_addr[RING_ADDR_W-1:9];
-  assign read_bank = read_addr[RING_ADDR_W-1:9];
   assign write_bank_addr = write_addr[8:0];
-  assign read_bank_addr = read_addr[8:0];
+
+  generate
+    for (genvar copy = 0; copy < READ_COPIES; copy++) begin : g_read_address
+      assign read_addr[copy] =
+          read_ring_row * MAX_PADDED_WIDTH + read_x[copy];
+      assign read_bank[copy] = read_addr[copy][RING_ADDR_W-1:9];
+      assign read_bank_addr[copy] = read_addr[copy][8:0];
+    end
+  endgenerate
 
   // Explicit 512x64 banking prevents the 2508-word logical depth from being
   // expanded into Vivado's larger irregular cascade. Each generated bank maps
   // independently to one RAMB36E2.
   generate
-    for (genvar bank = 0; bank < RING_BANKS; bank++) begin : g_ring_bank
-      (* ram_style = "block" *) logic [63:0] mem [0:RING_BANK_WORDS-1];
+    for (genvar copy = 0; copy < READ_COPIES; copy++) begin : g_read_copy
+      for (genvar bank = 0; bank < RING_BANKS; bank++) begin : g_ring_bank
+        (* ram_style = "block" *) logic [63:0] mem [0:RING_BANK_WORDS-1];
 
-      always_ff @(posedge clk) begin
-        if (scan_step && write_bank == bank)
-          mem[write_bank_addr] <= scan_values_masked;
-        if (state_q == ST_READ_ISSUE)
-          ring_bank_read_q[bank] <= mem[read_bank_addr];
+        always_ff @(posedge clk) begin
+          if (scan_step && write_bank == bank)
+            mem[write_bank_addr] <= scan_values_masked;
+          if (state_q == ST_READ_ISSUE)
+            ring_bank_read_q[copy][bank] <= mem[read_bank_addr[copy]];
+        end
       end
     end
   endgenerate
 
   always_comb begin
     m_valid = state_q == ST_EMIT;
-    m_act_lo[0] = $signed(pixel_q[0][emit_ic_q*8 +: 8]);
-    m_act_hi[0] = $signed(pixel_q[1][emit_ic_q*8 +: 8]);
-    m_act_lo[1] = $signed(pixel_q[2][emit_ic_q*8 +: 8]);
-    m_act_hi[1] = $signed(pixel_q[3][emit_ic_q*8 +: 8]);
-    m_lane_mask[0] = {group_count_q > 1, group_count_q > 0};
-    m_lane_mask[1] = {group_count_q > 3, group_count_q > 2};
+    for (int g = 0; g < PHYS_ROWS; g++) begin
+      m_act_lo[g] = $signed(pixel_q[2*g][emit_ic_q*8 +: 8]);
+      m_act_hi[g] = $signed(pixel_q[2*g+1][emit_ic_q*8 +: 8]);
+      m_lane_mask[g] = {group_count_q > 2*g + 1,
+                        group_count_q > 2*g};
+    end
     m_tile_clear = emit_k_q == 0;
     m_reduce_last = (emit_ky_q == kernel_q - 1'b1) &&
                     (emit_kx_q == kernel_q - 1'b1) &&
@@ -272,8 +293,9 @@ module alexnet_n8_rs_m4_feeder #(
       emit_ic_q <= '0;
       emit_k_q <= '0;
       read_m_q <= '0;
-      read_bank_select_q <= '0;
-      for (int m = 0; m < 4; m++)
+      for (int copy = 0; copy < READ_COPIES; copy++)
+        read_bank_select_q[copy] <= '0;
+      for (int m = 0; m < M_GROUP; m++)
         pixel_q[m] <= '0;
       frame_done <= 1'b0;
     end else begin
@@ -316,7 +338,7 @@ module alexnet_n8_rs_m4_feeder #(
         emit_ic_q <= '0;
         emit_k_q <= '0;
         read_m_q <= '0;
-        for (int m = 0; m < 4; m++)
+        for (int m = 0; m < M_GROUP; m++)
           pixel_q[m] <= '0;
       end
 
@@ -329,7 +351,7 @@ module alexnet_n8_rs_m4_feeder #(
           emit_ic_q <= '0;
           emit_k_q <= '0;
           read_m_q <= '0;
-          for (int m = 0; m < 4; m++)
+          for (int m = 0; m < M_GROUP; m++)
             pixel_q[m] <= '0;
           state_q <= ST_READ_ISSUE;
         end
@@ -353,24 +375,36 @@ module alexnet_n8_rs_m4_feeder #(
       end
 
       if (state_q == ST_READ_ISSUE) begin
-        read_bank_select_q <= read_bank;
+        for (int copy = 0; copy < READ_COPIES; copy++)
+          read_bank_select_q[copy] <= read_bank[copy];
         state_q <= ST_READ_CAPTURE;
       end
 
       if (state_q == ST_READ_CAPTURE) begin
-        pixel_q[read_m_q] <= ring_bank_read_q[read_bank_select_q];
-        if (read_m_q == group_count_q - 1'b1) begin
-          read_m_q <= '0;
-          state_q <= ST_EMIT;
+        if (READ_COPIES == 1) begin
+          pixel_q[read_m_q] <=
+              ring_bank_read_q[0][read_bank_select_q[0]];
+          if (read_m_q == group_count_q - 1'b1) begin
+            read_m_q <= '0;
+            state_q <= ST_EMIT;
+          end else begin
+            read_m_q <= read_m_q + 1'b1;
+            state_q <= ST_READ_ISSUE;
+          end
         end else begin
-          read_m_q <= read_m_q + 1'b1;
-          state_q <= ST_READ_ISSUE;
+          for (int m = 0; m < M_GROUP; m++) begin
+            if (m < group_count_q)
+              pixel_q[m] <= ring_bank_read_q[m][read_bank_select_q[m]];
+            else
+              pixel_q[m] <= '0;
+          end
+          state_q <= ST_EMIT;
         end
       end
 
       if (state_q == ST_EMIT && m_ready) begin
         if (m_reduce_last) begin
-          if (group_x_q + 4 >= output_w_q) begin
+          if (group_x_q + M_GROUP >= output_w_q) begin
             group_x_q <= '0;
             if (group_y_q == output_h_q - 1'b1) begin
               group_pending_q <= 1'b0;
@@ -385,7 +419,7 @@ module alexnet_n8_rs_m4_feeder #(
               state_q <= ST_SCAN;
             end
           end else begin
-            group_x_q <= group_x_q + 4;
+            group_x_q <= group_x_q + M_GROUP;
             state_q <= ST_SCAN;
           end
           emit_ky_q <= '0;
@@ -402,7 +436,7 @@ module alexnet_n8_rs_m4_feeder #(
             emit_kx_q <= emit_kx_q + 1'b1;
           end
           read_m_q <= '0;
-          for (int m = 0; m < 4; m++)
+          for (int m = 0; m < M_GROUP; m++)
             pixel_q[m] <= '0;
           state_q <= ST_READ_ISSUE;
         end else begin
@@ -414,6 +448,12 @@ module alexnet_n8_rs_m4_feeder #(
   end
 
 `ifndef SYNTHESIS
+  initial begin
+    if (!((PHYS_ROWS == 2 && M_GROUP == 4 && READ_COPIES == 1) ||
+          (PHYS_ROWS == 4 && M_GROUP == 8 && READ_COPIES == 8)))
+      $fatal(1, "RS feeder supports M4 serial-read or M8 parallel-read mode");
+  end
+
   always_ff @(posedge clk) begin
     if (!rst) begin
       if (frame_fire &&

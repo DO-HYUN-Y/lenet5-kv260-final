@@ -29,11 +29,11 @@ ipx::package_project -root_dir $ip_root -vendor user.org -library user \
     -taxonomy /UserIP -import_files -set_current true
 set core [ipx::current_core]
 set_property name alexnet_m4n8_accelerator $core
-set_property display_name {AlexNet M4xN8 DMA Accelerator} $core
+set_property display_name {AlexNet M8xN8 DMA Accelerator} $core
 set_property description \
-    {INT8 AlexNet M4xN8 accelerator with autonomous main AXI DMA control} \
+    {INT8 AlexNet M8xN8 accelerator with autonomous main AXI DMA control} \
     $core
-set_property core_revision 1 $core
+set_property core_revision 2 $core
 set_property version 1.0 $core
 set_property supported_families {zynquplus Production} $core
 

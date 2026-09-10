@@ -9,6 +9,10 @@
 // reconstructs the same M coordinate and tile tag without storing metadata in
 // the 256-bit partial-sum BRAM payload.
 module alexnet_m4n8_n8_accum_output_slice #(
+    parameter int PHYS_ROWS = 2,
+    parameter int M_GROUP = 2 * PHYS_ROWS,
+    parameter int M_COUNT_W = $clog2(M_GROUP + 1),
+    parameter int M_INDEX_W = $clog2(M_GROUP),
     parameter int SLICE_INDEX = 0,
     parameter int FIFO_DEPTH = 64,
     parameter int BANK_DEPTH = 512,
@@ -48,15 +52,15 @@ module alexnet_m4n8_n8_accum_output_slice #(
 
     input  logic tile_valid,
     output logic tile_ready,
-    input  logic [2:0] tile_m_count,
+    input  logic [M_COUNT_W-1:0] tile_m_count,
     input  logic [7:0] tile_n_lane_mask,
     input  logic [TILE_TAG_W-1:0] tile_tag,
 
-    input  logic hold_valid [0:1][0:7],
-    output logic hold_ready [0:1][0:7],
-    input  logic signed [31:0] hold_lo [0:1][0:7],
-    input  logic signed [31:0] hold_hi [0:1][0:7],
-    input  logic [1:0] hold_m_lane_mask [0:1][0:7],
+    input  logic hold_valid [0:PHYS_ROWS-1][0:7],
+    output logic hold_ready [0:PHYS_ROWS-1][0:7],
+    input  logic signed [31:0] hold_lo [0:PHYS_ROWS-1][0:7],
+    input  logic signed [31:0] hold_hi [0:PHYS_ROWS-1][0:7],
+    input  logic [1:0] hold_m_lane_mask [0:PHYS_ROWS-1][0:7],
 
     output logic egress_valid,
     input  logic egress_ready,
@@ -108,7 +112,7 @@ module alexnet_m4n8_n8_accum_output_slice #(
   logic scanner_valid;
   logic scanner_ready;
   logic signed [31:0] scanner_accumulator [0:7];
-  logic [1:0] scanner_m;
+  logic [M_INDEX_W-1:0] scanner_m;
   logic [7:0] scanner_lane_mask;
   logic [TILE_TAG_W-1:0] scanner_tile_tag;
   logic scanner_busy;
@@ -248,7 +252,8 @@ module alexnet_m4n8_n8_accum_output_slice #(
 
       if (scanner_fire) begin
         if ((ingress_raster_x_q + 1'b1 == resident_output_width_q) ||
-            (ingress_raster_x_q[1:0] == 2'b11))
+            (ingress_raster_x_q[M_INDEX_W-1:0] ==
+             M_INDEX_W'(M_GROUP-1)))
           ingress_tile_index_q <= ingress_tile_index_q + 1'b1;
         if (ingress_raster_x_q + 1'b1 == resident_output_width_q)
           ingress_raster_x_q <= '0;
@@ -262,7 +267,8 @@ module alexnet_m4n8_n8_accum_output_slice #(
       if (bank_egress_fire) begin
         egress_words_transferred_q <= egress_words_transferred_q + 1'b1;
         if ((egress_raster_x_q + 1'b1 == resident_output_width_q) ||
-            (egress_raster_x_q[1:0] == 2'b11))
+            (egress_raster_x_q[M_INDEX_W-1:0] ==
+             M_INDEX_W'(M_GROUP-1)))
           egress_tile_index_q <= egress_tile_index_q + 1'b1;
         if (egress_raster_x_q + 1'b1 == resident_output_width_q)
           egress_raster_x_q <= '0;
@@ -290,7 +296,7 @@ module alexnet_m4n8_n8_accum_output_slice #(
                               bank_accepting_scanner_words;
 
   alexnet_m4n8_result_scanner #(
-      .PHYS_ROWS(2),
+      .PHYS_ROWS(PHYS_ROWS),
       .COLS(8),
       .TILE_TAG_W(TILE_TAG_W)
   ) u_scanner (
@@ -317,7 +323,7 @@ module alexnet_m4n8_n8_accum_output_slice #(
   );
 
   assign scanner_metadata_match =
-      (scanner_m == ingress_raster_x_q[1:0]) &&
+      (scanner_m == ingress_raster_x_q[M_INDEX_W-1:0]) &&
       (scanner_tile_tag ==
        resident_tile_tag_base_q + ingress_tile_index_q);
   assign bank_ingress_valid = scanner_valid && scanner_metadata_match;
@@ -390,7 +396,7 @@ module alexnet_m4n8_n8_accum_output_slice #(
       .ingress_ready(requant_ready),
       .ingress_accumulator(bank_egress_accumulator),
       .ingress_lane_mask(bank_egress_n_lane_mask),
-      .ingress_m({3'b000, egress_raster_x_q[1:0]}),
+      .ingress_m(5'(egress_raster_x_q[M_INDEX_W-1:0])),
       .ingress_tile_tag(
           resident_tile_tag_base_q + egress_tile_index_q),
       .egress_valid(requant_valid),

@@ -1,0 +1,58 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+-------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Wed Sep  9 14:41:48 2026
+| Host         : yundodo running 64-bit unknown
+| Command      : report_drc -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/m8n8_shared_compute_top/200mhz/drc.rpt
+| Design       : alexnet_m4n8_shared_compute_top
+| Device       : xck26-sfvc784-2LV-c
+| Speed File   : -2LV
+| Design State : Fully Routed
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+Report DRC
+
+Table of Contents
+-----------------
+1. REPORT SUMMARY
+2. REPORT DETAILS
+
+1. REPORT SUMMARY
+-----------------
+            Netlist: alexnet_m4n8_shared_compute_top
+          Floorplan: design_1
+      Design limits: <entire design considered>
+           Ruledeck: default
+             Max violations: <unlimited>
+             Violations found: 2
++-----------+----------+------------------------+------------+
+| Rule      | Severity | Description            | Violations |
++-----------+----------+------------------------+------------+
+| DPOP-3    | Warning  | PREG Output pipelining | 1          |
+| RTSTAT-10 | Warning  | No routable loads      | 1          |
++-----------+----------+------------------------+------------+
+
+2. REPORT DETAILS
+-----------------
+DPOP-3#1 Warning
+PREG Output pipelining  
+DSP u_shared/u_output_slice/u_requant/product_pipe_q_reg[0] output u_shared/u_output_slice/u_requant/product_pipe_q_reg[0]/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+RTSTAT-10#1 Warning
+No routable loads  
+261 net(s) have no routable loads. The problem bus(es) and/or net(s) are owner_released, u_fc/u_controller/fc_fault_code[2:0],
+u_fc/u_controller/fc_job_rejected, u_fc/u_controller/fc_layer_done,
+u_fc/u_controller/fc_layer_failed,
+u_fc/u_controller/fc_result_complete_ready, u_fc/u_controller/owner_ready,
+u_fc/u_core/u_core/u_activation_bank/fc_job_ready,
+u_fc/u_core/u_egress/m_axis_tdata[127:0],
+u_fc/u_core/u_egress/m_axis_tkeep[0], u_fc/u_core/u_egress/m_axis_tlast,
+u_rs/u_datapath/u_result_dma_egress/m_axis_tvalid,
+u_shared/u_output_slice/rs_accum_chunk_active,
+u_shared/u_output_slice/u_partial_sum_bank/rs_accum_bank_state[2:0],
+u_shared/u_output_slice/u_partial_sum_bank/rs_accum_context_error
+ (the first 15 of 42 listed nets/buses).
+Related violations: <none>
+
+

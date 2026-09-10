@@ -1,14 +1,16 @@
-# AlexNet RTL status — 2026-09-07
+# AlexNet RTL status — 2026-09-10
 
 ## Current decision
 
 - Experiments use one clock only: **200 MHz**.
-- PE resource optimization is deferred.
-- The bring-up SA is logical **M4xN8**, implemented as a physical **2x8**
-  packed-PE grid (16 DSP48E2).
-- N remains fixed at 8. After the base datapath is integrated and PE resources
-  are revisited, the tile expands once in M to logical **M8xN8** (physical
-  4x8) without changing its N8-facing boundary.
+- The board SA is now logical **M8xN8**, implemented as a physical **4x8**
+  packed-PE grid (32 compute DSP48E2 plus eight N8 requant DSP48E2).
+- The complete KV260 PS/AXI/PL image passes 200 MHz with WNS/WHS
+  **+0.005/+0.010 ns**, 40 DSP48E2, 87 block-RAM tiles, and 13 URAM288.
+- PE utilization is measured before each further expansion. The next
+  architecture work is a Conv1 line-buffer/window-ping-pong direct issue path
+  followed by partitioned M/N scaling that uses the available DSP, BRAM, and
+  URAM without leaving small-layer M lanes idle.
 
 `PRE_RTL_SIGNOFF.md` remains the historical pre-RTL signoff. The post-measurement
 override is recorded under `rtl_bringup_revision` in `alexnet_contract.yaml`.
@@ -44,7 +46,7 @@ IP top. The KV260 block design now connects ZynqMP PS, shared DDR, the main and
 camera AXI DMA IPs, the 199.998002 MHz MMCM fabric clock/reset domain, and all
 five IRQ sources;
 its routed `system_wrapper` has generated a timing-clean bitstream and XSA.
-The measured Conv and FC paths share one M4xN8 compute/output block and have
+The measured Conv and FC paths share one M8xN8 compute/output block and have
 passed a clean Conv-to-FC8 ownership handoff without resetting that block.
 The official torchvision checkpoint has now also been converted into frozen
 contract-matching INT8 files and packed into the exact RTL weight/parameter DDR
@@ -54,9 +56,11 @@ separate aligned bases. A host-tested Linux driver/runtime now owns the
 fixed 199.998002 MHz fabric-clock contract,
 preprocesses saved images or V4L2/OpenCV frames, controls the camera DMA, and
 decodes the 1,000 signed INT8 FC8 outputs into top-k terminal labels. The
-timing-clean image and driver are now loaded on the physical KV260; coherent
-DMA mapping, RTL ID/build word, and 200 MHz clock inspection pass. Loading the
-model into board DDR and trained camera-to-terminal inference remain open.
+previous M4 image and driver were loaded on the physical KV260; coherent DMA
+mapping, RTL ID/build word, 200 MHz clock inspection, model loading, and
+trained camera-to-terminal inference passed. The current M8 image is fully
+implemented at 200 MHz but still needs physical-board deployment and
+measurement.
 
 ## Implemented RTL
 

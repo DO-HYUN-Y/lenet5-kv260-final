@@ -1,0 +1,15 @@
+design=alexnet_sa_m8n8
+logical_shape=M8xN8
+physical_shape=4x8
+git_commit=fd4bce7a31581970df2543fb65f2c59e84de2217
+vivado=2024.1
+part=xck26-sfvc784-2LV-c
+frequency_mhz=200
+clock_period_ns=5.000000
+dsp48e2=32
+wns_ns=2.191
+whs_ns=0.046
+pe_rtl_sha256=a7c6434235a7ba8d5d68a96c4f25da94a6b3595f411e0005609560f2ce777772
+base_rtl_sha256=e4103a9f5138c99eee35cfdcc8204a813fea7aaad53176123eb1e6ba2c453130
+tile_rtl_sha256=872f53923ddbe978a071ae6a3fd48ac160680fd4f7794a69007b80fe7e9ffe7c
+xdc_sha256=c2ede9ff17ff2d7352d297f49a5de520e6a4b7c70b9d4f6d79bd28b3ec2c0483

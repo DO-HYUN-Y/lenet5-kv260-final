@@ -7,6 +7,8 @@
 // error interlocks new chunk launches until software explicitly clears it.
 module alexnet_m4n8_rs_dma_activation_resident_weight_dual_accum_datapath #(
     parameter bit EXTERNAL_COMPUTE = 1'b0,
+    parameter int PHYS_ROWS = 2,
+    parameter int M_COUNT_W = $clog2(2 * PHYS_ROWS + 1),
     parameter int SLICE_INDEX = 0,
     parameter int FIFO_DEPTH = 64,
     parameter int MAX_INPUT_WIDTH = 224,
@@ -168,14 +170,14 @@ module alexnet_m4n8_rs_dma_activation_resident_weight_dual_accum_datapath #(
     output logic shared_chunk_final,
     output logic shared_tile_start_valid,
     input logic shared_tile_start_ready,
-    output logic [2:0] shared_tile_m_count,
+    output logic [M_COUNT_W-1:0] shared_tile_m_count,
     output logic [7:0] shared_tile_n_lane_mask,
     output logic [15:0] shared_tile_tag,
     output logic shared_issue_valid,
     input logic shared_issue_ready,
     output logic shared_issue_last,
-    output logic signed [7:0] shared_issue_act_lo [0:1],
-    output logic signed [7:0] shared_issue_act_hi [0:1],
+    output logic signed [7:0] shared_issue_act_lo [0:PHYS_ROWS-1],
+    output logic signed [7:0] shared_issue_act_hi [0:PHYS_ROWS-1],
     output logic signed [7:0] shared_issue_weight [0:7],
     input logic shared_egress_valid,
     output logic shared_egress_ready,
@@ -301,6 +303,7 @@ module alexnet_m4n8_rs_dma_activation_resident_weight_dual_accum_datapath #(
 
   alexnet_m4n8_rs_activation_resident_weight_dual_accum_datapath #(
       .EXTERNAL_COMPUTE(EXTERNAL_COMPUTE),
+      .PHYS_ROWS(PHYS_ROWS),
       .SLICE_INDEX(SLICE_INDEX),
       .FIFO_DEPTH(FIFO_DEPTH),
       .MAX_INPUT_WIDTH(MAX_INPUT_WIDTH),

@@ -181,6 +181,16 @@ int alexnet_golden_window_m4_token(int output_y, int output_x_base,
                                    uint8_t* m_lane_mask,
                                    uint8_t* tile_clear,
                                    uint8_t* reduce_last);
+int alexnet_golden_window_m8_reset(int input_h, int input_w,
+                                   int channel_count, int kernel,
+                                   int stride, int padding);
+int alexnet_golden_window_m8_set_pixel(int y, int x, uint64_t values);
+int alexnet_golden_window_m8_token(int output_y, int output_x_base,
+                                   int m_count, int k_index,
+                                   uint64_t* activations,
+                                   uint8_t* m_lane_mask,
+                                   uint8_t* tile_clear,
+                                   uint8_t* reduce_last);
 
 #ifdef __cplusplus
 }

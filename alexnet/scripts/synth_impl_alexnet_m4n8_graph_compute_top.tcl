@@ -14,7 +14,7 @@ synth_design -top $design_top -part $part -mode out_of_context
 set sa_cells [get_cells -hierarchical -filter {ORIG_REF_NAME == alexnet_sa_m4n8 || REF_NAME == alexnet_sa_m4n8}]
 if {[llength $sa_cells] != 1} { error "expected ONE shared SA, found: $sa_cells" }
 set dsp_cells [get_cells -hierarchical -filter {REF_NAME == DSP48E2}]
-if {[llength $dsp_cells] != 24} { error "expected 16 packed MAC + 8 requant DSPs" }
+if {[llength $dsp_cells] != 40} { error "expected 32 packed MAC + 8 requant DSPs" }
 set graph_cells [get_cells -hierarchical -filter {ORIG_REF_NAME == alexnet_graph_controller || REF_NAME == alexnet_graph_controller}]
 if {[llength $graph_cells] != 1} { error "expected ONE graph controller" }
 set conv_controller_cells [get_cells -hierarchical -filter {ORIG_REF_NAME == alexnet_conv_layer_controller || REF_NAME == alexnet_conv_layer_controller}]

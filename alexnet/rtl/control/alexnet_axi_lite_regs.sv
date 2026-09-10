@@ -262,7 +262,7 @@ module alexnet_axi_lite_regs #(
         read_data_c[2] = config_address_range_valid;
         read_data_c[8] = start_pending;
       end
-      REG_BUILD_CONFIG: read_data_c = {8'd4, 8'd8, 16'd200};
+      REG_BUILD_CONFIG: read_data_c = {8'd8, 8'd8, 16'd200};
       default: read_resp_c = 2'b10;
     endcase
   end

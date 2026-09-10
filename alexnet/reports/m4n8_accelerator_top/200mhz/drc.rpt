@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 ----------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
-| Date         : Sun Sep  6 20:23:08 2026
+| Date         : Wed Sep  9 15:09:56 2026
 | Host         : yundodo running 64-bit unknown
 | Command      : report_drc -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/m4n8_accelerator_top/200mhz/drc.rpt
 | Design       : alexnet_m4n8_accelerator_top
@@ -35,8 +35,10 @@ Table of Contents
 -----------------
 RTSTAT-10#1 Warning
 No routable loads  
-210 net(s) have no routable loads. The problem bus(es) and/or net(s) are u_control_regs/s_axi_ctrl_arready, u_control_regs/s_axi_ctrl_awready,
+209 net(s) have no routable loads. The problem bus(es) and/or net(s) are u_control_regs/s_axi_ctrl_arready, u_control_regs/s_axi_ctrl_awready,
 u_control_regs/s_axi_ctrl_rdata[31:0], u_control_regs/s_axi_ctrl_rresp[0],
+u_control_regs/s_axi_ctrl_wready,
+u_graph_dma/u_conv_storage/m_axis_s2mm_tvalid,
 u_graph_dma/u_dma_master/m_axi_dma_arvalid,
 u_graph_dma/u_dma_master/m_axi_dma_awaddr[4:0],
 u_graph_dma/u_dma_master/m_axi_dma_awvalid,
@@ -45,10 +47,8 @@ u_graph_dma/u_dma_master/m_axi_dma_rready,
 u_graph_dma/u_dma_master/m_axi_dma_wdata[31:0],
 u_graph_dma/u_dma_master/m_axi_dma_wvalid,
 u_graph_dma/u_graph_data/u_data_service/u_conv_results/u_pack/m_axis_s2mm_tdata[63:0],
-u_graph_dma/u_graph_data/u_data_service/u_conv_results/u_pack/m_axis_s2mm_tkeep[0],
-u_graph_dma/u_graph_data/u_graph/u_compute/u_fc/u_core/u_egress/m_axis_s2mm_tdata[63:0],
-u_graph_dma/u_graph_data/u_graph/u_orchestrator/u_graph/m_axis_s2mm_tvalid
- (the first 15 of 18 listed).
+u_graph_dma/u_graph_data/u_graph/u_compute/u_fc/u_core/u_egress/m_axis_s2mm_tdata[63:0]
+ (the first 15 of 17 listed nets/buses).
 Related violations: <none>
 
 

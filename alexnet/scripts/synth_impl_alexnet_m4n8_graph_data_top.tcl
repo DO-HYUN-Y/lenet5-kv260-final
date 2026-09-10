@@ -22,7 +22,7 @@ if {[llength $store_cells] != 1} { error "expected ONE Pool5 cache" }
 set flatten_cells [get_cells -hierarchical -filter {ORIG_REF_NAME == alexnet_pool5_fc6_flatten_reader || REF_NAME == alexnet_pool5_fc6_flatten_reader}]
 if {[llength $flatten_cells] != 1} { error "expected ONE FC6 flatten reader" }
 set dsp_cells [get_cells -hierarchical -filter {REF_NAME == DSP48E2}]
-if {[llength $dsp_cells] != 24} { error "expected 16 packed MAC plus 8 requant DSPs" }
+if {[llength $dsp_cells] != 40} { error "expected 32 packed MAC plus 8 requant DSPs" }
 set bram_cells [get_cells -hierarchical -filter {REF_NAME == RAMB36E2}]
 if {[llength $bram_cells] != 45} { error "expected 42 compute plus 3 data-service RAMB36E2" }
 write_checkpoint -force [file join $out_dir post_synth.dcp]

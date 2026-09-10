@@ -1210,3 +1210,61 @@ extern "C" int alexnet_golden_window_m4_token(
     return -2;
   }
 }
+
+extern "C" int alexnet_golden_window_m8_reset(
+    int input_h, int input_w, int channel_count, int kernel, int stride,
+    int padding) {
+  return alexnet_golden_window_m4_reset(
+      input_h, input_w, channel_count, kernel, stride, padding);
+}
+
+extern "C" int alexnet_golden_window_m8_set_pixel(
+    int y, int x, uint64_t values) {
+  return alexnet_golden_window_m4_set_pixel(y, x, values);
+}
+
+extern "C" int alexnet_golden_window_m8_token(
+    int output_y, int output_x_base, int m_count, int k_index,
+    uint64_t* activations, uint8_t* m_lane_mask, uint8_t* tile_clear,
+    uint8_t* reduce_last) {
+  if (!g_window_m4 || activations == nullptr || m_lane_mask == nullptr ||
+      tile_clear == nullptr || reduce_last == nullptr || output_y < 0 ||
+      output_x_base < 0 || m_count <= 0 || m_count > 8 || k_index < 0) {
+    return -1;
+  }
+  try {
+    if (g_window_m4->cached_output_y != output_y ||
+        g_window_m4->cached_output_x != output_x_base ||
+        g_window_m4->cached_m_count != m_count) {
+      g_window_m4->cached_tokens = alexnet::golden::make_window_tokens(
+          g_window_m4->input, 0, 0, g_window_m4->channel_count,
+          g_window_m4->geometry,
+          output_y * g_window_m4->output_w + output_x_base, m_count);
+      g_window_m4->cached_output_y = output_y;
+      g_window_m4->cached_output_x = output_x_base;
+      g_window_m4->cached_m_count = m_count;
+    }
+    if (k_index >= static_cast<int>(g_window_m4->cached_tokens.size())) {
+      return -3;
+    }
+    const auto& token =
+        g_window_m4->cached_tokens[static_cast<std::size_t>(k_index)];
+    std::uint64_t packed = 0;
+    std::uint8_t mask = 0;
+    for (int lane = 0; lane < m_count; ++lane) {
+      packed |= static_cast<std::uint64_t>(static_cast<std::uint8_t>(
+                    token.activations[static_cast<std::size_t>(lane)]))
+                << (lane * 8);
+      if (token.lane_valid[static_cast<std::size_t>(lane)] != 0) {
+        mask |= static_cast<std::uint8_t>(UINT8_C(1) << lane);
+      }
+    }
+    *activations = packed;
+    *m_lane_mask = mask;
+    *tile_clear = token.k == 0 ? 1 : 0;
+    *reduce_last = token.reduce_last ? 1 : 0;
+    return 0;
+  } catch (...) {
+    return -2;
+  }
+}

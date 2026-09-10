@@ -10,7 +10,11 @@
 // it does NOT yet schedule the complete graph, supply DDR addresses, perform
 // Pool5 flattening, or instantiate pool/PS IP.
 // Faults never authorize a mode change. Quiesce external services before reset.
-module alexnet_m4n8_shared_compute_top (
+module alexnet_m4n8_shared_compute_top #(
+    parameter int PHYS_ROWS = 2,
+    parameter int M_GROUP = 2 * PHYS_ROWS,
+    parameter int M_COUNT_W = $clog2(M_GROUP + 1)
+) (
     input logic clk, rst, ce,
     input logic owner_valid,
     output logic owner_ready,
@@ -249,14 +253,14 @@ module alexnet_m4n8_shared_compute_top (
   logic rs_shared_chunk_final;
   logic rs_shared_tile_start_valid;
   logic rs_shared_tile_start_ready;
-  logic [2:0] rs_shared_tile_m_count;
+  logic [M_COUNT_W-1:0] rs_shared_tile_m_count;
   logic [7:0] rs_shared_tile_n_lane_mask;
   logic [15:0] rs_shared_tile_tag;
   logic rs_shared_issue_valid;
   logic rs_shared_issue_ready;
   logic rs_shared_issue_last;
-  logic signed [7:0] rs_shared_issue_act_lo [0:1];
-  logic signed [7:0] rs_shared_issue_act_hi [0:1];
+  logic signed [7:0] rs_shared_issue_act_lo [0:PHYS_ROWS-1];
+  logic signed [7:0] rs_shared_issue_act_hi [0:PHYS_ROWS-1];
   logic signed [7:0] rs_shared_issue_weight [0:7];
   logic rs_shared_egress_valid;
   logic rs_shared_egress_ready;
@@ -353,14 +357,14 @@ module alexnet_m4n8_shared_compute_top (
   logic bus_shared_chunk_final;
   logic bus_shared_tile_start_valid;
   logic bus_shared_tile_start_ready;
-  logic [2:0] bus_shared_tile_m_count;
+  logic [M_COUNT_W-1:0] bus_shared_tile_m_count;
   logic [7:0] bus_shared_tile_n_lane_mask;
   logic [15:0] bus_shared_tile_tag;
   logic bus_shared_issue_valid;
   logic bus_shared_issue_ready;
   logic bus_shared_issue_last;
-  logic signed [7:0] bus_shared_issue_act_lo [0:1];
-  logic signed [7:0] bus_shared_issue_act_hi [0:1];
+  logic signed [7:0] bus_shared_issue_act_lo [0:PHYS_ROWS-1];
+  logic signed [7:0] bus_shared_issue_act_hi [0:PHYS_ROWS-1];
   logic signed [7:0] bus_shared_issue_weight [0:7];
   logic bus_shared_egress_valid;
   logic bus_shared_egress_ready;
@@ -462,15 +466,29 @@ module alexnet_m4n8_shared_compute_top (
   assign bus_shared_tile_start_valid = active_owner_fc ? fc_shared_tile_start_valid : rs_shared_tile_start_valid;
   assign rs_shared_tile_start_ready = rs_selected ? bus_shared_tile_start_ready : '0;
   assign fc_shared_tile_start_ready = fc_selected ? bus_shared_tile_start_ready : '0;
-  assign bus_shared_tile_m_count = active_owner_fc ? fc_shared_tile_m_count : rs_shared_tile_m_count;
+  assign bus_shared_tile_m_count = active_owner_fc ?
+      M_COUNT_W'(fc_shared_tile_m_count) : rs_shared_tile_m_count;
   assign bus_shared_tile_n_lane_mask = active_owner_fc ? fc_shared_tile_n_lane_mask : rs_shared_tile_n_lane_mask;
   assign bus_shared_tile_tag = active_owner_fc ? fc_shared_tile_tag : rs_shared_tile_tag;
   assign bus_shared_issue_valid = active_owner_fc ? fc_shared_issue_valid : rs_shared_issue_valid;
   assign rs_shared_issue_ready = rs_selected ? bus_shared_issue_ready : '0;
   assign fc_shared_issue_ready = fc_selected ? bus_shared_issue_ready : '0;
   assign bus_shared_issue_last = active_owner_fc ? fc_shared_issue_last : rs_shared_issue_last;
-  assign bus_shared_issue_act_lo = active_owner_fc ? fc_shared_issue_act_lo : rs_shared_issue_act_lo;
-  assign bus_shared_issue_act_hi = active_owner_fc ? fc_shared_issue_act_hi : rs_shared_issue_act_hi;
+  generate
+    for (genvar g = 0; g < PHYS_ROWS; g++) begin : g_shared_act_mux
+      if (g < 2) begin : g_fc_row
+        assign bus_shared_issue_act_lo[g] = active_owner_fc ?
+            fc_shared_issue_act_lo[g] : rs_shared_issue_act_lo[g];
+        assign bus_shared_issue_act_hi[g] = active_owner_fc ?
+            fc_shared_issue_act_hi[g] : rs_shared_issue_act_hi[g];
+      end else begin : g_conv_only_row
+        assign bus_shared_issue_act_lo[g] = active_owner_fc ?
+            '0 : rs_shared_issue_act_lo[g];
+        assign bus_shared_issue_act_hi[g] = active_owner_fc ?
+            '0 : rs_shared_issue_act_hi[g];
+      end
+    end
+  endgenerate
   assign bus_shared_issue_weight = active_owner_fc ? fc_shared_issue_weight : rs_shared_issue_weight;
   assign rs_shared_egress_valid = rs_selected ? bus_shared_egress_valid : '0;
   assign fc_shared_egress_valid = fc_selected ? bus_shared_egress_valid : '0;
@@ -516,6 +534,7 @@ module alexnet_m4n8_shared_compute_top (
 
   alexnet_m4n8_rs_dma_scheduled_io_datapath #(
       .EXTERNAL_COMPUTE(1'b1),
+      .PHYS_ROWS(PHYS_ROWS),
       .RESULT_MAX_WORDS(4096),
       .BANK_COUNT_W(13)
   ) u_rs (
@@ -851,6 +870,7 @@ module alexnet_m4n8_shared_compute_top (
   );
 
   alexnet_m4n8_accum_base_datapath #(
+      .PHYS_ROWS(PHYS_ROWS),
       .BANK_DEPTH(4096), .RUNTIME_SLICE_INDEX(1'b1)
   ) u_shared (
       .clk(clk), .rst(shared_rst), .ce(ce && owner_active),

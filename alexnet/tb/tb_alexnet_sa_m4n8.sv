@@ -1,8 +1,9 @@
 `timescale 1ns/1ps
 
-module tb_alexnet_sa_m4n8;
+module tb_alexnet_sa_m4n8 #(
+    parameter int PHYS_ROWS = 2
+);
 
-  localparam int PHYS_ROWS = 2;
   localparam int COLS = 8;
   localparam int MAX_RESULTS = 512;
 
@@ -26,7 +27,9 @@ module tb_alexnet_sa_m4n8;
   logic signed [31:0] result_hi [0:PHYS_ROWS-1][0:COLS-1];
   logic [1:0] result_lane_mask [0:PHYS_ROWS-1][0:COLS-1];
 
-  alexnet_sa_m4n8 dut (.*);
+  alexnet_sa_m4n8 #(
+      .PHYS_ROWS(PHYS_ROWS)
+  ) dut (.*);
 
   always #2.5 clk = ~clk;
 
@@ -183,12 +186,8 @@ module tb_alexnet_sa_m4n8;
     end
   endtask
 
-  task automatic random_tile(input int depth, input bit bubbles,
-                             input logic [1:0] row0_mask,
-                             input logic [1:0] row1_mask);
+  task automatic random_tile(input int depth, input bit bubbles);
     begin
-      m_lane_mask[0] = row0_mask;
-      m_lane_mask[1] = row1_mask;
       drive_cycle(1'b0, 1'b1, 1'b0);
 
       for (int k = 0; k < depth; k++) begin
@@ -241,7 +240,7 @@ module tb_alexnet_sa_m4n8;
         timeout = timeout + 1;
       end
       if (pending)
-        $fatal(1, "timeout draining M4xN8 results");
+        $fatal(1, "timeout draining M%0dxN8 results", 2*PHYS_ROWS);
     end
   endtask
 
@@ -278,11 +277,15 @@ module tb_alexnet_sa_m4n8;
     @(negedge clk);
 
     // Different values on every row/column make skew pairing errors visible.
-    random_tile(25, 1'b0, 2'b11, 2'b01);
+    for (int g = 0; g < PHYS_ROWS; g++)
+      m_lane_mask[g] = (g == PHYS_ROWS-1) ? 2'b01 : 2'b11;
+    random_tile(25, 1'b0);
     wait_for_all_results();
 
     // All 16 PE holdings fill under backpressure and must remain stable.
-    random_tile(7, 1'b0, 2'b11, 2'b11);
+    for (int g = 0; g < PHYS_ROWS; g++)
+      m_lane_mask[g] = 2'b11;
+    random_tile(7, 1'b0);
     for (int g = 0; g < PHYS_ROWS; g++)
       for (int c = 0; c < COLS; c++)
         result_ready[g][c] = 1'b0;
@@ -297,19 +300,28 @@ module tb_alexnet_sa_m4n8;
 
     // Random K depths, bubbles, CE stalls, and M-tail masks.
     for (int tile = 0; tile < random_tiles; tile++) begin
-      logic [1:0] row0_mask;
-      logic [1:0] row1_mask;
-      row0_mask = $urandom_range(1, 3);
-      row1_mask = ($urandom_range(0, 7) == 0) ? 2'b00 :
-                  $urandom_range(1, 3);
-      random_tile($urandom_range(1, 64), 1'b1, row0_mask, row1_mask);
+      int active_m;
+      active_m = $urandom_range(1, 2*PHYS_ROWS);
+      for (int g = 0; g < PHYS_ROWS; g++) begin
+        if (active_m >= 2*g + 2)
+          m_lane_mask[g] = 2'b11;
+        else if (active_m == 2*g + 1)
+          m_lane_mask[g] = 2'b01;
+        else
+          m_lane_mask[g] = 2'b00;
+      end
+      random_tile($urandom_range(1, 64), 1'b1);
     end
 
     wait_for_all_results();
     repeat (4) idle_cycle();
 
-    $display("ALEXNET_SA_M4N8_TEST_PASSED products=%0d results=%0d seed=%0d",
-             issued_products, checked_results, seed);
+    if (PHYS_ROWS == 4)
+      $display("ALEXNET_SA_M8N8_TEST_PASSED products=%0d results=%0d seed=%0d",
+               issued_products, checked_results, seed);
+    else
+      $display("ALEXNET_SA_M4N8_TEST_PASSED products=%0d results=%0d seed=%0d",
+               issued_products, checked_results, seed);
     $finish;
   end
 

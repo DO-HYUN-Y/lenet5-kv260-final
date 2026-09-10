@@ -11,7 +11,11 @@ foreach kind {rs fc} {
     set name alexnet_m4n8_fc_layer_datapath
   }
   set s [read_test [file join $alexnet_root tb tb_$name.sv]]
-  set header "module shared_${kind}_test_driver(input logic clk, input logic run, output logic test_done);"
+  if {$kind eq "rs"} {
+    set header "module shared_${kind}_test_driver(input logic clk, input logic run, input logic profile_mode, output logic test_done);"
+  } else {
+    set header "module shared_${kind}_test_driver(input logic clk, input logic run, output logic test_done);"
+  }
   set s [string map [list "module tb_$name;" $header] $s]
   # The DUT is supplied by the parent bench. Signals remain visible for wiring.
   set begin [string first "  $name " $s]
@@ -23,10 +27,19 @@ foreach kind {rs fc} {
   if {$kind eq "rs"} {
     set s [string map [list {    seed = 32'h7d62_4a17;} {    wait(run);
     seed = 32'h7d62_4a17;}] $s]
+    set s [string map [list \
+        {    random_compute_stalls = 1'b1;} \
+        {    random_compute_stalls = profile_mode ? 1'b0 : 1'b1;}] $s]
     # The standalone RS scoreboard's internal probes now live below the RS
     # child of the shared-compute integration top.
     set s [string map [list {dut.} \
         {tb_alexnet_m4n8_shared_compute_top.dut.u_rs.}] $s]
+    if {[info exists shared_compute_phys_rows] &&
+        $shared_compute_phys_rows == 4} {
+      set s [string map [list \
+          {INPUT_H * ((OUTPUT_W + 3) / 4)} \
+          {INPUT_H * ((OUTPUT_W + 7) / 8)}] $s]
+    }
   } else {
     set s [string map [list {    seed_init = $urandom(seed);} {    wait(run);
     seed_init = $urandom(seed);}] $s]

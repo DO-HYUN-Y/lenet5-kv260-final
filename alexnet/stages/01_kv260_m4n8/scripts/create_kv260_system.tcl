@@ -330,7 +330,7 @@ puts $summary_file "CAMERA_DMA_MM2S_ONLY=1"
 puts $summary_file "CAMERA_LAYOUT=224x224_RGB_INT8_IN_8_BYTE_WORD"
 puts $summary_file "CAMERA_BUFFER_BYTES=401408"
 puts $summary_file "CAMERA_VALID_LANE_MASK=0x07"
-puts $summary_file "ACCELERATOR_M=4"
+puts $summary_file "ACCELERATOR_M=8"
 puts $summary_file "ACCELERATOR_N=8"
 close $summary_file
 

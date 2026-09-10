@@ -1,5 +1,8 @@
 `timescale 1ns/1ps
-module tb_alexnet_m4n8_shared_compute_top;
+module tb_alexnet_m4n8_shared_compute_top #(
+    parameter int PHYS_ROWS = 2,
+    parameter bit PERF_PROFILE = 1'b0
+);
   logic clk = 0;
   always #2.5 clk = ~clk;
   logic bootstrap_rst = 1, phase_fc = 0, rs_run = 0, fc_run = 0;
@@ -32,10 +35,14 @@ module tb_alexnet_m4n8_shared_compute_top;
   assign u_rs_test.m_axis_tlast = m_axis_tlast;
   assign u_fc_test.m_axis_tlast = m_axis_tlast;
 
-  shared_rs_test_driver u_rs_test(.clk(clk && rs_run), .run(rs_run), .test_done(rs_test_done));
+  shared_rs_test_driver u_rs_test(
+      .clk(clk && rs_run), .run(rs_run), .profile_mode(PERF_PROFILE),
+      .test_done(rs_test_done));
   shared_fc_test_driver u_fc_test(.clk(clk && fc_run), .run(fc_run), .test_done(fc_test_done));
 
-  alexnet_m4n8_shared_compute_top dut (
+  alexnet_m4n8_shared_compute_top #(
+      .PHYS_ROWS(PHYS_ROWS)
+  ) dut (
       .clk(clk), .rst(rst), .ce(ce),
       .owner_valid(owner_valid), .owner_ready(owner_ready), .owner_fc(owner_fc),
       .owner_release_valid(owner_release_valid), .owner_release_ready(owner_release_ready),
@@ -246,6 +253,109 @@ module tb_alexnet_m4n8_shared_compute_top;
   int blocked_release_cycles = 0, fc_commit_block_cycles = 0;
   int idle_sum_block_cycles = 0, clean_handoffs = 0;
   bit fc_clean_seen = 0;
+  bit pe_profile_active = 0;
+  bit pe_compute_window = 0;
+  longint pe_command_cycles = 0;
+  longint pe_compute_cycles = 0;
+  longint pe_issue_cycles = 0;
+  longint pe_useful_cell_cycles = 0;
+  longint pe_source_starve_cycles = 0;
+  longint pe_issue_block_cycles = 0;
+  longint pe_ce_stall_cycles = 0;
+  longint pe_post_reduce_cycles = 0;
+  longint pe_intertile_cycles = 0;
+  longint pe_other_cycles = 0;
+  longint pe_dma_active_cycles = 0;
+  longint pe_egress_block_cycles = 0;
+  int pe_n_lanes = 8;
+  real pe_issue_duty_pct;
+  real pe_util_pct;
+  always @(posedge clk) begin : pe_utilization_monitor
+    int active_m_lanes;
+    if (rst) begin
+      pe_profile_active = 0;
+      pe_compute_window = 0;
+    end else if (PERF_PROFILE && !phase_fc) begin
+      if (u_rs_test.command_valid && u_rs_test.command_ready &&
+          u_rs_test.command_id == 16'h0100) begin
+        pe_profile_active = 1;
+        pe_compute_window = 0;
+        pe_command_cycles = 0;
+        pe_compute_cycles = 0;
+        pe_issue_cycles = 0;
+        pe_useful_cell_cycles = 0;
+        pe_source_starve_cycles = 0;
+        pe_issue_block_cycles = 0;
+        pe_ce_stall_cycles = 0;
+        pe_post_reduce_cycles = 0;
+        pe_intertile_cycles = 0;
+        pe_other_cycles = 0;
+        pe_dma_active_cycles = 0;
+        pe_egress_block_cycles = 0;
+        pe_n_lanes = 8;
+      end
+      if (pe_profile_active) begin
+        pe_command_cycles = pe_command_cycles + 1;
+        if (u_rs_test.dma_transfer_active)
+          pe_dma_active_cycles = pe_dma_active_cycles + 1;
+        if (dut.bus_shared_egress_valid && !dut.bus_shared_egress_ready)
+          pe_egress_block_cycles = pe_egress_block_cycles + 1;
+        if (dut.rs_shared_chunk_valid && dut.rs_shared_chunk_ready) begin
+          pe_compute_window = 1;
+          pe_n_lanes = $countones(dut.rs_shared_chunk_n_lane_mask);
+        end
+        if (pe_compute_window) begin
+          pe_compute_cycles = pe_compute_cycles + 1;
+          if (!ce) begin
+            pe_ce_stall_cycles = pe_ce_stall_cycles + 1;
+          end else if (dut.bus_shared_issue_valid &&
+                       dut.bus_shared_issue_ready) begin
+            active_m_lanes = 0;
+            for (int g = 0; g < PHYS_ROWS; g++)
+              active_m_lanes = active_m_lanes +
+                  dut.u_shared.m_lane_mask_q[g][0] +
+                  dut.u_shared.m_lane_mask_q[g][1];
+            pe_issue_cycles = pe_issue_cycles + 1;
+            pe_useful_cell_cycles = pe_useful_cell_cycles +
+                                    active_m_lanes * pe_n_lanes;
+          end else if (dut.u_shared.tile_active_q &&
+                       dut.u_shared.issue_open_q) begin
+            if (dut.bus_shared_issue_valid)
+              pe_issue_block_cycles = pe_issue_block_cycles + 1;
+            else
+              pe_source_starve_cycles = pe_source_starve_cycles + 1;
+          end else if (dut.u_shared.tile_active_q) begin
+            pe_post_reduce_cycles = pe_post_reduce_cycles + 1;
+          end else if (dut.bus_shared_chunk_active) begin
+            pe_intertile_cycles = pe_intertile_cycles + 1;
+          end else begin
+            pe_other_cycles = pe_other_cycles + 1;
+          end
+        end
+        if (dut.rs_shared_chunk_done) begin
+          pe_compute_window = 0;
+          pe_profile_active = 0;
+          pe_issue_duty_pct = 100.0 * pe_issue_cycles /
+                              pe_compute_cycles;
+          pe_util_pct = 100.0 * pe_useful_cell_cycles /
+                        (pe_compute_cycles * PHYS_ROWS * 2 * 8);
+          if (pe_compute_cycles != pe_issue_cycles +
+                  pe_source_starve_cycles + pe_issue_block_cycles +
+                  pe_ce_stall_cycles + pe_post_reduce_cycles +
+                  pe_intertile_cycles + pe_other_cycles)
+            $fatal(1, "PE profile cycle accounting mismatch");
+          $display(
+              "ALEXNET_M8N8_SHARED_PE_PROFILE command_cycles=%0d dma_active_cycles=%0d compute_cycles=%0d issue_cycles=%0d source_starve_cycles=%0d issue_block_cycles=%0d ce_stall_cycles=%0d post_reduce_cycles=%0d intertile_cycles=%0d other_cycles=%0d egress_block_cycles=%0d useful_cell_cycles=%0d issue_duty_pct=%0.3f pe_util_pct=%0.3f",
+              pe_command_cycles, pe_dma_active_cycles, pe_compute_cycles,
+              pe_issue_cycles, pe_source_starve_cycles,
+              pe_issue_block_cycles, pe_ce_stall_cycles,
+              pe_post_reduce_cycles, pe_intertile_cycles, pe_other_cycles,
+              pe_egress_block_cycles, pe_useful_cell_cycles,
+              pe_issue_duty_pct, pe_util_pct);
+        end
+      end
+    end
+  end
   always @(posedge clk) if (!rst && owner_active) begin
     if (owner_ready) $fatal(1, "acquire allowed during an active owner");
     if (active_owner_fc != phase_fc) $fatal(1, "unrequested mode change");
@@ -284,6 +394,13 @@ module tb_alexnet_m4n8_shared_compute_top;
     wait(rs_test_done);
     @(negedge clk);
     rs_run = 0;
+    if (PERF_PROFILE) begin
+      if (pe_issue_cycles == 0 || pe_compute_window || pe_profile_active ||
+          fault)
+        $fatal(1, "M8 PE utilization profile did not complete cleanly");
+      $display("ALEXNET_M8N8_SHARED_PE_PROFILE_PASS");
+      $finish;
+    end
     release_owner();
     // No reset occurs here: replace a completed Conv owner with a clean FC8.
     phase_fc = 1;
@@ -297,8 +414,14 @@ module tb_alexnet_m4n8_shared_compute_top;
     if (!fc_clean_seen || fault || blocked_release_cycles < 1000 ||
         idle_sum_block_cycles == 0 || fc_commit_block_cycles < 100)
       $fatal(1, "shared top coverage incomplete");
-    $display("ALEXNET_M4N8_SHARED_COMPUTE_TOP_TEST_PASSED sa_instances=1 conv_chunks=2 full_fc8=1 clean_handoffs=%0d blocked_release_cycles=%0d partial_sum_wait_cycles=%0d fc_commit_wait_cycles=%0d",
-        clean_handoffs, blocked_release_cycles, idle_sum_block_cycles, fc_commit_block_cycles);
+    if (PHYS_ROWS == 4)
+      $display("ALEXNET_M8N8_SHARED_COMPUTE_TOP_TEST_PASSED sa_instances=1 conv_chunks=2 full_fc8=1 clean_handoffs=%0d blocked_release_cycles=%0d partial_sum_wait_cycles=%0d fc_commit_wait_cycles=%0d",
+          clean_handoffs, blocked_release_cycles, idle_sum_block_cycles,
+          fc_commit_block_cycles);
+    else
+      $display("ALEXNET_M4N8_SHARED_COMPUTE_TOP_TEST_PASSED sa_instances=1 conv_chunks=2 full_fc8=1 clean_handoffs=%0d blocked_release_cycles=%0d partial_sum_wait_cycles=%0d fc_commit_wait_cycles=%0d",
+          clean_handoffs, blocked_release_cycles, idle_sum_block_cycles,
+          fc_commit_block_cycles);
     $finish;
   end
   initial begin #200000000; $fatal(1, "shared top watchdog"); end

@@ -190,7 +190,7 @@ module tb_alexnet_axi_lite_regs;
     rst = 1'b0;
 
     expect_read(8'h00, 32'h414c_0100);
-    expect_read(8'h7c, 32'h0408_00c8);
+    expect_read(8'h7c, 32'h0808_00c8);
     expect_read(8'h40, 32'd10_000_000);
     expect_read(8'h78, 32'h0000_0007, 32'h0000_0007);
 

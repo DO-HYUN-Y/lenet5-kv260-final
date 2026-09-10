@@ -6,6 +6,9 @@
 // are finally accepted atomically. The next spatial group cannot start until
 // the current base tile reports completion.
 module alexnet_m4n8_rs_issue_controller #(
+    parameter int PHYS_ROWS = 2,
+    parameter int M_GROUP = 2 * PHYS_ROWS,
+    parameter int M_COUNT_W = $clog2(M_GROUP + 1),
     parameter int DIM_W = 8,
     parameter int K_INDEX_W = 10,
     parameter int TILE_TAG_W = 16
@@ -17,13 +20,13 @@ module alexnet_m4n8_rs_issue_controller #(
 
     input  logic feeder_valid,
     output logic feeder_ready,
-    input  logic signed [7:0] feeder_act_lo [0:1],
-    input  logic signed [7:0] feeder_act_hi [0:1],
-    input  logic [1:0] feeder_m_lane_mask [0:1],
+    input  logic signed [7:0] feeder_act_lo [0:PHYS_ROWS-1],
+    input  logic signed [7:0] feeder_act_hi [0:PHYS_ROWS-1],
+    input  logic [1:0] feeder_m_lane_mask [0:PHYS_ROWS-1],
     input  logic feeder_tile_clear,
     input  logic feeder_reduce_last,
     input  logic [K_INDEX_W-1:0] feeder_k,
-    input  logic [2:0] feeder_m_count,
+    input  logic [M_COUNT_W-1:0] feeder_m_count,
     input  logic [DIM_W-1:0] feeder_output_y,
     input  logic [DIM_W-1:0] feeder_output_x,
     input  logic [TILE_TAG_W-1:0] feeder_frame_tag,
@@ -31,7 +34,7 @@ module alexnet_m4n8_rs_issue_controller #(
     output logic weight_tile_valid,
     input  logic weight_tile_ready,
     output logic [15:0] weight_tile_index,
-    output logic [2:0] weight_tile_m_count,
+    output logic [M_COUNT_W-1:0] weight_tile_m_count,
     output logic [DIM_W-1:0] weight_tile_output_y,
     output logic [DIM_W-1:0] weight_tile_output_x,
     output logic [TILE_TAG_W-1:0] weight_tile_tag,
@@ -44,15 +47,15 @@ module alexnet_m4n8_rs_issue_controller #(
 
     output logic tile_start_valid,
     input  logic tile_start_ready,
-    output logic [2:0] tile_m_count,
+    output logic [M_COUNT_W-1:0] tile_m_count,
     output logic [7:0] tile_n_lane_mask_out,
     output logic [TILE_TAG_W-1:0] tile_tag,
 
     output logic issue_valid,
     input  logic issue_ready,
     output logic issue_last,
-    output logic signed [7:0] issue_act_lo [0:1],
-    output logic signed [7:0] issue_act_hi [0:1],
+    output logic signed [7:0] issue_act_lo [0:PHYS_ROWS-1],
+    output logic signed [7:0] issue_act_hi [0:PHYS_ROWS-1],
     output logic signed [7:0] issue_weight [0:7],
     input  logic tile_done,
 
@@ -108,7 +111,7 @@ module alexnet_m4n8_rs_issue_controller #(
   assign issue_last = feeder_reduce_last;
 
   always_comb begin
-    for (int row = 0; row < 2; row++) begin
+    for (int row = 0; row < PHYS_ROWS; row++) begin
       issue_act_lo[row] = feeder_act_lo[row];
       issue_act_hi[row] = feeder_act_hi[row];
     end
@@ -166,12 +169,13 @@ module alexnet_m4n8_rs_issue_controller #(
         $fatal(1, "issue controller activation/weight K metadata mismatch");
       if (issue_fire && feeder_m_count == 0)
         $fatal(1, "issue controller accepted an empty M group");
-      if (issue_fire &&
-          (feeder_m_lane_mask[0] !=
-               {feeder_m_count > 1, feeder_m_count > 0} ||
-           feeder_m_lane_mask[1] !=
-               {feeder_m_count > 3, feeder_m_count > 2}))
-        $fatal(1, "issue controller feeder M mask/count mismatch");
+      if (issue_fire) begin
+        for (int g = 0; g < PHYS_ROWS; g++) begin
+          if (feeder_m_lane_mask[g] !=
+              {feeder_m_count > 2*g + 1, feeder_m_count > 2*g})
+            $fatal(1, "issue controller feeder M mask/count mismatch");
+        end
+      end
       if (tile_done && state_q != ST_WAIT_DONE)
         $fatal(1, "issue controller observed an unexpected tile_done");
     end
