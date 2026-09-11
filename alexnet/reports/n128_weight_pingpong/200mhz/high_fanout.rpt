@@ -1,0 +1,121 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Fri Sep 11 20:50:19 2026
+| Host         : yundodo running 64-bit unknown
+| Command      : report_high_fanout_nets -fanout_greater_than 16 -max_nets 100 -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/n128_weight_pingpong/200mhz/high_fanout.rpt
+| Design       : alexnet_n128_weight_pingpong_ooc
+| Device       : xck26
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+High Fan-out Nets Information
+
+1. Summary
+----------
+
++---------------------------------------------------------------------+--------+-------------+
+| Net Name                                                            | Fanout | Driver Type |
++---------------------------------------------------------------------+--------+-------------+
+| rst                                                                 |   1337 | PORT        |
+| u_pingpong/packed_weight_q[0][127]_i_1_n_0                          |   1037 | BUFGCE      |
+| u_pingpong/g_set[1].g_bank[7].u_memory/set_k_count_q[0]             |   1026 | LUT3        |
+| u_pingpong/replay_set_q_reg_rep__4_n_0                              |    200 | FDRE        |
+| u_pingpong/replay_set_q_reg_rep__7_n_0                              |    168 | FDRE        |
+| u_pingpong/replay_set_q_reg_rep__5_n_0                              |    140 | FDRE        |
+| u_pingpong/weight_valid                                             |    133 | FDRE        |
+| u_pingpong/replay_set_q_reg_rep__0_n_0                              |    128 | FDRE        |
+| u_pingpong/replay_set_q_reg_n_0                                     |    108 | FDRE        |
+| state_q[2]                                                          |     90 | FDRE        |
+| state_q[1]                                                          |     86 | FDRE        |
+| u_pingpong/replay_set_q_reg_rep__3_n_0                              |     76 | FDRE        |
+| u_pingpong/replay_set_q_reg_rep_n_0                                 |     72 | FDRE        |
+| start                                                               |     65 | PORT        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[26]                    |     64 | LUT6        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[8]                     |     64 | LUT6        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[9]                     |     64 | LUT6        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[7]                     |     64 | LUT5        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[6]                     |     64 | LUT5        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[5]                     |     64 | LUT5        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[4]                     |     64 | LUT5        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[3]                     |     64 | LUT5        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[2]                     |     64 | LUT6        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[1]                     |     64 | LUT6        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[0]                     |     64 | LUT6        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[28]                    |     64 | LUT5        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[29]                    |     64 | LUT5        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[30]                    |     64 | LUT5        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[31]                    |     64 | LUT5        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[27]                    |     64 | LUT5        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[11]                    |     64 | LUT5        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[13]                    |     64 | LUT5        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[14]                    |     64 | LUT5        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[15]                    |     64 | LUT5        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[17]                    |     64 | LUT6        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[18]                    |     64 | LUT6        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[19]                    |     64 | LUT5        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[20]                    |     64 | LUT5        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[21]                    |     64 | LUT5        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[22]                    |     64 | LUT5        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[23]                    |     64 | LUT5        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[24]                    |     64 | LUT6        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[25]                    |     64 | LUT6        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[16]                    |     64 | LUT6        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[12]                    |     64 | LUT5        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/DIN_B[10]                    |     64 | LUT6        |
+| state_q[0]                                                          |     61 | FDRE        |
+| u_pingpong/replay_set_q_reg_rep__2_n_0                              |     56 | FDRE        |
+| u_pingpong/replay_set_q_reg_rep__1_n_0                              |     51 | FDRE        |
+| u_pingpong/write_k[0]                                               |     44 | FDRE        |
+| u_pingpong/write_k[1]                                               |     43 | FDRE        |
+| u_pingpong/replay_set_q_reg_rep__6_n_0                              |     43 | FDRE        |
+| u_pingpong/write_k[6]                                               |     43 | FDRE        |
+| u_pingpong/write_k[7]                                               |     42 | FDRE        |
+| u_pingpong/write_k[2]                                               |     42 | FDRE        |
+| u_pingpong/write_k[3]                                               |     41 | FDRE        |
+| u_pingpong/write_k[4]                                               |     40 | FDRE        |
+| u_pingpong/reads_issued_q[0]                                        |     40 | FDRE        |
+| u_pingpong/write_k[5]                                               |     39 | FDRE        |
+| u_pingpong/fill_set_q_reg_n_0                                       |     39 | FDRE        |
+| u_pingpong/reads_issued_q[1]                                        |     39 | FDRE        |
+| u_pingpong/reads_issued_q[6]                                        |     39 | FDRE        |
+| u_pingpong/set_bank_enable_q_reg_n_0_[0][0]                         |     38 | FDRE        |
+| u_pingpong/reads_issued_q[2]                                        |     38 | FDRE        |
+| u_pingpong/reads_issued_q[7]                                        |     38 | FDRE        |
+| u_pingpong/set_bank_enable_q_reg_n_0_[1][0]                         |     37 | FDRE        |
+| u_pingpong/write_k[11]                                              |     37 | FDRE        |
+| u_pingpong/reads_issued_q[3]                                        |     37 | FDRE        |
+| u_pingpong/write_k[8]                                               |     37 | FDRE        |
+| u_pingpong/reads_issued_q[8]                                        |     37 | FDRE        |
+| u_pingpong/reads_issued_q[4]                                        |     36 | FDRE        |
+| u_pingpong/reads_issued_q[9]                                        |     36 | FDRE        |
+| u_pingpong/reads_issued_q[11]                                       |     36 | FDRE        |
+| u_pingpong/write_k[9]                                               |     36 | FDRE        |
+| u_pingpong/reads_issued_q[5]                                        |     35 | FDRE        |
+| u_pingpong/reads_issued_q[10]                                       |     35 | FDRE        |
+| u_pingpong/write_k[10]                                              |     35 | FDRE        |
+| u_pingpong/fill_active_reg_0[0]                                     |     32 | LUT5        |
+| result_signature[31]_i_1_n_0                                        |     32 | LUT5        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/issue_read                   |     30 | LUT4        |
+| u_pingpong/write_bank_slot[0]                                       |     27 | FDRE        |
+| u_pingpong/write_bank_slot[1]                                       |     26 | FDRE        |
+| u_pingpong/write_bank_slot[2]                                       |     25 | FDRE        |
+| u_pingpong/replay_done_i_1_n_0                                      |     23 | LUT5        |
+| u_pingpong/g_set[1].g_bank[4].u_memory/memory_write_enable[1][4]_11 |     18 | LUT4        |
+| u_pingpong/g_set[0].g_bank[2].u_memory/memory_write_enable[0][2]_19 |     18 | LUT4        |
+| u_pingpong/g_set[0].g_bank[4].u_memory/memory_write_enable[0][4]_16 |     18 | LUT4        |
+| u_pingpong/g_set[0].g_bank[5].u_memory/memory_write_enable[0][5]_18 |     18 | LUT4        |
+| u_pingpong/g_set[0].g_bank[6].u_memory/memory_write_enable[0][6]_17 |     18 | LUT4        |
+| u_pingpong/g_set[0].g_bank[7].u_memory/memory_write_enable[0][7]_6  |     18 | LUT4        |
+| u_pingpong/g_set[0].g_bank[1].u_memory/memory_write_enable[0][1]_20 |     18 | LUT4        |
+| u_pingpong/g_set[0].g_bank[3].u_memory/memory_write_enable[0][3]_8  |     18 | LUT4        |
+| u_pingpong/g_set[1].g_bank[1].u_memory/memory_write_enable[1][1]_13 |     18 | LUT4        |
+| u_pingpong/g_set[1].g_bank[2].u_memory/memory_write_enable[1][2]_12 |     18 | LUT4        |
+| u_pingpong/g_set[1].g_bank[3].u_memory/memory_write_enable[1][3]_7  |     18 | LUT4        |
+| u_pingpong/g_set[1].g_bank[5].u_memory/memory_write_enable[1][5]_10 |     18 | LUT4        |
+| u_pingpong/g_set[1].g_bank[6].u_memory/memory_write_enable[1][6]_9  |     18 | LUT4        |
+| u_pingpong/g_set[1].g_bank[7].u_memory/memory_write_enable[1][7]_5  |     18 | LUT4        |
+| u_pingpong/g_set[0].g_bank[0].u_memory/memory_write_enable[0][0]_15 |     18 | LUT4        |
+| u_pingpong/replay_fire                                              |     18 | LUT6        |
++---------------------------------------------------------------------+--------+-------------+
+
+
