@@ -17,7 +17,7 @@ module alexnet_n8_rs_m4_feeder #(
     parameter int PHYS_ROWS = 2,
     parameter int M_GROUP = 2 * PHYS_ROWS,
     parameter int M_COUNT_W = $clog2(M_GROUP + 1),
-    parameter int READ_COPIES = PHYS_ROWS == 4 ? M_GROUP : 1,
+    parameter int READ_COPIES = PHYS_ROWS >= 4 ? M_GROUP : 1,
     parameter int MAX_INPUT_WIDTH = 224,
     parameter int MAX_KERNEL = 11,
     parameter int MAX_PADDING = 2,
@@ -520,8 +520,10 @@ module alexnet_n8_rs_m4_feeder #(
 `ifndef SYNTHESIS
   initial begin
     if (!((PHYS_ROWS == 2 && M_GROUP == 4 && READ_COPIES == 1) ||
-          (PHYS_ROWS == 4 && M_GROUP == 8 && READ_COPIES == 8)))
-      $fatal(1, "RS feeder supports M4 serial-read or M8 parallel-read mode");
+          (PHYS_ROWS == 4 && M_GROUP == 8 && READ_COPIES == 8) ||
+          (PHYS_ROWS == 8 && M_GROUP == 16 && READ_COPIES == 16)))
+      $fatal(1,
+             "RS feeder supports M4 serial-read, M8 or M16 parallel-read mode");
   end
 
   always_ff @(posedge clk) begin

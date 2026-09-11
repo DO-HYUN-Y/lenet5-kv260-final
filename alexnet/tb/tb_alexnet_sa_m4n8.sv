@@ -1,10 +1,10 @@
 `timescale 1ns/1ps
 
 module tb_alexnet_sa_m4n8 #(
-    parameter int PHYS_ROWS = 2
+    parameter int PHYS_ROWS = 2,
+    parameter int COLS = 8
 );
 
-  localparam int COLS = 8;
   localparam int MAX_RESULTS = 512;
 
   import "DPI-C" function int alexnet_golden_packed_products(
@@ -28,7 +28,8 @@ module tb_alexnet_sa_m4n8 #(
   logic [1:0] result_lane_mask [0:PHYS_ROWS-1][0:COLS-1];
 
   alexnet_sa_m4n8 #(
-      .PHYS_ROWS(PHYS_ROWS)
+      .PHYS_ROWS(PHYS_ROWS),
+      .COLS(COLS)
   ) dut (.*);
 
   always #2.5 clk = ~clk;
@@ -240,7 +241,8 @@ module tb_alexnet_sa_m4n8 #(
         timeout = timeout + 1;
       end
       if (pending)
-        $fatal(1, "timeout draining M%0dxN8 results", 2*PHYS_ROWS);
+        $fatal(1, "timeout draining M%0dxN%0d results", 2*PHYS_ROWS,
+               COLS);
     end
   endtask
 
@@ -289,7 +291,9 @@ module tb_alexnet_sa_m4n8 #(
     for (int g = 0; g < PHYS_ROWS; g++)
       for (int c = 0; c < COLS; c++)
         result_ready[g][c] = 1'b0;
-    repeat (24) idle_cycle();
+    // Allow the farthest column's systolic skew plus the packed-DSP pipeline
+    // to reach its holding register before checking full-array backpressure.
+    repeat (COLS + 8) idle_cycle();
     for (int g = 0; g < PHYS_ROWS; g++)
       for (int c = 0; c < COLS; c++) begin
         if (!result_valid[g][c])
@@ -316,12 +320,8 @@ module tb_alexnet_sa_m4n8 #(
     wait_for_all_results();
     repeat (4) idle_cycle();
 
-    if (PHYS_ROWS == 4)
-      $display("ALEXNET_SA_M8N8_TEST_PASSED products=%0d results=%0d seed=%0d",
-               issued_products, checked_results, seed);
-    else
-      $display("ALEXNET_SA_M4N8_TEST_PASSED products=%0d results=%0d seed=%0d",
-               issued_products, checked_results, seed);
+    $display("ALEXNET_SA_M%0dN%0d_TEST_PASSED products=%0d results=%0d seed=%0d",
+             2*PHYS_ROWS, COLS, issued_products, checked_results, seed);
     $finish;
   end
 

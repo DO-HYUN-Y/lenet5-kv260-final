@@ -1,0 +1,286 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Fri Sep 11 15:43:38 2026
+| Host         : yundodo running 64-bit unknown
+| Command      : report_utilization -hierarchical -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/sa_m8n64/200mhz/impl_utilization_hierarchical.rpt
+| Design       : alexnet_sa_m4n8
+| Device       : xck26-sfvc784-2LV-c
+| Speed File   : -2LV
+| Design State : Routed
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++---------------------------------+-----------------------+------------+------------+---------+------+-------+--------+--------+------+------------+
+|             Instance            |         Module        | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs  | RAMB36 | RAMB18 | URAM | DSP Blocks |
++---------------------------------+-----------------------+------------+------------+---------+------+-------+--------+--------+------+------------+
+| alexnet_sa_m4n8                 |                 (top) |      22567 |      21838 |       0 |  729 | 36146 |      0 |      0 |    0 |        256 |
+|   (alexnet_sa_m4n8)             |                 (top) |        982 |        253 |       0 |  729 |  7602 |      0 |      0 |    0 |          0 |
+|   g_pe_row[0].g_pe_col[0].u_pe  |     alexnet_packed_pe |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[10].u_pe |   alexnet_packed_pe_0 |         84 |         84 |       0 |    0 |   119 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[11].u_pe |   alexnet_packed_pe_1 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[12].u_pe |   alexnet_packed_pe_2 |         84 |         84 |       0 |    0 |   119 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[13].u_pe |   alexnet_packed_pe_3 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[14].u_pe |   alexnet_packed_pe_4 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[15].u_pe |   alexnet_packed_pe_5 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[16].u_pe |   alexnet_packed_pe_6 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[17].u_pe |   alexnet_packed_pe_7 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[18].u_pe |   alexnet_packed_pe_8 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[19].u_pe |   alexnet_packed_pe_9 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[1].u_pe  |  alexnet_packed_pe_10 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[20].u_pe |  alexnet_packed_pe_11 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[21].u_pe |  alexnet_packed_pe_12 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[22].u_pe |  alexnet_packed_pe_13 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[23].u_pe |  alexnet_packed_pe_14 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[24].u_pe |  alexnet_packed_pe_15 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[25].u_pe |  alexnet_packed_pe_16 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[26].u_pe |  alexnet_packed_pe_17 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[27].u_pe |  alexnet_packed_pe_18 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[28].u_pe |  alexnet_packed_pe_19 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[29].u_pe |  alexnet_packed_pe_20 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[2].u_pe  |  alexnet_packed_pe_21 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[30].u_pe |  alexnet_packed_pe_22 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[31].u_pe |  alexnet_packed_pe_23 |         84 |         84 |       0 |    0 |   119 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[32].u_pe |  alexnet_packed_pe_24 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[33].u_pe |  alexnet_packed_pe_25 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[34].u_pe |  alexnet_packed_pe_26 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[35].u_pe |  alexnet_packed_pe_27 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[36].u_pe |  alexnet_packed_pe_28 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[37].u_pe |  alexnet_packed_pe_29 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[38].u_pe |  alexnet_packed_pe_30 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[39].u_pe |  alexnet_packed_pe_31 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[3].u_pe  |  alexnet_packed_pe_32 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[40].u_pe |  alexnet_packed_pe_33 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[41].u_pe |  alexnet_packed_pe_34 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[42].u_pe |  alexnet_packed_pe_35 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[43].u_pe |  alexnet_packed_pe_36 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[44].u_pe |  alexnet_packed_pe_37 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[45].u_pe |  alexnet_packed_pe_38 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[46].u_pe |  alexnet_packed_pe_39 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[47].u_pe |  alexnet_packed_pe_40 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[48].u_pe |  alexnet_packed_pe_41 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[49].u_pe |  alexnet_packed_pe_42 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[4].u_pe  |  alexnet_packed_pe_43 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[50].u_pe |  alexnet_packed_pe_44 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[51].u_pe |  alexnet_packed_pe_45 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[52].u_pe |  alexnet_packed_pe_46 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[53].u_pe |  alexnet_packed_pe_47 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[54].u_pe |  alexnet_packed_pe_48 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[55].u_pe |  alexnet_packed_pe_49 |         85 |         85 |       0 |    0 |   119 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[56].u_pe |  alexnet_packed_pe_50 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[57].u_pe |  alexnet_packed_pe_51 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[58].u_pe |  alexnet_packed_pe_52 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[59].u_pe |  alexnet_packed_pe_53 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[5].u_pe  |  alexnet_packed_pe_54 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[60].u_pe |  alexnet_packed_pe_55 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[61].u_pe |  alexnet_packed_pe_56 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[62].u_pe |  alexnet_packed_pe_57 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[63].u_pe |  alexnet_packed_pe_58 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[6].u_pe  |  alexnet_packed_pe_59 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[7].u_pe  |  alexnet_packed_pe_60 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[8].u_pe  |  alexnet_packed_pe_61 |         84 |         84 |       0 |    0 |   119 |      0 |      0 |    0 |          1 |
+|   g_pe_row[0].g_pe_col[9].u_pe  |  alexnet_packed_pe_62 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[0].u_pe  |  alexnet_packed_pe_63 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[10].u_pe |  alexnet_packed_pe_64 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[11].u_pe |  alexnet_packed_pe_65 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[12].u_pe |  alexnet_packed_pe_66 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[13].u_pe |  alexnet_packed_pe_67 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[14].u_pe |  alexnet_packed_pe_68 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[15].u_pe |  alexnet_packed_pe_69 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[16].u_pe |  alexnet_packed_pe_70 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[17].u_pe |  alexnet_packed_pe_71 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[18].u_pe |  alexnet_packed_pe_72 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[19].u_pe |  alexnet_packed_pe_73 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[1].u_pe  |  alexnet_packed_pe_74 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[20].u_pe |  alexnet_packed_pe_75 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[21].u_pe |  alexnet_packed_pe_76 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[22].u_pe |  alexnet_packed_pe_77 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[23].u_pe |  alexnet_packed_pe_78 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[24].u_pe |  alexnet_packed_pe_79 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[25].u_pe |  alexnet_packed_pe_80 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[26].u_pe |  alexnet_packed_pe_81 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[27].u_pe |  alexnet_packed_pe_82 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[28].u_pe |  alexnet_packed_pe_83 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[29].u_pe |  alexnet_packed_pe_84 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[2].u_pe  |  alexnet_packed_pe_85 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[30].u_pe |  alexnet_packed_pe_86 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[31].u_pe |  alexnet_packed_pe_87 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[32].u_pe |  alexnet_packed_pe_88 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[33].u_pe |  alexnet_packed_pe_89 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[34].u_pe |  alexnet_packed_pe_90 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[35].u_pe |  alexnet_packed_pe_91 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[36].u_pe |  alexnet_packed_pe_92 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[37].u_pe |  alexnet_packed_pe_93 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[38].u_pe |  alexnet_packed_pe_94 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[39].u_pe |  alexnet_packed_pe_95 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[3].u_pe  |  alexnet_packed_pe_96 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[40].u_pe |  alexnet_packed_pe_97 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[41].u_pe |  alexnet_packed_pe_98 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[42].u_pe |  alexnet_packed_pe_99 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[43].u_pe | alexnet_packed_pe_100 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[44].u_pe | alexnet_packed_pe_101 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[45].u_pe | alexnet_packed_pe_102 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[46].u_pe | alexnet_packed_pe_103 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[47].u_pe | alexnet_packed_pe_104 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[48].u_pe | alexnet_packed_pe_105 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[49].u_pe | alexnet_packed_pe_106 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[4].u_pe  | alexnet_packed_pe_107 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[50].u_pe | alexnet_packed_pe_108 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[51].u_pe | alexnet_packed_pe_109 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[52].u_pe | alexnet_packed_pe_110 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[53].u_pe | alexnet_packed_pe_111 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[54].u_pe | alexnet_packed_pe_112 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[55].u_pe | alexnet_packed_pe_113 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[56].u_pe | alexnet_packed_pe_114 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[57].u_pe | alexnet_packed_pe_115 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[58].u_pe | alexnet_packed_pe_116 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[59].u_pe | alexnet_packed_pe_117 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[5].u_pe  | alexnet_packed_pe_118 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[60].u_pe | alexnet_packed_pe_119 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[61].u_pe | alexnet_packed_pe_120 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[62].u_pe | alexnet_packed_pe_121 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[63].u_pe | alexnet_packed_pe_122 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[6].u_pe  | alexnet_packed_pe_123 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[7].u_pe  | alexnet_packed_pe_124 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[8].u_pe  | alexnet_packed_pe_125 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[1].g_pe_col[9].u_pe  | alexnet_packed_pe_126 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[0].u_pe  | alexnet_packed_pe_127 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[10].u_pe | alexnet_packed_pe_128 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[11].u_pe | alexnet_packed_pe_129 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[12].u_pe | alexnet_packed_pe_130 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[13].u_pe | alexnet_packed_pe_131 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[14].u_pe | alexnet_packed_pe_132 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[15].u_pe | alexnet_packed_pe_133 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[16].u_pe | alexnet_packed_pe_134 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[17].u_pe | alexnet_packed_pe_135 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[18].u_pe | alexnet_packed_pe_136 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[19].u_pe | alexnet_packed_pe_137 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[1].u_pe  | alexnet_packed_pe_138 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[20].u_pe | alexnet_packed_pe_139 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[21].u_pe | alexnet_packed_pe_140 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[22].u_pe | alexnet_packed_pe_141 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[23].u_pe | alexnet_packed_pe_142 |         84 |         84 |       0 |    0 |   119 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[24].u_pe | alexnet_packed_pe_143 |         84 |         84 |       0 |    0 |   119 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[25].u_pe | alexnet_packed_pe_144 |         84 |         84 |       0 |    0 |   119 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[26].u_pe | alexnet_packed_pe_145 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[27].u_pe | alexnet_packed_pe_146 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[28].u_pe | alexnet_packed_pe_147 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[29].u_pe | alexnet_packed_pe_148 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[2].u_pe  | alexnet_packed_pe_149 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[30].u_pe | alexnet_packed_pe_150 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[31].u_pe | alexnet_packed_pe_151 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[32].u_pe | alexnet_packed_pe_152 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[33].u_pe | alexnet_packed_pe_153 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[34].u_pe | alexnet_packed_pe_154 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[35].u_pe | alexnet_packed_pe_155 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[36].u_pe | alexnet_packed_pe_156 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[37].u_pe | alexnet_packed_pe_157 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[38].u_pe | alexnet_packed_pe_158 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[39].u_pe | alexnet_packed_pe_159 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[3].u_pe  | alexnet_packed_pe_160 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[40].u_pe | alexnet_packed_pe_161 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[41].u_pe | alexnet_packed_pe_162 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[42].u_pe | alexnet_packed_pe_163 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[43].u_pe | alexnet_packed_pe_164 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[44].u_pe | alexnet_packed_pe_165 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[45].u_pe | alexnet_packed_pe_166 |         84 |         84 |       0 |    0 |   119 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[46].u_pe | alexnet_packed_pe_167 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[47].u_pe | alexnet_packed_pe_168 |         84 |         84 |       0 |    0 |   119 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[48].u_pe | alexnet_packed_pe_169 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[49].u_pe | alexnet_packed_pe_170 |         84 |         84 |       0 |    0 |   119 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[4].u_pe  | alexnet_packed_pe_171 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[50].u_pe | alexnet_packed_pe_172 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[51].u_pe | alexnet_packed_pe_173 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[52].u_pe | alexnet_packed_pe_174 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[53].u_pe | alexnet_packed_pe_175 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[54].u_pe | alexnet_packed_pe_176 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[55].u_pe | alexnet_packed_pe_177 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[56].u_pe | alexnet_packed_pe_178 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[57].u_pe | alexnet_packed_pe_179 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[58].u_pe | alexnet_packed_pe_180 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[59].u_pe | alexnet_packed_pe_181 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[5].u_pe  | alexnet_packed_pe_182 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[60].u_pe | alexnet_packed_pe_183 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[61].u_pe | alexnet_packed_pe_184 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[62].u_pe | alexnet_packed_pe_185 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[63].u_pe | alexnet_packed_pe_186 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[6].u_pe  | alexnet_packed_pe_187 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[7].u_pe  | alexnet_packed_pe_188 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[8].u_pe  | alexnet_packed_pe_189 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[2].g_pe_col[9].u_pe  | alexnet_packed_pe_190 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[0].u_pe  | alexnet_packed_pe_191 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[10].u_pe | alexnet_packed_pe_192 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[11].u_pe | alexnet_packed_pe_193 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[12].u_pe | alexnet_packed_pe_194 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[13].u_pe | alexnet_packed_pe_195 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[14].u_pe | alexnet_packed_pe_196 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[15].u_pe | alexnet_packed_pe_197 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[16].u_pe | alexnet_packed_pe_198 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[17].u_pe | alexnet_packed_pe_199 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[18].u_pe | alexnet_packed_pe_200 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[19].u_pe | alexnet_packed_pe_201 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[1].u_pe  | alexnet_packed_pe_202 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[20].u_pe | alexnet_packed_pe_203 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[21].u_pe | alexnet_packed_pe_204 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[22].u_pe | alexnet_packed_pe_205 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[23].u_pe | alexnet_packed_pe_206 |         84 |         84 |       0 |    0 |   119 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[24].u_pe | alexnet_packed_pe_207 |         84 |         84 |       0 |    0 |   119 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[25].u_pe | alexnet_packed_pe_208 |         84 |         84 |       0 |    0 |   119 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[26].u_pe | alexnet_packed_pe_209 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[27].u_pe | alexnet_packed_pe_210 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[28].u_pe | alexnet_packed_pe_211 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[29].u_pe | alexnet_packed_pe_212 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[2].u_pe  | alexnet_packed_pe_213 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[30].u_pe | alexnet_packed_pe_214 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[31].u_pe | alexnet_packed_pe_215 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[32].u_pe | alexnet_packed_pe_216 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[33].u_pe | alexnet_packed_pe_217 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[34].u_pe | alexnet_packed_pe_218 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[35].u_pe | alexnet_packed_pe_219 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[36].u_pe | alexnet_packed_pe_220 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[37].u_pe | alexnet_packed_pe_221 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[38].u_pe | alexnet_packed_pe_222 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[39].u_pe | alexnet_packed_pe_223 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[3].u_pe  | alexnet_packed_pe_224 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[40].u_pe | alexnet_packed_pe_225 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[41].u_pe | alexnet_packed_pe_226 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[42].u_pe | alexnet_packed_pe_227 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[43].u_pe | alexnet_packed_pe_228 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[44].u_pe | alexnet_packed_pe_229 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[45].u_pe | alexnet_packed_pe_230 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[46].u_pe | alexnet_packed_pe_231 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[47].u_pe | alexnet_packed_pe_232 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[48].u_pe | alexnet_packed_pe_233 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[49].u_pe | alexnet_packed_pe_234 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[4].u_pe  | alexnet_packed_pe_235 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[50].u_pe | alexnet_packed_pe_236 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[51].u_pe | alexnet_packed_pe_237 |         85 |         85 |       0 |    0 |   119 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[52].u_pe | alexnet_packed_pe_238 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[53].u_pe | alexnet_packed_pe_239 |         84 |         84 |       0 |    0 |   119 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[54].u_pe | alexnet_packed_pe_240 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[55].u_pe | alexnet_packed_pe_241 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[56].u_pe | alexnet_packed_pe_242 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[57].u_pe | alexnet_packed_pe_243 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[58].u_pe | alexnet_packed_pe_244 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[59].u_pe | alexnet_packed_pe_245 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[5].u_pe  | alexnet_packed_pe_246 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[60].u_pe | alexnet_packed_pe_247 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[61].u_pe | alexnet_packed_pe_248 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[62].u_pe | alexnet_packed_pe_249 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[63].u_pe | alexnet_packed_pe_250 |         84 |         84 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[6].u_pe  | alexnet_packed_pe_251 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[7].u_pe  | alexnet_packed_pe_252 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[8].u_pe  | alexnet_packed_pe_253 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
+|   g_pe_row[3].g_pe_col[9].u_pe  | alexnet_packed_pe_254 |         85 |         85 |       0 |    0 |   111 |      0 |      0 |    0 |          1 |
++---------------------------------+-----------------------+------------+------------+---------+------+-------+--------+--------+------+------------+
+* Note: The sum of lower-level cells may be larger than their parent cells total, due to cross-hierarchy LUT combining
+
+

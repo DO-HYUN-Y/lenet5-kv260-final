@@ -30,6 +30,17 @@ module tb_alexnet_n8_rs_m4_feeder #(
       input int k_index, output longint unsigned activations,
       output byte m_lane_mask, output byte tile_clear,
       output byte reduce_last);
+  import "DPI-C" function int alexnet_golden_window_m16_reset(
+      input int input_h, input int input_w, input int channel_count,
+      input int kernel, input int stride, input int padding);
+  import "DPI-C" function int alexnet_golden_window_m16_set_pixel(
+      input int y, input int x, input longint unsigned values);
+  import "DPI-C" function int alexnet_golden_window_m16_token(
+      input int output_y, input int output_x_base, input int m_count,
+      input int k_index, output longint unsigned activations_lo,
+      output longint unsigned activations_hi,
+      output shortint unsigned m_lane_mask, output byte tile_clear,
+      output byte reduce_last);
 
   logic clk = 1'b0;
   logic rst;
@@ -86,8 +97,8 @@ module tb_alexnet_n8_rs_m4_feeder #(
   int output_stall_run;
 
   logic hold_active;
-  logic [63:0] hold_activations;
-  logic [7:0] hold_lane_mask;
+  logic [127:0] hold_activations;
+  logic [15:0] hold_lane_mask;
   logic hold_tile_clear;
   logic hold_reduce_last;
   logic [9:0] hold_k;
@@ -98,7 +109,10 @@ module tb_alexnet_n8_rs_m4_feeder #(
   logic [15:0] hold_tag;
 
   alexnet_n8_rs_m4_feeder #(
-      .PHYS_ROWS(PHYS_ROWS)
+      .PHYS_ROWS(PHYS_ROWS),
+      .M_GROUP(M_GROUP),
+      .M_COUNT_W(M_COUNT_W),
+      .READ_COPIES(PHYS_ROWS == 2 ? 1 : M_GROUP)
   ) dut (.*);
 
   always #2.5 clk = ~clk;
@@ -110,7 +124,7 @@ module tb_alexnet_n8_rs_m4_feeder #(
       low_mask = (9'b1 << count) - 1'b1;
   endfunction
 
-  function automatic logic [63:0] packed_activations;
+  function automatic logic [127:0] packed_activations;
     packed_activations = '0;
     for (int g = 0; g < PHYS_ROWS; g++) begin
       packed_activations[(2*g)*8 +: 8] = m_act_lo[g];
@@ -118,7 +132,7 @@ module tb_alexnet_n8_rs_m4_feeder #(
     end
   endfunction
 
-  function automatic logic [7:0] packed_m_mask;
+  function automatic logic [15:0] packed_m_mask;
     packed_m_mask = '0;
     for (int g = 0; g < PHYS_ROWS; g++)
       packed_m_mask[2*g +: 2] = m_lane_mask[g];
@@ -129,7 +143,11 @@ module tb_alexnet_n8_rs_m4_feeder #(
     int value;
     int status;
     begin
-      if (M_GROUP == 8)
+      if (M_GROUP == 16)
+        status = alexnet_golden_window_m16_reset(
+            current_h, current_w, current_channels, current_kernel,
+            current_stride, current_padding);
+      else if (M_GROUP == 8)
         status = alexnet_golden_window_m8_reset(
             current_h, current_w, current_channels, current_kernel,
             current_stride, current_padding);
@@ -151,7 +169,9 @@ module tb_alexnet_n8_rs_m4_feeder #(
             pixel_word[channel*8 +: 8] = value[7:0];
           end
           pixels[y * current_w + x] = pixel_word;
-          if (M_GROUP == 8)
+          if (M_GROUP == 16)
+            status = alexnet_golden_window_m16_set_pixel(y, x, pixel_word);
+          else if (M_GROUP == 8)
             status = alexnet_golden_window_m8_set_pixel(y, x, pixel_word);
           else
             status = alexnet_golden_window_m4_set_pixel(y, x, pixel_word);
@@ -165,10 +185,14 @@ module tb_alexnet_n8_rs_m4_feeder #(
 
   task automatic check_output;
     longint unsigned golden_activations;
+    longint unsigned golden_activations_hi;
     int unsigned golden_activations_m4;
     byte golden_mask;
+    shortint unsigned golden_mask_m16;
     byte golden_clear;
     byte golden_last;
+    logic [127:0] golden_activations_wide;
+    logic [15:0] golden_mask_wide;
     int status;
     int expected_count;
     begin
@@ -188,29 +212,44 @@ module tb_alexnet_n8_rs_m4_feeder #(
           expected_count = M_GROUP;
         else
           expected_count = current_out_w - expected_x;
-        if (M_GROUP == 8) begin
+        golden_activations_wide = '0;
+        golden_mask_wide = '0;
+        if (M_GROUP == 16) begin
+          status = alexnet_golden_window_m16_token(
+              expected_y, expected_x, expected_count, expected_k,
+              golden_activations, golden_activations_hi, golden_mask_m16,
+              golden_clear, golden_last);
+          golden_activations_wide =
+              {golden_activations_hi, golden_activations};
+          golden_mask_wide = golden_mask_m16;
+        end else if (M_GROUP == 8) begin
           status = alexnet_golden_window_m8_token(
               expected_y, expected_x, expected_count, expected_k,
               golden_activations, golden_mask, golden_clear, golden_last);
+          golden_activations_wide = {64'b0, golden_activations};
+          golden_mask_wide = {8'b0, golden_mask};
         end else begin
           status = alexnet_golden_window_m4_token(
               expected_y, expected_x, expected_count, expected_k,
               golden_activations_m4, golden_mask, golden_clear, golden_last);
-          golden_activations = {32'b0, golden_activations_m4};
+          golden_activations_wide = {96'b0, golden_activations_m4};
+          golden_mask_wide = {8'b0, golden_mask};
         end
-        if (status != 0 || packed_activations() != golden_activations ||
-            packed_m_mask() != golden_mask ||
+        if (status != 0 ||
+            packed_activations() != golden_activations_wide ||
+            packed_m_mask() != golden_mask_wide ||
             m_tile_clear != golden_clear[0] ||
             m_reduce_last != golden_last[0] || m_k != expected_k ||
             m_input_channel != expected_k % current_channels ||
             m_count != expected_count || m_output_y != expected_y ||
             m_output_x != expected_x || m_frame_tag != current_tag)
           $fatal(1,
-                 "RS feeder mismatch y=%0d/%0d x=%0d/%0d k=%0d/%0d ic=%0d count=%0d/%0d act=%016x/%016x mask=%x/%x clear=%0b/%0b last=%0b/%0b tag=%0d/%0d status=%0d",
+                 "RS feeder mismatch y=%0d/%0d x=%0d/%0d k=%0d/%0d ic=%0d count=%0d/%0d act=%032x/%032x mask=%x/%x clear=%0b/%0b last=%0b/%0b tag=%0d/%0d status=%0d",
                  m_output_y, expected_y, m_output_x, expected_x, m_k,
                  expected_k, m_input_channel, m_count, expected_count,
-                 packed_activations(), golden_activations, packed_m_mask(),
-                 golden_mask, m_tile_clear, golden_clear[0],
+                 packed_activations(), golden_activations_wide,
+                 packed_m_mask(), golden_mask_wide,
+                 m_tile_clear, golden_clear[0],
                  m_reduce_last, golden_last[0], m_frame_tag, current_tag,
                  status);
       end
@@ -413,12 +452,20 @@ module tb_alexnet_n8_rs_m4_feeder #(
                      emit_cycles,
                  issue_cycles, expected_tokens, source_starve_cycles,
                  output_block_cycles);
-        $display(
-            "ALEXNET_M8N8_FEEDER_PROFILE tag=%0d h=%0d w=%0d channels=%0d kernel=%0d stride=%0d output_h=%0d output_w=%0d cycles=%0d issue_cycles=%0d scan_cycles=%0d read_issue_cycles=%0d read_capture_cycles=%0d useful_m_slots=%0d issue_duty_pct=%0.3f pe_util_pct=%0.3f",
-            tag, height, width, channels, kernel, stride, current_out_h,
-            current_out_w, cycles, issue_cycles, scan_cycles,
-            read_issue_cycles, read_capture_cycles, useful_m_slots,
-            issue_duty_pct, pe_util_pct);
+        if (M_GROUP == 16)
+          $display(
+              "ALEXNET_M16N64_FEEDER_PROFILE tag=%0d h=%0d w=%0d channels=%0d kernel=%0d stride=%0d output_h=%0d output_w=%0d cycles=%0d issue_cycles=%0d scan_cycles=%0d read_issue_cycles=%0d read_capture_cycles=%0d useful_m_slots=%0d issue_duty_pct=%0.3f pe_util_pct=%0.3f",
+              tag, height, width, channels, kernel, stride, current_out_h,
+              current_out_w, cycles, issue_cycles, scan_cycles,
+              read_issue_cycles, read_capture_cycles, useful_m_slots,
+              issue_duty_pct, pe_util_pct);
+        else
+          $display(
+              "ALEXNET_M8N8_FEEDER_PROFILE tag=%0d h=%0d w=%0d channels=%0d kernel=%0d stride=%0d output_h=%0d output_w=%0d cycles=%0d issue_cycles=%0d scan_cycles=%0d read_issue_cycles=%0d read_capture_cycles=%0d useful_m_slots=%0d issue_duty_pct=%0.3f pe_util_pct=%0.3f",
+              tag, height, width, channels, kernel, stride, current_out_h,
+              current_out_w, cycles, issue_cycles, scan_cycles,
+              read_issue_cycles, read_capture_cycles, useful_m_slots,
+              issue_duty_pct, pe_util_pct);
       end
     end
   endtask
@@ -463,7 +510,15 @@ module tb_alexnet_n8_rs_m4_feeder #(
     // Actual conv1 geometry crosses every explicit 512-word ring-bank edge.
     run_frame(3, 224, 224, 3, 11, 4, 2, 104);
 
-    if (M_GROUP == 8 && PERF_PROFILE)
+    if (M_GROUP == 16 && PERF_PROFILE)
+      $display(
+          "ALEXNET_M16N64_FEEDER_PROFILE_PASS frames=%0d inputs=%0d tokens=%0d",
+          tested_frames, total_inputs, total_tokens);
+    else if (M_GROUP == 16)
+      $display(
+          "ALEXNET_N8_RS_M16_FEEDER_TEST_PASSED frames=%0d inputs=%0d tokens=%0d maxstall=%0d seed=%0d",
+          tested_frames, total_inputs, total_tokens, max_output_stall, seed);
+    else if (M_GROUP == 8 && PERF_PROFILE)
       $display(
           "ALEXNET_M8N8_PE_PROFILE_PASS frames=%0d inputs=%0d tokens=%0d",
           tested_frames, total_inputs, total_tokens);

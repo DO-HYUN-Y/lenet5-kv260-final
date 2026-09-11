@@ -1710,3 +1710,26 @@ warnings. Vectorless power is 3.092 W; the 0.0256-TOPS arithmetic peak is
 0.00828 peak TOPS/W. Physical-board latency, throughput, and power for this
 new image remain to be measured; all implementation experiments stay at
 200 MHz.
+
+The next compute-fabric milestone replaces a monolithic N expansion with eight
+local M8xN16 banks. Runtime scheduling selects one M8xN128 tile or two
+independent M8xN64 tiles, and a per-bank enable mask permits bandwidth-matched
+FC execution without switching unused banks. Numerical regression covers both
+modes, independent M tails/tags, output backpressure, mode transitions and a
+single enabled N16 bank. The compact OOC implementation retains exactly 512
+packed-MAC DSP48E2, or 1,024 logical INT8 MAC/cycle and 0.4096 arithmetic-peak
+TOPS. It routes at 200 MHz with WNS/WHS +0.564/+0.046 ns and zero failed nets.
+
+The matching M16 row-stationary feeder replicates sixteen 64-bit ring reads,
+uses exactly 80 RAMB36E2, and routes at 200 MHz with WNS/WHS
++0.136/+0.096 ns. Its RTL/DPI regression and the pre-existing M4 and M8 feeder
+regressions all pass. Measured issue duty is 90.993% on the Conv2-shaped proxy,
+78.854% on the Conv3-5-shaped proxy, and 60.370% on full 224x224 Conv1; full
+Conv1 useful PE-slot utilization is 51.881%, or about 0.2125 useful TOPS at the
+new peak. The BRAM read width is therefore physically feasible, while Conv1
+still needs scanner/prefetch overlap. Convolution weight preload fits behind
+spatial reuse on one 128-bit HP port, but batch-1 FC is eight-times short of
+the full N128 weight rate and must use the dynamic N16 bank mask. The remaining
+memory gate is the 1,024-bit/cycle N128 URAM weight ping-pong described in
+`DYNAMIC_ARRAY_BANDWIDTH.md`; this milestone does not yet claim a complete
+M8xN128 PS/AXI/PL top or new camera throughput.

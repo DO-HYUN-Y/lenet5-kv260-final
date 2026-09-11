@@ -2,14 +2,16 @@
 
 // AlexNet fixed-GEMM base systolic tile.
 //
-// Logical shape:  M4 x N8
-// Physical shape: 2 packed-activation rows x 8 weight columns
+// Default logical shape: M4 x N8
+// Default physical shape: 2 packed-activation rows x 8 weight columns
 //
 // The source presents one unskewed K token per enabled cycle. This tile owns
 // the row/column skew, systolic operand hops, the shared row-control alignment
 // taps, and one result holding register inside each packed PE. Doubling
-// PHYS_ROWS from 2 to 4 is the intended single-step M8 x N8 expansion; the N8
-// boundary and result interface do not change.
+// PHYS_ROWS=4 selects M8. Power-of-two COLS values from 8 through 256 let the
+// physical study scale N without replicating feeder memories: every added
+// column reuses the same activation and contributes one packed MAC DSP per
+// physical row.
 module alexnet_sa_m4n8 #(
     parameter int PHYS_ROWS = 2,
     parameter int COLS = 8,
@@ -211,10 +213,10 @@ module alexnet_sa_m4n8 #(
 
 `ifndef SYNTHESIS
   initial begin
-    if ((PHYS_ROWS != 2 && PHYS_ROWS != 4) ||
-        COLS != 8 || DSP_LATENCY != 4)
+    if ((PHYS_ROWS != 2 && PHYS_ROWS != 4) || COLS < 8 || COLS > 256 ||
+        ((COLS & (COLS - 1)) != 0) || DSP_LATENCY != 4)
       $fatal(1,
-             "AlexNet SA supports PHYS_ROWS=2/4, COLS=8, DSP_LATENCY=4");
+             "AlexNet SA requires PHYS_ROWS=2/4 and power-of-two COLS=8..256");
   end
 
   always_ff @(posedge clk) begin
