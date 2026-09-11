@@ -43,8 +43,8 @@ if {[llength $shared_cells] != 1 || [llength $sa_cells] != 1 ||
 set dsp_cells [get_cells -hierarchical -filter {REF_NAME == DSP48E2}]
 set bram_cells [get_cells -hierarchical -filter {REF_NAME == RAMB36E2}]
 set uram_cells [get_cells -hierarchical -filter {REF_NAME == URAM288}]
-if {[llength $dsp_cells] != 40} { error "expected exactly 40 DSP48E2" }
-if {[llength $bram_cells] != 45} { error "expected exactly 45 RAMB36E2" }
+if {[llength $dsp_cells] != 96} { error "expected exactly 96 DSP48E2" }
+if {[llength $bram_cells] != 49} { error "expected exactly 49 RAMB36E2" }
 if {[llength $uram_cells] != 13} { error "expected exactly 13 URAM288" }
 
 write_checkpoint -force [file join $out_dir post_synth.dcp]

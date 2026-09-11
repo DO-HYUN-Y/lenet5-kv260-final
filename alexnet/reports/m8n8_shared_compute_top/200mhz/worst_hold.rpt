@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version      : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
-| Date              : Wed Sep  9 14:41:46 2026
+| Date              : Fri Sep 11 11:59:38 2026
 | Host              : yundodo running 64-bit unknown
 | Command           : report_timing -delay_type min -max_paths 20 -sort_by group -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/m8n8_shared_compute_top/200mhz/worst_hold.rpt
 | Design            : alexnet_m4n8_shared_compute_top
@@ -32,24 +32,24 @@ Slack (MET) :             0.046ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
   -------------------------------------------------------------------    -------------------
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[0])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[0])
                                                       0.081     0.115 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/D_DATA[0]
                          net (fo=1, routed)           0.000     0.115    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA.D_DATA<0>
-    DSP48E2_X10Y26       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[0]_AD[0])
+    DSP48E2_X8Y18        DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[0]_AD[0])
                                                       0.033     0.148 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_INST/AD[0]
                          net (fo=1, routed)           0.000     0.148    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD.AD<0>
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[0]
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[0]
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
                          clock pessimism              0.000     0.042    
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[0])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[0])
                                                       0.060     0.102    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST
   -------------------------------------------------------------------
                          required time                         -0.102    
@@ -76,24 +76,24 @@ Slack (MET) :             0.046ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
   -------------------------------------------------------------------    -------------------
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[10])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[10])
                                                       0.081     0.115 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/D_DATA[10]
                          net (fo=1, routed)           0.000     0.115    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA.D_DATA<10>
-    DSP48E2_X10Y26       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[10]_AD[10])
+    DSP48E2_X8Y18        DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[10]_AD[10])
                                                       0.033     0.148 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_INST/AD[10]
                          net (fo=1, routed)           0.000     0.148    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD.AD<10>
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[10]
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[10]
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
                          clock pessimism              0.000     0.042    
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[10])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[10])
                                                       0.060     0.102    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST
   -------------------------------------------------------------------
                          required time                         -0.102    
@@ -120,24 +120,24 @@ Slack (MET) :             0.046ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
   -------------------------------------------------------------------    -------------------
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[11])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[11])
                                                       0.081     0.115 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/D_DATA[11]
                          net (fo=1, routed)           0.000     0.115    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA.D_DATA<11>
-    DSP48E2_X10Y26       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[11]_AD[11])
+    DSP48E2_X8Y18        DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[11]_AD[11])
                                                       0.033     0.148 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_INST/AD[11]
                          net (fo=1, routed)           0.000     0.148    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD.AD<11>
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[11]
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[11]
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
                          clock pessimism              0.000     0.042    
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[11])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[11])
                                                       0.060     0.102    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST
   -------------------------------------------------------------------
                          required time                         -0.102    
@@ -164,24 +164,24 @@ Slack (MET) :             0.046ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
   -------------------------------------------------------------------    -------------------
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[12])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[12])
                                                       0.081     0.115 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/D_DATA[12]
                          net (fo=1, routed)           0.000     0.115    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA.D_DATA<12>
-    DSP48E2_X10Y26       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[12]_AD[12])
+    DSP48E2_X8Y18        DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[12]_AD[12])
                                                       0.033     0.148 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_INST/AD[12]
                          net (fo=1, routed)           0.000     0.148    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD.AD<12>
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[12]
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[12]
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
                          clock pessimism              0.000     0.042    
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[12])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[12])
                                                       0.060     0.102    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST
   -------------------------------------------------------------------
                          required time                         -0.102    
@@ -208,24 +208,24 @@ Slack (MET) :             0.046ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
   -------------------------------------------------------------------    -------------------
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[13])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[13])
                                                       0.081     0.115 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/D_DATA[13]
                          net (fo=1, routed)           0.000     0.115    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA.D_DATA<13>
-    DSP48E2_X10Y26       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[13]_AD[13])
+    DSP48E2_X8Y18        DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[13]_AD[13])
                                                       0.033     0.148 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_INST/AD[13]
                          net (fo=1, routed)           0.000     0.148    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD.AD<13>
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[13]
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[13]
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
                          clock pessimism              0.000     0.042    
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[13])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[13])
                                                       0.060     0.102    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST
   -------------------------------------------------------------------
                          required time                         -0.102    
@@ -252,24 +252,24 @@ Slack (MET) :             0.046ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
   -------------------------------------------------------------------    -------------------
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[14])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[14])
                                                       0.081     0.115 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/D_DATA[14]
                          net (fo=1, routed)           0.000     0.115    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA.D_DATA<14>
-    DSP48E2_X10Y26       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[14]_AD[14])
+    DSP48E2_X8Y18        DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[14]_AD[14])
                                                       0.033     0.148 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_INST/AD[14]
                          net (fo=1, routed)           0.000     0.148    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD.AD<14>
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[14]
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[14]
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
                          clock pessimism              0.000     0.042    
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[14])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[14])
                                                       0.060     0.102    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST
   -------------------------------------------------------------------
                          required time                         -0.102    
@@ -296,24 +296,24 @@ Slack (MET) :             0.046ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
   -------------------------------------------------------------------    -------------------
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[15])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[15])
                                                       0.081     0.115 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/D_DATA[15]
                          net (fo=1, routed)           0.000     0.115    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA.D_DATA<15>
-    DSP48E2_X10Y26       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[15]_AD[15])
+    DSP48E2_X8Y18        DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[15]_AD[15])
                                                       0.033     0.148 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_INST/AD[15]
                          net (fo=1, routed)           0.000     0.148    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD.AD<15>
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[15]
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[15]
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
                          clock pessimism              0.000     0.042    
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[15])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[15])
                                                       0.060     0.102    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST
   -------------------------------------------------------------------
                          required time                         -0.102    
@@ -340,24 +340,24 @@ Slack (MET) :             0.046ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
   -------------------------------------------------------------------    -------------------
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[16])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[16])
                                                       0.081     0.115 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/D_DATA[16]
                          net (fo=1, routed)           0.000     0.115    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA.D_DATA<16>
-    DSP48E2_X10Y26       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[16]_AD[16])
+    DSP48E2_X8Y18        DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[16]_AD[16])
                                                       0.033     0.148 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_INST/AD[16]
                          net (fo=1, routed)           0.000     0.148    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD.AD<16>
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[16]
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[16]
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
                          clock pessimism              0.000     0.042    
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[16])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[16])
                                                       0.060     0.102    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST
   -------------------------------------------------------------------
                          required time                         -0.102    
@@ -384,24 +384,24 @@ Slack (MET) :             0.046ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
   -------------------------------------------------------------------    -------------------
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[17])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[17])
                                                       0.081     0.115 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/D_DATA[17]
                          net (fo=1, routed)           0.000     0.115    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA.D_DATA<17>
-    DSP48E2_X10Y26       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[17]_AD[17])
+    DSP48E2_X8Y18        DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[17]_AD[17])
                                                       0.033     0.148 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_INST/AD[17]
                          net (fo=1, routed)           0.000     0.148    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD.AD<17>
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[17]
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[17]
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
                          clock pessimism              0.000     0.042    
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[17])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[17])
                                                       0.060     0.102    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST
   -------------------------------------------------------------------
                          required time                         -0.102    
@@ -428,24 +428,24 @@ Slack (MET) :             0.046ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
   -------------------------------------------------------------------    -------------------
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[18])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[18])
                                                       0.081     0.115 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/D_DATA[18]
                          net (fo=1, routed)           0.000     0.115    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA.D_DATA<18>
-    DSP48E2_X10Y26       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[18]_AD[18])
+    DSP48E2_X8Y18        DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[18]_AD[18])
                                                       0.033     0.148 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_INST/AD[18]
                          net (fo=1, routed)           0.000     0.148    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD.AD<18>
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[18]
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[18]
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
                          clock pessimism              0.000     0.042    
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[18])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[18])
                                                       0.060     0.102    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST
   -------------------------------------------------------------------
                          required time                         -0.102    
@@ -472,24 +472,24 @@ Slack (MET) :             0.046ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
   -------------------------------------------------------------------    -------------------
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[19])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[19])
                                                       0.081     0.115 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/D_DATA[19]
                          net (fo=1, routed)           0.000     0.115    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA.D_DATA<19>
-    DSP48E2_X10Y26       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[19]_AD[19])
+    DSP48E2_X8Y18        DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[19]_AD[19])
                                                       0.033     0.148 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_INST/AD[19]
                          net (fo=1, routed)           0.000     0.148    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD.AD<19>
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[19]
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[19]
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
                          clock pessimism              0.000     0.042    
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[19])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[19])
                                                       0.060     0.102    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST
   -------------------------------------------------------------------
                          required time                         -0.102    
@@ -516,24 +516,24 @@ Slack (MET) :             0.046ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
   -------------------------------------------------------------------    -------------------
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[1])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[1])
                                                       0.081     0.115 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/D_DATA[1]
                          net (fo=1, routed)           0.000     0.115    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA.D_DATA<1>
-    DSP48E2_X10Y26       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[1]_AD[1])
+    DSP48E2_X8Y18        DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[1]_AD[1])
                                                       0.033     0.148 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_INST/AD[1]
                          net (fo=1, routed)           0.000     0.148    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD.AD<1>
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[1]
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[1]
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
                          clock pessimism              0.000     0.042    
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[1])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[1])
                                                       0.060     0.102    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST
   -------------------------------------------------------------------
                          required time                         -0.102    
@@ -560,24 +560,24 @@ Slack (MET) :             0.046ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
   -------------------------------------------------------------------    -------------------
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[20])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[20])
                                                       0.081     0.115 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/D_DATA[20]
                          net (fo=1, routed)           0.000     0.115    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA.D_DATA<20>
-    DSP48E2_X10Y26       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[20]_AD[20])
+    DSP48E2_X8Y18        DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[20]_AD[20])
                                                       0.033     0.148 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_INST/AD[20]
                          net (fo=1, routed)           0.000     0.148    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD.AD<20>
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[20]
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[20]
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
                          clock pessimism              0.000     0.042    
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[20])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[20])
                                                       0.060     0.102    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST
   -------------------------------------------------------------------
                          required time                         -0.102    
@@ -604,24 +604,24 @@ Slack (MET) :             0.046ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
   -------------------------------------------------------------------    -------------------
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[21])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[21])
                                                       0.081     0.115 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/D_DATA[21]
                          net (fo=1, routed)           0.000     0.115    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA.D_DATA<21>
-    DSP48E2_X10Y26       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[21]_AD[21])
+    DSP48E2_X8Y18        DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[21]_AD[21])
                                                       0.033     0.148 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_INST/AD[21]
                          net (fo=1, routed)           0.000     0.148    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD.AD<21>
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[21]
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[21]
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
                          clock pessimism              0.000     0.042    
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[21])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[21])
                                                       0.060     0.102    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST
   -------------------------------------------------------------------
                          required time                         -0.102    
@@ -648,24 +648,24 @@ Slack (MET) :             0.046ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
   -------------------------------------------------------------------    -------------------
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[22])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[22])
                                                       0.081     0.115 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/D_DATA[22]
                          net (fo=1, routed)           0.000     0.115    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA.D_DATA<22>
-    DSP48E2_X10Y26       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[22]_AD[22])
+    DSP48E2_X8Y18        DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[22]_AD[22])
                                                       0.033     0.148 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_INST/AD[22]
                          net (fo=1, routed)           0.000     0.148    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD.AD<22>
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[22]
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[22]
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
                          clock pessimism              0.000     0.042    
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[22])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[22])
                                                       0.060     0.102    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST
   -------------------------------------------------------------------
                          required time                         -0.102    
@@ -692,24 +692,24 @@ Slack (MET) :             0.046ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
   -------------------------------------------------------------------    -------------------
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[23])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[23])
                                                       0.081     0.115 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/D_DATA[23]
                          net (fo=1, routed)           0.000     0.115    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA.D_DATA<23>
-    DSP48E2_X10Y26       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[23]_AD[23])
+    DSP48E2_X8Y18        DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[23]_AD[23])
                                                       0.033     0.148 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_INST/AD[23]
                          net (fo=1, routed)           0.000     0.148    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD.AD<23>
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[23]
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[23]
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
                          clock pessimism              0.000     0.042    
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[23])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[23])
                                                       0.060     0.102    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST
   -------------------------------------------------------------------
                          required time                         -0.102    
@@ -736,24 +736,24 @@ Slack (MET) :             0.046ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
   -------------------------------------------------------------------    -------------------
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[24])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[24])
                                                       0.081     0.115 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/D_DATA[24]
                          net (fo=1, routed)           0.000     0.115    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA.D_DATA<24>
-    DSP48E2_X10Y26       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[24]_AD[24])
+    DSP48E2_X8Y18        DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[24]_AD[24])
                                                       0.033     0.148 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_INST/AD[24]
                          net (fo=1, routed)           0.000     0.148    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD.AD<24>
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[24]
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[24]
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
                          clock pessimism              0.000     0.042    
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[24])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[24])
                                                       0.060     0.102    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST
   -------------------------------------------------------------------
                          required time                         -0.102    
@@ -780,24 +780,24 @@ Slack (MET) :             0.046ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
   -------------------------------------------------------------------    -------------------
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[25])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[25])
                                                       0.081     0.115 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/D_DATA[25]
                          net (fo=1, routed)           0.000     0.115    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA.D_DATA<25>
-    DSP48E2_X10Y26       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[25]_AD[25])
+    DSP48E2_X8Y18        DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[25]_AD[25])
                                                       0.033     0.148 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_INST/AD[25]
                          net (fo=1, routed)           0.000     0.148    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD.AD<25>
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[25]
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[25]
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
                          clock pessimism              0.000     0.042    
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[25])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[25])
                                                       0.060     0.102    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST
   -------------------------------------------------------------------
                          required time                         -0.102    
@@ -824,24 +824,24 @@ Slack (MET) :             0.046ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
   -------------------------------------------------------------------    -------------------
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[26])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[26])
                                                       0.081     0.115 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/D_DATA[26]
                          net (fo=1, routed)           0.000     0.115    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA.D_DATA<26>
-    DSP48E2_X10Y26       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[26]_AD[26])
+    DSP48E2_X8Y18        DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[26]_AD[26])
                                                       0.033     0.148 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_INST/AD[26]
                          net (fo=1, routed)           0.000     0.148    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD.AD<26>
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[26]
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[26]
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
                          clock pessimism              0.000     0.042    
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[26])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[26])
                                                       0.060     0.102    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST
   -------------------------------------------------------------------
                          required time                         -0.102    
@@ -868,24 +868,24 @@ Slack (MET) :             0.046ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.034     0.034    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
   -------------------------------------------------------------------    -------------------
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[2])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Prop_DSP_PREADD_DATA_DSP48E2_CLK_D_DATA[2])
                                                       0.081     0.115 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/D_DATA[2]
                          net (fo=1, routed)           0.000     0.115    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA.D_DATA<2>
-    DSP48E2_X10Y26       DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[2]_AD[2])
+    DSP48E2_X8Y18        DSP_PREADD (Prop_DSP_PREADD_DSP48E2_D_DATA[2]_AD[2])
                                                       0.033     0.148 r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_INST/AD[2]
                          net (fo=1, routed)           0.000     0.148    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD.AD<2>
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[2]
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/AD[2]
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=11494, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
-    DSP48E2_X10Y26       DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
+                         net (fo=23753, unset)        0.042     0.042    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/CLK
+    DSP48E2_X8Y18        DSP_PREADD_DATA                              r  u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST/CLK
                          clock pessimism              0.000     0.042    
-    DSP48E2_X10Y26       DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[2])
+    DSP48E2_X8Y18        DSP_PREADD_DATA (Hold_DSP_PREADD_DATA_DSP48E2_CLK_AD[2])
                                                       0.060     0.102    u_shared/u_sa/g_pe_row[0].g_pe_col[0].u_pe/product_reg_reg/DSP_PREADD_DATA_INST
   -------------------------------------------------------------------
                          required time                         -0.102    

@@ -1,16 +1,19 @@
-# AlexNet RTL status — 2026-09-10
+# AlexNet RTL status — 2026-09-11
 
 ## Current decision
 
 - Experiments use one clock only: **200 MHz**.
 - The board SA is now logical **M8xN8**, implemented as a physical **4x8**
-  packed-PE grid (32 compute DSP48E2 plus eight N8 requant DSP48E2).
+  packed-PE grid with 32 compute DSP48E2. Eight parallel N8 postprocessor
+  rows add 64 requant DSP48E2, for 96 DSP48E2 in the accelerator path.
 - The complete KV260 PS/AXI/PL image passes 200 MHz with WNS/WHS
-  **+0.005/+0.010 ns**, 40 DSP48E2, 87 block-RAM tiles, and 13 URAM288.
-- PE utilization is measured before each further expansion. The next
-  architecture work is a Conv1 line-buffer/window-ping-pong direct issue path
-  followed by partitioned M/N scaling that uses the available DSP, BRAM, and
-  URAM without leaving small-layer M lanes idle.
+  **+0.009/+0.010 ns**, 96 DSP48E2, 90.5 block-RAM tiles, and 13 URAM288.
+- PE utilization is measured before each further expansion. Window ping-pong
+  prefetch now raises Conv1 feeder utilization from 48.177% to 71.300% and the
+  decoupled result snapshot raises the complete profiled Conv2 path from
+  75.325% to 76.431%. The M8 accumulator/postprocessor path is now widened and
+  pipelined; the remaining measured target is the partial-sum/post-reduce
+  boundary followed by the inter-tile transition.
 
 `PRE_RTL_SIGNOFF.md` remains the historical pre-RTL signoff. The post-measurement
 override is recorded under `rtl_bringup_revision` in `alexnet_contract.yaml`.
@@ -85,8 +88,10 @@ holding register.
 
 `rtl/result/alexnet_m4n8_result_scanner.sv` converts the packed holding bank to
 one N8 accumulator beat per logical M coordinate. It supports M=1..4, contiguous
-N-tail masks, staggered PE completion, ready/valid stalls, and releases a
-physical PE row only after its final active packed lane transfers.
+N-tail masks, staggered PE completion, and ready/valid stalls. Once every
+active holding is valid, it snapshots the full tile into a local buffer and
+releases all physical PEs together. Buffered N8 rows then serialize while the
+SA is free to start the next tile.
 
 ### N8 output router
 
@@ -109,6 +114,23 @@ rounding over the frozen shift range 23..32, optional lane-local ReLU, and
 signed INT8 saturation. It accepts one N8 beat per cycle when unstalled, freezes
 all data and coordinate stages under output backpressure, and only changes
 parameters after the complete pipeline drains.
+
+### M8 parallel requantization and wide result path
+
+`rtl/postprocess/alexnet_m8n8_parallel_requant.sv` instantiates eight lockstep
+N8 requant rows, one per logical M coordinate. All 64 lanes retain the same
+five-stage bias/multiply/round/ReLU/saturate arithmetic and use 64 DSP48E2.
+The row-zero ready/valid control is the shared representative, with simulation
+assertions proving that all rows remain aligned.
+
+`rtl/result/alexnet_m8n8_result_snapshot.sv` captures all M8xN8 PE holdings in
+one transaction and releases the physical 4x8 packed grid immediately.
+`rtl/memory/alexnet_m8n8_int32_partial_sum_bank.sv` stores and updates all eight
+M rows in parallel across eight 512x256-bit BRAM banks, and
+`rtl/postprocess/alexnet_m8n8_requant_serializer.sv` converts the 512-bit
+postprocessed result into the existing ordered N8 router interface. This wide
+path is selected when `PHYS_ROWS=4`; the legacy M4 scalar path remains
+available when `PHYS_ROWS=2`.
 
 ### Integrated M4xN8 N8 output slice
 
@@ -270,6 +292,12 @@ partial-sum bank between the unchanged scanner and requant pipeline, followed
 by the existing router. A chunk descriptor binds word count, output width, N
 mask, accumulation context, base tile tag, chunk index, and first/final state.
 Each accepted chunk covers one complete raster segment beginning at x=0.
+
+With `PHYS_ROWS=4`, the same integration boundary selects the M8 snapshot,
+eight-bank wide partial-sum owner, 64-DSP parallel requantizer, and N8
+serializer. With `PHYS_ROWS=2`, it retains the original scalar scanner and
+single-bank M4 path. Both variants keep the router and external packet ABI
+unchanged.
 
 The ingress sequencer converts row-local scanner M coordinates and tile tags to
 strictly sequential bank word indices. Only a final chunk starts bank emission;
@@ -1105,6 +1133,9 @@ routed FC variant, not a resynthesis of every earlier wrapper revision.
 | FC6/7/8 layer controller | 418 | 418 | 0 | 577 | 0 | 0 | +1.026 ns | +0.090 ns | 0 |
 | Controller-owned M4xN8 FC layer datapath | 5,820 | 5,683 | 41 | 4,897 | 7 | 24 | +0.497 ns | +0.046 ns | 0 |
 | Shared Conv/FC M4xN8 compute top, 4096-word accumulator | 9,063 | 8,926 | 41 | 7,721 | 42 | 24 | +0.017 ns | +0.046 ns | 0 |
+| M8 parallel-read window feeder | 2,151 | 2,151 | 0 | 1,215 | 40 | 0 | +0.395 ns | +0.087 ns | 0 |
+| M8xN8 parallel requantizer | 13,035 | 13,035 | 0 | 2,841 | 0 | 64 | +0.621 ns | +0.055 ns | 0 |
+| Shared Conv/FC M8xN8 compute top, wide accumulator/postprocess | 28,548 | 28,339 | 49 | 22,807 | 81 | 96 | +0.052 ns | +0.046 ns | 0 |
 | Conv1..FC8 logical graph controller | 94 | 94 | 0 | 38 | 0 | 0 | +2.051 ns | +0.089 ns | 0 |
 | Pool5-to-FC6 flatten reader | 311 | 311 | 0 | 291 | 0 | 0 | +0.843 ns | +0.064 ns | 0 |
 | Graph-connected Conv1..FC8 M4xN8 compute top | 8,878 | 8,741 | 41 | 7,355 | 42 | 24 | +0.008 ns | +0.031 ns | 0 |
@@ -1667,5 +1698,15 @@ USB-camera classifications. Mean/min/max PL round-trip latency was
 during continuous inference averaged 3.7895 W (3.64..4.42 W), giving 0.0007505
 effective TOPS/W and 1.9032 J per inference for the complete board. A subsequent
 one-shot inference after interrupting the continuous loop also completed in
-502.5 ms. PE optimization and the one M8xN8 expansion remain later steps; all
-implementation experiments stay at 200 MHz.
+502.5 ms. These measurements remain the deployed M4 baseline.
+
+The current M8 release completes the next architecture step: parallel window
+prefetch, tile-wide PE snapshot/release, eight parallel INT32 partial-sum
+banks, and 64-DSP postprocessing around the 32-DSP packed SA. Its complete
+PS/AXI/PL route passes 200 MHz with WNS/WHS +0.009/+0.010 ns, 40,183 CLB LUT,
+36,747 registers, 89 RAMB36E2 plus three RAMB18E2, 13 URAM288, and 96 DSP48E2.
+All 79,220 routable nets are connected and DRC has zero errors or critical
+warnings. Vectorless power is 3.092 W; the 0.0256-TOPS arithmetic peak is
+0.00828 peak TOPS/W. Physical-board latency, throughput, and power for this
+new image remain to be measured; all implementation experiments stay at
+200 MHz.

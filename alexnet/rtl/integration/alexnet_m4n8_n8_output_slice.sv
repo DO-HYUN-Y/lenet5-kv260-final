@@ -82,7 +82,7 @@ module alexnet_m4n8_n8_output_slice #(
   logic router_idle;
 
   assign configured = configured_q;
-  assign slice_idle = scanner_tile_ready && requant_idle && router_idle;
+  assign slice_idle = !scanner_busy && requant_idle && router_idle;
   assign cfg_ready = slice_idle;
   assign cfg_fire = cfg_valid && cfg_ready;
 

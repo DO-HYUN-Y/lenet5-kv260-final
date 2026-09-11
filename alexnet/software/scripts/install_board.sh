@@ -9,7 +9,7 @@ bitstream_path="${firmware_dir}/alexnet_m4n8_kv260.bit.bin"
 overlay_path="${firmware_dir}/alexnet_m4n8_kv260.dtbo"
 mode=${1:---load-and-probe}
 
-bitstream_sha256=7b0884f1875602942752b69fd203b105f32b2193ce82df87a47e9c3bd337c3ae
+bitstream_sha256=98cd56ae2f3932b93735ee7b56e8b3a47f07d796b85b4f2e63f341f3514d4f2a
 overlay_sha256=d33ca5572e3f746a18ce80e6e2c01e827a0ca058d11b37a5603973bd32c433e8
 
 case "${mode}" in

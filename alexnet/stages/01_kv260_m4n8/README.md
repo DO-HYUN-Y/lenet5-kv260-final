@@ -115,33 +115,44 @@ vivado -mode batch \
 
 ## Verified 200 MHz result
 
-The 2026-09-10 M8 expansion doubled the packed compute rows from two to four
-and replicated the row-stationary feeder read banks so all eight spatial lanes
-are fetched together. The complete PS/AXI/PL build passed every gate and
-generated a new bitstream and XSA at 200 MHz.
+The 2026-09-11 M8 pipeline release retains the four-by-eight packed compute
+grid, prefetches the next row-stationary window while the current channels are
+issued, snapshots all PE results without a serialized release, and processes
+all eight M rows through 64 parallel postprocessor DSPs. The complete
+PS/AXI/PL build passed every gate and generated a new bitstream and XSA at
+200 MHz.
 
 | Check | M8 result |
 | --- | ---: |
 | PS PL0 input / MMCM fabric clock | `99.999001 MHz` / `199.998002 MHz` |
-| Setup WNS / TNS | `+0.005 ns` / `0.000 ns` |
+| Setup WNS / TNS | `+0.009 ns` / `0.000 ns` |
 | Hold WHS / THS | `+0.010 ns` / `0.000 ns` |
-| Constrained setup/hold endpoints | 99,404 |
-| Fully routed nets / routing errors | 53,112 / 0 |
+| Constrained setup/hold endpoints | 143,632 |
+| Fully routed nets / routing errors | 79,220 / 0 |
 | DRC errors / critical warnings | 0 / 0 |
-| CLB LUT | 23,963 / 117,120 (20.46%) |
-| CLB registers | 25,492 / 234,240 (10.88%) |
-| Block RAM tiles | 87 / 144 (60.42%) |
+| CLB LUT | 40,183 / 117,120 (34.31%) |
+| CLB registers | 36,747 / 234,240 (15.69%) |
+| Block RAM tiles | 90.5 / 144 (62.85%) |
 | URAM | 13 / 64 (20.31%) |
-| DSP | 40 / 1,248 (3.21%) |
+| DSP | 96 / 1,248 (7.69%) |
 | MMCM | 1 / 4 (25.00%) |
 
 The M8 arithmetic peak is 0.0256 TOPS. The vectorless total on-chip power
-estimate is 3.048 W, giving 0.00840 peak TOPS/W; this is not a measured board
+estimate is 3.092 W, giving 0.00828 peak TOPS/W; this is not a measured board
 power value. The output artifacts have SHA-256 values
-`18ae1700381a71451b7f1dbde0573a8b2eff7217d9877e5bad5e8daec5de978e`
+`4c6f94c18da2ab00b42d7b9e66f3f4953a777266d39ccf4256038689c81bc087`
 for the bitstream and
-`2032c26fb400500108ef8b42d8118251c5e288a424fb64ef366bc2158a9c705f`
-for the XSA.
+`a9d488f21ed1b2b50b17c44f2fd3c413378a7c5e225f28800f137819332991c0`
+for the XSA. The FPGA-manager package hashes are
+`98cd56ae2f3932b93735ee7b56e8b3a47f07d796b85b4f2e63f341f3514d4f2a`
+for the bitstream binary and
+`d33ca5572e3f746a18ce80e6e2c01e827a0ca058d11b37a5603973bd32c433e8`
+for the unchanged device-tree overlay.
+
+The 137 remaining DRC entries are warnings only: 64 `REQP-1731` and 64
+`REQP-1732` DSP pre-adder width advisories, three `REQP-1934`, five
+`REQP-1935`, and one `RTSTAT-10`. There are no DRC errors, critical warnings,
+unrouted nets, or unconstrained internal paths.
 
 The earlier M4 frame-cache result below is retained as the deployed camera
 benchmark baseline. Its measured throughput and power must not be attributed

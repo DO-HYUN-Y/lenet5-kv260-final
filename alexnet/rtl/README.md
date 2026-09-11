@@ -4,6 +4,25 @@ This tree is separate from the verified LeNet RTL in the repository root. It
 implements the frozen contracts in `alexnet_contract.yaml` and
 `PRE_RTL_SIGNOFF.md` without changing the LeNet top or build flow.
 
+## Current M8xN8 implementation override
+
+Historical module names and the bring-up chronology below retain `m4n8` for
+source and script compatibility. The selected board configuration is now a
+logical M8xN8 engine: a physical 4x8 packed-PE grid uses 32 compute DSP48E2,
+the feeder has eight parallel ring-memory read copies with next-window
+prefetch, and a tile-wide snapshot releases all PEs before serialization.
+Eight parallel 512x256-bit partial-sum banks feed eight N8 requant rows using
+64 additional DSP48E2; the existing N8 packet ABI is preserved by a final
+serializer.
+
+The current M8 shared-compute OOC route uses 28,548 CLB LUT, 22,807 FF,
+81 RAMB36E2, and 96 DSP48E2 and passes 200 MHz with WNS/WHS
++0.052/+0.046 ns. The complete KV260 `system_wrapper` uses 40,183 CLB LUT,
+36,747 FF, 89 RAMB36E2, three RAMB18E2, 13 URAM288, and 96 DSP48E2 and passes
+200 MHz with WNS/WHS +0.009/+0.010 ns. Older M4 measurements below document
+the verified construction sequence rather than the current board resource
+contract.
+
 ## Phase 3 bring-up order
 
 1. `packed_mac/alexnet_packed_pe.sv`: U0 fixed-GEMM, split-every-cycle packed

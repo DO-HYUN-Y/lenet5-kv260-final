@@ -1,0 +1,12 @@
+design=alexnet_m8n8_parallel_requant
+logical_shape=M8xN8
+parallel_requant_dsp48e2=64
+pipeline_stages=5
+frequency_mhz=200
+wns_ns=0.621
+whs_ns=0.055
+vivado=2024.1
+part=xck26-sfvc784-2LV-c
+git_commit=fead86a42152b2a7aeb49d43f5b88f1e8b47b0ff
+scalar_rtl_sha256=cd6b8d344b866fe572e14ef116656f2c880d1ce3446587565772bfcaa0c30c94
+parallel_rtl_sha256=e0d9a34713a4df71eb739ee563492189a856791d6b23da697a3c1d12a709b076

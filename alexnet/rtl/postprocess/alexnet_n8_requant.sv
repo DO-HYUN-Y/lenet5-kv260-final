@@ -120,22 +120,10 @@ module alexnet_n8_requant #(
     if (rst) begin
       configured_q <= 1'b0;
       valid_q <= '0;
-      relu_q <= '0;
-      values_q <= '0;
-      for (int lane = 0; lane < 8; lane++) begin
-        bias_q[lane] <= '0;
-        multiplier_q[lane] <= '0;
-        right_shift_q[lane] <= '0;
-        biased_q[lane] <= '0;
-        product_q[lane] <= '0;
-        product_pipe_q[lane] <= '0;
-        rounded_q[lane] <= '0;
-      end
-      for (int stage = 0; stage < 5; stage++) begin
-        lane_mask_q[stage] <= '0;
-        m_q[stage] <= '0;
-        tile_tag_q[stage] <= '0;
-      end
+      // Payload registers are deliberately not reset. valid_q/configured_q
+      // completely qualify their use, while resetting the inferred DSP data
+      // registers creates a long system-configuration-to-DSP reset path.
+      // Their contents are overwritten before becoming architecturally live.
     end else begin
       if (cfg_valid && cfg_ready) begin
         configured_q <= 1'b1;

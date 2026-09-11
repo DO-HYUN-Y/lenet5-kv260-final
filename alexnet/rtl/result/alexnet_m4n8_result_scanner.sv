@@ -1,8 +1,9 @@
 `timescale 1ns/1ps
 
-// Serializes one logical M4 x N8 holding bank into four N8 accumulator beats.
-// Each packed PE holds two adjacent logical M values, so a physical row is
-// released only after its last active lo/hi lane transfers.
+// Snapshots one logical MxN8 holding bank, releases every packed PE together,
+// then serializes the registered snapshot into N8 accumulator beats. The
+// snapshot can drain while the SA computes the next tile, removing the old
+// post-reduce serialization bubble from the compute schedule.
 module alexnet_m4n8_result_scanner #(
     parameter int PHYS_ROWS = 2,
     parameter int COLS = 8,
@@ -36,43 +37,43 @@ module alexnet_m4n8_result_scanner #(
     output logic tile_done
 );
 
-  logic busy_q;
+  logic descriptor_active_q;
+  logic buffer_valid_q;
   logic [M_COUNT_W-1:0] m_count_q;
+  logic [M_COUNT_W-1:0] buffer_m_count_q;
   logic [M_INDEX_W-1:0] scan_m_q;
   logic [COLS-1:0] n_lane_mask_q;
+  logic [COLS-1:0] buffer_n_lane_mask_q;
   logic [TILE_TAG_W-1:0] tile_tag_q;
+  logic [TILE_TAG_W-1:0] buffer_tile_tag_q;
+  logic signed [31:0] buffer_accumulator_q
+      [0:2*PHYS_ROWS-1][0:COLS-1];
 
-  logic selected_row_valid;
-  logic selected_lane_is_hi;
-  logic selected_row_release;
+  logic all_active_holds_valid;
+  logic capture_fire;
 
-  assign tile_ready = !busy_q;
-  assign busy = busy_q;
+  assign tile_ready = !descriptor_active_q;
+  assign busy = descriptor_active_q || buffer_valid_q;
   assign out_m = scan_m_q;
-  assign out_n_lane_mask = n_lane_mask_q;
-  assign out_tile_tag = tile_tag_q;
-  assign selected_lane_is_hi = scan_m_q[0];
-  assign selected_row_release =
-      selected_lane_is_hi || (M_COUNT_W'(scan_m_q) == (m_count_q - 1'b1));
+  assign out_n_lane_mask = buffer_n_lane_mask_q;
+  assign out_tile_tag = buffer_tile_tag_q;
 
   always_comb begin
-    selected_row_valid = 1'b1;
-    for (int c = 0; c < COLS; c++)
-      selected_row_valid &= hold_valid[scan_m_q[M_INDEX_W-1:1]][c];
+    all_active_holds_valid = 1'b1;
+    for (int g = 0; g < PHYS_ROWS; g++) begin
+      if (M_COUNT_W'(2*g) < m_count_q)
+        for (int c = 0; c < COLS; c++)
+          all_active_holds_valid &= hold_valid[g][c];
+    end
   end
 
-  assign out_valid = busy_q && selected_row_valid;
+  assign capture_fire = descriptor_active_q && !buffer_valid_q &&
+                        all_active_holds_valid;
+  assign out_valid = buffer_valid_q;
 
   always_comb begin
-    for (int c = 0; c < COLS; c++) begin
-      if (!n_lane_mask_q[c] ||
-          !hold_m_lane_mask[scan_m_q[M_INDEX_W-1:1]][c][selected_lane_is_hi])
-        out_accumulator[c] = '0;
-      else if (selected_lane_is_hi)
-        out_accumulator[c] = hold_hi[scan_m_q[M_INDEX_W-1:1]][c];
-      else
-        out_accumulator[c] = hold_lo[scan_m_q[M_INDEX_W-1:1]][c];
-    end
+    for (int c = 0; c < COLS; c++)
+      out_accumulator[c] = buffer_accumulator_q[scan_m_q][c];
   end
 
   always_comb begin
@@ -80,34 +81,63 @@ module alexnet_m4n8_result_scanner #(
       for (int c = 0; c < COLS; c++)
         hold_ready[g][c] = 1'b0;
 
-    if (out_valid && out_ready && selected_row_release)
-      for (int c = 0; c < COLS; c++)
-        hold_ready[scan_m_q[M_INDEX_W-1:1]][c] = 1'b1;
+    if (capture_fire)
+      for (int g = 0; g < PHYS_ROWS; g++)
+        if (M_COUNT_W'(2*g) < m_count_q)
+          for (int c = 0; c < COLS; c++)
+            hold_ready[g][c] = 1'b1;
   end
 
   always_ff @(posedge clk) begin
     if (rst) begin
-      busy_q <= 1'b0;
+      descriptor_active_q <= 1'b0;
+      buffer_valid_q <= 1'b0;
       m_count_q <= '0;
+      buffer_m_count_q <= '0;
       scan_m_q <= '0;
       n_lane_mask_q <= '0;
+      buffer_n_lane_mask_q <= '0;
       tile_tag_q <= '0;
+      buffer_tile_tag_q <= '0;
+      for (int m = 0; m < 2*PHYS_ROWS; m++)
+        for (int c = 0; c < COLS; c++)
+          buffer_accumulator_q[m][c] <= '0;
       tile_done <= 1'b0;
     end else begin
       tile_done <= 1'b0;
 
       if (tile_valid && tile_ready) begin
-        busy_q <= 1'b1;
+        descriptor_active_q <= 1'b1;
         m_count_q <= tile_m_count;
-        scan_m_q <= '0;
         n_lane_mask_q <= tile_n_lane_mask;
         tile_tag_q <= tile_tag;
       end
 
+      if (capture_fire) begin
+        descriptor_active_q <= 1'b0;
+        buffer_valid_q <= 1'b1;
+        buffer_m_count_q <= m_count_q;
+        buffer_n_lane_mask_q <= n_lane_mask_q;
+        buffer_tile_tag_q <= tile_tag_q;
+        scan_m_q <= '0;
+        tile_done <= 1'b1;
+        for (int m = 0; m < 2*PHYS_ROWS; m++) begin
+          for (int c = 0; c < COLS; c++) begin
+            if ((M_COUNT_W'(m) >= m_count_q) || !n_lane_mask_q[c] ||
+                !hold_m_lane_mask[m/2][c][m%2])
+              buffer_accumulator_q[m][c] <= '0;
+            else if ((m % 2) != 0)
+              buffer_accumulator_q[m][c] <= hold_hi[m/2][c];
+            else
+              buffer_accumulator_q[m][c] <= hold_lo[m/2][c];
+          end
+        end
+      end
+
       if (out_valid && out_ready) begin
-        if (M_COUNT_W'(scan_m_q) == (m_count_q - 1'b1)) begin
-          busy_q <= 1'b0;
-          tile_done <= 1'b1;
+        if (M_COUNT_W'(scan_m_q) == (buffer_m_count_q - 1'b1)) begin
+          buffer_valid_q <= 1'b0;
+          scan_m_q <= '0;
         end else begin
           scan_m_q <= scan_m_q + 1'b1;
         end
@@ -133,17 +163,24 @@ module alexnet_m4n8_result_scanner #(
           $fatal(1, "scanner N mask must be a nonzero low-lane tail mask");
       end
 
-      if (out_valid) begin
-        if ((M_COUNT_W'(scan_m_q[M_INDEX_W-1:1]) << 1) + 1'b1 ==
-            m_count_q)
+      if (capture_fire) begin
+        for (int g = 0; g < PHYS_ROWS; g++) begin
+          if ((M_COUNT_W'(g) << 1) + 1'b1 == m_count_q)
           expected_m_mask = 2'b01;
-        else
-          expected_m_mask = 2'b11;
+          else if (M_COUNT_W'(g) * 2 < m_count_q)
+            expected_m_mask = 2'b11;
+          else
+            expected_m_mask = 2'b00;
 
-        for (int c = 0; c < COLS; c++) begin
-          if (hold_m_lane_mask[scan_m_q[M_INDEX_W-1:1]][c] !== expected_m_mask)
-            $fatal(1, "scanner M mask mismatch at row=%0d col=%0d",
-                   scan_m_q[M_INDEX_W-1:1], c);
+          for (int c = 0; c < COLS; c++) begin
+            // Inactive physical rows can retain the lane mask from an older
+            // tile because no result is produced or consumed for those PEs.
+            // They are explicitly zeroed in the snapshot above; only active
+            // rows carry a meaningful mask for this descriptor.
+            if (expected_m_mask != 2'b00 &&
+                hold_m_lane_mask[g][c] !== expected_m_mask)
+              $fatal(1, "scanner M mask mismatch at row=%0d col=%0d", g, c);
+          end
         end
       end
     end

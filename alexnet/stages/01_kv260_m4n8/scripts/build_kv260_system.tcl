@@ -103,8 +103,8 @@ if {[llength $drc_errors] != 0 || [llength $drc_critical] != 0} {
     error "DRC failed: [llength $drc_errors] errors, \
 [llength $drc_critical] critical warnings"
 }
-if {[llength $dsp_cells] != 40 || [llength $bram_cells] != 85 ||
-    [llength $bram18_cells] != 4 || [llength $uram_cells] != 13} {
+if {[llength $dsp_cells] != 96 || [llength $bram_cells] != 89 ||
+    [llength $bram18_cells] != 3 || [llength $uram_cells] != 13} {
     error "Resource contract failed: DSP48E2=[llength $dsp_cells], RAMB36E2=[llength $bram_cells], RAMB18E2=[llength $bram18_cells], URAM288=[llength $uram_cells]"
 }
 

@@ -71,6 +71,7 @@ module alexnet_n8_rs_m4_feeder #(
   localparam int RING_ADDR_W = $clog2(RING_LOGICAL_DEPTH);
   localparam int RING_BANK_W = $clog2(RING_BANKS);
   localparam int RING_ROW_W = $clog2(MAX_KERNEL);
+  localparam bit PARALLEL_READ = READ_COPIES == M_GROUP;
 
   typedef enum logic [2:0] {
     ST_IDLE,
@@ -111,6 +112,9 @@ module alexnet_n8_rs_m4_feeder #(
   logic [K_INDEX_W-1:0] emit_k_q;
   logic [M_COUNT_W-1:0] read_m_q;
   logic [63:0] pixel_q [0:M_GROUP-1];
+  logic [63:0] prefetch_pixel_q [0:M_GROUP-1];
+  logic prefetch_inflight_q;
+  logic prefetch_valid_q;
   logic [63:0] ring_bank_read_q [0:READ_COPIES-1][0:RING_BANKS-1];
   logic [RING_BANK_W-1:0] read_bank_select_q [0:READ_COPIES-1];
 
@@ -131,6 +135,11 @@ module alexnet_n8_rs_m4_feeder #(
   logic [8:0] read_bank_addr [0:READ_COPIES-1];
   logic [RING_ROW_W:0] read_ring_row_sum;
   logic [RING_ROW_W-1:0] read_ring_row;
+  logic [DIM_W-1:0] read_ky;
+  logic [DIM_W-1:0] read_kx;
+  logic [DIM_W-1:0] next_emit_ky;
+  logic [DIM_W-1:0] next_emit_kx;
+  logic prefetch_issue;
   logic [DIM_W-1:0] read_x [0:READ_COPIES-1];
   logic [63:0] scan_values_masked;
   logic [3:0] expected_lane_count;
@@ -185,7 +194,36 @@ module alexnet_n8_rs_m4_feeder #(
   assign write_addr = write_ring_row_q * MAX_PADDED_WIDTH + scan_x_q;
 
   always_comb begin
-    read_ring_row_sum = endpoint_ring_row_q + 1'b1 + emit_ky_q;
+    if (emit_kx_q == kernel_q - 1'b1) begin
+      next_emit_ky = emit_ky_q + 1'b1;
+      next_emit_kx = '0;
+    end else begin
+      next_emit_ky = emit_ky_q;
+      next_emit_kx = emit_kx_q + 1'b1;
+    end
+  end
+
+  // With one replicated read port per M lane, fetch the next kernel position
+  // while the current pixel word supplies its input-channel beats. AlexNet's
+  // smallest channel count is three, which leaves enough time for the
+  // synchronous BRAM issue/capture pair before the current word retires.
+  assign prefetch_issue = PARALLEL_READ &&
+                          (state_q == ST_EMIT) &&
+                          (channel_count_q >= 3) &&
+                          !prefetch_inflight_q && !prefetch_valid_q &&
+                          !((emit_ky_q == kernel_q - 1'b1) &&
+                            (emit_kx_q == kernel_q - 1'b1));
+
+  always_comb begin
+    if (prefetch_issue) begin
+      read_ky = next_emit_ky;
+      read_kx = next_emit_kx;
+    end else begin
+      read_ky = emit_ky_q;
+      read_kx = emit_kx_q;
+    end
+
+    read_ring_row_sum = endpoint_ring_row_q + 1'b1 + read_ky;
     if (read_ring_row_sum >= kernel_q)
       read_ring_row = read_ring_row_sum - kernel_q;
     else
@@ -194,14 +232,14 @@ module alexnet_n8_rs_m4_feeder #(
     for (int copy = 0; copy < READ_COPIES; copy++) begin
       if (stride_q == 4) begin
         if (READ_COPIES == 1)
-          read_x[copy] = (group_x_q << 2) + (read_m_q << 2) + emit_kx_q;
+          read_x[copy] = (group_x_q << 2) + (read_m_q << 2) + read_kx;
         else
-          read_x[copy] = (group_x_q << 2) + (copy << 2) + emit_kx_q;
+          read_x[copy] = (group_x_q << 2) + (copy << 2) + read_kx;
       end else begin
         if (READ_COPIES == 1)
-          read_x[copy] = group_x_q + read_m_q + emit_kx_q;
+          read_x[copy] = group_x_q + read_m_q + read_kx;
         else
-          read_x[copy] = group_x_q + copy + emit_kx_q;
+          read_x[copy] = group_x_q + copy + read_kx;
       end
     end
   end
@@ -229,7 +267,7 @@ module alexnet_n8_rs_m4_feeder #(
         always_ff @(posedge clk) begin
           if (scan_step && write_bank == bank)
             mem[write_bank_addr] <= scan_values_masked;
-          if (state_q == ST_READ_ISSUE)
+          if (state_q == ST_READ_ISSUE || prefetch_issue)
             ring_bank_read_q[copy][bank] <= mem[read_bank_addr[copy]];
         end
       end
@@ -293,10 +331,15 @@ module alexnet_n8_rs_m4_feeder #(
       emit_ic_q <= '0;
       emit_k_q <= '0;
       read_m_q <= '0;
+      prefetch_inflight_q <= 1'b0;
+      prefetch_valid_q <= 1'b0;
       for (int copy = 0; copy < READ_COPIES; copy++)
         read_bank_select_q[copy] <= '0;
-      for (int m = 0; m < M_GROUP; m++)
-        pixel_q[m] <= '0;
+      // Pixel payload registers intentionally have no reset. State and
+      // prefetch-valid control qualify every use, and each live M lane is
+      // overwritten by a BRAM capture before it can be emitted. Avoiding a
+      // reset/clear mux here keeps frame-control fanout off the 1024 payload
+      // bits and materially shortens the 200 MHz feeder path.
       frame_done <= 1'b0;
     end else begin
       frame_done <= 1'b0;
@@ -338,8 +381,8 @@ module alexnet_n8_rs_m4_feeder #(
         emit_ic_q <= '0;
         emit_k_q <= '0;
         read_m_q <= '0;
-        for (int m = 0; m < M_GROUP; m++)
-          pixel_q[m] <= '0;
+        prefetch_inflight_q <= 1'b0;
+        prefetch_valid_q <= 1'b0;
       end
 
       if (scan_step) begin
@@ -351,8 +394,8 @@ module alexnet_n8_rs_m4_feeder #(
           emit_ic_q <= '0;
           emit_k_q <= '0;
           read_m_q <= '0;
-          for (int m = 0; m < M_GROUP; m++)
-            pixel_q[m] <= '0;
+          prefetch_inflight_q <= 1'b0;
+          prefetch_valid_q <= 1'b0;
           state_q <= ST_READ_ISSUE;
         end
 
@@ -374,9 +417,28 @@ module alexnet_n8_rs_m4_feeder #(
         end
       end
 
-      if (state_q == ST_READ_ISSUE) begin
+      if (state_q == ST_READ_ISSUE || prefetch_issue) begin
         for (int copy = 0; copy < READ_COPIES; copy++)
           read_bank_select_q[copy] <= read_bank[copy];
+      end
+
+      if (prefetch_issue)
+        prefetch_inflight_q <= 1'b1;
+
+      if (prefetch_inflight_q) begin
+        for (int m = 0; m < M_GROUP; m++) begin
+          if (m < group_count_q)
+            prefetch_pixel_q[m] <=
+                ring_bank_read_q[m % READ_COPIES]
+                                [read_bank_select_q[m % READ_COPIES]];
+          else
+            prefetch_pixel_q[m] <= '0;
+        end
+        prefetch_inflight_q <= 1'b0;
+        prefetch_valid_q <= 1'b1;
+      end
+
+      if (state_q == ST_READ_ISSUE) begin
         state_q <= ST_READ_CAPTURE;
       end
 
@@ -385,6 +447,10 @@ module alexnet_n8_rs_m4_feeder #(
           pixel_q[read_m_q] <=
               ring_bank_read_q[0][read_bank_select_q[0]];
           if (read_m_q == group_count_q - 1'b1) begin
+            for (int m = 0; m < M_GROUP; m++) begin
+              if (m >= group_count_q)
+                pixel_q[m] <= '0;
+            end
             read_m_q <= '0;
             state_q <= ST_EMIT;
           end else begin
@@ -436,9 +502,13 @@ module alexnet_n8_rs_m4_feeder #(
             emit_kx_q <= emit_kx_q + 1'b1;
           end
           read_m_q <= '0;
-          for (int m = 0; m < M_GROUP; m++)
-            pixel_q[m] <= '0;
-          state_q <= ST_READ_ISSUE;
+          if (PARALLEL_READ && prefetch_valid_q) begin
+            for (int m = 0; m < M_GROUP; m++)
+              pixel_q[m] <= prefetch_pixel_q[m];
+            prefetch_valid_q <= 1'b0;
+          end else begin
+            state_q <= ST_READ_ISSUE;
+          end
         end else begin
           emit_ic_q <= emit_ic_q + 1'b1;
           emit_k_q <= emit_k_q + 1'b1;

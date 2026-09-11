@@ -46,7 +46,7 @@ frame. Each eight-byte DDR word contains signed INT8 model channels in bytes
 | `0x70` | `REJECTED_SUBMITS` | RO | rejected submit count since reset |
 | `0x74` | `FAILED_JOBS` | RO | failed inference count since reset |
 | `0x78` | `CONFIG_STATUS` | RO | bit 0 valid, bit 1 aligned, bit 2 within 32-bit DMA range, bit 8 pending |
-| `0x7C` | `BUILD_CONFIG` | RO | logical M=4, N=8, clock target=200 MHz |
+| `0x7C` | `BUILD_CONFIG` | RO | logical M=8, N=8, clock target=200 MHz |
 
 Unmapped reads and writes return AXI `SLVERR`. Byte writes are honored through
 `WSTRB`.
