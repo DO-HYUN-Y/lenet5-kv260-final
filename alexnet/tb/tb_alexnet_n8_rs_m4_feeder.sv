@@ -509,6 +509,12 @@ module tb_alexnet_n8_rs_m4_feeder #(
     run_frame(2, 13, 13, 8, 3, 1, 1, 103);
     // Actual conv1 geometry crosses every explicit 512-word ring-bank edge.
     run_frame(3, 224, 224, 3, 11, 4, 2, 104);
+    // M-tail hypothesis probes. Output width 16 and 32 are exact M16 group
+    // multiples and must show no lane-fill loss; width 17 adds one position
+    // and must drop the lane fill to 17/32.
+    run_frame(4, 16, 16, 8, 3, 1, 1, 105);
+    run_frame(5, 17, 17, 8, 3, 1, 1, 106);
+    run_frame(6, 32, 32, 8, 3, 1, 1, 107);
 
     if (M_GROUP == 16 && PERF_PROFILE)
       $display(
