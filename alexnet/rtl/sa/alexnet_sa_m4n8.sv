@@ -213,10 +213,11 @@ module alexnet_sa_m4n8 #(
 
 `ifndef SYNTHESIS
   initial begin
-    if ((PHYS_ROWS != 2 && PHYS_ROWS != 4) || COLS < 8 || COLS > 256 ||
+    if ((PHYS_ROWS != 2 && PHYS_ROWS != 4 && PHYS_ROWS != 8) ||
+        COLS < 8 || COLS > 256 ||
         ((COLS & (COLS - 1)) != 0) || DSP_LATENCY != 4)
       $fatal(1,
-             "AlexNet SA requires PHYS_ROWS=2/4 and power-of-two COLS=8..256");
+             "AlexNet SA requires PHYS_ROWS=2/4/8 and power-of-two COLS=8..256");
   end
 
   always_ff @(posedge clk) begin

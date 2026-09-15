@@ -298,15 +298,20 @@ module tb_alexnet_m4n8_rs_resident_weight_datapath;
     int status;
     int context_index;
     int m_count;
+    int output_y;
+    int output_x;
+    int group_advance;
     longint unsigned packed_values;
     begin
       context_index = 0;
-      for (int output_y = 0; output_y < current_out_h; output_y++) begin
-        for (int output_x = 0; output_x < current_out_w; output_x += 4) begin
-          if (current_out_w - output_x >= 4)
+      output_y = 0;
+      output_x = 0;
+      while (output_y < current_out_h) begin
+          m_count = current_out_w - output_x;
+          if (output_y + 1 < current_out_h)
+            m_count = m_count + current_out_w;
+          if (m_count > 4)
             m_count = 4;
-          else
-            m_count = current_out_w - output_x;
 
           for (int m = 0; m < 4; m++)
             for (int lane = 0; lane < 8; lane++)
@@ -367,7 +372,16 @@ module tb_alexnet_m4n8_rs_resident_weight_datapath;
             expected_write = expected_write + 1;
           end
           context_index = context_index + 1;
-        end
+          group_advance = output_x + m_count;
+          if (group_advance >= 2 * current_out_w) begin
+            output_y = output_y + 2;
+            output_x = group_advance - 2 * current_out_w;
+          end else if (group_advance >= current_out_w) begin
+            output_y = output_y + 1;
+            output_x = group_advance - current_out_w;
+          end else begin
+            output_x = group_advance;
+          end
       end
     end
   endtask
@@ -505,6 +519,10 @@ module tb_alexnet_m4n8_rs_resident_weight_datapath;
     int expected_packets_before;
     int replay_count_before;
     int frame_replay_pulses;
+    int count_cursor_y;
+    int count_cursor_x;
+    int count_capacity;
+    int count_advance;
     int cycles;
     logic pending_input;
     logic input_fire;
@@ -522,7 +540,27 @@ module tb_alexnet_m4n8_rs_resident_weight_datapath;
       current_tag_base = tag_base;
       current_weight_context_tag = weight_context_tag;
       current_weight_pattern = frame_index + 5;
-      expected_tiles = current_out_h * ((current_out_w + 3) / 4);
+      expected_tiles = 0;
+      count_cursor_y = 0;
+      count_cursor_x = 0;
+      while (count_cursor_y < current_out_h) begin
+        count_capacity = current_out_w - count_cursor_x;
+        if (count_cursor_y + 1 < current_out_h)
+          count_capacity = count_capacity + current_out_w;
+        if (count_capacity > 4)
+          count_capacity = 4;
+        count_advance = count_cursor_x + count_capacity;
+        if (count_advance >= 2 * current_out_w) begin
+          count_cursor_y = count_cursor_y + 2;
+          count_cursor_x = count_advance - 2 * current_out_w;
+        end else if (count_advance >= current_out_w) begin
+          count_cursor_y = count_cursor_y + 1;
+          count_cursor_x = count_advance - current_out_w;
+        end else begin
+          count_cursor_x = count_advance;
+        end
+        expected_tiles = expected_tiles + 1;
+      end
       expected_packets_before = expected_write;
       replay_count_before = completed_weight_replays;
       frame_replay_pulses = 0;
@@ -702,8 +740,8 @@ module tb_alexnet_m4n8_rs_resident_weight_datapath;
     run_frame(2, 16, 16, 3, 11, 4, 2, 16'h3000, 16'h0303);
 
     if (configuration_count != 3 || tested_frames != 3 ||
-        total_tiles != 27 || completed_weight_replays != 27 ||
-        total_replay_words != 4609 || total_weight_fill_words != 635 ||
+        total_tiles != 24 || completed_weight_replays != 24 ||
+        total_replay_words != 4265 || total_weight_fill_words != 635 ||
         context_rejections != 6 || expected_read != expected_write ||
         expected_read != 88 || protocol_error || weight_context_error)
       $fatal(1,

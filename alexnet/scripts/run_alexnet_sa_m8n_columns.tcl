@@ -14,9 +14,17 @@ set cpp_build [file join $alexnet_root cpp build]
 file mkdir $out_dir
 
 set clean_host_env [list env -u LD_LIBRARY_PATH -u LD_PRELOAD]
-set system_cxx_runtime /usr/lib/libstdc++.so.6
-if {![file exists $system_cxx_runtime]} {
-  error "system C++ runtime not found at $system_cxx_runtime"
+set system_cxx_runtime ""
+foreach candidate [list /usr/lib/libstdc++.so.6 \
+                         /lib/x86_64-linux-gnu/libstdc++.so.6 \
+                         /usr/lib/x86_64-linux-gnu/libstdc++.so.6] {
+  if {[file exists $candidate]} {
+    set system_cxx_runtime $candidate
+    break
+  }
+}
+if {$system_cxx_runtime eq ""} {
+  error "system 64-bit C++ runtime not found"
 }
 set simulator_library_path "$cpp_build:$env(LD_LIBRARY_PATH)"
 set simulator_env [list env LD_PRELOAD=$system_cxx_runtime \

@@ -10,6 +10,19 @@ set repo_dir [file normalize [file join $alexnet_dir ..]]
 set build_dir [file join $stage_dir build]
 set package_project_dir [file join $build_dir ip_package_accelerator]
 set ip_root [file join $build_dir ip_repo alexnet_m4n8_accelerator_1.0]
+set accelerator_top alexnet_m4n8_accelerator_top
+set accelerator_display_name {AlexNet M8xN8 DMA Accelerator}
+set accelerator_description \
+    {INT8 AlexNet M8xN8 accelerator with autonomous main AXI DMA control}
+if {[info exists ::alexnet_accelerator_top_override]} {
+    set accelerator_top $::alexnet_accelerator_top_override
+}
+if {[info exists ::alexnet_accelerator_display_name_override]} {
+    set accelerator_display_name $::alexnet_accelerator_display_name_override
+}
+if {[info exists ::alexnet_accelerator_description_override]} {
+    set accelerator_description $::alexnet_accelerator_description_override
+}
 
 file delete -force $package_project_dir
 file delete -force $ip_root
@@ -22,17 +35,15 @@ create_project -force alexnet_m4n8_ip_package $package_project_dir \
 set rtl_sources [lsort [glob [file join $alexnet_dir rtl * *.sv]]]
 lappend rtl_sources [file join $repo_dir rtl axi_dma_simple_master.sv]
 add_files -norecurse $rtl_sources
-set_property top alexnet_m4n8_accelerator_top [current_fileset]
+set_property top $accelerator_top [current_fileset]
 update_compile_order -fileset sources_1
 
 ipx::package_project -root_dir $ip_root -vendor user.org -library user \
     -taxonomy /UserIP -import_files -set_current true
 set core [ipx::current_core]
 set_property name alexnet_m4n8_accelerator $core
-set_property display_name {AlexNet M8xN8 DMA Accelerator} $core
-set_property description \
-    {INT8 AlexNet M8xN8 accelerator with autonomous main AXI DMA control} \
-    $core
+set_property display_name $accelerator_display_name $core
+set_property description $accelerator_description $core
 set_property core_revision 2 $core
 set_property version 1.0 $core
 set_property supported_families {zynquplus Production} $core

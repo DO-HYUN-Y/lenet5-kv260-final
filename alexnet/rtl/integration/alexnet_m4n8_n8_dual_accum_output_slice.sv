@@ -242,8 +242,7 @@ module alexnet_m4n8_n8_dual_accum_output_slice #(
       end
 
       if (scanner_fire) begin
-        if ((ingress_raster_x_q + 1'b1 == resident_output_width_q) ||
-            (ingress_raster_x_q[1:0] == 2'b11))
+        if (bank_words_accepted[1:0] == 2'b11)
           ingress_tile_index_q <= ingress_tile_index_q + 1'b1;
         if (ingress_raster_x_q + 1'b1 == resident_output_width_q)
           ingress_raster_x_q <= '0;
@@ -256,8 +255,7 @@ module alexnet_m4n8_n8_dual_accum_output_slice #(
 
       if (bank_egress_fire) begin
         egress_words_transferred_q <= egress_words_transferred_q + 1'b1;
-        if ((egress_raster_x_q + 1'b1 == resident_output_width_q) ||
-            (egress_raster_x_q[1:0] == 2'b11))
+        if (egress_words_transferred_q[1:0] == 2'b11)
           egress_tile_index_q <= egress_tile_index_q + 1'b1;
         if (egress_raster_x_q + 1'b1 == resident_output_width_q)
           egress_raster_x_q <= '0;
@@ -312,7 +310,7 @@ module alexnet_m4n8_n8_dual_accum_output_slice #(
   );
 
   assign scanner_metadata_match =
-      (scanner_m == ingress_raster_x_q[1:0]) &&
+      (scanner_m == bank_words_accepted[1:0]) &&
       (scanner_tile_tag ==
        resident_tile_tag_base_q + ingress_tile_index_q);
   assign bank_ingress_valid = scanner_valid && scanner_metadata_match;
@@ -385,7 +383,7 @@ module alexnet_m4n8_n8_dual_accum_output_slice #(
       .ingress_ready(requant_ready),
       .ingress_accumulator(bank_egress_accumulator),
       .ingress_lane_mask(bank_egress_n_lane_mask),
-      .ingress_m({3'b000, egress_raster_x_q[1:0]}),
+      .ingress_m({3'b000, egress_words_transferred_q[1:0]}),
       .ingress_tile_tag(
           resident_tile_tag_base_q + egress_tile_index_q),
       .egress_valid(requant_valid),

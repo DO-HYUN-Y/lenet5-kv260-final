@@ -208,10 +208,11 @@ module tb_alexnet_n8_rs_m4_feeder #(
       end
 
       if (m_valid) begin
-        if (current_out_w - expected_x >= M_GROUP)
+        expected_count = current_out_w - expected_x;
+        if (expected_y + 1 < current_out_h)
+          expected_count = expected_count + current_out_w;
+        if (expected_count >= M_GROUP)
           expected_count = M_GROUP;
-        else
-          expected_count = current_out_w - expected_x;
         golden_activations_wide = '0;
         golden_mask_wide = '0;
         if (M_GROUP == 16) begin
@@ -296,6 +297,11 @@ module tb_alexnet_n8_rs_m4_feeder #(
     int issue_cycles;
     int source_starve_cycles;
     int output_block_cycles;
+    int expected_groups;
+    int count_cursor_y;
+    int count_cursor_x;
+    int count_capacity;
+    int count_advance;
     longint useful_m_slots;
     real issue_duty_pct;
     real pe_util_pct;
@@ -319,9 +325,28 @@ module tb_alexnet_n8_rs_m4_feeder #(
       expected_k = 0;
       input_index = 0;
       frame_tokens = 0;
-      expected_tokens = current_out_h *
-                        ((current_out_w + M_GROUP - 1) / M_GROUP) *
-                        current_depth;
+      expected_groups = 0;
+      count_cursor_y = 0;
+      count_cursor_x = 0;
+      while (count_cursor_y < current_out_h) begin
+        count_capacity = current_out_w - count_cursor_x;
+        if (count_cursor_y + 1 < current_out_h)
+          count_capacity = count_capacity + current_out_w;
+        if (count_capacity > M_GROUP)
+          count_capacity = M_GROUP;
+        count_advance = count_cursor_x + count_capacity;
+        if (count_advance >= 2 * current_out_w) begin
+          count_cursor_y = count_cursor_y + 2;
+          count_cursor_x = count_advance - 2 * current_out_w;
+        end else if (count_advance >= current_out_w) begin
+          count_cursor_y = count_cursor_y + 1;
+          count_cursor_x = count_advance - current_out_w;
+        end else begin
+          count_cursor_x = count_advance;
+        end
+        expected_groups = expected_groups + 1;
+      end
+      expected_tokens = expected_groups * current_depth;
       cycles = 0;
       scan_cycles = 0;
       read_issue_cycles = 0;
@@ -374,15 +399,14 @@ module tb_alexnet_n8_rs_m4_feeder #(
         input_fire = s_valid && s_ready;
         output_fire = m_valid && m_ready;
         if (PERF_PROFILE) begin
+          if (dut.scan_step)
+            scan_cycles = scan_cycles + 1;
+          if (dut.s_ready && !s_valid)
+            source_starve_cycles = source_starve_cycles + 1;
           case (dut.state_q)
-            3'd1: begin
-              scan_cycles = scan_cycles + 1;
-              if (s_ready && !s_valid)
-                source_starve_cycles = source_starve_cycles + 1;
-            end
-            3'd2: read_issue_cycles = read_issue_cycles + 1;
-            3'd3: read_capture_cycles = read_capture_cycles + 1;
-            3'd4: begin
+            3'd5: read_issue_cycles = read_issue_cycles + 1;
+            3'd6: read_capture_cycles = read_capture_cycles + 1;
+            3'd7: begin
               emit_cycles = emit_cycles + 1;
               if (output_fire) begin
                 issue_cycles = issue_cycles + 1;
@@ -407,11 +431,15 @@ module tb_alexnet_n8_rs_m4_feeder #(
           total_tokens = total_tokens + 1;
           if (expected_k == current_depth - 1) begin
             expected_k = 0;
-            if (expected_x + M_GROUP >= current_out_w) begin
-              expected_x = 0;
+            count_advance = expected_x + m_count;
+            if (count_advance >= 2 * current_out_w) begin
+              expected_x = count_advance - 2 * current_out_w;
+              expected_y = expected_y + 2;
+            end else if (count_advance >= current_out_w) begin
+              expected_x = count_advance - current_out_w;
               expected_y = expected_y + 1;
             end else begin
-              expected_x = expected_x + M_GROUP;
+              expected_x = count_advance;
             end
           end else begin
             expected_k = expected_k + 1;
@@ -442,14 +470,10 @@ module tb_alexnet_n8_rs_m4_feeder #(
         issue_duty_pct = 100.0 * issue_cycles / cycles;
         pe_util_pct = 100.0 * useful_m_slots / (cycles * M_GROUP);
         if (source_starve_cycles != 0 || output_block_cycles != 0 ||
-            issue_cycles != expected_tokens ||
-            scan_cycles + read_issue_cycles + read_capture_cycles +
-                emit_cycles != cycles)
+            issue_cycles != expected_tokens)
           $fatal(1,
-                 "M8 feeder profile accounting mismatch tag=%0d cycles=%0d accounted=%0d issue=%0d/%0d source=%0d output=%0d",
+                 "M8 feeder profile accounting mismatch tag=%0d cycles=%0d issue=%0d/%0d source=%0d output=%0d",
                  tag, cycles,
-                 scan_cycles + read_issue_cycles + read_capture_cycles +
-                     emit_cycles,
                  issue_cycles, expected_tokens, source_starve_cycles,
                  output_block_cycles);
         if (M_GROUP == 16)

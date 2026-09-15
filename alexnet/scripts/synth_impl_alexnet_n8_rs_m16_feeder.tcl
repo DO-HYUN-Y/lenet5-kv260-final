@@ -1,6 +1,6 @@
 set part xck26-sfvc784-2LV-c
 set frequency_mhz 200
-set expected_ramb36 80
+set expected_ramb36 112
 set_param general.maxThreads 8
 
 set alexnet_root [file normalize [file join [file dirname [info script]] ..]]
@@ -45,9 +45,6 @@ set setup_path [get_timing_paths -delay_type max -max_paths 1]
 set hold_path [get_timing_paths -delay_type min -max_paths 1]
 set setup_wns [get_property SLACK $setup_path]
 set hold_whs [get_property SLACK $hold_path]
-if {$setup_wns < 0.0 || $hold_whs < 0.0} {
-  error "M16 feeder failed 200 MHz timing: WNS=$setup_wns WHS=$hold_whs"
-}
 
 write_checkpoint -force [file join $out_dir post_route.dcp]
 report_utilization -file [file join $report_dir impl_utilization.rpt]
@@ -71,7 +68,8 @@ puts $metadata_file "design=alexnet_n8_rs_m16_feeder"
 puts $metadata_file "input_lanes=8"
 puts $metadata_file "output_m=16"
 puts $metadata_file "read_copies=16"
-puts $metadata_file "ring_banks_per_copy=5"
+puts $metadata_file "ring_rows=15"
+puts $metadata_file "ring_banks_per_copy=7"
 puts $metadata_file "git_commit=[exec git -C $repo_root rev-parse HEAD]"
 puts $metadata_file "vivado=[version -short]"
 puts $metadata_file "part=$part"
@@ -85,5 +83,9 @@ puts $metadata_file \
     "wrapper_rtl_sha256=[lindex [exec sha256sum $wrapper_source] 0]"
 puts $metadata_file "xdc_sha256=[lindex [exec sha256sum $xdc_source] 0]"
 close $metadata_file
+
+if {$setup_wns < 0.0 || $hold_whs < 0.0} {
+  error "M16 feeder failed 200 MHz timing: WNS=$setup_wns WHS=$hold_whs"
+}
 
 puts "ALEXNET_N8_RS_M16_FEEDER_OOC_PASS frequency_mhz=$frequency_mhz RAMB36=$synth_ramb36 WNS=$setup_wns WHS=$hold_whs"

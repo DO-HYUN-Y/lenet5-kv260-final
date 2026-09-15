@@ -244,10 +244,11 @@ module tb_alexnet_m4n8_rs_datapath;
     int expected_count;
     longint unsigned packed_values;
     begin
-      if (current_out_w - expected_context_x >= 4)
+      expected_count = current_out_w - expected_context_x;
+      if (expected_context_y + 1 < current_out_h)
+        expected_count = expected_count + current_out_w;
+      if (expected_count > 4)
         expected_count = 4;
-      else
-        expected_count = current_out_w - expected_context_x;
 
       if (weight_tile_index != frame_contexts ||
           weight_tile_output_y != expected_context_y ||
@@ -317,11 +318,15 @@ module tb_alexnet_m4n8_rs_datapath;
 
       frame_contexts = frame_contexts + 1;
       total_contexts = total_contexts + 1;
-      if (expected_context_x + 4 >= current_out_w) begin
-        expected_context_x = 0;
+      expected_count = expected_context_x + expected_count;
+      if (expected_count >= 2 * current_out_w) begin
+        expected_context_y = expected_context_y + 2;
+        expected_context_x = expected_count - 2 * current_out_w;
+      end else if (expected_count >= current_out_w) begin
         expected_context_y = expected_context_y + 1;
+        expected_context_x = expected_count - current_out_w;
       end else begin
-        expected_context_x = expected_context_x + 4;
+        expected_context_x = expected_count;
       end
     end
   endtask
@@ -396,6 +401,10 @@ module tb_alexnet_m4n8_rs_datapath;
     int frame_weight_tokens;
     int expected_tiles;
     int expected_packets_before;
+    int count_cursor_y;
+    int count_cursor_x;
+    int count_capacity;
+    int count_advance;
     int cycles;
     logic pending_input;
     logic pending_weight;
@@ -421,7 +430,27 @@ module tb_alexnet_m4n8_rs_datapath;
       input_index = 0;
       weight_index = 0;
       frame_weight_tokens = 0;
-      expected_tiles = current_out_h * ((current_out_w + 3) / 4);
+      expected_tiles = 0;
+      count_cursor_y = 0;
+      count_cursor_x = 0;
+      while (count_cursor_y < current_out_h) begin
+        count_capacity = current_out_w - count_cursor_x;
+        if (count_cursor_y + 1 < current_out_h)
+          count_capacity = count_capacity + current_out_w;
+        if (count_capacity > 4)
+          count_capacity = 4;
+        count_advance = count_cursor_x + count_capacity;
+        if (count_advance >= 2 * current_out_w) begin
+          count_cursor_y = count_cursor_y + 2;
+          count_cursor_x = count_advance - 2 * current_out_w;
+        end else if (count_advance >= current_out_w) begin
+          count_cursor_y = count_cursor_y + 1;
+          count_cursor_x = count_advance - current_out_w;
+        end else begin
+          count_cursor_x = count_advance;
+        end
+        expected_tiles = expected_tiles + 1;
+      end
       expected_packets_before = expected_write;
       cycles = 0;
       pending_input = 1'b0;
@@ -614,7 +643,7 @@ module tb_alexnet_m4n8_rs_datapath;
     run_frame(2, 16, 16, 3, 11, 4, 2, 16'h3000);
 
     if (configuration_count != 3 || tested_frames != 3 ||
-        total_contexts != 27 || total_weight_tokens != 4609 ||
+        total_contexts != 24 || total_weight_tokens != 4265 ||
         expected_read != expected_write || expected_read != 88 ||
         protocol_error)
       $fatal(1,

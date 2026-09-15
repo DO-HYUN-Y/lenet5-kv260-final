@@ -291,9 +291,11 @@ module alexnet_m4n8_n8_accum_output_slice #(
             ingress_raster_x_q <=
                 ingress_raster_x_q + wide_scanner_m_count;
         end else begin
-          if ((ingress_raster_x_q + 1'b1 == resident_output_width_q) ||
-              (ingress_raster_x_q[M_INDEX_W-1:0] ==
-               M_INDEX_W'(M_GROUP-1)))
+          // M groups are flattened across raster-row boundaries.  A row
+          // boundary therefore advances only the raster coordinate; the tile
+          // index advances after the fourth sequential output word.
+          if (bank_words_accepted[M_INDEX_W-1:0] ==
+              M_INDEX_W'(M_GROUP-1))
             ingress_tile_index_q <= ingress_tile_index_q + 1'b1;
           if (ingress_raster_x_q + 1'b1 == resident_output_width_q)
             ingress_raster_x_q <= '0;
@@ -312,9 +314,8 @@ module alexnet_m4n8_n8_accum_output_slice #(
           egress_tile_index_q <= egress_tile_index_q + 1'b1;
         end else begin
           egress_words_transferred_q <= egress_words_transferred_q + 1'b1;
-          if ((egress_raster_x_q + 1'b1 == resident_output_width_q) ||
-              (egress_raster_x_q[M_INDEX_W-1:0] ==
-               M_INDEX_W'(M_GROUP-1)))
+          if (egress_words_transferred_q[M_INDEX_W-1:0] ==
+              M_INDEX_W'(M_GROUP-1))
             egress_tile_index_q <= egress_tile_index_q + 1'b1;
           if (egress_raster_x_q + 1'b1 == resident_output_width_q)
             egress_raster_x_q <= '0;
@@ -638,7 +639,7 @@ module alexnet_m4n8_n8_accum_output_slice #(
       );
 
       assign scanner_metadata_match =
-          (scanner_m == ingress_raster_x_q[M_INDEX_W-1:0]) &&
+          (scanner_m == bank_words_accepted[M_INDEX_W-1:0]) &&
           (scanner_tile_tag ==
            resident_tile_tag_base_q + ingress_tile_index_q);
       assign bank_ingress_valid = scanner_valid && scanner_metadata_match;
@@ -707,7 +708,7 @@ module alexnet_m4n8_n8_accum_output_slice #(
           .ingress_ready(requant_ready),
           .ingress_accumulator(bank_egress_accumulator),
           .ingress_lane_mask(bank_egress_n_lane_mask),
-          .ingress_m(5'(egress_raster_x_q[M_INDEX_W-1:0])),
+          .ingress_m(5'(egress_words_transferred_q[M_INDEX_W-1:0])),
           .ingress_tile_tag(
               resident_tile_tag_base_q + egress_tile_index_q),
           .egress_valid(requant_valid),

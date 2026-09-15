@@ -29,7 +29,7 @@ module tb_alexnet_m4n8_rs_dma_scheduled_io_datapath;
   localparam int OUTPUT_WORDS = INPUT_H * INPUT_W;
   localparam int RESULT_BEATS = (OUTPUT_WORDS + 1) / 2;
   localparam int K_COUNT = KERNEL * KERNEL * CHANNELS;
-  localparam int TILES_PER_CHUNK = INPUT_H * ((OUTPUT_W + 3) / 4);
+  localparam int TILES_PER_CHUNK = (INPUT_H * OUTPUT_W + 3) / 4;
   localparam int CHUNK_COUNT = 2;
   localparam logic [1:0] DMA_ACTIVATION_DIRECT = 2'd0;
   localparam logic [1:0] DMA_ACTIVATION_POOLED = 2'd1;
@@ -51,6 +51,7 @@ module tb_alexnet_m4n8_rs_dma_scheduled_io_datapath;
   logic command_valid;
   logic command_ready;
   logic [15:0] command_id;
+  logic command_activation_streaming;
   logic [1:0] command_activation_destination;
   logic [ACTIVATION_COUNT_W-1:0] command_activation_word_count;
   logic [15:0] command_activation_byte_count;
@@ -91,6 +92,11 @@ module tb_alexnet_m4n8_rs_dma_scheduled_io_datapath;
   logic s_axis_tvalid;
   logic s_axis_tready;
   logic s_axis_tlast;
+  logic activation_stream_valid;
+  logic activation_stream_ready;
+  logic [63:0] activation_stream_values;
+  logic [7:0] activation_stream_lane_mask;
+  logic activation_stream_last;
   logic [127:0] m_axis_tdata;
   logic [15:0] m_axis_tkeep;
   logic m_axis_tvalid;
@@ -148,6 +154,7 @@ module tb_alexnet_m4n8_rs_dma_scheduled_io_datapath;
   logic activation_read_segment;
   logic activation_read_done;
   logic [ACTIVATION_COUNT_W-1:0] activation_words_forwarded;
+  logic [15:0] activation_stream_words_forwarded;
 
   logic dma_busy;
   logic dma_transfer_active;
@@ -295,6 +302,7 @@ module tb_alexnet_m4n8_rs_dma_scheduled_io_datapath;
       .command_valid(command_valid),
       .command_ready(command_ready),
       .command_id(command_id),
+      .command_activation_streaming(command_activation_streaming),
       .command_activation_destination(command_activation_destination),
       .command_activation_word_count(command_activation_word_count),
       .command_activation_byte_count(command_activation_byte_count),
@@ -335,6 +343,11 @@ module tb_alexnet_m4n8_rs_dma_scheduled_io_datapath;
       .s_axis_tvalid(s_axis_tvalid),
       .s_axis_tready(s_axis_tready),
       .s_axis_tlast(s_axis_tlast),
+      .activation_stream_valid(activation_stream_valid),
+      .activation_stream_ready(activation_stream_ready),
+      .activation_stream_values(activation_stream_values),
+      .activation_stream_lane_mask(activation_stream_lane_mask),
+      .activation_stream_last(activation_stream_last),
       .rs_mm2s_request_valid(rs_mm2s_request_valid),
       .rs_mm2s_request_ready(rs_mm2s_request_ready),
       .rs_mm2s_request_destination(rs_mm2s_request_destination),
@@ -404,6 +417,8 @@ module tb_alexnet_m4n8_rs_dma_scheduled_io_datapath;
       .activation_read_segment(activation_read_segment),
       .activation_read_done(activation_read_done),
       .activation_words_forwarded(activation_words_forwarded),
+      .activation_stream_words_forwarded(
+          activation_stream_words_forwarded),
       .dma_busy(dma_busy),
       .dma_transfer_active(dma_transfer_active),
       .dma_transfer_done(dma_transfer_done),
@@ -657,6 +672,7 @@ module tb_alexnet_m4n8_rs_dma_scheduled_io_datapath;
       input logic bad_activation_byte_count);
     begin
       command_id = 16'h0100 + chunk_number;
+      command_activation_streaming = 1'b0;
       command_activation_destination =
           chunk_number[0] ? DMA_ACTIVATION_POOLED : DMA_ACTIVATION_DIRECT;
       command_activation_word_count = OUTPUT_WORDS;
@@ -839,6 +855,7 @@ module tb_alexnet_m4n8_rs_dma_scheduled_io_datapath;
     cfg_relu = '0;
     command_valid = 1'b0;
     command_id = '0;
+    command_activation_streaming = 1'b0;
     command_activation_destination = '0;
     command_activation_word_count = '0;
     command_activation_byte_count = '0;
@@ -877,6 +894,10 @@ module tb_alexnet_m4n8_rs_dma_scheduled_io_datapath;
     s_axis_tkeep = '0;
     s_axis_tvalid = 1'b0;
     s_axis_tlast = 1'b0;
+    activation_stream_valid = 1'b0;
+    activation_stream_values = '0;
+    activation_stream_lane_mask = '0;
+    activation_stream_last = 1'b0;
     m_axis_tready = 1'b0;
     random_compute_stalls = 1'b0;
     random_result_stalls = 1'b1;
@@ -988,7 +1009,7 @@ module tb_alexnet_m4n8_rs_dma_scheduled_io_datapath;
         result_axis_beats != RESULT_BEATS ||
         result_dma_completed_first_tile_tag != 16'h4000 ||
         result_dma_completed_last_tile_tag !=
-            16'(16'h4000 + INPUT_H * ((OUTPUT_W + 3) / 4) - 1) ||
+            16'(16'h4000 + TILES_PER_CHUNK - 1) ||
         chunk_completions != CHUNK_COUNT ||
         transaction_completions != 1 || activation_reads != CHUNK_COUNT ||
         completed_weight_replays != CHUNK_COUNT * TILES_PER_CHUNK ||

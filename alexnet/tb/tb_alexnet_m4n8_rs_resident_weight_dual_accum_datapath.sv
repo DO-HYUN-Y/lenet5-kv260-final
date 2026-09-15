@@ -18,7 +18,7 @@ module tb_alexnet_m4n8_rs_resident_weight_dual_accum_datapath;
   localparam int OUTPUT_W = 27;
   localparam int OUTPUT_WORDS = OUTPUT_H * OUTPUT_W;
   localparam int K_COUNT = KERNEL * KERNEL * CHANNELS;
-  localparam int TILES_PER_CHUNK = OUTPUT_H * ((OUTPUT_W + 3) / 4);
+  localparam int TILES_PER_CHUNK = (OUTPUT_WORDS + 3) / 4;
   localparam int CHUNK_COUNT = 12;
   localparam int MAX_EXPECTED = 1024;
 
@@ -47,6 +47,7 @@ module tb_alexnet_m4n8_rs_resident_weight_dual_accum_datapath;
   logic cfg_ready;
   logic [1:0] cfg_destination;
   logic [15:0] cfg_n64_tile_base;
+  logic [2:0] cfg_slice_index;
   logic [7:0] cfg_lane_mask;
   logic signed [31:0] cfg_bias [0:7];
   logic signed [17:0] cfg_multiplier [0:7];
@@ -427,6 +428,9 @@ module tb_alexnet_m4n8_rs_resident_weight_dual_accum_datapath;
     int status;
     int m_count;
     int word_index;
+    int output_y;
+    int output_x;
+    int group_advance;
     begin
       status = alexnet_golden_window_m4_reset(
           INPUT_H, INPUT_W, CHANNELS, KERNEL, STRIDE, PADDING);
@@ -446,12 +450,14 @@ module tb_alexnet_m4n8_rs_resident_weight_dual_accum_datapath;
         end
       end
 
-      for (int output_y = 0; output_y < OUTPUT_H; output_y++) begin
-        for (int output_x = 0; output_x < OUTPUT_W; output_x += 4) begin
-          if (OUTPUT_W - output_x >= 4)
+      output_y = 0;
+      output_x = 0;
+      while (output_y < OUTPUT_H) begin
+          m_count = OUTPUT_W - output_x;
+          if (output_y + 1 < OUTPUT_H)
+            m_count = m_count + OUTPUT_W;
+          if (m_count > 4)
             m_count = 4;
-          else
-            m_count = OUTPUT_W - output_x;
 
           for (int k = 0; k < K_COUNT; k++) begin
             status = alexnet_golden_window_m4_token(
@@ -487,7 +493,16 @@ module tb_alexnet_m4n8_rs_resident_weight_dual_accum_datapath;
               end
             end
           end
-        end
+          group_advance = output_x + m_count;
+          if (group_advance >= 2 * OUTPUT_W) begin
+            output_y = output_y + 2;
+            output_x = group_advance - 2 * OUTPUT_W;
+          end else if (group_advance >= OUTPUT_W) begin
+            output_y = output_y + 1;
+            output_x = group_advance - OUTPUT_W;
+          end else begin
+            output_x = group_advance;
+          end
       end
     end
   endtask
@@ -520,13 +535,12 @@ module tb_alexnet_m4n8_rs_resident_weight_dual_accum_datapath;
           end
         end
 
-        tile_index = (word / OUTPUT_W) * ((OUTPUT_W + 3) / 4) +
-                     ((word % OUTPUT_W) / 4);
+        tile_index = word / 4;
         expected_values[expected_write] = packed_values;
         expected_mask[expected_write] = active_lane_mask;
         expected_destination[expected_write] = active_destination;
         expected_slice[expected_write] = SLICE_INDEX;
-        expected_m[expected_write] = (word % OUTPUT_W) % 4;
+        expected_m[expected_write] = word % 4;
         expected_n_base[expected_write] =
             active_n64_tile_base + SLICE_INDEX * 8;
         expected_tag[expected_write] = 16'h4000 + tile_index;
@@ -755,6 +769,7 @@ module tb_alexnet_m4n8_rs_resident_weight_dual_accum_datapath;
     cfg_valid = 1'b0;
     cfg_destination = '0;
     cfg_n64_tile_base = '0;
+    cfg_slice_index = SLICE_INDEX;
     cfg_lane_mask = '0;
     cfg_relu = '0;
     weight_fill_valid = 1'b0;

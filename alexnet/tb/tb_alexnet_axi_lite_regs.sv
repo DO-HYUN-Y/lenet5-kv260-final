@@ -34,6 +34,11 @@ module tb_alexnet_axi_lite_regs;
   logic [2:0] dma_active_source;
   logic [31:0] dma_accepted_requests, dma_issued_commands;
   logic [31:0] dma_completed_transfers, conv_storage_completed_tiles;
+  logic [31:0] perf_active_cycles, perf_issue_cycles;
+  logic [31:0] perf_weight_stall_cycles, perf_activation_stall_cycles;
+  logic [31:0] perf_result_stall_cycles, perf_result_signature;
+  logic [63:0] perf_useful_mac_count, perf_peak_mac_slot_count;
+  logic [15:0] perf_completed_tiles;
   logic irq, start_pending, done_sticky, failed_sticky, fault_sticky;
   logic start_rejected_sticky;
   logic [31:0] read_value;
@@ -185,6 +190,15 @@ module tb_alexnet_axi_lite_regs;
     dma_issued_commands = 0;
     dma_completed_transfers = 0;
     conv_storage_completed_tiles = 0;
+    perf_active_cycles = 32'h1000_0001;
+    perf_issue_cycles = 32'h2000_0002;
+    perf_weight_stall_cycles = 32'h3000_0003;
+    perf_activation_stall_cycles = 32'h4000_0004;
+    perf_result_stall_cycles = 32'h5000_0005;
+    perf_useful_mac_count = 64'h6000_0006_7000_0007;
+    perf_peak_mac_slot_count = 64'h8000_0008_9000_0009;
+    perf_result_signature = 32'ha000_000a;
+    perf_completed_tiles = 16'hb00b;
     repeat (5) @(posedge clk);
     @(negedge clk);
     rst = 1'b0;
@@ -301,10 +315,22 @@ module tb_alexnet_axi_lite_regs;
     if (failed_sticky || fault_sticky || irq)
       $fatal(1, "failure/fault W1C failed after live fault cleared");
 
-    axi_read(8'h80, read_value, read_response);
+    expect_read(8'h80, perf_active_cycles);
+    expect_read(8'h84, perf_issue_cycles);
+    expect_read(8'h88, perf_weight_stall_cycles);
+    expect_read(8'h8c, perf_activation_stall_cycles);
+    expect_read(8'h90, perf_result_stall_cycles);
+    expect_read(8'h94, perf_useful_mac_count[31:0]);
+    expect_read(8'h98, perf_useful_mac_count[63:32]);
+    expect_read(8'h9c, perf_peak_mac_slot_count[31:0]);
+    expect_read(8'ha0, perf_peak_mac_slot_count[63:32]);
+    expect_read(8'ha4, perf_result_signature);
+    expect_read(8'ha8, {16'd0, perf_completed_tiles});
+
+    axi_read(8'hac, read_value, read_response);
     if (read_response != 2'b10)
       $fatal(1, "unmapped AXI read did not return SLVERR");
-    axi_write(8'h80, 32'h0, 4'hf, 1, 2'b10);
+    axi_write(8'hac, 32'h0, 4'hf, 1, 2'b10);
 
     $display("ALEXNET_AXI_LITE_REGS_TEST_PASSED completed=%0d rejected=%0d failed=%0d",
              dut.completed_jobs_q, dut.rejected_submits_q, dut.failed_jobs_q);

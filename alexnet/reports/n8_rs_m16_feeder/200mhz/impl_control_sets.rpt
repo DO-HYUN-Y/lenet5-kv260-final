@@ -1,12 +1,12 @@
-Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
-| Date         : Fri Sep 11 16:37:10 2026
-| Host         : yundodo running 64-bit unknown
-| Command      : report_control_sets -verbose -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/n8_rs_m16_feeder/200mhz/impl_control_sets.rpt
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (lin64) Build 6299465 Fri Nov 14 12:34:56 MST 2025
+| Date         : Mon Sep 14 18:16:13 2026
+| Host         : jian-ThinkBook-16-G9-AHP running 64-bit Ubuntu 24.04.4 LTS
+| Command      : report_control_sets -verbose -file /home/jian/Documents/Codex/2026-09-09/https-github-com-do-hyun-y/work/lenet5-kv260-final/alexnet/reports/n8_rs_m16_feeder/200mhz/impl_control_sets.rpt
 | Design       : alexnet_n8_rs_m16_feeder
 | Device       : xck26
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Control Set Information
 
@@ -23,11 +23,11 @@ Table of Contents
 +----------------------------------------------------------+-------+
 |                          Status                          | Count |
 +----------------------------------------------------------+-------+
-| Total control sets                                       |    18 |
-|    Minimum number of control sets                        |    18 |
+| Total control sets                                       |    19 |
+|    Minimum number of control sets                        |    19 |
 |    Addition due to synthesis replication                 |     0 |
 |    Addition due to physical synthesis replication        |     0 |
-| Unused register locations in slices containing registers |    14 |
+| Unused register locations in slices containing registers |    11 |
 +----------------------------------------------------------+-------+
 * Control sets can be merged at opt_design using control_set_merge or merge_equivalent_drivers
 ** Run report_qor_suggestions for automated merging and remapping suggestions
@@ -39,15 +39,15 @@ Table of Contents
 +--------------------+-------+
 |       Fanout       | Count |
 +--------------------+-------+
-| Total control sets |    18 |
-| >= 0 to < 4        |     3 |
+| Total control sets |    19 |
+| >= 0 to < 4        |     1 |
 | >= 4 to < 6        |     3 |
-| >= 6 to < 8        |     1 |
-| >= 8 to < 10       |     4 |
-| >= 10 to < 12      |     1 |
-| >= 12 to < 14      |     2 |
+| >= 6 to < 8        |     0 |
+| >= 8 to < 10       |     3 |
+| >= 10 to < 12      |     0 |
+| >= 12 to < 14      |     0 |
 | >= 14 to < 16      |     0 |
-| >= 16              |     4 |
+| >= 16              |    12 |
 +--------------------+-------+
 * Control sets can be remapped at either synth_design or opt_design
 
@@ -58,12 +58,12 @@ Table of Contents
 +--------------+-----------------------+------------------------+-----------------+--------------+
 | Clock Enable | Synchronous Set/Reset | Asynchronous Set/Reset | Total Registers | Total Slices |
 +--------------+-----------------------+------------------------+-----------------+--------------+
-| No           | No                    | No                     |               2 |            2 |
+| No           | No                    | No                     |               0 |            0 |
 | No           | No                    | Yes                    |               0 |            0 |
-| No           | Yes                   | No                     |               4 |            4 |
-| Yes          | No                    | No                     |            2064 |          403 |
+| No           | Yes                   | No                     |               5 |            5 |
+| Yes          | No                    | No                     |            2048 |          414 |
 | Yes          | No                    | Yes                    |               0 |            0 |
-| Yes          | Yes                   | No                     |             204 |           74 |
+| Yes          | Yes                   | No                     |             664 |          280 |
 +--------------+-----------------------+------------------------+-----------------+--------------+
 
 
@@ -73,24 +73,25 @@ Table of Contents
 +--------------+------------------------------------------+--------------------------------------+------------------+----------------+--------------+
 | Clock Signal |               Enable Signal              |           Set/Reset Signal           | Slice Load Count | Bel Load Count | Bels / Slice |
 +--------------+------------------------------------------+--------------------------------------+------------------+----------------+--------------+
-|  clk         |                                          |                                      |                2 |              2 |         1.00 |
-|  clk         | u_feeder/CEC                             | u_feeder/scan_x_q[4]_i_1_n_0         |                1 |              3 |         3.00 |
-|  clk         | u_feeder/state_q[2]_i_1_n_0              |                                      |                2 |              3 |         1.50 |
-|  clk         |                                          | rst                                  |                4 |              4 |         1.00 |
-|  clk         | u_feeder/group_x_q[7]_i_2_n_0            | u_feeder/group_x_q[7]_i_1_n_0        |                1 |              4 |         4.00 |
+|  clk         | u_feeder/state_q[2]_i_1_n_0              | rst                                  |                2 |              3 |         1.50 |
+|  clk         | u_feeder/endpoint_ring_row_q[3]_i_1_n_0  | rst                                  |                1 |              4 |         4.00 |
 |  clk         | u_feeder/CEB2                            | u_feeder/write_ring_row_q[3]_i_1_n_0 |                1 |              4 |         4.00 |
-|  clk         | u_feeder/emit_k_q                        | u_feeder/emit_ic_q[3]_i_1_n_0        |                2 |              6 |         3.00 |
-|  clk         | u_feeder/emit_kx_q[7]_i_2_n_0            | u_feeder/emit_kx_q[7]_i_1_n_0        |                3 |              8 |         2.67 |
-|  clk         | u_feeder/group_y_q[7]_i_1_n_0            | rst                                  |                2 |              8 |         4.00 |
-|  clk         | u_feeder/emit_ky_q[7]_i_1_n_0            | u_feeder/emit_kx_q[7]_i_1_n_0        |                4 |              8 |         2.00 |
-|  clk         | u_feeder/write_ring_row_q                | rst                                  |                3 |              8 |         2.67 |
-|  clk         | u_feeder/emit_k_q                        | u_feeder/emit_k_q[9]_i_1_n_0         |                3 |             10 |         3.33 |
-|  clk         | u_feeder/group_count_q[4]_rep_i_1_n_0    | rst                                  |                5 |             13 |         2.60 |
-|  clk         | u_feeder/CEC                             |                                      |                7 |             13 |         1.86 |
-|  clk         | u_feeder/p_0_out                         | rst                                  |               16 |             48 |         3.00 |
-|  clk         | u_feeder/frame_fire                      | rst                                  |               36 |             84 |         2.33 |
-|  clk         | u_feeder/pixel_q                         |                                      |              377 |           1024 |         2.72 |
-|  clk         | u_feeder/prefetch_pixel_q[0][63]_i_1_n_0 |                                      |              381 |           1024 |         2.69 |
+|  clk         |                                          | rst                                  |                5 |              5 |         1.00 |
+|  clk         | u_feeder/write_ring_row_q[0]             | rst                                  |                3 |              8 |         2.67 |
+|  clk         | u_feeder/emit_ky_q[7]_i_1_n_0            | rst                                  |                2 |              8 |         4.00 |
+|  clk         | u_feeder/emit_kx_q[7]_i_1_n_0            | rst                                  |                5 |              8 |         1.60 |
+|  clk         | u_feeder/group_x_q[0]                    | rst                                  |               10 |             16 |         1.60 |
+|  clk         | u_feeder/planned_endpoint_x_q[0]         | rst                                  |                9 |             16 |         1.78 |
+|  clk         | u_feeder/emit_k_q[9]_i_1_n_0             | rst                                  |                6 |             16 |         2.67 |
+|  clk         | u_feeder/CEC                             | u_feeder/scan_x_q[7]_i_1_n_0         |               11 |             17 |         1.55 |
+|  clk         | u_feeder/next_group_y_q[7]_i_1_n_0       | rst                                  |               10 |             17 |         1.70 |
+|  clk         | u_feeder/p_1_out                         | rst                                  |               32 |             48 |         1.50 |
+|  clk         | u_feeder/group_end_x_q[0]                | rst                                  |               32 |             56 |         1.75 |
+|  clk         | u_feeder/frame_fire                      | rst                                  |               38 |             91 |         2.39 |
+|  clk         | u_feeder/lane_x_base_q[0]                | rst                                  |               74 |            128 |         1.73 |
+|  clk         | u_feeder/lane_row_addr_q[0]              | rst                                  |               91 |            224 |         2.46 |
+|  clk         | u_feeder/pixel_q[0]                      |                                      |              411 |           1024 |         2.49 |
+|  clk         | u_feeder/prefetch_pixel_q[0][63]_i_1_n_0 |                                      |              410 |           1024 |         2.50 |
 +--------------+------------------------------------------+--------------------------------------+------------------+----------------+--------------+
 
 

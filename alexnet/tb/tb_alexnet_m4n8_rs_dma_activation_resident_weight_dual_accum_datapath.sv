@@ -18,7 +18,7 @@ module tb_alexnet_m4n8_rs_dma_activation_resident_weight_dual_accum_datapath;
   localparam int OUTPUT_W = 27;
   localparam int OUTPUT_WORDS = INPUT_H * INPUT_W;
   localparam int K_COUNT = KERNEL * KERNEL * CHANNELS;
-  localparam int TILES_PER_CHUNK = INPUT_H * ((OUTPUT_W + 3) / 4);
+  localparam int TILES_PER_CHUNK = (INPUT_H * OUTPUT_W + 3) / 4;
   localparam int CHUNK_COUNT = 2;
   localparam logic [1:0] DMA_ACTIVATION_DIRECT = 2'd0;
   localparam logic [1:0] DMA_ACTIVATION_POOLED = 2'd1;
@@ -31,6 +31,7 @@ module tb_alexnet_m4n8_rs_dma_activation_resident_weight_dual_accum_datapath;
   logic cfg_ready;
   logic [1:0] cfg_destination;
   logic [15:0] cfg_n64_tile_base;
+  logic [2:0] cfg_slice_index;
   logic [7:0] cfg_lane_mask;
   logic signed [31:0] cfg_bias [0:7];
   logic signed [17:0] cfg_multiplier [0:7];
@@ -50,11 +51,17 @@ module tb_alexnet_m4n8_rs_dma_activation_resident_weight_dual_accum_datapath;
   logic s_axis_tvalid;
   logic s_axis_tready;
   logic s_axis_tlast;
+  logic activation_stream_valid;
+  logic activation_stream_ready;
+  logic [63:0] activation_stream_values;
+  logic [7:0] activation_stream_lane_mask;
+  logic activation_stream_last;
 
   logic weight_release_valid;
   logic weight_release_ready;
   logic chunk_valid;
   logic chunk_ready;
+  logic chunk_activation_streaming;
   logic [15:0] chunk_activation_tensor_tag;
   logic [7:0] chunk_input_h;
   logic [7:0] chunk_input_w;
@@ -118,6 +125,7 @@ module tb_alexnet_m4n8_rs_dma_activation_resident_weight_dual_accum_datapath;
   logic activation_read_segment;
   logic activation_read_done;
   logic [ACTIVATION_COUNT_W-1:0] activation_words_forwarded;
+  logic [15:0] activation_stream_words_forwarded;
 
   logic dma_busy;
   logic dma_transfer_active;
@@ -354,12 +362,12 @@ module tb_alexnet_m4n8_rs_dma_activation_resident_weight_dual_accum_datapath;
           $fatal(1, "DMA-fed RS emitted an extra output packet");
         y = output_packets / OUTPUT_W;
         x = output_packets % OUTPUT_W;
-        tile_index = y * ((OUTPUT_W + 3) / 4) + x / 4;
+        tile_index = output_packets / 4;
         expected_byte = expected_output_byte(y, x);
         expected_values = {8{expected_byte}};
         if (egress_values != expected_values ||
             egress_lane_mask != 8'hff || egress_destination != 2'd1 ||
-            egress_slice != SLICE_INDEX || egress_m != x % 4 ||
+            egress_slice != SLICE_INDEX || egress_m != output_packets % 4 ||
             egress_n_base != 16'd1032 ||
             egress_tile_tag != 16'h4000 + tile_index)
           $fatal(1,
@@ -376,6 +384,7 @@ module tb_alexnet_m4n8_rs_dma_activation_resident_weight_dual_accum_datapath;
     begin
       cfg_destination = 2'd1;
       cfg_n64_tile_base = 16'd1024;
+      cfg_slice_index = SLICE_INDEX;
       cfg_lane_mask = 8'hff;
       cfg_relu = '0;
       for (int lane = 0; lane < 8; lane++) begin
@@ -394,6 +403,7 @@ module tb_alexnet_m4n8_rs_dma_activation_resident_weight_dual_accum_datapath;
 
   task automatic drive_chunk_descriptor(input int chunk_number);
     begin
+      chunk_activation_streaming = 1'b0;
       chunk_activation_tensor_tag = 16'h2000 + chunk_number;
       chunk_input_h = INPUT_H;
       chunk_input_w = INPUT_W;
@@ -602,6 +612,7 @@ module tb_alexnet_m4n8_rs_dma_activation_resident_weight_dual_accum_datapath;
     cfg_valid = 1'b0;
     cfg_destination = '0;
     cfg_n64_tile_base = '0;
+    cfg_slice_index = SLICE_INDEX;
     cfg_lane_mask = '0;
     cfg_relu = '0;
     dma_clear_error = 1'b0;
@@ -615,6 +626,10 @@ module tb_alexnet_m4n8_rs_dma_activation_resident_weight_dual_accum_datapath;
     s_axis_tkeep = '0;
     s_axis_tvalid = 1'b0;
     s_axis_tlast = 1'b0;
+    activation_stream_valid = 1'b0;
+    activation_stream_values = '0;
+    activation_stream_lane_mask = '0;
+    activation_stream_last = 1'b0;
     weight_release_valid = 1'b0;
     chunk_valid = 1'b0;
     drive_chunk_descriptor(0);

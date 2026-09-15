@@ -9,6 +9,10 @@ set build_dir [file join $stage_dir build]
 set project_dir [file join $build_dir vivado]
 set report_dir [file join $build_dir reports]
 set ip_repo_dir [file join $build_dir ip_repo]
+set use_four_hp 0
+if {[info exists ::alexnet_use_four_hp]} {
+    set use_four_hp $::alexnet_use_four_hp
+}
 file mkdir $report_dir
 file delete -force $project_dir
 
@@ -32,7 +36,7 @@ set ps [create_bd_cell -type ip \
     -vlnv xilinx.com:ip:zynq_ultra_ps_e:* zynq_ultra_ps_e_0]
 apply_bd_automation -rule xilinx.com:bd_rule:zynq_ultra_ps_e \
     -config {apply_board_preset "1"} $ps
-set_property -dict [list \
+set ps_config [list \
     CONFIG.PSU__FPGA_PL0_ENABLE {1} \
     CONFIG.PSU__FPGA_PL1_ENABLE {0} \
     CONFIG.PSU__CRL_APB__PL0_REF_CTRL__FREQMHZ {100} \
@@ -42,7 +46,17 @@ set_property -dict [list \
     CONFIG.PSU__USE__S_AXI_GP2 {1} \
     CONFIG.PSU__SAXIGP2__DATA_WIDTH {128} \
     CONFIG.PSU__USE__IRQ0 {1} \
-] $ps
+]
+if {$use_four_hp} {
+    lappend ps_config \
+        CONFIG.PSU__USE__S_AXI_GP3 {1} \
+        CONFIG.PSU__USE__S_AXI_GP4 {1} \
+        CONFIG.PSU__USE__S_AXI_GP5 {1} \
+        CONFIG.PSU__SAXIGP3__DATA_WIDTH {128} \
+        CONFIG.PSU__SAXIGP4__DATA_WIDTH {128} \
+        CONFIG.PSU__SAXIGP5__DATA_WIDTH {128}
+}
+set_property -dict $ps_config $ps
 
 # Main model/activation DMA. The accelerator is its autonomous register owner.
 # DRE is required because AlexNet N8 payload descriptors are eight-byte aligned
@@ -74,7 +88,7 @@ set_property -dict [list \
     CONFIG.c_include_mm2s {1} \
     CONFIG.c_include_s2mm {0} \
     CONFIG.c_include_mm2s_dre {0} \
-    CONFIG.c_m_axi_mm2s_data_width {64} \
+    CONFIG.c_m_axi_mm2s_data_width {128} \
     CONFIG.c_m_axis_mm2s_tdata_width {64} \
     CONFIG.c_mm2s_burst_size {64} \
     CONFIG.c_sg_length_width {26} \
@@ -92,9 +106,11 @@ set ctrl_ic [create_bd_cell -type ip \
     -vlnv xilinx.com:ip:smartconnect:* axi_ctrl]
 set_property -dict [list CONFIG.NUM_SI {2} CONFIG.NUM_MI {3}] $ctrl_ic
 
-set mem_ic [create_bd_cell -type ip \
-    -vlnv xilinx.com:ip:smartconnect:* axi_mem]
-set_property -dict [list CONFIG.NUM_SI {3} CONFIG.NUM_MI {1}] $mem_ic
+if {!$use_four_hp} {
+    set mem_ic [create_bd_cell -type ip \
+        -vlnv xilinx.com:ip:smartconnect:* axi_mem]
+    set_property -dict [list CONFIG.NUM_SI {3} CONFIG.NUM_MI {1}] $mem_ic
+}
 
 set reset_ctrl [create_bd_cell -type ip \
     -vlnv xilinx.com:ip:proc_sys_reset:* rst_pl]
@@ -142,19 +158,34 @@ connect_bd_intf_net \
     [get_bd_intf_pins axi_ctrl/M02_AXI] \
     [get_bd_intf_pins axi_dma_camera/S_AXI_LITE]
 
-# Three DDR readers/writers share the non-coherent 128-bit HP0 port.
-connect_bd_intf_net \
-    [get_bd_intf_pins axi_dma_main/M_AXI_MM2S] \
-    [get_bd_intf_pins axi_mem/S00_AXI]
-connect_bd_intf_net \
-    [get_bd_intf_pins axi_dma_main/M_AXI_S2MM] \
-    [get_bd_intf_pins axi_mem/S01_AXI]
-connect_bd_intf_net \
-    [get_bd_intf_pins axi_dma_camera/M_AXI_MM2S] \
-    [get_bd_intf_pins axi_mem/S02_AXI]
-connect_bd_intf_net \
-    [get_bd_intf_pins axi_mem/M00_AXI] \
-    [get_bd_intf_pins zynq_ultra_ps_e_0/S_AXI_HP0_FPD]
+# The compatibility build shares HP0.  The wide-array probe removes that
+# arbitration point: main read, main write and camera read receive HP0/1/2.
+# HP3 is enabled and clocked as the reserved fourth path for the separate
+# weight MM2S master used by the subsequent full-graph integration.
+if {$use_four_hp} {
+    connect_bd_intf_net \
+        [get_bd_intf_pins axi_dma_main/M_AXI_MM2S] \
+        [get_bd_intf_pins zynq_ultra_ps_e_0/S_AXI_HP0_FPD]
+    connect_bd_intf_net \
+        [get_bd_intf_pins axi_dma_main/M_AXI_S2MM] \
+        [get_bd_intf_pins zynq_ultra_ps_e_0/S_AXI_HP1_FPD]
+    connect_bd_intf_net \
+        [get_bd_intf_pins axi_dma_camera/M_AXI_MM2S] \
+        [get_bd_intf_pins zynq_ultra_ps_e_0/S_AXI_HP2_FPD]
+} else {
+    connect_bd_intf_net \
+        [get_bd_intf_pins axi_dma_main/M_AXI_MM2S] \
+        [get_bd_intf_pins axi_mem/S00_AXI]
+    connect_bd_intf_net \
+        [get_bd_intf_pins axi_dma_main/M_AXI_S2MM] \
+        [get_bd_intf_pins axi_mem/S01_AXI]
+    connect_bd_intf_net \
+        [get_bd_intf_pins axi_dma_camera/M_AXI_MM2S] \
+        [get_bd_intf_pins axi_mem/S02_AXI]
+    connect_bd_intf_net \
+        [get_bd_intf_pins axi_mem/M00_AXI] \
+        [get_bd_intf_pins zynq_ultra_ps_e_0/S_AXI_HP0_FPD]
+}
 
 # Main payload loop and independent camera stream.
 connect_bd_intf_net \
@@ -176,11 +207,10 @@ connect_bd_net \
     [get_bd_pins zynq_ultra_ps_e_0/pl_clk0] \
     [get_bd_pins clk_wiz_200/clk_in1]
 set clock_source [get_bd_pins clk_wiz_200/clk_out1]
-foreach clock_sink [list \
+set clock_sinks [list \
     zynq_ultra_ps_e_0/maxihpm0_fpd_aclk \
     zynq_ultra_ps_e_0/saxihp0_fpd_aclk \
     axi_ctrl/aclk \
-    axi_mem/aclk \
     axi_dma_main/s_axi_lite_aclk \
     axi_dma_main/m_axi_mm2s_aclk \
     axi_dma_main/m_axi_s2mm_aclk \
@@ -189,7 +219,16 @@ foreach clock_sink [list \
     alexnet_m4n8_0/aclk \
     camera_rgbx_0/aclk \
     rst_pl/slowest_sync_clk \
-] {
+]
+if {$use_four_hp} {
+    lappend clock_sinks \
+        zynq_ultra_ps_e_0/saxihp1_fpd_aclk \
+        zynq_ultra_ps_e_0/saxihp2_fpd_aclk \
+        zynq_ultra_ps_e_0/saxihp3_fpd_aclk
+} else {
+    lappend clock_sinks axi_mem/aclk
+}
+foreach clock_sink $clock_sinks {
     connect_bd_net $clock_source [get_bd_pins $clock_sink]
 }
 
@@ -204,14 +243,17 @@ connect_bd_net \
     [get_bd_pins clk_wiz_200/locked] \
     [get_bd_pins rst_pl/dcm_locked]
 set reset_source [get_bd_pins rst_pl/peripheral_aresetn]
-foreach reset_sink [list \
+set reset_sinks [list \
     axi_ctrl/aresetn \
-    axi_mem/aresetn \
     axi_dma_main/axi_resetn \
     axi_dma_camera/axi_resetn \
     alexnet_m4n8_0/aresetn \
     camera_rgbx_0/aresetn \
-] {
+]
+if {!$use_four_hp} {
+    lappend reset_sinks axi_mem/aresetn
+}
+foreach reset_sink $reset_sinks {
     connect_bd_net $reset_source [get_bd_pins $reset_sink]
 }
 
@@ -252,13 +294,24 @@ exclude_bd_addr_seg -target_address_space \
     [get_bd_addr_spaces alexnet_m4n8_0/M_AXI_DMA] \
     [get_bd_addr_segs axi_dma_camera/S_AXI_LITE/Reg]
 
-foreach dma_space_name [list \
-        axi_dma_main/Data_MM2S axi_dma_main/Data_S2MM \
-        axi_dma_camera/Data_MM2S] {
-    assign_bd_address -offset 0x00000000 -range 0x80000000 \
-        -target_address_space [get_bd_addr_spaces $dma_space_name] \
-        [get_bd_addr_segs \
-            zynq_ultra_ps_e_0/SAXIGP2/HP0_DDR_LOW] -force
+if {$use_four_hp} {
+    foreach {dma_space_name ps_segment} [list \
+            axi_dma_main/Data_MM2S SAXIGP2/HP0_DDR_LOW \
+            axi_dma_main/Data_S2MM SAXIGP3/HP1_DDR_LOW \
+            axi_dma_camera/Data_MM2S SAXIGP4/HP2_DDR_LOW] {
+        assign_bd_address -offset 0x00000000 -range 0x80000000 \
+            -target_address_space [get_bd_addr_spaces $dma_space_name] \
+            [get_bd_addr_segs zynq_ultra_ps_e_0/$ps_segment] -force
+    }
+} else {
+    foreach dma_space_name [list \
+            axi_dma_main/Data_MM2S axi_dma_main/Data_S2MM \
+            axi_dma_camera/Data_MM2S] {
+        assign_bd_address -offset 0x00000000 -range 0x80000000 \
+            -target_address_space [get_bd_addr_spaces $dma_space_name] \
+            [get_bd_addr_segs \
+                zynq_ultra_ps_e_0/SAXIGP2/HP0_DDR_LOW] -force
+    }
 }
 
 validate_bd_design
@@ -320,6 +373,19 @@ puts $summary_file "EXTERNAL_RESET_INACTIVE_VALUE=1"
 puts $summary_file "AUX_RESET_INACTIVE_VALUE=1"
 puts $summary_file \
     "HP0_WIDTH=[get_property CONFIG.PSU__SAXIGP2__DATA_WIDTH $ps]"
+puts $summary_file "FOUR_HP_ENABLED=$use_four_hp"
+if {$use_four_hp} {
+    puts $summary_file \
+        "HP1_WIDTH=[get_property CONFIG.PSU__SAXIGP3__DATA_WIDTH $ps]"
+    puts $summary_file \
+        "HP2_WIDTH=[get_property CONFIG.PSU__SAXIGP4__DATA_WIDTH $ps]"
+    puts $summary_file \
+        "HP3_WIDTH=[get_property CONFIG.PSU__SAXIGP5__DATA_WIDTH $ps]"
+    puts $summary_file "HP0_MASTER=MAIN_MM2S"
+    puts $summary_file "HP1_MASTER=MAIN_S2MM"
+    puts $summary_file "HP2_MASTER=CAMERA_MM2S"
+    puts $summary_file "HP3_MASTER=RESERVED_WEIGHT_MM2S"
+}
 puts $summary_file \
     "MAIN_DMA_MM2S_DRE=[get_property CONFIG.c_include_mm2s_dre $main_dma]"
 puts $summary_file \
@@ -331,7 +397,11 @@ puts $summary_file "CAMERA_LAYOUT=224x224_RGB_INT8_IN_8_BYTE_WORD"
 puts $summary_file "CAMERA_BUFFER_BYTES=401408"
 puts $summary_file "CAMERA_VALID_LANE_MASK=0x07"
 puts $summary_file "ACCELERATOR_M=8"
-puts $summary_file "ACCELERATOR_N=8"
+if {$use_four_hp} {
+    puts $summary_file "ACCELERATOR_N=126_LOGICAL_128_PHYSICAL"
+} else {
+    puts $summary_file "ACCELERATOR_N=8"
+}
 close $summary_file
 
 close_project

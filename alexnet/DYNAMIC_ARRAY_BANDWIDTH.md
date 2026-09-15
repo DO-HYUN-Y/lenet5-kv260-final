@@ -28,7 +28,7 @@ than projections:
 | Block | Routed resources | 200 MHz timing | Verified behavior |
 | --- | --- | --- | --- |
 | Dynamic SA | 512 DSP48E2, 46,694 CLB LUT, 57,036 FF | WNS +0.564 ns, WHS +0.046 ns | M8xN128, 2xM8xN64, independent tags/tails/backpressure and per-N16 bank enable |
-| M16 RS feeder | 80 RAMB36E2, 4,165 CLB LUT, 2,274 FF | WNS +0.136 ns, WHS +0.096 ns | Sixteen correct activation positions per issue, including padded/strided AlexNet geometry |
+| M16 RS feeder | 112 RAMB36E2, 6,476 CLB LUT, 2,717 FF | WNS +0.229 ns, WHS +0.087 ns | Sixteen correct activation positions per issue, including padded/strided AlexNet geometry |
 
 The dynamic-SA OOC harness reduces every PE result through a registered
 parity tree.  The tree is present only to retain all 512 compute paths without
@@ -42,17 +42,16 @@ scanner/prefetch overhead; the final row is the full Conv1 input geometry.
 
 | Geometry | Issue duty | Useful PE-slot utilization | Status |
 | --- | ---: | ---: | --- |
-| 16x16, C3, K11, S4 | 72.843% | 13.658% | Stress/tail case |
-| 27x27, C8, K5, S1 | 90.993% | 76.776% | Conv2-shaped proxy |
-| 13x13, C8, K3, S1 | 78.854% | 64.069% | Conv3-5-shaped proxy |
-| 224x224, C3, K11, S4 | 60.370% | 51.881% | Full Conv1 geometry |
+| 16x16, C8, K3, S1 | 88.684% | 88.684% | Divisible spatial case |
+| 27x27, C8, K5, S1 | 95.406% | 94.499% | Conv2 geometry |
+| 13x13, C8, K3, S1 | 78.728% | 75.596% | Conv3-5 geometry |
+| 224x224, C3, K11, S4 | 95.186% | 94.717% | Full Conv1 geometry |
 
-For Conv1 the corresponding useful arithmetic rate is about 0.2125 TOPS
-(`0.4096 * 0.51881`).  The 25.6 GB/s BRAM read fabric meets 200 MHz, but the
-current controller scans 51,984 cycles before/among 79,860 issue cycles.  The
-next Conv1 optimization is therefore a queued window-descriptor/prefetch path
-that overlaps scanning with the current K reduction; adding more BRAM ports
-alone will not remove this control bubble.
+For Conv1 the corresponding logical-array arithmetic-rate estimate is about
+0.3819 TOPS (`0.4032 * 0.94717`). The 25.6 GB/s BRAM read fabric meets 200 MHz;
+the scanner's 51,984 cycles are now hidden under 68,970 issue cycles. The next
+controller target is the shared path's remaining inter-tile descriptor/replay
+boundary, not another increase in BRAM read ports.
 
 ## Clock-domain bandwidth
 
@@ -72,6 +71,11 @@ All values below use the only experiment clock, 200 MHz.
 The internal weight port is eight times wider than one external HP0 port.  It
 is a replay port, not a direct DDR-to-PE connection.  DDR fills a resident
 bank slowly; the bank then replays that weight tile for many spatial M groups.
+
+The representative full shared Conv2 profile now measures 94.060% useful PE
+utilization after overlapping the prior tile's result wavefront with the next
+tile. Projecting that measured duty onto logical M8xN126 gives 0.3793 TOPS at
+200 MHz. This remains an RTL compute-path estimate, not board throughput.
 
 ## Convolution weight-overlap proof
 
@@ -148,16 +152,18 @@ partial-sum bank accounts for 32 RAMB36E2.
 
 | Change | RAMB36 effect | URAM effect |
 | --- | ---: | ---: |
-| M8 feeder to naive 16-read M16 feeder | +40 | 0 |
+| M8 feeder to stride-safe 16-read M16 feeder | +72 | 0 |
 | Remove full-raster partial-sum bank | -32 | 0 |
 | Move current N8 weight bank out of BRAM | -2 | 0 |
 | N128 weight ping-pong, 15 URAM per 1,024-bit bank set | 0 | +30 |
 | Existing Conv1 frame replay | 0 | existing 13 |
 
-The first projection is about 95 RAMB36 plus local FIFOs/control and 43 URAM,
-which fits 144 RAMB36 and 64 URAM.  A full N128 raster partial-sum expansion
-would require roughly 512 RAMB36 equivalents and is explicitly rejected.
-Actual primitive inference and 200 MHz routing remain implementation gates.
+The routed resource probe realizes 116 RAMB36E2, three RAMB18E2 and 32 URAM,
+or 81.60% of the K26 block-RAM tiles and 50.00% of URAM. The M16 feeder uses
+112 RAMB36E2 because the safe ring depth is `kernel + stride` and every one of
+the sixteen read copies needs seven width banks. A full N128 raster partial-sum
+expansion would still require roughly 512 RAMB36 equivalents and is explicitly
+rejected.
 
 ## Release gates
 
@@ -166,13 +172,19 @@ Actual primitive inference and 200 MHz routing remain implementation gates.
 - **PASS:** The compact-pin dynamic SA routes with exactly 512 compute
   DSP48E2 and positive setup/hold slack at 200 MHz.
 - **PASS:** The M16 feeder produces sixteen correct activation lanes, uses
-  exactly 80 RAMB36E2, and routes at 200 MHz.
-- **PARTIAL:** Conv2-shaped issue duty is above 90%, but full Conv1 issue duty
-  is 60.370%.  Scanner/prefetch overlap is still required before calling the
-  Conv1 supply path utilization-complete.
-- The N128 URAM weight ping-pong must sustain one 1,024-bit replay per cycle
-  after fill and preserve the one-port fill/replay overlap table above.
-- PE accumulation must cross K-bank swaps without a full-raster partial-sum
-  write/read.
-- Full-shell bandwidth claims require AXI performance counters; theoretical
-  3.2 GB/s values are not board measurements.
+  exactly 112 RAMB36E2, and routes at 200 MHz with WNS +0.229 ns.
+- **PASS:** Scanner/issue overlap and flat spatial grouping raise full Conv1
+  issue duty to 95.186% and useful M-lane utilization to 94.717%.
+- **PASS:** The N128 URAM weight ping-pong, 512-DSP SA and 64-DSP requant path
+  synthesize together with exactly 576 DSP48E2 and WNS +0.468 ns.
+- **PASS:** The KV260 probe top routes at 200 MHz with WNS +0.006 ns, WHS
+  +0.011 ns, zero failed-route nets and zero DRC errors/critical warnings.
+- **PASS:** Post-reduce overlap removes all 1,469 classified post-reduce cycles
+  in the representative shared command, raises useful PE utilization from
+  89.439% to 94.060%, and keeps issue-ready stalls at zero. Full shared M8 OOC
+  route passes with WNS +0.020 ns and WHS +0.046 ns.
+- **NEXT:** Reduce the remaining 883-cycle inter-tile descriptor/replay
+  boundary, migrate the compute island into the functional graph, then connect
+  HP3 to an independent weight MM2S master. Full-shell bandwidth claims still
+  require AXI performance counters; theoretical 3.2 GB/s-per-port values are
+  not board measurements.

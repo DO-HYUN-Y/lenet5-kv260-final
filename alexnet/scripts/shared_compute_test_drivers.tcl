@@ -37,8 +37,8 @@ foreach kind {rs fc} {
     if {[info exists shared_compute_phys_rows] &&
         $shared_compute_phys_rows == 4} {
       set s [string map [list \
-          {INPUT_H * ((OUTPUT_W + 3) / 4)} \
-          {INPUT_H * ((OUTPUT_W + 7) / 8)}] $s]
+          {(INPUT_H * OUTPUT_W + 3) / 4} \
+          {(INPUT_H * OUTPUT_W + 7) / 8}] $s]
     }
   } else {
     set s [string map [list {    seed_init = $urandom(seed);} {    wait(run);

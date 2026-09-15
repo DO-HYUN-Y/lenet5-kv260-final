@@ -8,7 +8,10 @@
 module alexnet_axi_lite_regs #(
     parameter int ADDR_W = 8,
     parameter logic [15:0] MODULE_ID = 16'h414c,
-    parameter logic [7:0] VERSION = 8'h01
+    parameter logic [7:0] VERSION = 8'h01,
+    parameter logic [7:0] BUILD_M = 8'd8,
+    parameter logic [7:0] BUILD_N = 8'd8,
+    parameter logic [15:0] BUILD_CLOCK_MHZ = 16'd200
 ) (
     input  logic clk,
     input  logic rst,
@@ -63,6 +66,18 @@ module alexnet_axi_lite_regs #(
     input logic [31:0] dma_completed_transfers,
     input logic [31:0] conv_storage_completed_tiles,
 
+    // Optional implementation-probe counters.  They live above the original
+    // software ABI so the complete M8xN8 accelerator remains compatible.
+    input logic [31:0] perf_active_cycles,
+    input logic [31:0] perf_issue_cycles,
+    input logic [31:0] perf_weight_stall_cycles,
+    input logic [31:0] perf_activation_stall_cycles,
+    input logic [31:0] perf_result_stall_cycles,
+    input logic [63:0] perf_useful_mac_count,
+    input logic [63:0] perf_peak_mac_slot_count,
+    input logic [31:0] perf_result_signature,
+    input logic [15:0] perf_completed_tiles,
+
     output logic irq,
     output logic start_pending,
     output logic done_sticky,
@@ -102,6 +117,17 @@ module alexnet_axi_lite_regs #(
   localparam logic [ADDR_W-1:0] REG_FAILED_JOBS = ADDR_W'(8'h74);
   localparam logic [ADDR_W-1:0] REG_CONFIG_STATUS = ADDR_W'(8'h78);
   localparam logic [ADDR_W-1:0] REG_BUILD_CONFIG = ADDR_W'(8'h7c);
+  localparam logic [ADDR_W-1:0] REG_PERF_ACTIVE = ADDR_W'(8'h80);
+  localparam logic [ADDR_W-1:0] REG_PERF_ISSUE = ADDR_W'(8'h84);
+  localparam logic [ADDR_W-1:0] REG_PERF_WEIGHT_STALL = ADDR_W'(8'h88);
+  localparam logic [ADDR_W-1:0] REG_PERF_ACT_STALL = ADDR_W'(8'h8c);
+  localparam logic [ADDR_W-1:0] REG_PERF_RESULT_STALL = ADDR_W'(8'h90);
+  localparam logic [ADDR_W-1:0] REG_PERF_USEFUL_MAC_LO = ADDR_W'(8'h94);
+  localparam logic [ADDR_W-1:0] REG_PERF_USEFUL_MAC_HI = ADDR_W'(8'h98);
+  localparam logic [ADDR_W-1:0] REG_PERF_PEAK_MAC_LO = ADDR_W'(8'h9c);
+  localparam logic [ADDR_W-1:0] REG_PERF_PEAK_MAC_HI = ADDR_W'(8'ha0);
+  localparam logic [ADDR_W-1:0] REG_PERF_SIGNATURE = ADDR_W'(8'ha4);
+  localparam logic [ADDR_W-1:0] REG_PERF_TILES = ADDR_W'(8'ha8);
 
   logic aw_pending_q;
   logic [ADDR_W-1:0] awaddr_q;
@@ -262,7 +288,18 @@ module alexnet_axi_lite_regs #(
         read_data_c[2] = config_address_range_valid;
         read_data_c[8] = start_pending;
       end
-      REG_BUILD_CONFIG: read_data_c = {8'd8, 8'd8, 16'd200};
+      REG_BUILD_CONFIG: read_data_c = {BUILD_M, BUILD_N, BUILD_CLOCK_MHZ};
+      REG_PERF_ACTIVE: read_data_c = perf_active_cycles;
+      REG_PERF_ISSUE: read_data_c = perf_issue_cycles;
+      REG_PERF_WEIGHT_STALL: read_data_c = perf_weight_stall_cycles;
+      REG_PERF_ACT_STALL: read_data_c = perf_activation_stall_cycles;
+      REG_PERF_RESULT_STALL: read_data_c = perf_result_stall_cycles;
+      REG_PERF_USEFUL_MAC_LO: read_data_c = perf_useful_mac_count[31:0];
+      REG_PERF_USEFUL_MAC_HI: read_data_c = perf_useful_mac_count[63:32];
+      REG_PERF_PEAK_MAC_LO: read_data_c = perf_peak_mac_slot_count[31:0];
+      REG_PERF_PEAK_MAC_HI: read_data_c = perf_peak_mac_slot_count[63:32];
+      REG_PERF_SIGNATURE: read_data_c = perf_result_signature;
+      REG_PERF_TILES: read_data_c = {16'd0, perf_completed_tiles};
       default: read_resp_c = 2'b10;
     endcase
   end

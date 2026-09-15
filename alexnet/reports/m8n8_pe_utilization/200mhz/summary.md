@@ -1,6 +1,6 @@
 # M8xN8 PE utilization profile at 200 MHz
 
-Date: 2026-09-11
+Date: 2026-09-14
 
 The profile uses cycle-accurate RTL simulation with an always-valid feeder
 source, an always-ready feeder sink, and no artificial CE stalls in the
@@ -11,44 +11,52 @@ M-by-N cells, so spatial tail lanes are correctly treated as idle.
 
 | AlexNet shape | Total cycles | Issue cycles | Input scan | BRAM read issue | BRAM read capture | Useful PE utilization |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Conv1, 224x224 C3 K11/s4 | 192,509 | 139,755 | 51,984 | 385 | 385 | 71.300% |
-| Conv2, 27x27 C8 K5/s1 | 22,777 | 21,600 | 961 | 108 | 108 | 80.015% |
-| Conv3/4/5, 13x13 C8 K3/s1 | 2,149 | 1,872 | 225 | 26 | 26 | 70.777% |
+| Conv1, 224x224 C3 K11/s4 | 142,167 | 137,577 | 51,984 | 379 | 379 | 96.548% |
+| Conv2, 27x27 C8 K5/s1 | 19,085 | 18,400 | 961 | 92 | 92 | 95.494% |
+| Conv3/4/5, 13x13 C8 K3/s1 | 1,754 | 1,584 | 225 | 22 | 22 | 86.716% |
 
-The parallel-read feeder now prefetches the next kernel position into a second
-window register while the current word emits its three or eight channel beats.
-Only the initial issue/capture pair remains for each spatial group. Conv1's
-repeated BRAM-read cost therefore fell from 93,170 to 770 cycles and its issue
-duty rose from 49.053% to 72.597%. The difference to 71.300% useful utilization
-is the final M7 spatial tail in every output row.
+The scanner now fills the ring while the current window is being issued. Flat
+M groups continue across raster-row boundaries, so padding is paid only once at
+the complete tensor tail instead of once per output row. Registered endpoint
+planning and per-lane ring addresses keep the BRAM path routable at 200 MHz.
+Conv1 issue duty is 96.771%; the difference to 96.548% useful utilization is
+the final tensor tail. The physical ring is `kernel + stride` rows rather than
+`kernel + 1`, because a stride-four group can consume endpoints from two
+successive output rows before the scanner may overwrite the oldest row.
 
 ## Complete shared Conv2 chunk
 
-| Class | Cycles | Share of compute window |
-| --- | ---: | ---: |
-| Useful issue | 21,600 | 90.585% |
-| Feeder/source starvation | 108 | 0.453% |
-| Post-reduce result scan/accumulation drain | 1,674 | 7.020% |
-| Inter-tile transition | 462 | 1.938% |
-| Other boundary | 1 | 0.004% |
-| CE stall | 0 | 0.000% |
-| Issue-ready backpressure | 0 | 0.000% |
+The accumulator now releases the compute side as soon as `issue_last` is
+accepted. A pending descriptor and two-entry outstanding-result counter let the
+next tile issue while the previous result wavefront reaches the snapshot. The
+snapshot still owns a distinct descriptor/data holding set, so random output
+backpressure cannot overwrite the previous tile.
 
-The complete compute window is 23,845 cycles. Lane-weighted useful PE
-utilization is 76.431%; the M3 tail of each 27-pixel row accounts for most of
-the gap between issue duty and useful utilization. The containing command
-takes 25,616 cycles, including 1,759 input-DMA-active cycles. No egress
-backpressure occurs in the profiled non-final chunk.
+| Class | Before A4 | After A4 | After share of compute window |
+| --- | ---: | ---: | ---: |
+| Useful issue | 18,400 | 18,400 | 94.963% |
+| Feeder/source starvation | 92 | 92 | 0.475% |
+| Post-reduce result scan/accumulation drain | 1,469 | 0 | 0.000% |
+| Inter-tile transition | 415 | 883 | 4.557% |
+| Other boundary | 1 | 1 | 0.005% |
+| CE stall | 0 | 0 | 0.000% |
+| Issue-ready backpressure | 0 | 0 | 0.000% |
+
+The complete compute window falls from 20,377 to 19,376 cycles and
+lane-weighted useful PE utilization rises from 89.439% to 94.060%. The
+containing command falls from 22,172 to 21,171 cycles, including the same 1,785
+input-DMA-active cycles. This is a 4.51% latency reduction and a 4.73%
+throughput increase for this profiled command. The larger inter-tile class is
+the remaining control/replay boundary exposed after the post-reduce class is
+removed; total non-issue cycles still fall by 1,001.
 
 ## Bottleneck decision
 
-AXI backpressure and the global CE are not the current compute bottlenecks. The
-window ping-pong prefetch has removed 97.96% of the measured Conv2 source
-starvation and 99.17% of Conv1's explicit read-state cycles. The result
-snapshot now releases every PE together and overlaps serialization with the
-next tile; this cuts the measured post-reduce class from 2,025 to 1,674 cycles
-and raises useful PE utilization from 75.325% to 76.431%. The remaining
-post-reduce/partial-sum work is the largest class, followed by the 462-cycle
-inter-tile transition. Larger SA configurations must expand the window/weight
-banks and partial-sum storage together so that added DSP lanes do not recreate
-a memory-supply bottleneck.
+AXI backpressure and the global CE are not the current simulated compute
+bottlenecks. A4 removes the measured post-reduce bubble without creating issue
+backpressure. The largest remaining class is now the 883-cycle inter-tile
+control/replay boundary (4.557%), followed by 92 source-starvation cycles
+(0.475%). The next on-chip optimization is descriptor/weight-replay prefetch at
+that boundary. A dedicated HP3 weight MM2S path follows during functional graph
+integration; board AXI counters are still required because this simulation
+proves the on-chip supply path, not external DDR bandwidth.

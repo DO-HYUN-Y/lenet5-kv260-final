@@ -550,14 +550,12 @@ module tb_alexnet_m4n8_accum_base_datapath;
           end
         end
 
-        tile_index = (word / output_width) *
-                     ((output_width + 3) / 4) +
-                     ((word % output_width) / 4);
+        tile_index = word / 4;
         expected_values[expected_write] = packed_values;
         expected_mask[expected_write] = active_lane_mask;
         expected_destination[expected_write] = active_destination;
         expected_slice[expected_write] = SLICE_INDEX;
-        expected_m[expected_write] = (word % output_width) % 4;
+        expected_m[expected_write] = word % 4;
         expected_n_base[expected_write] =
             active_n64_tile_base + SLICE_INDEX * 8;
         expected_tag[expected_write] = tile_tag_base + tile_index;
@@ -605,27 +603,24 @@ module tb_alexnet_m4n8_accum_base_datapath;
         end
 
         tile_index = 0;
-        for (int row = 0; row < word_count / output_width; row++) begin
-          for (int x = 0; x < output_width; x += 4) begin
-            word_base = row * output_width + x;
-            m_count = output_width - x;
-            if (m_count > 4)
-              m_count = 4;
-            // The 48-chunk case is an accumulation/ownership stress. K-depth
-            // variation is already covered by the surrounding transactions
-            // and the standalone base-datapath regression, so use K=1 here
-            // to keep the full 13x13 raster regression practical.
-            if (transaction_number == 1)
-              depth = 1;
-            else
-              depth = 1 + ((transaction_number + chunk + tile_index) % 3);
-            run_tile(transaction_number, chunk, word_count, word_base,
-                     depth, m_count, lane_mask, tile_tag_base + tile_index,
-                     1'b1, 1'b1,
-                     transaction_number == 0 && chunk == 0 &&
-                     tile_index == 0);
-            tile_index = tile_index + 1;
-          end
+        for (word_base = 0; word_base < word_count; word_base += 4) begin
+          m_count = word_count - word_base;
+          if (m_count > 4)
+            m_count = 4;
+          // The 48-chunk case is an accumulation/ownership stress. K-depth
+          // variation is already covered by the surrounding transactions
+          // and the standalone base-datapath regression, so use K=1 here
+          // to keep the full 13x13 raster regression practical.
+          if (transaction_number == 1)
+            depth = 1;
+          else
+            depth = 1 + ((transaction_number + chunk + tile_index) % 3);
+          run_tile(transaction_number, chunk, word_count, word_base,
+                   depth, m_count, lane_mask, tile_tag_base + tile_index,
+                   1'b1, 1'b1,
+                   transaction_number == 0 && chunk == 0 &&
+                   tile_index == 0);
+          tile_index = tile_index + 1;
         end
 
         // The final tile scan and chunk completion may share one edge. Wait
@@ -728,8 +723,8 @@ module tb_alexnet_m4n8_accum_base_datapath;
       $fatal(1, "accum base datapath drain timeout");
     if (configuration_count != 3 || submitted_transactions != 3 ||
         completed_transactions != 3 || submitted_chunks != 52 ||
-        completed_chunks != submitted_chunks || submitted_tiles != 2554 ||
-        completed_tiles != submitted_tiles || accepted_k_tokens != 2613 ||
+        completed_chunks != submitted_chunks || submitted_tiles != 2103 ||
+        completed_tiles != submitted_tiles || accepted_k_tokens != 2142 ||
         accepted_k_tokens != expected_k_tokens || accumulated_words != 8259 ||
         expected_read != 226 || expected_read != expected_write ||
         max_queued != FIFO_DEPTH || tiles_while_cfg_pending == 0 ||

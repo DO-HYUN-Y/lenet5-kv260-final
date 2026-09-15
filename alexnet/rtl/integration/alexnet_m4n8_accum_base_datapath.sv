@@ -103,6 +103,14 @@ module alexnet_m4n8_accum_base_datapath #(
   logic output_chunk_ready;
   logic output_tile_valid;
   logic output_tile_ready;
+  logic [M_COUNT_W-1:0] output_tile_m_count;
+  logic [7:0] output_tile_n_lane_mask;
+  logic [TILE_TAG_W-1:0] output_tile_tag;
+  logic output_descriptor_pending_q;
+  logic [M_COUNT_W-1:0] pending_tile_m_count_q;
+  logic [7:0] pending_tile_n_lane_mask_q;
+  logic [TILE_TAG_W-1:0] pending_tile_tag_q;
+  logic [1:0] outstanding_result_count_q;
   logic output_configured;
   logic output_slice_idle;
   logic output_transaction_active;
@@ -117,7 +125,8 @@ module alexnet_m4n8_accum_base_datapath #(
   assign chunk_active = output_chunk_active;
   assign chunk_done = output_chunk_done;
   assign transaction_done = output_transaction_done;
-  assign datapath_idle = !tile_active_q && output_slice_idle;
+  assign datapath_idle = !tile_active_q && !output_descriptor_pending_q &&
+                         output_slice_idle;
 
   // A configuration request wins over a new first chunk at the fully drained
   // boundary. Once a transaction owns the partial-sum bank, however, a pending
@@ -130,14 +139,25 @@ module alexnet_m4n8_accum_base_datapath #(
                        (output_transaction_active || !cfg_valid) &&
                        output_chunk_ready;
 
-  // tile_start is both one standalone SA clear cycle and one scanner
-  // descriptor handshake. ce must be high so both sides observe the same edge.
-  assign tile_start_ready = output_configured && !tile_active_q &&
-                            output_tile_ready && ce;
+  // The PE holding register and accumulator are independent.  Keep at most one
+  // scanner descriptor queued locally so the next tile can clear/start while
+  // the previous result wavefront is still reaching the snapshot.  A two-entry
+  // outstanding limit prevents a later reduce_last from overwriting a PE hold.
+  assign tile_start_ready = output_configured && output_chunk_active &&
+                            !tile_active_q && !output_descriptor_pending_q &&
+                            (outstanding_result_count_q < 2) && ce;
   assign tile_start_fire = tile_start_valid && tile_start_ready;
-  assign output_tile_valid = tile_start_fire;
+  assign output_tile_valid = output_descriptor_pending_q || tile_start_fire;
+  assign output_tile_m_count = output_descriptor_pending_q ?
+                               pending_tile_m_count_q : tile_m_count;
+  assign output_tile_n_lane_mask = output_descriptor_pending_q ?
+                                   pending_tile_n_lane_mask_q :
+                                   tile_n_lane_mask;
+  assign output_tile_tag = output_descriptor_pending_q ?
+                           pending_tile_tag_q : tile_tag;
 
-  assign issue_ready = tile_active_q && issue_open_q && ce;
+  assign issue_ready = tile_active_q && issue_open_q && ce &&
+                       (!issue_last || outstanding_result_count_q < 2);
   assign issue_fire = issue_valid && issue_ready;
 
   // The accumulator-aware slice consults cfg_lane_mask on every continuation
@@ -152,6 +172,11 @@ module alexnet_m4n8_accum_base_datapath #(
       issue_open_q <= 1'b0;
       for (int g = 0; g < PHYS_ROWS; g++)
         m_lane_mask_q[g] <= '0;
+      output_descriptor_pending_q <= 1'b0;
+      pending_tile_m_count_q <= '0;
+      pending_tile_n_lane_mask_q <= '0;
+      pending_tile_tag_q <= '0;
+      outstanding_result_count_q <= '0;
       tile_done <= 1'b0;
       cfg_lane_mask_q <= '0;
     end else begin
@@ -163,6 +188,12 @@ module alexnet_m4n8_accum_base_datapath #(
       if (tile_start_fire) begin
         tile_active_q <= 1'b1;
         issue_open_q <= 1'b1;
+        if (!output_tile_ready) begin
+          output_descriptor_pending_q <= 1'b1;
+          pending_tile_m_count_q <= tile_m_count;
+          pending_tile_n_lane_mask_q <= tile_n_lane_mask;
+          pending_tile_tag_q <= tile_tag;
+        end
         for (int g = 0; g < PHYS_ROWS; g++) begin
           if (tile_m_count <= 2*g)
             m_lane_mask_q[g] <= 2'b00;
@@ -173,14 +204,22 @@ module alexnet_m4n8_accum_base_datapath #(
         end
       end
 
-      if (issue_fire && issue_last)
-        issue_open_q <= 1'b0;
+      if (output_descriptor_pending_q && output_tile_ready)
+        output_descriptor_pending_q <= 1'b0;
 
-      if (output_tile_scan_done) begin
-        tile_active_q <= 1'b0;
+      if (issue_fire && issue_last) begin
         issue_open_q <= 1'b0;
+        tile_active_q <= 1'b0;
         tile_done <= 1'b1;
       end
+
+      case ({tile_start_fire, output_tile_scan_done})
+        2'b10: outstanding_result_count_q <=
+                   outstanding_result_count_q + 1'b1;
+        2'b01: outstanding_result_count_q <=
+                   outstanding_result_count_q - 1'b1;
+        default: outstanding_result_count_q <= outstanding_result_count_q;
+      endcase
     end
   end
 
@@ -240,9 +279,9 @@ module alexnet_m4n8_accum_base_datapath #(
       .chunk_final(chunk_final),
       .tile_valid(output_tile_valid),
       .tile_ready(output_tile_ready),
-      .tile_m_count(tile_m_count),
-      .tile_n_lane_mask(tile_n_lane_mask),
-      .tile_tag(tile_tag),
+      .tile_m_count(output_tile_m_count),
+      .tile_n_lane_mask(output_tile_n_lane_mask),
+      .tile_tag(output_tile_tag),
       .hold_valid(sa_result_valid),
       .hold_ready(sa_result_ready),
       .hold_lo(sa_result_lo),
@@ -282,9 +321,12 @@ module alexnet_m4n8_accum_base_datapath #(
       if (issue_valid && tile_active_q && !issue_open_q)
         $fatal(1,
                "accum base datapath received a K token after issue_last");
-      if (output_tile_scan_done && issue_open_q)
-        $fatal(1,
-               "accum base datapath released a tile before its final K token");
+      if (output_tile_scan_done && outstanding_result_count_q == 0)
+        $fatal(1, "accum base datapath observed an unowned result snapshot");
+      if (outstanding_result_count_q > 2)
+        $fatal(1, "accum base datapath exceeded two outstanding result sets");
+      if (issue_fire && issue_last && outstanding_result_count_q >= 2)
+        $fatal(1, "accum base datapath allowed PE holding overflow");
       if (output_chunk_done && tile_active_q && !output_tile_scan_done)
         $fatal(1,
                "accum base datapath completed a chunk with compute still active");

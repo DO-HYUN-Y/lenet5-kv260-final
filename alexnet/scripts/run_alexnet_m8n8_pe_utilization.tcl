@@ -6,7 +6,19 @@ exec {*}$clean_env cmake -S [file join $alexnet_root cpp] -B $cpp_build \
     -G Ninja -DCMAKE_BUILD_TYPE=Release
 exec {*}$clean_env cmake --build $cpp_build --parallel
 
-set sim_env [list env LD_PRELOAD=/usr/lib/libstdc++.so.6 \
+set system_cxx_runtime ""
+foreach candidate [list /usr/lib/libstdc++.so.6 \
+                         /lib/x86_64-linux-gnu/libstdc++.so.6 \
+                         /usr/lib/x86_64-linux-gnu/libstdc++.so.6] {
+  if {[file exists $candidate]} {
+    set system_cxx_runtime $candidate
+    break
+  }
+}
+if {$system_cxx_runtime eq ""} {
+  error "system 64-bit C++ runtime not found"
+}
+set sim_env [list env LD_PRELOAD=$system_cxx_runtime \
     "LD_LIBRARY_PATH=$cpp_build:$env(LD_LIBRARY_PATH)"]
 
 # First measure the feeder itself with an always-valid source and an
