@@ -42,12 +42,21 @@ result; it is not yet present in the resource-probe bitstream.
 
 ## B: functional M8xN126 graph migration (next)
 
-1. Replace the resource-probe command generator with the graph scheduler and
-   real activation/weight/result DMA payload path.
-2. Retain logical N=126 masking and verify all AlexNet layer tails.
-3. Compare every layer with the C++ golden model, then run a complete image
+0. **Completed:** add a two-set M16 activation-patch ping-pong. Each set is
+   4,096 x 128 bit, so address K supplies sixteen spatial values to the dynamic
+   array. Randomized overlap/backpressure XSim passes, and the block routes at
+   200 MHz with four URAM, WNS +0.434 ns and WHS +0.055 ns.
+1. Add the x-mod-4 activation store and patch assembler. Its read contract
+   must produce one M16 patch word per K while the other patch set replays;
+   test stride 4, row crossings, padding, and M tails explicitly.
+2. Replace the resource-probe command generator with the graph scheduler and
+   real activation/weight/result DMA payload path. Keep a spatial output tile
+   resident through the true final K token instead of expanding the raster
+   partial-sum BRAM sixteenfold.
+3. Retain logical N=126 masking and verify all AlexNet layer tails.
+4. Compare every layer with the C++ golden model, then run a complete image
    comparison with exact INT8/requant parameters.
-4. Add timeout, tile/tag ordering, result-count and non-overwrite assertions.
+5. Add timeout, tile/tag ordering, result-count and non-overwrite assertions.
 
 Exit gates:
 

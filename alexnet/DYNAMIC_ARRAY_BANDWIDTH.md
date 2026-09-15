@@ -65,6 +65,7 @@ All values below use the only experiment clock, 200 MHz.
 | M8 feeder ring-memory reads | 8 x 64 bit | 12.8 GB/s | Eight spatial word reads select eight INT8 activations |
 | M16 feeder ring-memory reads | 16 x 64 bit | 25.6 GB/s | Sixteen spatial word reads select sixteen INT8 activations |
 | N128 resident-weight replay | 1,024 bit | 25.6 GB/s | Eight N16 banks, 128 bit/bank/cycle |
+| M16 patch ping-pong replay | 128 bit | 3.2 GB/s | Sixteen INT8 spatial values for one K |
 | 64-lane INT32 postprocess ingress | 2,048 bit | 51.2 GB/s | Sixteen-cycle drain of one 1,024-result tile |
 | Postprocessed INT8 burst | 512 bit | 12.8 GB/s | Local N16 FIFOs absorb the burst |
 
@@ -72,9 +73,9 @@ The internal weight port is eight times wider than one external HP0 port.  It
 is a replay port, not a direct DDR-to-PE connection.  DDR fills a resident
 bank slowly; the bank then replays that weight tile for many spatial M groups.
 
-The representative full shared Conv2 profile now measures 94.060% useful PE
-utilization after overlapping the prior tile's result wavefront with the next
-tile. Projecting that measured duty onto logical M8xN126 gives 0.3793 TOPS at
+The representative full shared Conv2 profile now measures 96.337% useful PE
+utilization after A5 removes the source and inter-tile control bubbles.
+Projecting that measured duty onto logical M8xN126 gives 0.3884 TOPS at
 200 MHz. This remains an RTL compute-path estimate, not board throughput.
 
 ## Convolution weight-overlap proof
@@ -181,10 +182,17 @@ rejected.
   +0.011 ns, zero failed-route nets and zero DRC errors/critical warnings.
 - **PASS:** Post-reduce overlap removes all 1,469 classified post-reduce cycles
   in the representative shared command, raises useful PE utilization from
-  89.439% to 94.060%, and keeps issue-ready stalls at zero. Full shared M8 OOC
-  route passes with WNS +0.020 ns and WHS +0.046 ns.
-- **NEXT:** Reduce the remaining 883-cycle inter-tile descriptor/replay
-  boundary, migrate the compute island into the functional graph, then connect
-  HP3 to an independent weight MM2S master. Full-shell bandwidth claims still
-  require AXI performance counters; theoretical 3.2 GB/s-per-port values are
-  not board measurements.
+  89.439% to 94.060%, and keeps issue-ready stalls at zero.
+- **PASS:** A5 eliminates the 92 source-starve cycles, reduces the corrected
+  steady-state inter-tile boundary to 379 cycles, and raises useful PE
+  utilization to 96.337%. Full shared M8 OOC route passes with WNS +0.040 ns
+  and WHS +0.046 ns.
+- **PASS:** The new two-set M16 activation-patch ping-pong sustains one
+  128-bit K word per replay cycle after startup, overlaps fill and replay under
+  randomized backpressure, infers exactly four URAM, and routes at 200 MHz
+  with WNS +0.434 ns and WHS +0.055 ns.
+- **NEXT:** Build the x-mod-4 activation store/patch assembler, migrate the
+  dynamic compute island into the functional graph, then connect HP3 to an
+  independent weight MM2S master. Full-shell bandwidth claims still require
+  AXI performance counters; theoretical 3.2 GB/s-per-port values are not board
+  measurements.
