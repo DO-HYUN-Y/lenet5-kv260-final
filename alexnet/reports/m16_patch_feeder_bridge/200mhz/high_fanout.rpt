@@ -1,0 +1,122 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (lin64) Build 6299465 Fri Nov 14 12:34:56 MST 2025
+| Date         : Tue Sep 15 14:46:39 2026
+| Host         : jian-ThinkBook-16-G9-AHP running 64-bit Ubuntu 24.04.4 LTS
+| Command      : report_high_fanout_nets -fanout_greater_than 16 -max_nets 100 -file /home/jian/Documents/Codex/2026-09-09/https-github-com-do-hyun-y/work/lenet5-kv260-final/alexnet/reports/m16_patch_feeder_bridge/200mhz/high_fanout.rpt
+| Design       : alexnet_m16_patch_feeder_bridge
+| Device       : xck26
+| Design State : Routed
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+High Fan-out Nets Information
+
+1. Summary
+----------
+
++------------------------------------------------------------------+--------+-------------+
+| Net Name                                                         | Fanout | Driver Type |
++------------------------------------------------------------------+--------+-------------+
+| u_feeder/u_feeder/pixel_q[0]                                     |   1024 | LUT6        |
+| u_feeder/u_feeder/prefetch_pixel_q[0][63]_i_1_n_0                |   1024 | BUFGCE      |
+| rst                                                              |    921 | PORT        |
+| u_feeder/u_feeder/s_ready_INST_0_i_1_n_0                         |    260 | LUT6        |
+| u_feeder/u_feeder/group_count_q_reg[2]_rep__6_n_0                |    251 | FDRE        |
+| u_feeder/u_feeder/state_q_reg[1]_0                               |    240 | LUT2        |
+| u_feeder/u_feeder/pixel_q[2][56]_i_2_n_0                         |    230 | LUT3        |
+| u_feeder/u_feeder/lane_row_addr_q[0]                             |    224 | LUT2        |
+| u_feeder/u_feeder/group_count_q_reg[2]_rep__4_n_0                |    192 | FDRE        |
+| u_feeder/u_feeder/group_x_q_reg_n_0_[1]                          |    186 | FDRE        |
+| u_feeder/u_feeder/group_x_q_reg_n_0_[0]                          |    182 | FDRE        |
+| u_patch_pingpong/replay_set_q_reg_n_0                            |    181 | FDRE        |
+| u_feeder/u_feeder/kernel_q_reg_n_0_[0]                           |    175 | FDRE        |
+| u_patch_pingpong/packed_patch_q[7]_i_1_n_0                       |    173 | LUT3        |
+| u_feeder/u_feeder/pixel_q[12][57]_i_2_n_0                        |    170 | LUT3        |
+| u_feeder/u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_96_n_0 |    160 | LUT6        |
+| u_patch_pingpong/fill_set_q_reg_n_0                              |    150 | FDRE        |
+| u_feeder/u_feeder/pixel_q[10][63]_i_2_n_0                        |    150 | LUT3        |
+| u_feeder/u_feeder/lane_x_base_q[0]                               |    147 | LUT4        |
+| u_feeder/u_feeder/runtime_ring_rows_q[0]                         |    146 | FDRE        |
+| u_feeder/u_feeder/emit_ic_q_reg_n_0_[1]                          |    144 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[2]_rep__7_n_0                |    143 | FDRE        |
+| u_feeder/u_feeder/planned_endpoint_x_q[1]_i_4_n_0                |    140 | LUT3        |
+| u_feeder/u_feeder/group_x_q_reg_n_0_[2]                          |    139 | FDRE        |
+| u_feeder/u_feeder/group_x_q_reg_n_0_[5]                          |    139 | FDRE        |
+| u_feeder/u_feeder/next_group_y2[1]                               |    134 | FDRE        |
+| u_feeder/u_feeder/Q[0]                                           |    133 | FDRE        |
+| u_feeder/u_feeder/prefetch_inflight_q_i_1_n_0                    |    133 | LUT5        |
+| u_feeder/u_feeder/runtime_ring_rows_q[1]                         |    130 | FDRE        |
+| u_feeder/u_feeder/emit_ic_q_reg[2]_0                             |    129 | LUT3        |
+| u_feeder/u_feeder/group_count_q_reg[2]_rep__3_n_0                |    128 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[0]_rep_n_0                   |    128 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[0]_rep__1_n_0                |    128 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[0]_rep__3_n_0                |    127 | FDRE        |
+| u_feeder/u_feeder/group_x_q_reg_n_0_[3]                          |    127 | FDRE        |
+| u_feeder/u_feeder/group_x_q_reg_n_0_[4]                          |    123 | FDRE        |
+| u_feeder/u_feeder/state_q_reg_n_0_[2]                            |    120 | FDRE        |
+| u_feeder/u_feeder/state_q_reg_n_0_[1]                            |    120 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[4]_rep__2_n_0                |    118 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[4]_rep__10_n_0               |    118 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[4]_rep__3_n_0                |    118 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[4]_rep__4_n_0                |    118 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[4]_rep__6_n_0                |    118 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[4]_rep__8_n_0                |    118 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[4]_rep__9_n_0                |    118 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[4]_rep__5_n_0                |    118 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[4]_rep__7_n_0                |    118 | FDRE        |
+| u_feeder/u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_95_n_0 |    116 | LUT6        |
+| u_feeder/u_feeder/next_group_y2[3]                               |    115 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[3]_rep__4_n_0                |    114 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[3]_rep__9_n_0                |    114 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[3]_rep__8_n_0                |    114 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[3]_rep__7_n_0                |    114 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[3]_rep__6_n_0                |    114 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[3]_rep__5_n_0                |    114 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[3]_rep__3_n_0                |    114 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[3]_rep__2_n_0                |    114 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[1]_rep_n_0                   |    113 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[1]_rep__5_n_0                |    113 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[1]_rep__0_n_0                |    113 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[1]_rep__2_n_0                |    113 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[1]_rep__3_n_0                |    113 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[1]_rep__4_n_0                |    113 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[1]_rep__1_n_0                |    113 | FDRE        |
+| u_feeder/u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_5_n_11 |    112 | CARRY8      |
+| u_feeder/u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_5_n_8  |    112 | CARRY8      |
+| u_feeder/u_feeder/emit_ic_q_reg[1]_rep_n_0                       |    112 | FDRE        |
+| u_feeder/u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_5_n_9  |    112 | CARRY8      |
+| u_feeder/u_feeder/emit_ic_q_reg[0]_rep__0_n_0                    |    112 | FDRE        |
+| u_feeder/u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_5_n_10 |    112 | CARRY8      |
+| u_feeder/u_feeder/write_bank[1]                                  |    112 | CARRY8      |
+| u_feeder/u_feeder/write_bank[2]                                  |    112 | CARRY8      |
+| u_feeder/u_feeder/write_bank[0]                                  |    112 | CARRY8      |
+| u_feeder/u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_5_n_13 |    112 | CARRY8      |
+| u_feeder/u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_5_n_14 |    112 | CARRY8      |
+| u_feeder/u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_5_n_15 |    112 | CARRY8      |
+| u_feeder/u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_5_n_12 |    112 | CARRY8      |
+| u_feeder/u_feeder/kernel_q_reg_n_0_[1]                           |    109 | FDRE        |
+| u_feeder/u_feeder/group_x_q_reg_n_0_[6]                          |    109 | FDRE        |
+| u_feeder/u_feeder/E[0]                                           |    107 | LUT4        |
+| u_feeder/u_feeder/pixel_q[9][59]_i_2_n_0                         |    103 | LUT3        |
+| u_feeder/u_feeder/next_group_y2[5]                               |    101 | FDRE        |
+| u_feeder/u_feeder/next_group_y2[4]                               |    101 | FDRE        |
+| u_feeder/u_feeder/group_count_q[4]_i_3_n_0                       |     99 | LUT3        |
+| u_feeder/u_feeder/stride_q_reg_n_0_[0]                           |     99 | FDRE        |
+| u_feeder/u_feeder/next_group_y2[2]                               |     98 | FDRE        |
+| u_feeder/u_feeder/next_group_y2[6]                               |     97 | FDRE        |
+| u_feeder/u_feeder/lane_ring_base_q[0][0]_i_18_n_0                |     96 | LUT5        |
+| u_feeder/u_feeder/runtime_ring_rows_q[2]                         |     96 | FDRE        |
+| u_feeder/u_feeder/emit_ic_q_reg_n_0_[0]                          |     95 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[4]_rep__1_n_0                |     92 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[4]_rep__0_n_0                |     92 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[4]_rep_n_0                   |     92 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[3]_rep__1_n_0                |     92 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[3]_rep__0_n_0                |     92 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg[3]_rep_n_0                   |     92 | FDRE        |
+| u_feeder/u_feeder/group_x_q_reg_n_0_[7]                          |     90 | FDRE        |
+| u_feeder/u_feeder/kernel_q_reg_n_0_[2]                           |     88 | FDRE        |
+| u_feeder/u_feeder/group_y_q_reg_n_0_[0]                          |     88 | FDRE        |
+| u_feeder/u_feeder/group_count_q_reg_n_0_[0]                      |     86 | FDRE        |
++------------------------------------------------------------------+--------+-------------+
+
+

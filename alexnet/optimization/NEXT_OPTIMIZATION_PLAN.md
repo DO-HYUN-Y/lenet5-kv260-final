@@ -19,6 +19,33 @@ Date: 2026-09-15
 - The current M8xN126 bitstream is a self-test/resource probe, not a functional
   end-to-end AlexNet graph.
 
+## Full-graph descriptor checkpoint
+
+The batch-1 Conv1-through-FC8 scheduler is now RTL rather than a spreadsheet
+projection. Randomized command/completion backpressure XSim verifies 1,635
+work descriptors, 714,188,480 useful MACs and 61,090,496 weight bytes. The
+standalone scheduler routes at 200 MHz with 345 CLB LUTs, 99 registers, WNS
++0.435 ns and WHS +0.099 ns. This proves graph enumeration and all M/N/K
+tails; it does not yet prove the numerical payload path.
+
+The physical-slot accounting is intentionally reported separately from useful
+work:
+
+| Boundary | Useful MACs | Physical M8xN128 slots | Slot utilization |
+| --- | ---: | ---: | ---: |
+| FC6 | 37,748,736 | 2,415,919,104 | 1.5625% |
+| FC7 | 16,777,216 | 1,073,741,824 | 1.5625% |
+| FC8 | 4,096,000 | 264,241,152 | 1.5501% |
+| FC6-FC8 | 58,621,952 | 3,753,902,080 | 1.5616% |
+| Conv1-FC8 | 714,188,480 | 4,595,623,936 | 15.5406% |
+
+The FC percentage is low because batch 1 uses one of eight physical M rows
+and one bandwidth-matched N16 bank out of eight. It is not a claim that an
+enabled FC compute burst performs at 1% efficiency. At the 0.4096 physical
+peak, the descriptor-only full-graph ceiling is about 0.06365 TOPS and 44.56
+images/s before feeder, control and DDR protocol overhead. These are analytic
+RTL scheduling ceilings, not board measurements.
+
 ## A5: remove the remaining on-chip control bubble (completed)
 
 The feeder now forms the next spatial descriptor while the current group emits,
@@ -40,20 +67,29 @@ The profiled command falls from 21,171 to 20,713 cycles, a 2.163% latency
 reduction and 2.211% throughput gain over A4. This is an RTL shared-compute
 result; it is not yet present in the resource-probe bitstream.
 
-## B: functional M8xN126 graph migration (next)
+## B: functional M8xN126 graph migration (in progress)
 
 0. **Completed:** add a two-set M16 activation-patch ping-pong. Each set is
    4,096 x 128 bit, so address K supplies sixteen spatial values to the dynamic
    array. Randomized overlap/backpressure XSim passes, and the block routes at
    200 MHz with four URAM, WNS +0.434 ns and WHS +0.055 ns.
-1. Add the x-mod-4 activation store and patch assembler. Its read contract
-   must produce one M16 patch word per K while the other patch set replays;
-   test stride 4, row crossings, padding, and M tails explicitly.
-2. Replace the resource-probe command generator with the graph scheduler and
-   real activation/weight/result DMA payload path. Keep a spatial output tile
+1. **Completed bridge checkpoint:** the existing 16-read M16 feeder now fills
+   the inactive patch set while the other set replays. Golden-coordinate XSim
+   passes stride 4/K11/padding, stride 1/K3, cross-row groups, M tails and
+   randomized replay backpressure. The complete bridge routes at 200 MHz with
+   6,862 CLB LUTs, 3,101 registers, 112 RAMB36E2, four URAM, WNS +0.185 ns,
+   WHS +0.055 ns, zero routing errors and zero DRC checks. Replace the
+   replicated read store with x-mod-4 banking behind this verified interface
+   to reduce BRAM cost.
+2. **Completed control checkpoint:** replace the resource-probe command
+   generator with a batch-1 Conv1-through-FC8 work scheduler. It uses split
+   `2xM8xN64` for Conv1/2, logical N126 masks for Conv3-5, and one N16 bank for
+   bandwidth-matched FC6-8. All layer counts, FC6 K chunks and tails pass
+   XSim.
+3. **Next:** connect those descriptors to the real activation, weight,
+   dynamic-SA, postprocess and result payload path. Keep a spatial output tile
    resident through the true final K token instead of expanding the raster
    partial-sum BRAM sixteenfold.
-3. Retain logical N=126 masking and verify all AlexNet layer tails.
 4. Compare every layer with the C++ golden model, then run a complete image
    comparison with exact INT8/requant parameters.
 5. Add timeout, tile/tag ordering, result-count and non-overwrite assertions.

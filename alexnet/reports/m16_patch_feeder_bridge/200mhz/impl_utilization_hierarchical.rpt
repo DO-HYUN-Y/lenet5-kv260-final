@@ -1,0 +1,35 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (lin64) Build 6299465 Fri Nov 14 12:34:56 MST 2025
+| Date         : Tue Sep 15 14:46:37 2026
+| Host         : jian-ThinkBook-16-G9-AHP running 64-bit Ubuntu 24.04.4 LTS
+| Command      : report_utilization -hierarchical -file /home/jian/Documents/Codex/2026-09-09/https-github-com-do-hyun-y/work/lenet5-kv260-final/alexnet/reports/m16_patch_feeder_bridge/200mhz/impl_utilization_hierarchical.rpt
+| Design       : alexnet_m16_patch_feeder_bridge
+| Device       : xck26-sfvc784-2LV-c
+| Speed File   : -2LV
+| Design State : Routed
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++-------------------------------------+----------------------------+------------+------------+---------+------+------+--------+--------+------+------------+
+|               Instance              |           Module           | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs | RAMB36 | RAMB18 | URAM | DSP Blocks |
++-------------------------------------+----------------------------+------------+------------+---------+------+------+--------+--------+------+------------+
+| alexnet_m16_patch_feeder_bridge     |                      (top) |       6862 |       6862 |       0 |    0 | 3101 |    112 |      0 |    4 |          0 |
+|   (alexnet_m16_patch_feeder_bridge) |                      (top) |          1 |          1 |       0 |    0 |   46 |      0 |      0 |    0 |          0 |
+|   u_feeder                          |   alexnet_n8_rs_m16_feeder |       6492 |       6492 |       0 |    0 | 2710 |    112 |      0 |    0 |          0 |
+|     u_feeder                        |    alexnet_n8_rs_m4_feeder |       6492 |       6492 |       0 |    0 | 2710 |    112 |      0 |    0 |          0 |
+|   u_patch_pingpong                  | alexnet_m16_patch_pingpong |        370 |        370 |       0 |    0 |  345 |      0 |      0 |    4 |          0 |
+|     (u_patch_pingpong)              | alexnet_m16_patch_pingpong |        114 |        114 |       0 |    0 |  345 |      0 |      0 |    0 |          0 |
+|     g_set[1].u_memory               |   alexnet_m16_patch_uram_0 |        255 |        255 |       0 |    0 |    0 |      0 |      0 |    2 |          0 |
++-------------------------------------+----------------------------+------------+------------+---------+------+------+--------+--------+------+------------+
+* Note: The sum of lower-level cells may be larger than their parent cells total, due to cross-hierarchy LUT combining
+
+

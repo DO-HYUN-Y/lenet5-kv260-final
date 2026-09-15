@@ -133,6 +133,31 @@ one HP0 through a three-input SmartConnect.  Its aggregate ceiling is still
 throughput build should separate weight MM2S, activation/result traffic and
 camera traffic onto distinct PS HP ports before claiming a multi-port number.
 
+The batch-1 full-graph RTL scheduler makes the resulting utilization explicit.
+FC6 and FC7 each use exactly `1/8 M rows * 1/8 N banks = 1.5625%` of physical
+PE slots in bandwidth-matched N16 mode. FC8's 1,000-output N tail lowers it to
+1.5501%; the combined FC6-FC8 figure is 1.5616%. FC layers are only 8.208% of
+AlexNet useful MACs but contain 58,621,952 of the 61,090,496 weight bytes
+(95.96%), so they dominate batch-1 external weight time.
+
+This creates the preferred measurement sequence for the full-graph build:
+
+1. Batch 1, shared HP traffic: establish end-to-end throughput, bytes/image
+   and AXI/compute stall counters.
+2. Batch 1, weight traffic isolated on HP3: measure arbitration removal; do
+   not assume the theoretical port width is sustained DDR bandwidth.
+3. Batch 8 with one weight stream reused across all eight images: target an
+   87.5% reduction in FC weight bytes/image.
+4. Batch 8 with up to four measured weight ports: test the approximately 50%
+   FC physical-slot ceiling implied by four N16 banks. The common DDR
+   controller can make scaling sub-linear.
+
+The presentation claim should therefore be causal: on-chip scheduling first
+raises convolution PE utilization, exposing the FC memory roofline; batching,
+reuse and independent HP traffic then reduce measured memory stalls and raise
+useful TOPS/TOPS-W. A bare statement that “DDR is slow” is insufficient without
+the before/after counters.
+
 ## Result bandwidth
 
 One full dynamic tile produces 1,024 INT32 accumulators, or 4,096 bytes.  A
@@ -191,6 +216,14 @@ rejected.
   128-bit K word per replay cycle after startup, overlaps fill and replay under
   randomized backpressure, infers exactly four URAM, and routes at 200 MHz
   with WNS +0.434 ns and WHS +0.055 ns.
+- **PASS:** The batch-1 Conv1-through-FC8 scheduler emits all 1,635 descriptors,
+  714,188,480 useful MACs and 61,090,496 weight bytes under randomized
+  command/completion backpressure. It routes at 200 MHz with WNS +0.435 ns
+  and WHS +0.099 ns.
+- **PASS:** The M16 feeder-to-patch bridge passes coordinate-golden XSim for
+  strided/padded/cross-row/tail geometries while fill and replay overlap. The
+  integrated bridge routes at 200 MHz with 112 RAMB36E2, four URAM, WNS
+  +0.185 ns, WHS +0.055 ns, zero routing errors and zero DRC checks.
 - **NEXT:** Build the x-mod-4 activation store/patch assembler, migrate the
   dynamic compute island into the functional graph, then connect HP3 to an
   independent weight MM2S master. Full-shell bandwidth claims still require

@@ -1,5 +1,28 @@
 # AlexNet RTL status — 2026-09-11
 
+## 2026-09-15 M8xN126 graph-migration checkpoint
+
+The M8xN8 text below remains the last functional board baseline. The active
+migration keeps a logical M8xN126 / physical M8xN128 compute fabric and does
+not claim a functional full-graph bitstream yet.
+
+- A batch-1 Conv1-through-FC8 RTL scheduler now emits 1,635 verified work
+  descriptors covering 714,188,480 useful MACs and 61,090,496 weight bytes.
+  It passes randomized XSim and routes at 200 MHz with WNS/WHS
+  +0.435/+0.099 ns.
+- The M16 feeder now fills a two-set M16 patch ping-pong while the other set
+  replays. Coordinate-golden XSim passes AlexNet stride/padding, cross-row
+  grouping, tails and randomized backpressure. The integrated bridge routes
+  at 200 MHz with 6,862 CLB LUTs, 3,101 registers, 112 RAMB36E2, four URAM,
+  WNS/WHS +0.185/+0.055 ns, zero routing errors and zero DRC checks.
+- The remaining functional boundary is scheduler-to-payload integration:
+  activation/weight service, dynamic SA, postprocess and result routing must
+  be connected and compared layer-by-layer and end-to-end with the golden
+  model before generating the replacement board bitstream.
+- Exact descriptor slot utilization is 1.5616% for combined FC6-FC8 at batch
+  1 in one-N16-bank mode, and 15.5406% for Conv1-through-FC8. These are
+  scheduling ceilings, not measured board utilization.
+
 ## Current decision
 
 - Experiments use one clock only: **200 MHz**.

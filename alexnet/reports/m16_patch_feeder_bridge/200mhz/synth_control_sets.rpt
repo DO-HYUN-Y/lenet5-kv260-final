@@ -1,0 +1,109 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (lin64) Build 6299465 Fri Nov 14 12:34:56 MST 2025
+| Date         : Tue Sep 15 14:44:37 2026
+| Host         : jian-ThinkBook-16-G9-AHP running 64-bit Ubuntu 24.04.4 LTS
+| Command      : report_control_sets -verbose -file /home/jian/Documents/Codex/2026-09-09/https-github-com-do-hyun-y/work/lenet5-kv260-final/alexnet/reports/m16_patch_feeder_bridge/200mhz/synth_control_sets.rpt
+| Design       : alexnet_m16_patch_feeder_bridge
+| Device       : xck26
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Control Set Information
+
+Table of Contents
+-----------------
+1. Summary
+2. Histogram
+3. Flip-Flop Distribution
+4. Detailed Control Set Information
+
+1. Summary
+----------
+
++----------------------------------------------------------+-------+
+|                          Status                          | Count |
++----------------------------------------------------------+-------+
+| Total control sets                                       |    31 |
+|    Minimum number of control sets                        |    31 |
+|    Addition due to synthesis replication                 |     0 |
+|    Addition due to physical synthesis replication        |     0 |
+| Unused register locations in slices containing registers |    35 |
++----------------------------------------------------------+-------+
+* Control sets can be merged at opt_design using control_set_merge or merge_equivalent_drivers
+** Run report_qor_suggestions for automated merging and remapping suggestions
+
+
+2. Histogram
+------------
+
++--------------------+-------+
+|       Fanout       | Count |
++--------------------+-------+
+| Total control sets |    31 |
+| >= 0 to < 4        |     3 |
+| >= 4 to < 6        |     2 |
+| >= 6 to < 8        |     0 |
+| >= 8 to < 10       |     5 |
+| >= 10 to < 12      |     0 |
+| >= 12 to < 14      |     4 |
+| >= 14 to < 16      |     0 |
+| >= 16              |    17 |
++--------------------+-------+
+* Control sets can be remapped at either synth_design or opt_design
+
+
+3. Flip-Flop Distribution
+-------------------------
+
++--------------+-----------------------+------------------------+-----------------+--------------+
+| Clock Enable | Synchronous Set/Reset | Asynchronous Set/Reset | Total Registers | Total Slices |
++--------------+-----------------------+------------------------+-----------------+--------------+
+| No           | No                    | No                     |               5 |            0 |
+| No           | No                    | Yes                    |               0 |            0 |
+| No           | Yes                   | No                     |               9 |            0 |
+| Yes          | No                    | No                     |            2048 |            0 |
+| Yes          | No                    | Yes                    |               0 |            0 |
+| Yes          | Yes                   | No                     |            1035 |            0 |
++--------------+-----------------------+------------------------+-----------------+--------------+
+
+
+4. Detailed Control Set Information
+-----------------------------------
+
++--------------+-------------------------------------------------------+-----------------------------------------------+------------------+----------------+--------------+
+| Clock Signal |                     Enable Signal                     |                Set/Reset Signal               | Slice Load Count | Bel Load Count | Bels / Slice |
++--------------+-------------------------------------------------------+-----------------------------------------------+------------------+----------------+--------------+
+|  clk         | u_patch_pingpong/set_state[1][1]_i_1_n_0              | u_patch_pingpong/set_k_count_q[1][12]_i_1_n_0 |                0 |              2 |           NA |
+|  clk         | u_patch_pingpong/set_state[0][1]_i_1_n_0              | u_patch_pingpong/set_context_tag_q            |                0 |              2 |           NA |
+|  clk         | u_feeder/u_feeder/state_q[2]_i_1_n_0                  | rst                                           |                0 |              3 |           NA |
+|  clk         | u_feeder/u_feeder/endpoint_ring_row_q[3]_i_1_n_0      | rst                                           |                0 |              4 |           NA |
+|  clk         | u_feeder/u_feeder/CEB2                                | u_feeder/u_feeder/write_ring_row_q[3]_i_1_n_0 |                0 |              4 |           NA |
+|  clk         | u_feeder/u_feeder/write_ring_row_q[0]                 | rst                                           |                0 |              8 |           NA |
+|  clk         | u_feeder/u_feeder/emit_kx_q[7]_i_1_n_0                | rst                                           |                0 |              8 |           NA |
+|  clk         | u_feeder/u_feeder/emit_ky_q[7]_i_1_n_0                | rst                                           |                0 |              8 |           NA |
+|  clk         |                                                       | rst                                           |                0 |              9 |           NA |
+|  clk         |                                                       |                                               |                0 |              9 |           NA |
+|  clk         | u_feeder/u_feeder/fill_descriptor_accepted_q_reg_2[0] | rst                                           |                0 |             12 |           NA |
+|  clk         | u_feeder/u_feeder/CEC                                 | u_feeder/u_feeder/scan_x_q[7]_i_1_n_0         |                0 |             12 |           NA |
+|  clk         | u_patch_pingpong/reads_issued_q[12]_i_2_n_0           | u_patch_pingpong/reads_issued_q[12]_i_1_n_0   |                0 |             13 |           NA |
+|  clk         | u_patch_pingpong/pending_k_q_2                        | rst                                           |                0 |             13 |           NA |
+|  clk         | u_patch_pingpong/completed_replays[15]_i_1_n_0        | rst                                           |                0 |             16 |           NA |
+|  clk         | u_feeder/u_feeder/fill_descriptor_accepted_q_reg_0[0] | u_feeder/u_feeder/SR[0]                       |                0 |             16 |           NA |
+|  clk         | u_feeder/u_feeder/fill_active_reg[0]                  | rst                                           |                0 |             16 |           NA |
+|  clk         | u_feeder/u_feeder/planned_endpoint_x_q[7]_i_1_n_0     | rst                                           |                0 |             16 |           NA |
+|  clk         | u_feeder/u_feeder/group_x_q[0]                        | rst                                           |                0 |             16 |           NA |
+|  clk         | u_feeder/u_feeder/next_group_x_q[7]_i_1_n_0           | rst                                           |                0 |             17 |           NA |
+|  clk         | u_feeder/u_feeder/emit_ic_q[3]_i_1_n_0                | rst                                           |                0 |             18 |           NA |
+|  clk         | u_patch_pingpong/set_k_count_q[0][12]_i_2_n_0         | u_patch_pingpong/set_context_tag_q            |                0 |             45 |           NA |
+|  clk         | u_patch_pingpong/set_k_count_q[1][12]_i_2_n_0         | u_patch_pingpong/set_k_count_q[1][12]_i_1_n_0 |                0 |             45 |           NA |
+|  clk         | u_feeder/u_feeder/p_1_out                             | rst                                           |                0 |             48 |           NA |
+|  clk         | u_feeder/u_feeder/group_count_q[4]_i_1_n_0            | rst                                           |                0 |             65 |           NA |
+|  clk         | u_feeder/u_feeder/E[0]                                | rst                                           |                0 |            103 |           NA |
+|  clk         | u_feeder/u_feeder/lane_x_base_q[0]                    | rst                                           |                0 |            128 |           NA |
+|  clk         | u_patch_pingpong/packed_patch_q[7]_i_1_n_0            | rst                                           |                0 |            173 |           NA |
+|  clk         | u_feeder/u_feeder/lane_row_addr_q[0]                  | rst                                           |                0 |            224 |           NA |
+|  clk         | u_feeder/u_feeder/pixel_q[0]                          |                                               |                0 |           1024 |           NA |
+|  clk         | u_feeder/u_feeder/prefetch_pixel_q[0][63]_i_1_n_0     |                                               |                0 |           1024 |           NA |
++--------------+-------------------------------------------------------+-----------------------------------------------+------------------+----------------+--------------+
+
+
