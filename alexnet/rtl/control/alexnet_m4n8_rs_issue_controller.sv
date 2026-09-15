@@ -1,10 +1,11 @@
 `timescale 1ns/1ps
 
 // Serializes one RS-feeder M group into one M4xN8 base-datapath tile.
-// A weight-stream context handshake occurs first, the base tile descriptor is
-// then started on its required standalone cycle, and activation/weight K beats
-// are finally accepted atomically. The next spatial group cannot start until
-// the current base tile reports completion.
+// The resident-weight replay and base tile descriptor are accepted atomically
+// on the standalone tile-clear cycle, then activation/weight K beats are
+// accepted together. The base reports tile_done one cycle after reduce_last;
+// the controller can already prepare the next context because reduce_last is
+// itself the unique retirement event for the current issue stream.
 module alexnet_m4n8_rs_issue_controller #(
     parameter int PHYS_ROWS = 2,
     parameter int M_GROUP = 2 * PHYS_ROWS,
@@ -75,12 +76,15 @@ module alexnet_m4n8_rs_issue_controller #(
   state_t state_q;
   logic [15:0] tile_index_q;
   logic metadata_match;
+  logic context_start_valid;
   logic context_fire;
   logic tile_start_fire;
   logic issue_fire;
 
   assign metadata_match = (weight_k == feeder_k) &&
                           (weight_last == feeder_reduce_last);
+  assign context_start_valid = (state_q == ST_WAIT_CONTEXT) && feeder_valid &&
+                               feeder_tile_clear && (feeder_k == 0);
   assign context_fire = weight_tile_valid && weight_tile_ready;
   assign tile_start_fire = tile_start_valid && tile_start_ready;
   assign issue_fire = issue_valid && issue_ready;
@@ -89,15 +93,17 @@ module alexnet_m4n8_rs_issue_controller #(
   assign tile_inflight = state_q != ST_WAIT_CONTEXT;
   assign completed_tile_count = tile_index_q;
 
-  assign weight_tile_valid = (state_q == ST_WAIT_CONTEXT) && feeder_valid &&
-                             feeder_tile_clear && (feeder_k == 0);
+  // Cross-gating makes the replay and tile descriptor handshakes indivisible.
+  // This removes two control-only cycles per spatial group while retaining the
+  // base datapath's required no-issue tile-clear cycle.
+  assign weight_tile_valid = context_start_valid && tile_start_ready;
   assign weight_tile_index = tile_index_q;
   assign weight_tile_m_count = feeder_m_count;
   assign weight_tile_output_y = feeder_output_y;
   assign weight_tile_output_x = feeder_output_x;
   assign weight_tile_tag = feeder_frame_tag + tile_index_q;
 
-  assign tile_start_valid = (state_q == ST_START_TILE) && feeder_valid;
+  assign tile_start_valid = context_start_valid && weight_tile_ready;
   assign tile_m_count = feeder_m_count;
   assign tile_n_lane_mask_out = tile_n_lane_mask;
   assign tile_tag = feeder_frame_tag + tile_index_q;
@@ -132,8 +138,8 @@ module alexnet_m4n8_rs_issue_controller #(
 
       case (state_q)
         ST_WAIT_CONTEXT: begin
-          if (context_fire)
-            state_q <= ST_START_TILE;
+          if (context_fire && tile_start_fire)
+            state_q <= ST_ISSUE;
         end
         ST_START_TILE: begin
           if (tile_start_fire)
@@ -142,8 +148,10 @@ module alexnet_m4n8_rs_issue_controller #(
         ST_ISSUE: begin
           if (feeder_valid && weight_valid && !metadata_match)
             protocol_error <= 1'b1;
-          if (issue_fire && feeder_reduce_last)
-            state_q <= ST_WAIT_DONE;
+          if (issue_fire && feeder_reduce_last) begin
+            tile_index_q <= tile_index_q + 1'b1;
+            state_q <= ST_WAIT_CONTEXT;
+          end
         end
         ST_WAIT_DONE: begin
           if (tile_done) begin
@@ -176,7 +184,7 @@ module alexnet_m4n8_rs_issue_controller #(
             $fatal(1, "issue controller feeder M mask/count mismatch");
         end
       end
-      if (tile_done && state_q != ST_WAIT_DONE)
+      if (tile_done && state_q != ST_WAIT_CONTEXT)
         $fatal(1, "issue controller observed an unexpected tile_done");
     end
   end

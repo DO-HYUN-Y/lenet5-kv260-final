@@ -32,6 +32,13 @@ instead of waiting for the previous result wavefront and snapshot handshake.
 The M8xN126 compute island likewise starts the next tile while the five-stage
 requant tail drains; the final tile waits in a separate completion state.
 
+The A5 inter-tile change prepares the next feeder group descriptor while the
+current group emits, accepts resident-weight replay and tile start atomically,
+and issues the first synchronous BRAM weight read on the replay handshake. It
+retains a registered feeder read-address stage: a trial that drove the BRAM
+address directly from endpoint arithmetic missed placement timing by about
+1.62 ns and was rejected.
+
 ## Feeder performance
 
 The table compares the saved pre-change M16 feeder profile with the final
@@ -57,29 +64,39 @@ The complete representative Conv2 command includes DMA-fed activation and
 weight storage, feeder, shared SA, accumulation, result scan and output path.
 Artificial CE stalls are disabled.
 
-| Class | Before A4 | After A4 | After share |
-| --- | ---: | ---: | ---: |
-| Useful issue | 18,400 | 18,400 | 94.963% |
-| Feeder/source starvation | 92 | 92 | 0.475% |
-| Issue-ready backpressure | 0 | 0 | 0.000% |
-| CE stall | 0 | 0 | 0.000% |
-| Post-reduce/result work | 1,469 | 0 | 0.000% |
-| Inter-tile transition | 415 | 883 | 4.557% |
-| Other | 1 | 1 | 0.005% |
+| Class | Before A4 | After A4 | After A5 | A5 share |
+| --- | ---: | ---: | ---: | ---: |
+| Useful issue | 18,400 | 18,400 | 18,400 | 97.262% |
+| Feeder/source starvation | 92 | 92 | 0 | 0.000% |
+| Issue-ready backpressure | 0 | 0 | 0 | 0.000% |
+| CE stall | 0 | 0 | 0 | 0.000% |
+| Post-reduce/result work | 1,469 | 0 | 0 | 0.000% |
+| Frontend startup + inter-tile | 415 | 883 | 517 | 2.733% |
+| Other | 1 | 1 | 1 | 0.005% |
 
-The compute window falls from 20,377 to 19,376 cycles and lane-weighted useful
-PE utilization rises from 89.439% to 94.060%. The containing command falls
-from 22,172 to 21,171 cycles with the same 1,785 DMA-active cycles: 4.51% lower
-latency and 4.73% higher throughput for the profiled command. Post-reduce loss
-is eliminated without issue-ready, CE, or egress stalls. The 883-cycle
-inter-tile control/replay boundary is now the largest measured on-chip loss.
+The A5 monitor separates the final 517-cycle frontend boundary into 138 cycles
+before the first tile and 379 steady-state inter-tile cycles. Older profiles
+reported these as one class, so 883-to-517 is the like-for-like aggregate
+comparison; the reduction is 41.45%. Of the remaining 379 steady cycles, the
+feeder is observed in idle/read-wait/read-issue/read-capture/emit for
+14/91/91/91/92 cycles. Controller and weight-bank observations are both ready
+for all 379 cycles; they overlap rather than add to the total.
+
+A4 first reduced the compute window from 20,377 to 19,376 cycles and raised
+lane-weighted useful PE utilization from 89.439% to 94.060%. A5 reduces it
+again to 18,918 cycles and raises utilization to 96.337%. The containing
+command falls from 21,171 to 20,713 cycles with the same 1,785 DMA-active
+cycles: 2.163% lower latency and 2.211% higher throughput over A4. Source
+starvation is eliminated without introducing issue-ready, CE, post-reduce, or
+egress stalls.
 
 ## STA and implemented resources
 
 | Build | WNS | WHS | Result |
 | --- | ---: | ---: | --- |
 | M16 feeder OOC | +0.229 ns | +0.087 ns | PASS |
-| Full shared M8 compute OOC, post-route | +0.020 ns | +0.046 ns | PASS |
+| M8 feeder OOC after A5 | +0.343 ns | +0.091 ns | PASS |
+| Full shared M8 compute OOC after A5, post-route | +0.040 ns | +0.046 ns | PASS |
 | M8xN126 compute island OOC, post-synth | +0.468 ns | +0.046 ns | PASS |
 | KV260 probe top, post-route | +0.006 ns | +0.011 ns | PASS |
 
@@ -112,16 +129,16 @@ At 200 MHz and `1 MAC = 2 OPS`:
 - physical M8xN128 peak: 0.4096 TOPS;
 - logical M8xN126 peak: 0.4032 TOPS;
 - Conv1 feeder-limited estimate at 94.717%: 0.3819 TOPS;
-- representative shared-compute estimate at 94.060%: 0.3793 TOPS.
+- representative shared-compute estimate after A5 at 96.337%: 0.3884 TOPS.
 
 These are RTL compute rates, not end-to-end AlexNet board throughput. Applying
 the shared-compute rate to the model's 1.42837696 GOP/image gives an optimistic
-265.5 image/s upper estimate before DDR, pooling, scheduling and software
+271.9 image/s upper estimate before DDR, pooling, scheduling and software
 overhead.
 
 Vivado's vectorless report estimates 3.562 W for the complete device, including
 2.435 W attributed to the PS. Dividing by that estimate gives 0.113 logical
-peak TOPS/W or 0.106 representative effective TOPS/W. These are planning
+peak TOPS/W or 0.109 representative effective TOPS/W. These are planning
 numbers only. Reportable TOPS/W must use a board run, hardware cycle counters,
 and measured VCC_SOM energy over the same inference interval.
 
@@ -139,7 +156,11 @@ and measured VCC_SOM energy over the same inference interval.
   reduced from 1,403 to 1,328 while result-stall cycles remain 336.
 - Full M4 and M8 shared Conv+FC XSim with randomized output backpressure: PASS.
 - Graph compute orchestrator and graph controller XSim: PASS.
-- Feeder OOC implementation and top bitstream resource/timing contracts: PASS.
+- A5 weight-bank DPI golden, M8 feeder randomized-backpressure/DPI golden,
+  Conv2/Conv3 scheduled DMA loop, shared Conv+FC, graph controller and graph
+  orchestrator regressions: PASS.
+- M8 feeder and full shared-compute OOC implementation at 200 MHz, plus the
+  existing top bitstream resource/timing contracts: PASS.
 
 Published hardware files:
 
@@ -153,14 +174,12 @@ SHA-256:
 
 ## Next implementation order
 
-1. Reduce the remaining 883-cycle inter-tile boundary with a queued descriptor
-   and inactive-weight-set replay prefetch; preserve zero issue backpressure.
-2. Integrate the M8xN126 compute island into the functional graph top. The
+1. Integrate the M8xN126 compute island into the functional graph top. The
    current bitstream is a self-testable resource/timing probe and does not
    consume the board DMA payloads.
-3. Add a dedicated weight MM2S DMA on the already-enabled HP3 port and fill the
+2. Add a dedicated weight MM2S DMA on the already-enabled HP3 port and fill the
    inactive URAM weight set while the active set replays.
-4. Add AXI counters for read bytes, outstanding transactions,
+3. Add AXI counters for read bytes, outstanding transactions,
    `ARVALID&&!ARREADY`, stream starvation and overlap cycles.
-5. Establish a functional batch-1 board baseline before enabling batch 8, then
+4. Establish a functional batch-1 board baseline before enabling batch 8, then
    measure end-to-end images/s and VCC_SOM TOPS/W over the same interval.

@@ -146,6 +146,13 @@ module alexnet_n8_rs_m4_feeder #(
   logic [DIM_W:0] next_group_y;
   logic [DIM_W-1:0] next_group_x;
   logic group_is_last;
+  logic [DIM_W:0] queued_group_span_capacity;
+  logic [DIM_W:0] queued_group_end_x_sum;
+  logic [M_COUNT_W-1:0] queued_group_count;
+  logic [DIM_W-1:0] queued_group_end_y;
+  logic [DIM_W-1:0] queued_group_end_x;
+  logic [DIM_W-1:0] queued_endpoint_y;
+  logic [DIM_W-1:0] queued_endpoint_x;
   logic [DIM_W-1:0] endpoint_group_y;
   logic [DIM_W-1:0] endpoint_group_x;
   logic [DIM_W-1:0] endpoint_y;
@@ -181,6 +188,8 @@ module alexnet_n8_rs_m4_feeder #(
   logic [DIM_W-1:0] read_kx;
   logic [DIM_W-1:0] next_emit_kx;
   logic prefetch_issue;
+  logic group_prep_fire;
+  logic [RING_ROW_W-1:0] plan_endpoint_ring_row;
   logic [DIM_W-1:0] read_x [0:READ_COPIES-1];
   logic [63:0] scan_values_masked;
   logic [3:0] expected_lane_count;
@@ -248,6 +257,32 @@ module alexnet_n8_rs_m4_feeder #(
     end
     group_is_last = next_group_y >= output_h_q;
 
+    // The next spatial descriptor is independent of the current K walk.
+    // Form it while the current group is issuing so the reduce_last edge can
+    // queue count, endpoint and coordinates without revisiting PLAN/ENDPOINT.
+    queued_group_span_capacity = output_w_q - next_group_x_q;
+    if (next_group_y_q + 1'b1 < output_h_q)
+      queued_group_span_capacity = queued_group_span_capacity + output_w_q;
+    if (queued_group_span_capacity >= M_GROUP)
+      queued_group_count = M_COUNT_W'(M_GROUP);
+    else
+      queued_group_count = M_COUNT_W'(queued_group_span_capacity);
+    queued_group_end_x_sum = next_group_x_q + queued_group_count - 1'b1;
+    if (queued_group_end_x_sum >= output_w_q) begin
+      queued_group_end_y = next_group_y_q + 1'b1;
+      queued_group_end_x = queued_group_end_x_sum - output_w_q;
+    end else begin
+      queued_group_end_y = next_group_y_q;
+      queued_group_end_x = queued_group_end_x_sum[DIM_W-1:0];
+    end
+    if (stride_q == 4) begin
+      queued_endpoint_y = (queued_group_end_y << 2) + kernel_q - 1'b1;
+      queued_endpoint_x = (queued_group_end_x << 2) + kernel_q - 1'b1;
+    end else begin
+      queued_endpoint_y = queued_group_end_y + kernel_q - 1'b1;
+      queued_endpoint_x = queued_group_end_x + kernel_q - 1'b1;
+    end
+
     // ST_PLAN registers the group's last output coordinate first.  Deriving
     // the input-data endpoint from those registers in ST_ENDPOINT keeps the
     // span/count planning cone out of this path.
@@ -267,6 +302,11 @@ module alexnet_n8_rs_m4_feeder #(
       ((scan_y_q == planned_endpoint_y_q) &&
        (scan_x_q == planned_endpoint_x_q) && scan_step);
 
+  // Endpoint-relative lane bases are captured as soon as the group has enough
+  // source data. The following READ_ISSUE cycle deliberately remains between
+  // this arithmetic and the BRAM address pins to preserve 200 MHz timing.
+  assign group_prep_fire = state_q == ST_WAIT_DATA && group_data_available;
+
   assign endpoint_row_lag = scan_y_q - planned_endpoint_y_q;
   assign endpoint_ring_sum = write_ring_row_q + runtime_ring_rows_q -
                              endpoint_row_lag;
@@ -274,6 +314,8 @@ module alexnet_n8_rs_m4_feeder #(
       endpoint_ring_sum - runtime_ring_rows_q : endpoint_ring_sum;
 
   always_comb begin
+    plan_endpoint_ring_row = group_prep_fire ? endpoint_ring_row :
+                                              endpoint_ring_row_q;
     scan_values_masked = '0;
     if (scan_inside) begin
       for (int lane = 0; lane < 8; lane++) begin
@@ -326,7 +368,7 @@ module alexnet_n8_rs_m4_feeder #(
       plan_row_lag[m] = kernel_q - 1'b1;
       if (group_end_y_q != plan_output_y[m])
         plan_row_lag[m] = plan_row_lag[m] + stride_q;
-      plan_ring_row_sum[m] = endpoint_ring_row_q + runtime_ring_rows_q -
+      plan_ring_row_sum[m] = plan_endpoint_ring_row + runtime_ring_rows_q -
                              plan_row_lag[m];
       if (plan_ring_row_sum[m] >= runtime_ring_rows_q)
         plan_ring_row[m] = plan_ring_row_sum[m] - runtime_ring_rows_q;
@@ -624,7 +666,15 @@ module alexnet_n8_rs_m4_feeder #(
             read_m_q <= '0;
             prefetch_inflight_q <= 1'b0;
             prefetch_valid_q <= 1'b0;
-            state_q <= ST_PREP;
+            for (int m = 0; m < M_GROUP; m++) begin
+              lane_ring_base_q[m] <= plan_ring_row[m];
+              lane_row_addr_q[m] <= plan_ring_row[m] * MAX_PADDED_WIDTH;
+              lane_x_base_q[m] <= plan_x_base[m];
+            end
+            next_group_y_q <= next_group_y[DIM_W-1:0];
+            next_group_x_q <= next_group_x;
+            next_group_is_last_q <= group_is_last;
+            state_q <= ST_READ_ISSUE;
           end
         end
 
@@ -653,7 +703,12 @@ module alexnet_n8_rs_m4_feeder #(
             end else begin
               group_y_q <= next_group_y_q;
               group_x_q <= next_group_x_q;
-              state_q <= ST_PLAN;
+              group_count_q <= queued_group_count;
+              group_end_y_q <= queued_group_end_y;
+              group_end_x_q <= queued_group_end_x;
+              planned_endpoint_y_q <= queued_endpoint_y;
+              planned_endpoint_x_q <= queued_endpoint_x;
+              state_q <= ST_WAIT_DATA;
             end
             emit_ky_q <= '0;
             emit_kx_q <= '0;

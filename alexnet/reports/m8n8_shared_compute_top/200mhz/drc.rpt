@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2025.2 (lin64) Build 6299465 Fri Nov 14 12:34:56 MST 2025
-| Date         : Mon Sep 14 23:24:11 2026
+| Date         : Tue Sep 15 10:58:16 2026
 | Host         : jian-ThinkBook-16-G9-AHP running 64-bit Ubuntu 24.04.4 LTS
 | Command      : report_drc -file /home/jian/Documents/Codex/2026-09-09/https-github-com-do-hyun-y/work/lenet5-kv260-final/alexnet/reports/m8n8_shared_compute_top/200mhz/drc.rpt
 | Design       : alexnet_m4n8_shared_compute_top
@@ -24,44 +24,18 @@ Table of Contents
       Design limits: <entire design considered>
            Ruledeck: default
              Max checks: <unlimited>
-             Checks found: 6
-+-----------+----------+------------------------+--------+
-| Rule      | Severity | Description            | Checks |
-+-----------+----------+------------------------+--------+
-| DPOP-3    | Warning  | PREG Output pipelining | 5      |
-| RTSTAT-10 | Warning  | No routable loads      | 1      |
-+-----------+----------+------------------------+--------+
+             Checks found: 1
++-----------+----------+-------------------+--------+
+| Rule      | Severity | Description       | Checks |
++-----------+----------+-------------------+--------+
+| RTSTAT-10 | Warning  | No routable loads | 1      |
++-----------+----------+-------------------+--------+
 
 2. REPORT DETAILS
 -----------------
-DPOP-3#1 Warning
-PREG Output pipelining  
-DSP u_shared/u_output_slice/g_m8_parallel.u_requant/u_parallel_requant/g_requant_row[3].u_requant/product_pipe_q_reg[3] output u_shared/u_output_slice/g_m8_parallel.u_requant/u_parallel_requant/g_requant_row[3].u_requant/product_pipe_q_reg[3]/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
-Related violations: <none>
-
-DPOP-3#2 Warning
-PREG Output pipelining  
-DSP u_shared/u_output_slice/g_m8_parallel.u_requant/u_parallel_requant/g_requant_row[4].u_requant/product_pipe_q_reg[3] output u_shared/u_output_slice/g_m8_parallel.u_requant/u_parallel_requant/g_requant_row[4].u_requant/product_pipe_q_reg[3]/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
-Related violations: <none>
-
-DPOP-3#3 Warning
-PREG Output pipelining  
-DSP u_shared/u_output_slice/g_m8_parallel.u_requant/u_parallel_requant/g_requant_row[5].u_requant/product_pipe_q_reg[3] output u_shared/u_output_slice/g_m8_parallel.u_requant/u_parallel_requant/g_requant_row[5].u_requant/product_pipe_q_reg[3]/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
-Related violations: <none>
-
-DPOP-3#4 Warning
-PREG Output pipelining  
-DSP u_shared/u_output_slice/g_m8_parallel.u_requant/u_parallel_requant/g_requant_row[7].u_requant/product_pipe_q_reg[0] output u_shared/u_output_slice/g_m8_parallel.u_requant/u_parallel_requant/g_requant_row[7].u_requant/product_pipe_q_reg[0]/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
-Related violations: <none>
-
-DPOP-3#5 Warning
-PREG Output pipelining  
-DSP u_shared/u_output_slice/g_m8_parallel.u_requant/u_parallel_requant/g_requant_row[7].u_requant/product_pipe_q_reg[1] output u_shared/u_output_slice/g_m8_parallel.u_requant/u_parallel_requant/g_requant_row[7].u_requant/product_pipe_q_reg[1]/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
-Related violations: <none>
-
 RTSTAT-10#1 Warning
 No routable loads  
-239 net(s) have no routable loads. The problem bus(es) and/or net(s) are owner_released, u_fc/u_controller/fc_fault_code[2:0],
+240 net(s) have no routable loads. The problem bus(es) and/or net(s) are owner_released, u_fc/u_controller/fc_fault_code[2:0],
 u_fc/u_controller/fc_job_rejected, u_fc/u_controller/fc_layer_done,
 u_fc/u_controller/fc_layer_failed,
 u_fc/u_controller/fc_result_complete_ready, u_fc/u_controller/owner_ready,
@@ -72,7 +46,7 @@ u_rs/u_datapath/u_result_dma_egress/m_axis_tdata[63:0],
 u_rs/u_datapath/u_result_dma_egress/m_axis_tvalid,
 u_shared/u_output_slice/g_m8_parallel.u_parallel_partial_sum_bank/rs_accum_bank_state[2:0],
 u_shared/u_output_slice/rs_accum_chunk_active
- (the first 15 of 43 listed nets/buses).
+ (the first 15 of 44 listed nets/buses).
 Related violations: <none>
 
 

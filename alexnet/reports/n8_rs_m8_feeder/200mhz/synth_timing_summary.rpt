@@ -1,15 +1,15 @@
-Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-| Tool Version      : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
-| Date              : Fri Sep 11 11:42:15 2026
-| Host              : yundodo running 64-bit unknown
-| Command           : report_timing_summary -delay_type min_max -check_timing_verbose -file /home/dodo/Documents/Codex/2026-08-31/kv260-alexnet-rtl/alexnet/reports/n8_rs_m8_feeder/200mhz/synth_timing_summary.rpt
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version      : Vivado v.2025.2 (lin64) Build 6299465 Fri Nov 14 12:34:56 MST 2025
+| Date              : Tue Sep 15 10:44:17 2026
+| Host              : jian-ThinkBook-16-G9-AHP running 64-bit Ubuntu 24.04.4 LTS
+| Command           : report_timing_summary -delay_type min_max -check_timing_verbose -file /home/jian/Documents/Codex/2026-09-09/https-github-com-do-hyun-y/work/lenet5-kv260-final/alexnet/reports/n8_rs_m8_feeder/200mhz/synth_timing_summary.rpt
 | Design            : alexnet_n8_rs_m8_feeder
 | Device            : xck26-sfvc784
 | Speed File        : -2LV  PRODUCTION 1.30 05-15-2022
 | Design State      : Synthesized
 | Temperature Grade : C
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Timing Summary Report
 
@@ -139,10 +139,10 @@ Table of Contents
 
     WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
     -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
-      0.575        0.000                      0                 6378        0.133        0.000                      0                 6378        1.923        0.000                       0                  1295  
+     -0.697      -55.302                    133                 8582        0.134        0.000                      0                 8582        1.923        0.000                       0                  1575  
 
 
-All user specified timing constraints are met.
+Timing constraints are not met.
 
 
 ------------------------------------------------------------------------------------------------
@@ -162,7 +162,7 @@ clk    {0.000 2.500}        5.000           200.000
 
 Clock             WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
 -----             -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
-clk                 0.575        0.000                      0                 6378        0.133        0.000                      0                 6378        1.923        0.000                       0                  1295  
+clk                -0.697      -55.302                    133                 8582        0.134        0.000                      0                 8582        1.923        0.000                       0                  1575  
 
 
 ------------------------------------------------------------------------------------------------
@@ -193,26 +193,26 @@ Path Group    From Clock    To Clock          WNS(ns)      TNS(ns)  TNS Failing 
 From Clock:  clk
   To Clock:  clk
 
-Setup :            0  Failing Endpoints,  Worst Slack        0.575ns,  Total Violation        0.000ns
-Hold  :            0  Failing Endpoints,  Worst Slack        0.133ns,  Total Violation        0.000ns
+Setup :          133  Failing Endpoints,  Worst Slack       -0.697ns,  Total Violation      -55.302ns
+Hold  :            0  Failing Endpoints,  Worst Slack        0.134ns,  Total Violation        0.000ns
 PW    :            0  Failing Endpoints,  Worst Slack        1.923ns,  Total Violation        0.000ns
 ---------------------------------------------------------------------------------------------------
 
 
 Max Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             0.575ns  (required time - arrival time)
-  Source:                 u_feeder/kernel_q_reg[3]/C
+Slack (VIOLATED) :        -0.697ns  (required time - arrival time)
+  Source:                 u_feeder/next_group_y_q_reg[4]/C
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Destination:            u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg/ADDRARDADDR[14]
-                            (rising edge-triggered cell RAMB36E2 clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_feeder/planned_endpoint_x_q_reg[4]/D
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
   Path Group:             clk
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
-  Data Path Delay:        3.968ns  (logic 1.144ns (28.831%)  route 2.824ns (71.169%))
-  Logic Levels:           12  (CARRY8=2 LUT4=2 LUT5=2 LUT6=6)
-  Clock Path Skew:        0.006ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    0.047ns = ( 5.047 - 5.000 ) 
+  Data Path Delay:        5.694ns  (logic 2.108ns (37.021%)  route 3.586ns (62.979%))
+  Logic Levels:           16  (CARRY8=3 LUT2=1 LUT3=2 LUT4=2 LUT5=3 LUT6=5)
+  Clock Path Skew:        -0.012ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.029ns = ( 5.029 - 5.000 ) 
     Source Clock Delay      (SCD):    0.041ns
     Clock Pessimism Removal (CPR):    0.000ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -225,53 +225,61 @@ Slack (MET) :             0.575ns  (required time - arrival time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=1294, unset)         0.041     0.041    u_feeder/clk
-                         FDRE                                         r  u_feeder/kernel_q_reg[3]/C
+                         net (fo=1574, unset)         0.041     0.041    u_feeder/clk
+                         FDRE                                         r  u_feeder/next_group_y_q_reg[4]/C
   -------------------------------------------------------------------    -------------------
-                         FDRE (Prop_FDRE_C_Q)         0.114     0.155 f  u_feeder/kernel_q_reg[3]/Q
-                         net (fo=15, unplaced)        0.149     0.304    u_feeder/kernel_q_reg_n_0_[3]
-                         LUT4 (Prop_LUT4_I0_O)        0.152     0.456 r  u_feeder/m_reduce_last_INST_0_i_12/O
-                         net (fo=8, unplaced)         0.239     0.695    u_feeder/m_reduce_last_INST_0_i_12_n_0
-                         LUT6 (Prop_LUT6_I1_O)        0.058     0.753 f  u_feeder/m_reduce_last_INST_0_i_9/O
-                         net (fo=1, unplaced)         0.211     0.964    u_feeder/m_reduce_last_INST_0_i_9_n_0
-                         LUT6 (Prop_LUT6_I4_O)        0.058     1.022 f  u_feeder/m_reduce_last_INST_0_i_3/O
-                         net (fo=5, unplaced)         0.229     1.251    u_feeder/m_reduce_last_INST_0_i_3_n_0
-                         LUT5 (Prop_LUT5_I3_O)        0.058     1.309 r  u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_70/O
-                         net (fo=37, unplaced)        0.274     1.583    u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_70_n_0
-                         LUT6 (Prop_LUT6_I2_O)        0.058     1.641 r  u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_129/O
-                         net (fo=3, unplaced)         0.217     1.858    u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_129_n_0
-                         LUT6 (Prop_LUT6_I3_O)        0.058     1.916 f  u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_102/O
-                         net (fo=5, unplaced)         0.229     2.145    u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_102_n_0
-                         LUT4 (Prop_LUT4_I3_O)        0.097     2.242 r  u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_121/O
-                         net (fo=1, unplaced)         0.230     2.472    u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_121_n_0
-                         CARRY8 (Prop_CARRY8_DI[1]_CO[2])
-                                                      0.125     2.597 r  u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_96/CO[2]
-                         net (fo=30, unplaced)        0.269     2.866    u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_96_n_5
-                         LUT5 (Prop_LUT5_I4_O)        0.058     2.924 r  u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_98/O
-                         net (fo=45, unplaced)        0.278     3.202    u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_98_n_0
-                         LUT6 (Prop_LUT6_I5_O)        0.058     3.260 r  u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_72/O
-                         net (fo=16, unplaced)        0.255     3.515    u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_72_n_0
-                         LUT6 (Prop_LUT6_I0_O)        0.056     3.571 r  u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_79/O
-                         net (fo=1, unplaced)         0.023     3.594    u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_79_n_0
-                         CARRY8 (Prop_CARRY8_S[5]_O[7])
-                                                      0.194     3.788 r  u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_2/O[7]
-                         net (fo=5, unplaced)         0.221     4.009    u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg_i_2_n_8
-                         RAMB36E2                                     r  u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg/ADDRARDADDR[14]
+                         FDRE (Prop_FDRE_C_Q)         0.114     0.155 r  u_feeder/next_group_y_q_reg[4]/Q
+                         net (fo=9, unplaced)         0.205     0.360    u_feeder/next_group_y_q[4]
+                         LUT6 (Prop_LUT6_I0_O)        0.225     0.585 r  u_feeder/group_end_y_q[7]_i_4/O
+                         net (fo=4, unplaced)         0.223     0.808    u_feeder/group_end_y_q[7]_i_4_n_0
+                         LUT5 (Prop_LUT5_I1_O)        0.091     0.899 r  u_feeder/group_count_q[2]_i_44/O
+                         net (fo=1, unplaced)         0.170     1.069    u_feeder/group_count_q[2]_i_44_n_0
+                         CARRY8 (Prop_CARRY8_DI[3]_CO[3])
+                                                      0.196     1.265 r  u_feeder/group_count_q_reg[2]_i_35/CO[3]
+                         net (fo=16, unplaced)        0.144     1.409    u_feeder/queued_group_span_capacity1
+                         LUT3 (Prop_LUT3_I1_O)        0.093     1.502 r  u_feeder/group_count_q[2]_i_24/O
+                         net (fo=1, unplaced)         0.277     1.779    u_feeder/group_count_q[2]_i_24_n_0
+                         CARRY8 (Prop_CARRY8_DI[2]_O[5])
+                                                      0.284     2.063 r  u_feeder/group_count_q_reg[2]_i_3/O[5]
+                         net (fo=1, unplaced)         0.172     2.235    u_feeder/group_count_q_reg[2]_i_3_n_10
+                         LUT6 (Prop_LUT6_I0_O)        0.225     2.460 r  u_feeder/group_count_q[3]_i_6/O
+                         net (fo=34, unplaced)        0.272     2.732    u_feeder/group_count_q[3]_i_6_n_0
+                         LUT3 (Prop_LUT3_I1_O)        0.058     2.790 f  u_feeder/group_end_x_q[3]_i_8/O
+                         net (fo=2, unplaced)         0.211     3.001    u_feeder/group_end_x_q[3]_i_8_n_0
+                         LUT6 (Prop_LUT6_I5_O)        0.058     3.059 r  u_feeder/group_end_x_q[5]_i_17/O
+                         net (fo=6, unplaced)         0.233     3.292    u_feeder/group_end_x_q[5]_i_17_n_0
+                         LUT4 (Prop_LUT4_I0_O)        0.058     3.350 r  u_feeder/group_end_x_q[5]_i_6/O
+                         net (fo=4, unplaced)         0.223     3.573    u_feeder/group_end_x_q[5]_i_6_n_0
+                         LUT4 (Prop_LUT4_I2_O)        0.093     3.666 r  u_feeder/group_end_x_q[5]_i_9/O
+                         net (fo=1, unplaced)         0.277     3.943    u_feeder/group_end_x_q[5]_i_9_n_0
+                         CARRY8 (Prop_CARRY8_DI[2]_CO[4])
+                                                      0.229     4.172 r  u_feeder/group_end_x_q_reg[5]_i_3/CO[4]
+                         net (fo=34, unplaced)        0.270     4.442    u_feeder/queued_group_end_y1
+                         LUT5 (Prop_LUT5_I4_O)        0.058     4.500 r  u_feeder/group_end_x_q[1]_i_3/O
+                         net (fo=7, unplaced)         0.236     4.736    u_feeder/group_end_x_q[1]_i_3_n_0
+                         LUT5 (Prop_LUT5_I2_O)        0.058     4.794 r  u_feeder/planned_endpoint_x_q[3]_i_8/O
+                         net (fo=5, unplaced)         0.172     4.966    u_feeder/planned_endpoint_x_q[3]_i_8_n_0
+                         LUT6 (Prop_LUT6_I0_O)        0.152     5.118 r  u_feeder/planned_endpoint_x_q[7]_i_13/O
+                         net (fo=4, unplaced)         0.223     5.341    u_feeder/planned_endpoint_x_q[7]_i_13_n_0
+                         LUT2 (Prop_LUT2_I1_O)        0.058     5.399 r  u_feeder/planned_endpoint_x_q[4]_i_3/O
+                         net (fo=1, unplaced)         0.211     5.610    u_feeder/planned_endpoint_x_q[4]_i_3_n_0
+                         LUT6 (Prop_LUT6_I3_O)        0.058     5.668 r  u_feeder/planned_endpoint_x_q[4]_i_1/O
+                         net (fo=1, unplaced)         0.067     5.735    u_feeder/planned_endpoint_x_q[4]_i_1_n_0
+                         FDRE                                         r  u_feeder/planned_endpoint_x_q_reg[4]/D
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        5.000     5.000 r  
                                                       0.000     5.000 r  clk (IN)
-                         net (fo=1294, unset)         0.047     5.047    u_feeder/clk
-                         RAMB36E2                                     r  u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg/CLKARDCLK
-                         clock pessimism              0.000     5.047    
-                         clock uncertainty           -0.035     5.012    
-                         RAMB36E2 (Setup_RAMB36E2_CLKARDCLK_ADDRARDADDR[14])
-                                                     -0.428     4.584    u_feeder/g_read_copy[0].g_ring_bank[0].mem_reg
+                         net (fo=1574, unset)         0.029     5.029    u_feeder/clk
+                         FDRE                                         r  u_feeder/planned_endpoint_x_q_reg[4]/C
+                         clock pessimism              0.000     5.029    
+                         clock uncertainty           -0.035     4.994    
+                         FDRE (Setup_FDRE_C_D)        0.044     5.038    u_feeder/planned_endpoint_x_q_reg[4]
   -------------------------------------------------------------------
-                         required time                          4.584    
-                         arrival time                          -4.009    
+                         required time                          5.038    
+                         arrival time                          -5.735    
   -------------------------------------------------------------------
-                         slack                                  0.575    
+                         slack                                 -0.697    
 
 
 
@@ -279,7 +287,7 @@ Slack (MET) :             0.575ns  (required time - arrival time)
 
 Min Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             0.133ns  (arrival time - required time)
+Slack (MET) :             0.134ns  (arrival time - required time)
   Source:                 u_feeder/emit_ic_q_reg[3]/C
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
   Destination:            u_feeder/emit_ic_q_reg[3]/D
@@ -287,7 +295,7 @@ Slack (MET) :             0.133ns  (arrival time - required time)
   Path Group:             clk
   Path Type:              Hold (Min at Fast Process Corner)
   Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
-  Data Path Delay:        0.182ns  (logic 0.121ns (66.484%)  route 0.061ns (33.516%))
+  Data Path Delay:        0.183ns  (logic 0.122ns (66.667%)  route 0.061ns (33.333%))
   Logic Levels:           1  (LUT5=1)
   Clock Path Skew:        0.005ns (DCD - SCD - CPR)
     Destination Clock Delay (DCD):    0.019ns
@@ -298,27 +306,27 @@ Slack (MET) :             0.133ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=1294, unset)         0.014     0.014    u_feeder/clk
+                         net (fo=1574, unset)         0.014     0.014    u_feeder/clk
                          FDRE                                         r  u_feeder/emit_ic_q_reg[3]/C
   -------------------------------------------------------------------    -------------------
                          FDRE (Prop_FDRE_C_Q)         0.084     0.098 r  u_feeder/emit_ic_q_reg[3]/Q
                          net (fo=2, unplaced)         0.043     0.141    u_feeder/m_input_channel[3]
-                         LUT5 (Prop_LUT5_I4_O)        0.037     0.178 r  u_feeder/emit_ic_q[3]_i_2/O
-                         net (fo=1, unplaced)         0.018     0.196    u_feeder/p_0_in__0[3]
+                         LUT5 (Prop_LUT5_I4_O)        0.038     0.179 r  u_feeder/emit_ic_q[3]_i_1/O
+                         net (fo=1, unplaced)         0.018     0.197    u_feeder/emit_ic_q[3]_i_1_n_0
                          FDRE                                         r  u_feeder/emit_ic_q_reg[3]/D
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=1294, unset)         0.019     0.019    u_feeder/clk
+                         net (fo=1574, unset)         0.019     0.019    u_feeder/clk
                          FDRE                                         r  u_feeder/emit_ic_q_reg[3]/C
                          clock pessimism              0.000     0.019    
                          FDRE (Hold_FDRE_C_D)         0.044     0.063    u_feeder/emit_ic_q_reg[3]
   -------------------------------------------------------------------
                          required time                         -0.063    
-                         arrival time                           0.196    
+                         arrival time                           0.197    
   -------------------------------------------------------------------
-                         slack                                  0.133    
+                         slack                                  0.134    
 
 
 

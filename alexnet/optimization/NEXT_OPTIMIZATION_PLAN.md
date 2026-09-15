@@ -7,10 +7,11 @@ Date: 2026-09-15
 - Keep the logical M8xN126 / physical M8xN128 array. Do not move to M16: DSP
   headroom exists, but block RAM and placed-CLB headroom are already tighter.
 - The SA uses 512 DSP48E2 and the parallel requant path uses 64, for 576 total.
-- The representative shared Conv2 command has 94.060% useful PE utilization,
-  zero issue-ready stalls, and zero post-reduce cycles after A4 overlap.
-- The largest remaining simulated loss is the 883-cycle (4.557%) inter-tile
-  descriptor/weight-replay boundary; source starvation is 92 cycles (0.475%).
+- A5 raises the representative shared Conv2 command from 94.060% to 96.337%
+  useful PE utilization. Issue-ready, CE, post-reduce and egress stalls remain
+  zero, and source starvation falls from 92 cycles to zero.
+- The corrected profile separates 138 first-tile startup cycles from 379
+  steady-state inter-tile cycles. The old 883-cycle aggregate included both.
 - HP0, HP1, HP2 and HP3 are enabled. HP0 carries main MM2S, HP1 main S2MM,
   HP2 camera MM2S, and HP3 is enabled but has no weight DMA master yet.
 - The 200 MHz resource-probe bitstream passes route and DRC with WNS/WHS
@@ -18,22 +19,28 @@ Date: 2026-09-15
 - The current M8xN126 bitstream is a self-test/resource probe, not a functional
   end-to-end AlexNet graph.
 
-## A5: remove the remaining on-chip control bubble
+## A5: remove the remaining on-chip control bubble (completed)
 
-1. Add a queued next-tile descriptor at the graph/shared controller boundary.
-2. Prefetch inactive-set weight replay metadata while the active tile issues.
-3. Preserve the two-outstanding-result bound and snapshot ownership assertions.
-4. Re-run short-K, randomized-backpressure, shared Conv+FC, graph-controller and
-   DPI-golden regressions.
+The feeder now forms the next spatial descriptor while the current group emits,
+then enters data wait directly instead of revisiting plan and endpoint states.
+The issue controller accepts weight replay and the tile descriptor atomically
+on the existing tile-clear cycle. The weight bank issues BRAM address zero on
+that replay handshake and sustains one K word per cycle. A registered
+`READ_ISSUE` stage remains in the feeder because removing it created a roughly
+1.62 ns setup violation on the endpoint-to-BRAM-address path.
 
 Exit gates:
 
-- inter-tile cycles below 400 in the same profile;
-- issue-ready, CE and egress-block stalls remain zero;
-- useful PE utilization at least 96%;
-- full shared M8 post-route WNS and WHS remain non-negative at 200 MHz.
+- steady-state inter-tile cycles: 379, below 400: PASS;
+- issue-ready, CE and egress-block stalls remain zero: PASS;
+- useful PE utilization: 96.337%, at least 96%: PASS;
+- full shared M8 post-route WNS/WHS: +0.040/+0.046 ns at 200 MHz: PASS.
 
-## B: functional M8xN126 graph migration
+The profiled command falls from 21,171 to 20,713 cycles, a 2.163% latency
+reduction and 2.211% throughput gain over A4. This is an RTL shared-compute
+result; it is not yet present in the resource-probe bitstream.
+
+## B: functional M8xN126 graph migration (next)
 
 1. Replace the resource-probe command generator with the graph scheduler and
    real activation/weight/result DMA payload path.

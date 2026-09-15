@@ -68,10 +68,6 @@ module alexnet_n8_weight_tile_bank #(
 
   logic [ADDR_W-1:0] write_addr_q;
   logic [COUNT_W-1:0] reads_issued_q;
-  logic read_pending_q;
-  logic [63:0] mem_read_q;
-  logic [ADDR_W-1:0] pending_k_q;
-  logic pending_last_q;
 
   logic [63:0] masked_write_values;
   logic [63:0] packed_weight_values;
@@ -82,7 +78,6 @@ module alexnet_n8_weight_tile_bank #(
   logic weight_fire;
   logic release_fire;
   logic output_slot_ready;
-  logic read_stage_ready;
   logic issue_read;
 
   assign idle = bank_state == STATE_EMPTY;
@@ -104,8 +99,12 @@ module alexnet_n8_weight_tile_bank #(
   assign release_fire = release_valid && release_ready;
 
   assign output_slot_ready = !weight_valid || weight_ready;
-  assign read_stage_ready = !read_pending_q || output_slot_ready;
-  assign issue_read = (bank_state == STATE_REPLAYING) && read_stage_ready &&
+  // The replay handshake supplies address zero directly to the synchronous
+  // BRAM read. Subsequent reads replace a consumed output beat in place, so
+  // one register stage sustains one K word per cycle without the former empty
+  // cycle between replay acceptance and the first weight.
+  assign issue_read = ((bank_state == STATE_REPLAYING) || replay_fire) &&
+                      output_slot_ready &&
                       (reads_issued_q < resident_k_count);
 
   always_comb begin
@@ -126,10 +125,6 @@ module alexnet_n8_weight_tile_bank #(
       write_addr_q <= '0;
       words_written <= '0;
       reads_issued_q <= '0;
-      read_pending_q <= 1'b0;
-      mem_read_q <= '0;
-      pending_k_q <= '0;
-      pending_last_q <= 1'b0;
       weight_valid <= 1'b0;
       packed_weight_values <= '0;
       weight_k <= '0;
@@ -171,33 +166,22 @@ module alexnet_n8_weight_tile_bank #(
       if (replay_fire) begin
         bank_state <= STATE_REPLAYING;
         reads_issued_q <= '0;
-        read_pending_q <= 1'b0;
         weight_valid <= 1'b0;
       end
 
-      if (read_stage_ready) begin
-        if (read_pending_q) begin
-          weight_valid <= 1'b1;
-          packed_weight_values <= mem_read_q;
-          weight_k <= pending_k_q;
-          weight_last <= pending_last_q;
-          weight_n_lane_mask <= resident_n_lane_mask;
-          weight_context_tag <= resident_context_tag;
-        end
-
-        read_pending_q <= issue_read;
-        if (issue_read) begin
-          mem_read_q <= mem[reads_issued_q[ADDR_W-1:0]];
-          pending_k_q <= reads_issued_q[ADDR_W-1:0];
-          pending_last_q <= reads_issued_q + 1'b1 == resident_k_count;
-          reads_issued_q <= reads_issued_q + 1'b1;
-        end
+      if (issue_read) begin
+        weight_valid <= 1'b1;
+        packed_weight_values <= mem[reads_issued_q[ADDR_W-1:0]];
+        weight_k <= reads_issued_q[ADDR_W-1:0];
+        weight_last <= reads_issued_q + 1'b1 == resident_k_count;
+        weight_n_lane_mask <= resident_n_lane_mask;
+        weight_context_tag <= resident_context_tag;
+        reads_issued_q <= reads_issued_q + 1'b1;
       end
 
       if (weight_fire && weight_last) begin
         bank_state <= STATE_READY;
         reads_issued_q <= '0;
-        read_pending_q <= 1'b0;
         completed_replays <= completed_replays + 1'b1;
         replay_done <= 1'b1;
       end
@@ -210,7 +194,6 @@ module alexnet_n8_weight_tile_bank #(
         write_addr_q <= '0;
         words_written <= '0;
         reads_issued_q <= '0;
-        read_pending_q <= 1'b0;
         weight_valid <= 1'b0;
         context_error <= 1'b0;
       end

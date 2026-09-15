@@ -255,6 +255,7 @@ module tb_alexnet_m4n8_shared_compute_top #(
   bit fc_clean_seen = 0;
   bit pe_profile_active = 0;
   bit pe_compute_window = 0;
+  bit pe_tile_seen = 0;
   longint pe_command_cycles = 0;
   longint pe_compute_cycles = 0;
   longint pe_issue_cycles = 0;
@@ -263,7 +264,11 @@ module tb_alexnet_m4n8_shared_compute_top #(
   longint pe_issue_block_cycles = 0;
   longint pe_ce_stall_cycles = 0;
   longint pe_post_reduce_cycles = 0;
+  longint pe_frontend_startup_cycles = 0;
   longint pe_intertile_cycles = 0;
+  longint pe_intertile_controller_cycles [0:3];
+  longint pe_intertile_feeder_cycles [0:7];
+  longint pe_intertile_weight_cycles [0:3];
   longint pe_other_cycles = 0;
   longint pe_dma_active_cycles = 0;
   longint pe_egress_block_cycles = 0;
@@ -272,14 +277,19 @@ module tb_alexnet_m4n8_shared_compute_top #(
   real pe_util_pct;
   always @(posedge clk) begin : pe_utilization_monitor
     int active_m_lanes;
+    int controller_state;
+    int feeder_state;
+    int weight_state;
     if (rst) begin
       pe_profile_active = 0;
       pe_compute_window = 0;
+      pe_tile_seen = 0;
     end else if (PERF_PROFILE && !phase_fc) begin
       if (u_rs_test.command_valid && u_rs_test.command_ready &&
           u_rs_test.command_id == 16'h0100) begin
         pe_profile_active = 1;
         pe_compute_window = 0;
+        pe_tile_seen = 0;
         pe_command_cycles = 0;
         pe_compute_cycles = 0;
         pe_issue_cycles = 0;
@@ -288,7 +298,14 @@ module tb_alexnet_m4n8_shared_compute_top #(
         pe_issue_block_cycles = 0;
         pe_ce_stall_cycles = 0;
         pe_post_reduce_cycles = 0;
+        pe_frontend_startup_cycles = 0;
         pe_intertile_cycles = 0;
+        for (int state = 0; state < 4; state++) begin
+          pe_intertile_controller_cycles[state] = 0;
+          pe_intertile_weight_cycles[state] = 0;
+        end
+        for (int state = 0; state < 8; state++)
+          pe_intertile_feeder_cycles[state] = 0;
         pe_other_cycles = 0;
         pe_dma_active_cycles = 0;
         pe_egress_block_cycles = 0;
@@ -304,6 +321,9 @@ module tb_alexnet_m4n8_shared_compute_top #(
           pe_compute_window = 1;
           pe_n_lanes = $countones(dut.rs_shared_chunk_n_lane_mask);
         end
+        if (dut.bus_shared_tile_start_valid &&
+            dut.bus_shared_tile_start_ready)
+          pe_tile_seen = 1;
         if (pe_compute_window) begin
           pe_compute_cycles = pe_compute_cycles + 1;
           if (!ce) begin
@@ -327,7 +347,26 @@ module tb_alexnet_m4n8_shared_compute_top #(
           end else if (dut.u_shared.tile_active_q) begin
             pe_post_reduce_cycles = pe_post_reduce_cycles + 1;
           end else if (dut.bus_shared_chunk_active) begin
-            pe_intertile_cycles = pe_intertile_cycles + 1;
+            if (!pe_tile_seen) begin
+              pe_frontend_startup_cycles = pe_frontend_startup_cycles + 1;
+            end else begin
+              pe_intertile_cycles = pe_intertile_cycles + 1;
+              controller_state =
+                  dut.u_rs.u_datapath.u_dma_fed_datapath.u_datapath.u_core.
+                      u_issue_controller.state_q;
+              feeder_state =
+                  dut.u_rs.u_datapath.u_dma_fed_datapath.u_datapath.u_core.
+                      u_feeder.state_q;
+              weight_state =
+                  dut.u_rs.u_datapath.u_dma_fed_datapath.u_datapath.u_core.
+                      u_weight_bank.bank_state;
+              pe_intertile_controller_cycles[controller_state] =
+                  pe_intertile_controller_cycles[controller_state] + 1;
+              pe_intertile_feeder_cycles[feeder_state] =
+                  pe_intertile_feeder_cycles[feeder_state] + 1;
+              pe_intertile_weight_cycles[weight_state] =
+                  pe_intertile_weight_cycles[weight_state] + 1;
+            end
           end else begin
             pe_other_cycles = pe_other_cycles + 1;
           end
@@ -342,16 +381,30 @@ module tb_alexnet_m4n8_shared_compute_top #(
           if (pe_compute_cycles != pe_issue_cycles +
                   pe_source_starve_cycles + pe_issue_block_cycles +
                   pe_ce_stall_cycles + pe_post_reduce_cycles +
-                  pe_intertile_cycles + pe_other_cycles)
+                  pe_frontend_startup_cycles + pe_intertile_cycles +
+                  pe_other_cycles)
             $fatal(1, "PE profile cycle accounting mismatch");
           $display(
-              "ALEXNET_M8N8_SHARED_PE_PROFILE command_cycles=%0d dma_active_cycles=%0d compute_cycles=%0d issue_cycles=%0d source_starve_cycles=%0d issue_block_cycles=%0d ce_stall_cycles=%0d post_reduce_cycles=%0d intertile_cycles=%0d other_cycles=%0d egress_block_cycles=%0d useful_cell_cycles=%0d issue_duty_pct=%0.3f pe_util_pct=%0.3f",
+              "ALEXNET_M8N8_SHARED_PE_PROFILE command_cycles=%0d dma_active_cycles=%0d compute_cycles=%0d issue_cycles=%0d source_starve_cycles=%0d issue_block_cycles=%0d ce_stall_cycles=%0d post_reduce_cycles=%0d frontend_startup_cycles=%0d intertile_cycles=%0d other_cycles=%0d egress_block_cycles=%0d useful_cell_cycles=%0d issue_duty_pct=%0.3f pe_util_pct=%0.3f",
               pe_command_cycles, pe_dma_active_cycles, pe_compute_cycles,
               pe_issue_cycles, pe_source_starve_cycles,
               pe_issue_block_cycles, pe_ce_stall_cycles,
-              pe_post_reduce_cycles, pe_intertile_cycles, pe_other_cycles,
+              pe_post_reduce_cycles, pe_frontend_startup_cycles,
+              pe_intertile_cycles, pe_other_cycles,
               pe_egress_block_cycles, pe_useful_cell_cycles,
               pe_issue_duty_pct, pe_util_pct);
+          $display(
+              "ALEXNET_M8N8_SHARED_PE_INTERTILE controller_wait_context=%0d controller_start_tile=%0d controller_issue=%0d controller_wait_done=%0d feeder_idle=%0d feeder_plan=%0d feeder_endpoint=%0d feeder_wait_data=%0d feeder_prep=%0d feeder_read_issue=%0d feeder_read_capture=%0d feeder_emit=%0d weight_empty=%0d weight_writing=%0d weight_ready=%0d weight_replaying=%0d",
+              pe_intertile_controller_cycles[0],
+              pe_intertile_controller_cycles[1],
+              pe_intertile_controller_cycles[2],
+              pe_intertile_controller_cycles[3],
+              pe_intertile_feeder_cycles[0], pe_intertile_feeder_cycles[1],
+              pe_intertile_feeder_cycles[2], pe_intertile_feeder_cycles[3],
+              pe_intertile_feeder_cycles[4], pe_intertile_feeder_cycles[5],
+              pe_intertile_feeder_cycles[6], pe_intertile_feeder_cycles[7],
+              pe_intertile_weight_cycles[0], pe_intertile_weight_cycles[1],
+              pe_intertile_weight_cycles[2], pe_intertile_weight_cycles[3]);
         end
       end
     end
