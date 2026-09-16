@@ -8,7 +8,7 @@ compute contract remains 512 SA DSP48E2 plus 64 requantizer DSP48E2.
 
 ## Four independent HP paths
 
-- HP0: patch and parameter MM2S
+- HP0: Conv1 raster, later-layer patch and parameter MM2S
 - HP1: result S2MM
 - HP2: camera MM2S
 - HP3: weight MM2S
@@ -21,12 +21,17 @@ scheduling optimization and is not claimed by this checkpoint.
 
 ## Storage contract
 
-The patch stream currently uses the engine's transposed K-major M16 tape. It is
-not yet an autonomous raster feature-map-to-patch traversal. Consequently this
-stage validates the integrated graph-payload hardware and board routing, but a
-board-run image packer must supply the documented tape format. Connecting the
-x-mod-4 raster assembler and writing each layer's results in the exact next-layer
-layout remain the final functional full-graph storage milestone.
+Conv1 now accepts the normal `224x224xN8` raster contract. HP0 reads 401,408
+bytes, the AXIS128 unpacker restores N8 words, and the x-mod-4 feeder assembles
+the K-major M16 patches consumed by the graph engine. The previous Conv1 patch
+tape was 1,103,520 bytes, so the RTL byte contract removes 702,112 bytes
+(63.6%) of Conv1 DDR reads per image. This is a static traffic reduction, not a
+measured board-throughput result.
+
+Conv2 through FC8 still use the legacy patch-tape service. Exact result
+placement, Pool1/2/5 ownership, and the frozen weight-file ABI must therefore
+be completed before this checkpoint can be called an autonomous full-graph
+board inference.
 
 ## Build
 
@@ -37,7 +42,7 @@ vivado -mode batch -source scripts/build_kv260_m8n126_graph.tcl
 ```
 
 The script publishes the `.bit` and `.xsa` only after synthesis, route, setup,
-hold, DRC, 512-SA/576-total DSP, and 36-URAM checks all pass.
+hold, DRC, 512-SA/576-total DSP, and 40-URAM checks all pass.
 
 If the clean flow leaves only a small setup violation, preserve its post-route
 checkpoint and run:
@@ -51,24 +56,24 @@ needed, timing-driven rerouting before repeating all signoff gates.
 
 ## Verified 200 MHz checkpoint
 
-Vivado 2025.2 generated the graph-payload `.bit` and fixed `.xsa` on
-2026-09-16. An explicit SA-result capture stage now registers all 64 INT32
+Vivado 2025.2 generated the Conv1-raster graph-payload `.bit` and fixed `.xsa`
+on 2026-09-16. An explicit SA-result capture stage registers all 64 INT32
 values plus slice metadata before the parallel requantizer. The clean build,
-without post-route recovery, closes at WNS `+0.151 ns`, TNS `0.000 ns`, WHS
-`+0.010 ns` and THS `0.000 ns`. All 393,038 setup/hold endpoints meet timing.
+without post-route recovery, closes at WNS `+0.016 ns`, TNS `0.000 ns`, WHS
+`+0.010 ns` and THS `0.000 ns`. All 404,142 setup/hold endpoints meet timing.
 Route status has zero failed, unrouted or partially routed nets, and DRC has
 zero errors or critical warnings.
 
 | Resource | Used | Available | Utilization |
 | --- | ---: | ---: | ---: |
-| CLB LUT | 78,971 | 117,120 | 67.43% |
-| CLB register | 87,800 | 234,240 | 37.48% |
-| BRAM tile | 9 | 144 | 6.25% |
-| URAM | 36 | 64 | 56.25% |
+| CLB LUT | 89,654 | 117,120 | 76.55% |
+| CLB register | 90,641 | 234,240 | 38.70% |
+| BRAM tile | 73 | 144 | 50.69% |
+| URAM | 40 | 64 | 62.50% |
 | DSP48E2 | 576 | 1,248 | 46.15% |
 
 The DSP split is exactly 512 for the physical M8xN128 SA and 64 for parallel
-requantization. Vectorless Vivado power is 3.422 W at medium confidence; it is
+requantization. Vectorless Vivado power is 3.555 W at medium confidence; it is
 not a board TOPS/W measurement. The capture boundary costs one cycle per
 emitted N8 result slice, not one cycle per K issue. The tile XSim active count
 changes from 281 to 302 and the two-command graph test from 1,088 to 1,123,
@@ -80,6 +85,8 @@ The following XSim gates pass after the bitstream build:
 
 - full scheduler: 1,635 commands, 714,188,480 useful MACs;
 - x-mod-4 M16 patch bridge: 205 fills/replays and 69,714 overlap cycles;
+- AXIS128 raster-to-M16 patch service: 205 fills/replays and 71,214 checked
+  patch words across K11/s4/p2, K3/s1/p1 and full 224x224 Conv1 cases;
 - M8xN128 tile payload: 886 result bytes with
   wide/split/FC/K-continuation/result-stall coverage;
 - integrated graph payload: two Conv1 tiles, 1,452 weight words, 726 patch
@@ -89,19 +96,20 @@ The following XSim gates pass after the bitstream build:
 
 Published local build hashes:
 
-- `.bit`: `cf8521fc18fb3eef95019ea50a6bc228e01a216f3ed108b2f36b7c2e616808a1`
-- `.xsa`: `89b507df304b7326c1985f96c84eeda56f670655b586b6043da30758cb33d40e`
+- `.bit`: `cb3326c35301645261c78f6ff7ba449029b21d98c5e23aae1afe3d9b0826d497`
+- `.xsa`: `f930616b6da847fd07e69fc78533c90fabd3ba0a06e6def08a29905f6e797211`
 - timing-clean `.dcp`:
-  `601b851e8ab81b131a4e2c52e76ee677938d5bbdb3d43fb05831582b0ef12405`
+  `fe03b67192c1516e5ef74d5c60bca9baf72297ce92a2ebd826786265ee9cd2a4`
 
 Build products remain under the ignored `build/` directory; the committed
 sources, scripts, reports and hashes reproduce and identify the checkpoint.
 
 ## Next functional milestone
 
-1. Connect the x-mod-4 raster assembler to the top so software can submit
-   normal feature-map rasters instead of pretransposed K-major M16 tape.
-2. Store every layer in the exact layout consumed by the next layer and close
+1. Align scheduler N tiles and the frozen weight exporter with the N16 DDR
+   service ABI, including the FC8 tail.
+2. Store every layer in the exact layout consumed by the next layer, integrate
+   Pool1/2/5 ownership, and close
    the Conv1-through-FC8 numerical loop against the C++ golden model.
 3. Schedule inactive-set weight fill concurrently with active-set compute,
    then use the hardware counters to compare shared versus dedicated HP3

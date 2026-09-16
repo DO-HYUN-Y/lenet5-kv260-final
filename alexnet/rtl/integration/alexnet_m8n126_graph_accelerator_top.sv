@@ -2,11 +2,10 @@
 
 // PS-facing batch-one M8xN126 graph-payload accelerator.
 //
-// HP0 supplies scheduled M16 patch and parameter MM2S traffic, HP1 drains
-// result S2MM traffic, and the independent weight DMA on HP3 fills the N128
-// URAM ping-pong.  The patch port consumes the graph engine's transposed
-// K-major M16 contract; connecting the raster x-mod-4 assembler to that
-// contract remains a separate end-to-end graph-storage milestone.
+// HP0 first supplies the normal 224x224xN8 input raster.  An x-mod-4 feeder
+// assembles Conv1 M16 patches locally; later-layer patch and parameter traffic
+// still use the scheduled HP0 service while exact inter-layer raster storage
+// is integrated. HP1 drains results and HP3 independently fills weights.
 module alexnet_m8n126_graph_accelerator_top #(
     parameter int CTRL_ADDR_W = 8
 ) (
@@ -104,6 +103,10 @@ module alexnet_m8n126_graph_accelerator_top #(
 
   typedef enum logic [3:0] {
     MAIN_IDLE,
+    MAIN_RASTER_COMMAND,
+    MAIN_RASTER_ARM,
+    MAIN_RASTER_STREAM,
+    MAIN_RASTER_DRAIN,
     MAIN_PATCH_STREAM,
     MAIN_PATCH_DRAIN,
     MAIN_PARAMETER_STREAM,
@@ -131,6 +134,7 @@ module alexnet_m8n126_graph_accelerator_top #(
 
   logic core_start_valid, core_start_ready;
   logic engine_start_ready;
+  logic engine_start_valid, engine_start_fire;
   logic [15:0] core_start_tag;
   logic [15:0] active_inference_tag_q;
   logic [63:0] active_input_base, active_activation_a_base;
@@ -156,6 +160,18 @@ module alexnet_m8n126_graph_accelerator_top #(
   logic [15:0] engine_patch_request_m_lane_mask;
   logic [15:0] engine_patch_request_context_tag;
   logic engine_patch_axis_ready;
+
+  logic raster_frame_valid, raster_frame_ready;
+  logic raster_axis_ready;
+  logic raster_request_ready;
+  logic raster_patch_axis_valid, raster_patch_axis_ready;
+  logic [127:0] raster_patch_axis_data;
+  logic raster_patch_axis_last;
+  logic raster_active, raster_frame_active, raster_frame_done;
+  logic [15:0] raster_completed_fills, raster_completed_replays;
+  logic raster_overlap_active, raster_fault, raster_idle;
+  logic raster_patch_active_q;
+  logic engine_start_pending_q;
 
   logic engine_parameter_request_valid, engine_parameter_request_ready;
   logic [3:0] engine_parameter_request_layer_id;
@@ -225,6 +241,7 @@ module alexnet_m8n126_graph_accelerator_top #(
   logic [31:0] parameter_address;
   logic [31:0] selected_result_base;
   logic main_command_fire, weight_command_fire;
+  logic raster_stream_fire, raster_patch_fire;
   logic patch_stream_fire, parameter_stream_fire, weight_stream_fire;
   logic core_start_fire;
 
@@ -278,8 +295,15 @@ module alexnet_m8n126_graph_accelerator_top #(
   endfunction
 
   assign rst = !aresetn;
-  assign core_start_ready = engine_start_ready && !accelerator_fault;
+  assign core_start_ready = main_state_q == MAIN_IDLE &&
+                            engine_start_ready && raster_frame_ready &&
+                            !accelerator_fault;
   assign core_start_fire = core_start_valid && core_start_ready;
+  assign engine_start_valid = engine_start_pending_q &&
+                              main_state_q == MAIN_RASTER_ARM &&
+                              !accelerator_fault;
+  assign engine_start_fire = engine_start_valid && engine_start_ready;
+  assign raster_frame_valid = core_start_valid && core_start_ready;
   assign s_axis_camera_tready = 1'b1;
 
   assign weight_request_bytes = weight_bytes(
@@ -310,7 +334,15 @@ module alexnet_m8n126_graph_accelerator_top #(
     engine_parameter_request_ready = 1'b0;
     loader_start_valid = 1'b0;
 
-    if (main_state_q == MAIN_IDLE && !accelerator_fault) begin
+    if (main_state_q == MAIN_RASTER_COMMAND && !accelerator_fault) begin
+      main_dma_cmd_valid = 1'b1;
+      main_dma_cmd_address = active_input_base[31:0];
+      main_dma_cmd_length = 26'd401408;
+    end else if (engine_patch_request_valid &&
+                 engine_patch_request_layer_id == 1 &&
+                 !accelerator_fault) begin
+      engine_patch_request_ready = raster_request_ready;
+    end else if (main_state_q == MAIN_IDLE && !accelerator_fault) begin
       if (engine_patch_request_valid) begin
         main_dma_cmd_valid = 1'b1;
         main_dma_cmd_address = active_input_base[31:0] +
@@ -351,9 +383,18 @@ module alexnet_m8n126_graph_accelerator_top #(
                               s_axis_weight_tready;
   assign patch_stream_fire = main_state_q == MAIN_PATCH_STREAM &&
       s_axis_mm2s_tvalid && engine_patch_axis_ready;
+  assign raster_stream_fire =
+      (main_state_q == MAIN_RASTER_ARM ||
+       main_state_q == MAIN_RASTER_STREAM) &&
+      s_axis_mm2s_tvalid && raster_axis_ready;
+  assign raster_patch_fire = raster_patch_axis_valid &&
+                             raster_patch_axis_ready;
   assign parameter_stream_fire = main_state_q == MAIN_PARAMETER_STREAM &&
       s_axis_mm2s_tvalid && loader_axis_ready;
-  assign s_axis_mm2s_tready = main_state_q == MAIN_PATCH_STREAM ?
+  assign s_axis_mm2s_tready =
+      (main_state_q == MAIN_RASTER_ARM ||
+       main_state_q == MAIN_RASTER_STREAM) ? raster_axis_ready :
+      main_state_q == MAIN_PATCH_STREAM ?
       engine_patch_axis_ready : main_state_q == MAIN_PARAMETER_STREAM ?
       loader_axis_ready : 1'b0;
 
@@ -400,7 +441,8 @@ module alexnet_m8n126_graph_accelerator_top #(
   end
 
   assign accelerator_fault = service_fault_q || engine_fault ||
-      engine_failed || main_dma_error || weight_dma_error || loader_fault;
+      engine_failed || main_dma_error || weight_dma_error || loader_fault ||
+      raster_fault;
   assign accelerator_busy = engine_busy || main_state_q != MAIN_IDLE ||
       weight_service_active_q || main_dma_busy || weight_dma_busy ||
       result_packer_active_q;
@@ -431,8 +473,11 @@ module alexnet_m8n126_graph_accelerator_top #(
       active_inference_tag_q <= 0;
       for (int row = 0; row < 8; row++)
         result_packer_values_q[row] <= 0;
+      engine_start_pending_q <= 1'b0;
+      raster_patch_active_q <= 1'b0;
     end else begin
       if (core_start_fire) begin
+        engine_start_pending_q <= 1'b1;
         active_inference_tag_q <= core_start_tag;
         patch_byte_offset_q <= 0;
         weight_byte_offset_q <= 0;
@@ -441,6 +486,21 @@ module alexnet_m8n126_graph_accelerator_top #(
         result_slice_index_q <= 0;
         result_signature_q <= 0;
       end
+
+      if (engine_start_fire)
+        engine_start_pending_q <= 1'b0;
+
+      if (engine_patch_request_valid && engine_patch_request_ready &&
+          engine_patch_request_layer_id == 1) begin
+        raster_patch_active_q <= 1'b1;
+        patch_lower_m_count_q <=
+            popcount8(engine_patch_request_m_lane_mask[7:0]);
+        patch_upper_m_count_q <=
+            popcount8(engine_patch_request_m_lane_mask[15:8]);
+        result_slice_index_q <= 0;
+      end
+      if (raster_patch_fire && raster_patch_axis_last)
+        raster_patch_active_q <= 1'b0;
 
       if (main_dma_done)
         main_dma_done_seen_q <= 1'b1;
@@ -479,7 +539,10 @@ module alexnet_m8n126_graph_accelerator_top #(
       case (main_state_q)
         MAIN_IDLE: begin
           main_dma_done_seen_q <= 1'b0;
-          if (engine_patch_request_valid &&
+          if (core_start_fire) begin
+            main_state_q <= MAIN_RASTER_COMMAND;
+          end else if (engine_patch_request_valid &&
+              engine_patch_request_layer_id != 1 &&
               engine_patch_request_ready) begin
             patch_byte_offset_q <= patch_byte_offset_q +
                                    patch_request_bytes;
@@ -503,6 +566,28 @@ module alexnet_m8n126_graph_accelerator_top #(
             main_state_q <= MAIN_PARAMETER_STREAM;
           end
         end
+
+        MAIN_RASTER_COMMAND: if (main_command_fire) begin
+          main_dma_done_seen_q <= 1'b0;
+          main_state_q <= MAIN_RASTER_ARM;
+        end
+
+        MAIN_RASTER_ARM: begin
+          if (engine_start_fire)
+            main_state_q <= MAIN_RASTER_STREAM;
+          if (raster_stream_fire && s_axis_mm2s_tlast)
+            main_state_q <= MAIN_RASTER_DRAIN;
+        end
+
+        MAIN_RASTER_STREAM:
+          if (raster_stream_fire && s_axis_mm2s_tlast)
+            main_state_q <= MAIN_RASTER_DRAIN;
+
+        MAIN_RASTER_DRAIN:
+          if (main_dma_done_seen_q || main_dma_done) begin
+            main_dma_done_seen_q <= 1'b0;
+            main_state_q <= MAIN_IDLE;
+          end
 
         MAIN_PATCH_STREAM: if (patch_stream_fire) begin
           if (s_axis_mm2s_tkeep != 16'hffff)
@@ -577,7 +662,7 @@ module alexnet_m8n126_graph_accelerator_top #(
         end
       endcase
 
-      if (main_dma_error || weight_dma_error || loader_fault ||
+      if (main_dma_error || weight_dma_error || loader_fault || raster_fault ||
           engine_fault || engine_failed) begin
         service_fault_q <= 1'b1;
         main_state_q <= MAIN_FAILED;
@@ -585,10 +670,44 @@ module alexnet_m8n126_graph_accelerator_top #(
     end
   end
 
+  assign raster_patch_axis_ready = raster_patch_active_q &&
+                                   engine_patch_axis_ready;
+
+  alexnet_m16_raster_patch_service u_conv1_raster_patches (
+      .clk(aclk), .rst,
+      .frame_valid(raster_frame_valid), .frame_ready(raster_frame_ready),
+      .frame_input_h(8'd224), .frame_input_w(8'd224),
+      .frame_channel_count(4'd3), .frame_lane_mask(8'h07),
+      .frame_kernel(4'd11), .frame_stride(3'd4), .frame_padding(3'd2),
+      .frame_k_count(13'd363), .frame_tag(core_start_tag),
+      .s_axis_tdata(s_axis_mm2s_tdata),
+      .s_axis_tkeep(s_axis_mm2s_tkeep),
+      .s_axis_tvalid(s_axis_mm2s_tvalid &&
+          (main_state_q == MAIN_RASTER_ARM ||
+           main_state_q == MAIN_RASTER_STREAM)),
+      .s_axis_tready(raster_axis_ready), .s_axis_tlast(s_axis_mm2s_tlast),
+      .request_valid(engine_patch_request_valid &&
+          engine_patch_request_layer_id == 1),
+      .request_ready(raster_request_ready),
+      .request_k_count(engine_patch_request_k_count),
+      .request_m_lane_mask(engine_patch_request_m_lane_mask),
+      .request_context_tag(engine_patch_request_context_tag),
+      .patch_axis_valid(raster_patch_axis_valid),
+      .patch_axis_ready(raster_patch_axis_ready),
+      .patch_axis_data(raster_patch_axis_data),
+      .patch_axis_last(raster_patch_axis_last),
+      .raster_active, .frame_active(raster_frame_active),
+      .frame_done(raster_frame_done),
+      .completed_patch_fills(raster_completed_fills),
+      .completed_patch_replays(raster_completed_replays),
+      .overlap_active(raster_overlap_active), .fault(raster_fault),
+      .idle(raster_idle)
+  );
+
   alexnet_m8n126_graph_payload_engine u_graph_payload (
       .clk(aclk), .rst,
-      .start_valid(core_start_valid && !accelerator_fault),
-      .start_ready(engine_start_ready), .start_tag(core_start_tag),
+      .start_valid(engine_start_valid),
+      .start_ready(engine_start_ready), .start_tag(active_inference_tag_q),
       .weight_request_valid(engine_weight_request_valid),
       .weight_request_ready(engine_weight_request_ready),
       .weight_request_layer_id(engine_weight_request_layer_id),
@@ -610,11 +729,13 @@ module alexnet_m8n126_graph_accelerator_top #(
       .patch_request_k_count(engine_patch_request_k_count),
       .patch_request_m_lane_mask(engine_patch_request_m_lane_mask),
       .patch_request_context_tag(engine_patch_request_context_tag),
-      .patch_axis_valid(s_axis_mm2s_tvalid &&
-          main_state_q == MAIN_PATCH_STREAM),
+      .patch_axis_valid(raster_patch_active_q ? raster_patch_axis_valid :
+          (s_axis_mm2s_tvalid && main_state_q == MAIN_PATCH_STREAM)),
       .patch_axis_ready(engine_patch_axis_ready),
-      .patch_axis_data(s_axis_mm2s_tdata),
-      .patch_axis_last(s_axis_mm2s_tlast),
+      .patch_axis_data(raster_patch_active_q ? raster_patch_axis_data :
+                                                 s_axis_mm2s_tdata),
+      .patch_axis_last(raster_patch_active_q ? raster_patch_axis_last :
+                                                 s_axis_mm2s_tlast),
       .parameter_request_valid(engine_parameter_request_valid),
       .parameter_request_ready(engine_parameter_request_ready),
       .parameter_request_layer_id(engine_parameter_request_layer_id),

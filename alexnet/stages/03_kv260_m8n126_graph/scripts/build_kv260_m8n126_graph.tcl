@@ -10,7 +10,7 @@ set ::alexnet_accelerator_top_override \
 set ::alexnet_accelerator_display_name_override \
     {AlexNet M8xN126 graph-payload accelerator}
 set ::alexnet_accelerator_description_override \
-    {KV260 M8xN126 descriptor engine with physical M8xN128 compute and independent weight DMA}
+    {KV260 M8xN126 descriptor engine with Conv1 x-mod-4 raster assembly and independent weight DMA}
 set ::alexnet_use_four_hp 1
 set ::alexnet_add_weight_dma 1
 
@@ -104,6 +104,10 @@ puts $summary_file "URAM288=[llength $uram_cells]"
 puts $summary_file "HP_PORTS_ENABLED=4"
 puts $summary_file "HP_PORTS_ACTIVE=4"
 puts $summary_file "HP3_WEIGHT_MM2S=1"
+puts $summary_file "CONV1_INPUT_LAYOUT=N8_RASTER"
+puts $summary_file "CONV1_INPUT_BYTES=401408"
+puts $summary_file "CONV1_LEGACY_PATCH_TAPE_BYTES=1103520"
+puts $summary_file "CONV1_DDR_READ_REDUCTION_BYTES=702112"
 puts $summary_file "GRAPH_SCHEDULER_COMMANDS=1635"
 puts $summary_file "GRAPH_USEFUL_MACS=714188480"
 puts $summary_file \
@@ -126,7 +130,7 @@ if {[llength $drc_errors] != 0 || [llength $drc_critical] != 0} {
 [llength $drc_critical] critical warnings"
 }
 if {[llength $sa_dsp_cells] != 512 || [llength $dsp_cells] != 576 ||
-    [llength $uram_cells] != 36} {
+    [llength $uram_cells] != 40} {
     error "Resource contract failed: SA_DSP48E2=[llength $sa_dsp_cells], TOTAL_DSP48E2=[llength $dsp_cells], RAMB36E2=[llength $bram_cells], URAM288=[llength $uram_cells]"
 }
 

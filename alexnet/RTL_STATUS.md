@@ -1,4 +1,4 @@
-# AlexNet RTL status — 2026-09-11
+# AlexNet RTL status — 2026-09-16
 
 ## 2026-09-16 M8xN126 graph-payload bitstream checkpoint
 
@@ -12,19 +12,22 @@ board-verified full AlexNet inference.
   It passes randomized XSim and routes at 200 MHz with WNS/WHS
   +0.435/+0.099 ns.
 - The M16 feeder bridge now uses x-mod-4 banking and fills a two-set M16 patch
-  ping-pong while the other set replays. Coordinate-golden XSim passes AlexNet
-  stride/padding, cross-row grouping, tails and randomized backpressure.
+  ping-pong while the other set replays. Conv1 accepts a normal 224x224 N8
+  raster from HP0; coordinate-golden XSim passes AlexNet stride/padding,
+  cross-row grouping, tails and randomized backpressure.
 - The scheduler is connected to the N128 weight ping-pong, M16 patch
   ping-pong, dynamic SA, parallel requantizer and result stream. The integrated
   payload XSim passes two Conv1 tiles.
 - The KV260 top activates four independent HP paths; HP3 owns the weight MM2S
   DMA. A registered 64-value SA-to-requant capture boundary now gives the
-  clean 200 MHz build WNS/TNS/WHS `+0.151/0.000/+0.010 ns`, with zero failed
-  route nets and zero DRC errors or critical warnings. It uses 78,971 LUT,
-  87,800 registers, 9 BRAM tiles, 36 URAM and 576 DSP48E2, and generated both
+  clean 200 MHz build WNS/TNS/WHS `+0.016/0.000/+0.010 ns`, with zero failed
+  route nets and zero DRC errors or critical warnings. It uses 89,654 LUT,
+  90,641 registers, 73 BRAM tiles, 40 URAM and 576 DSP48E2, and generated both
   bitstream and XSA without the recovery flow.
-- The remaining functional boundary is normal raster-to-patch assembly plus
-  exact result-to-next-layer storage. Weight fill is also not yet overlapped
+- Conv1's DDR-read contract is now 401,408 bytes instead of the 1,103,520-byte
+  pretransposed patch tape, a 702,112-byte (63.6%) reduction. The remaining
+  functional boundary is N16 weight ABI/tile alignment plus exact
+  result/pool-to-next-layer storage. Weight fill is also not yet overlapped
   with compute. Layer-by-layer and end-to-end golden comparison are required
   before calling this a functional full-graph bitstream.
 - Exact descriptor slot utilization is 1.5616% for combined FC6-FC8 at batch
