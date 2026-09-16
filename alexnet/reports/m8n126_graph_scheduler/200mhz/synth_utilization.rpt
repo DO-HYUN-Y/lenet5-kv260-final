@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2025.2 (lin64) Build 6299465 Fri Nov 14 12:34:56 MST 2025
-| Date         : Tue Sep 15 14:32:38 2026
+| Date         : Wed Sep 16 23:00:19 2026
 | Host         : jian-ThinkBook-16-G9-AHP running 64-bit Ubuntu 24.04.4 LTS
 | Command      : report_utilization -file /home/jian/Documents/Codex/2026-09-09/https-github-com-do-hyun-y/work/lenet5-kv260-final/alexnet/reports/m8n126_graph_scheduler/200mhz/synth_utilization.rpt
 | Design       : alexnet_m8n126_graph_scheduler
@@ -32,14 +32,14 @@ Table of Contents
 +-------------------------+------+-------+------------+-----------+-------+
 |        Site Type        | Used | Fixed | Prohibited | Available | Util% |
 +-------------------------+------+-------+------------+-----------+-------+
-| CLB LUTs*               |  373 |     0 |          0 |    117120 |  0.32 |
-|   LUT as Logic          |  373 |     0 |          0 |    117120 |  0.32 |
+| CLB LUTs*               |  285 |     0 |          0 |    117120 |  0.24 |
+|   LUT as Logic          |  285 |     0 |          0 |    117120 |  0.24 |
 |   LUT as Memory         |    0 |     0 |          0 |     57600 |  0.00 |
-| CLB Registers           |   99 |     0 |          0 |    234240 |  0.04 |
-|   Register as Flip Flop |   99 |     0 |          0 |    234240 |  0.04 |
+| CLB Registers           |   97 |     0 |          0 |    234240 |  0.04 |
+|   Register as Flip Flop |   97 |     0 |          0 |    234240 |  0.04 |
 |   Register as Latch     |    0 |     0 |          0 |    234240 |  0.00 |
 | CARRY8                  |   16 |     0 |          0 |     14640 |  0.11 |
-| F7 Muxes                |    0 |     0 |          0 |     58560 |  0.00 |
+| F7 Muxes                |    1 |     0 |          0 |     58560 | <0.01 |
 | F8 Muxes                |    0 |     0 |          0 |     29280 |  0.00 |
 | F9 Muxes                |    0 |     0 |          0 |     14640 |  0.00 |
 | Unique Control Sets     |    9 |       |          0 |     29280 |  0.03 |
@@ -65,7 +65,7 @@ Warning! For any ECO changes, please run place_design if there are unplaced inst
 | 0     |          Yes |           - |          Set |
 | 0     |          Yes |           - |        Reset |
 | 0     |          Yes |         Set |            - |
-| 99    |          Yes |       Reset |            - |
+| 97    |          Yes |       Reset |            - |
 +-------+--------------+-------------+--------------+
 
 
@@ -171,14 +171,15 @@ Warning! For any ECO changes, please run place_design if there are unplaced inst
 +----------+------+---------------------+
 | Ref Name | Used | Functional Category |
 +----------+------+---------------------+
-| LUT6     |  151 |                 CLB |
-| LUT4     |  104 |                 CLB |
-| FDRE     |   99 |            Register |
-| LUT5     |   88 |                 CLB |
-| LUT2     |   50 |                 CLB |
-| LUT3     |   45 |                 CLB |
+| LUT6     |  113 |                 CLB |
+| FDRE     |   97 |            Register |
+| LUT4     |   79 |                 CLB |
+| LUT5     |   68 |                 CLB |
+| LUT3     |   47 |                 CLB |
+| LUT2     |   37 |                 CLB |
 | CARRY8   |   16 |                 CLB |
-| LUT1     |    6 |                 CLB |
+| LUT1     |    3 |                 CLB |
+| MUXF7    |    1 |                 CLB |
 +----------+------+---------------------+
 
 

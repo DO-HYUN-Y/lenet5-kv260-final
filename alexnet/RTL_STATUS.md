@@ -1,16 +1,17 @@
-# AlexNet RTL status — 2026-09-16
+# AlexNet RTL status — 2026-09-17
 
-## 2026-09-16 M8xN126 graph-payload bitstream checkpoint
+## 2026-09-17 M8xN126 format-v2 graph-payload bitstream checkpoint
 
 The M8xN8 text below remains the last functional board baseline. The active
 migration keeps a logical M8xN126 / physical M8xN128 compute fabric. A
 graph-payload top bitstream now exists, but it is not yet an autonomous or
 board-verified full AlexNet inference.
 
-- A batch-1 Conv1-through-FC8 RTL scheduler now emits 1,635 verified work
-  descriptors covering 714,188,480 useful MACs and 61,090,496 weight bytes.
-  It passes randomized XSim and routes at 200 MHz with WNS/WHS
-  +0.435/+0.099 ns.
+- A batch-1 Conv1-through-FC8 RTL scheduler emits 1,635 verified work
+  descriptors covering 714,188,480 useful MACs. Conv3-5 use N112 scheduler
+  tiles, so all convolution N bases and transfers stay N16 aligned. It passes
+  randomized XSim and routes standalone at 200 MHz with WNS/WHS
+  +0.459/+0.088 ns.
 - The M16 feeder bridge now uses x-mod-4 banking and fills a two-set M16 patch
   ping-pong while the other set replays. Conv1 accepts a normal 224x224 N8
   raster from HP0; coordinate-golden XSim passes AlexNet stride/padding,
@@ -19,17 +20,21 @@ board-verified full AlexNet inference.
   ping-pong, dynamic SA, parallel requantizer and result stream. The integrated
   payload XSim passes two Conv1 tiles.
 - The KV260 top activates four independent HP paths; HP3 owns the weight MM2S
-  DMA. A registered 64-value SA-to-requant capture boundary now gives the
-  clean 200 MHz build WNS/TNS/WHS `+0.016/0.000/+0.010 ns`, with zero failed
-  route nets and zero DRC errors or critical warnings. It uses 89,654 LUT,
-  90,641 registers, 73 BRAM tiles, 40 URAM and 576 DSP48E2, and generated both
-  bitstream and XSA without the recovery flow.
+  DMA. The format-v2 clean 200 MHz build closes at WNS/TNS/WHS
+  `0.000/0.000/+0.010 ns` with the timing report marked MET, zero failed route
+  nets and zero DRC errors or critical warnings. It uses 89,451 LUT, 90,271
+  registers, 73 BRAM tiles, 40 URAM and 576 DSP48E2, and generated both
+  bitstream and XSA without the separate recovery flow.
 - Conv1's DDR-read contract is now 401,408 bytes instead of the 1,103,520-byte
   pretransposed patch tape, a 702,112-byte (63.6%) reduction. The remaining
-  functional boundary is N16 weight ABI/tile alignment plus exact
-  result/pool-to-next-layer storage. Weight fill is also not yet overlapped
-  with compute. Layer-by-layer and end-to-end golden comparison are required
-  before calling this a functional full-graph bitstream.
+  functional boundary is exact result/pool-to-next-layer storage. Weight fill
+  is also not yet overlapped with compute. Layer-by-layer and end-to-end golden
+  comparison are required before calling this a functional full-graph
+  bitstream.
+- The format-v2 official-checkpoint export and independent full-byte verifier
+  pass with 61,123,264 physical weight bytes: 61,090,496 logical bytes plus
+  32,768 zero-padding bytes for the FC8 N8 tail. The rebuilt bitstream now
+  contains this aligned scheduler and consumes that exact transfer contract.
 - Exact descriptor slot utilization is 1.5616% for combined FC6-FC8 at batch
   1 in one-N16-bank mode, and 15.5406% for Conv1-through-FC8. These are
   scheduling ceilings, not measured board utilization.

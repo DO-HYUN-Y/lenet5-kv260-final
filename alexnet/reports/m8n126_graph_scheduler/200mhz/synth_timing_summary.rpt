@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version      : Vivado v.2025.2 (lin64) Build 6299465 Fri Nov 14 12:34:56 MST 2025
-| Date              : Tue Sep 15 14:32:46 2026
+| Date              : Wed Sep 16 23:00:27 2026
 | Host              : jian-ThinkBook-16-G9-AHP running 64-bit Ubuntu 24.04.4 LTS
 | Command           : report_timing_summary -delay_type min_max -check_timing_verbose -file /home/jian/Documents/Codex/2026-09-09/https-github-com-do-hyun-y/work/lenet5-kv260-final/alexnet/reports/m8n126_graph_scheduler/200mhz/synth_timing_summary.rpt
 | Design            : alexnet_m8n126_graph_scheduler
@@ -30,11 +30,11 @@ Timing Summary Report
   Merge Timing Exceptions                    :  Yes
   Inter-SLR Compensation                     :  Conservative
 
-  Corner  Analyze    Analyze    
-  Name    Max Paths  Min Paths  
-  ------  ---------  ---------  
-  Slow    Yes        Yes        
-  Fast    Yes        Yes        
+  Corner  Analyze    Analyze
+  Name    Max Paths  Min Paths
+  ------  ---------  ---------
+  Slow    Yes        Yes
+  Fast    Yes        Yes
 
 
 ------------------------------------------------------------------------------------------------
@@ -137,9 +137,9 @@ Table of Contents
 | ---------------------
 ------------------------------------------------------------------------------------------------
 
-    WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
-    -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
-      0.115        0.000                      0                  575        0.133        0.000                      0                  575        2.225        0.000                       0                    99  
+    WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints
+    -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------
+      0.591        0.000                      0                  565        0.133        0.000                      0                  565        2.225        0.000                       0                    97
 
 
 All user specified timing constraints are met.
@@ -152,7 +152,7 @@ All user specified timing constraints are met.
 
 Clock  Waveform(ns)         Period(ns)      Frequency(MHz)
 -----  ------------         ----------      --------------
-clk    {0.000 2.500}        5.000           200.000         
+clk    {0.000 2.500}        5.000           200.000
 
 
 ------------------------------------------------------------------------------------------------
@@ -160,9 +160,9 @@ clk    {0.000 2.500}        5.000           200.000
 | -----------------
 ------------------------------------------------------------------------------------------------
 
-Clock             WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
------             -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
-clk                 0.115        0.000                      0                  575        0.133        0.000                      0                  575        2.225        0.000                       0                    99  
+Clock             WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints
+-----             -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------
+clk                 0.591        0.000                      0                  565        0.133        0.000                      0                  565        2.225        0.000                       0                    97
 
 
 ------------------------------------------------------------------------------------------------
@@ -170,8 +170,8 @@ clk                 0.115        0.000                      0                  5
 | -----------------
 ------------------------------------------------------------------------------------------------
 
-From Clock    To Clock          WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints  
-----------    --------          -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------  
+From Clock    To Clock          WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints
+----------    --------          -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------
 
 
 ------------------------------------------------------------------------------------------------
@@ -179,8 +179,8 @@ From Clock    To Clock          WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS
 | -----------------------
 ------------------------------------------------------------------------------------------------
 
-Path Group    From Clock    To Clock          WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints  
-----------    ----------    --------          -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------  
+Path Group    From Clock    To Clock          WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints
+----------    ----------    --------          -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------
 
 
 ------------------------------------------------------------------------------------------------
@@ -193,7 +193,7 @@ Path Group    From Clock    To Clock          WNS(ns)      TNS(ns)  TNS Failing 
 From Clock:  clk
   To Clock:  clk
 
-Setup :            0  Failing Endpoints,  Worst Slack        0.115ns,  Total Violation        0.000ns
+Setup :            0  Failing Endpoints,  Worst Slack        0.591ns,  Total Violation        0.000ns
 Hold  :            0  Failing Endpoints,  Worst Slack        0.133ns,  Total Violation        0.000ns
 PW    :            0  Failing Endpoints,  Worst Slack        2.225ns,  Total Violation        0.000ns
 ---------------------------------------------------------------------------------------------------
@@ -201,19 +201,19 @@ PW    :            0  Failing Endpoints,  Worst Slack        2.225ns,  Total Vio
 
 Max Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             0.115ns  (required time - arrival time)
-  Source:                 layer_q_reg[0]/C
+Slack (MET) :             0.591ns  (required time - arrival time)
+  Source:                 layer_q_reg[2]/C
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
   Destination:            command_weight_release
                             (output port clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
   Path Group:             clk
   Path Type:              Max at Slow Process Corner
   Requirement:            5.000ns  (clk rise@5.000ns - clk rise@0.000ns)
-  Data Path Delay:        3.809ns  (logic 1.478ns (38.803%)  route 2.331ns (61.197%))
-  Logic Levels:           12  (CARRY8=3 LUT2=2 LUT4=2 LUT5=1 LUT6=4)
+  Data Path Delay:        3.333ns  (logic 1.455ns (43.654%)  route 1.878ns (56.346%))
+  Logic Levels:           10  (CARRY8=3 LUT4=3 LUT5=2 LUT6=2)
   Output Delay:           1.000ns
   Clock Path Skew:        -0.041ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    0.000ns = ( 5.000 - 5.000 ) 
+    Destination Clock Delay (DCD):    0.000ns = ( 5.000 - 5.000 )
     Source Clock Delay      (SCD):    0.041ns
     Clock Pessimism Removal (CPR):    0.000ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -224,52 +224,48 @@ Slack (MET) :             0.115ns  (required time - arrival time)
 
     Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
   -------------------------------------------------------------------    -------------------
-                         (clock clk rise edge)        0.000     0.000 r  
+                         (clock clk rise edge)        0.000     0.000 r
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=98, unset)           0.041     0.041    clk
-                         FDRE                                         r  layer_q_reg[0]/C
+                         net (fo=96, unset)           0.041     0.041    clk
+                         FDRE                                         r  layer_q_reg[2]/C
   -------------------------------------------------------------------    -------------------
-                         FDRE (Prop_FDRE_C_Q)         0.114     0.155 f  layer_q_reg[0]/Q
-                         net (fo=121, unplaced)       0.197     0.352    command_layer_id[0]
-                         LUT4 (Prop_LUT4_I0_O)        0.152     0.504 f  command_bank_enable[0]_INST_0_i_2/O
-                         net (fo=10, unplaced)        0.244     0.748    layer_n_tile[1]
-                         LUT5 (Prop_LUT5_I4_O)        0.058     0.806 r  command_m_count[4]_INST_0_i_31/O
-                         net (fo=3, unplaced)         0.217     1.023    command_m_count[4]_INST_0_i_31_n_0
-                         LUT6 (Prop_LUT6_I4_O)        0.058     1.081 r  command_m_count[4]_INST_0_i_20/O
-                         net (fo=8, unplaced)         0.239     1.320    command_m_count[4]_INST_0_i_20_n_0
-                         LUT2 (Prop_LUT2_I1_O)        0.058     1.378 r  command_m_count[4]_INST_0_i_24/O
-                         net (fo=1, unplaced)         0.211     1.589    command_m_count[4]_INST_0_i_24_n_0
-                         LUT6 (Prop_LUT6_I5_O)        0.058     1.647 r  command_m_count[4]_INST_0_i_8/O
-                         net (fo=1, unplaced)         0.211     1.858    command_m_count[4]_INST_0_i_8_n_0
+                         FDRE (Prop_FDRE_C_Q)         0.114     0.155 r  layer_q_reg[2]/Q
+                         net (fo=126, unplaced)       0.198     0.353    command_layer_id[2]
+                         LUT4 (Prop_LUT4_I0_O)        0.152     0.505 f  command_mode_split_n64_INST_0/O
+                         net (fo=22, unplaced)        0.204     0.709    command_mode_split_n64
+                         LUT6 (Prop_LUT6_I0_O)        0.137     0.846 r  command_m_count[4]_INST_0_i_20/O
+                         net (fo=3, unplaced)         0.217     1.063    command_m_count[4]_INST_0_i_20_n_0
+                         LUT5 (Prop_LUT5_I2_O)        0.058     1.121 r  command_m_count[4]_INST_0_i_17/O
+                         net (fo=3, unplaced)         0.217     1.338    command_m_count[4]_INST_0_i_17_n_0
+                         LUT5 (Prop_LUT5_I0_O)        0.100     1.438 r  command_m_count[4]_INST_0_i_4/O
+                         net (fo=1, unplaced)         0.250     1.688    command_m_count[4]_INST_0_i_4_n_0
+                         CARRY8 (Prop_CARRY8_DI[5]_CO[6])
+                                                      0.132     1.820 r  command_m_count[4]_INST_0_i_3/CO[6]
+                         net (fo=14, unplaced)        0.192     2.012    current_m_count1
+                         LUT4 (Prop_LUT4_I3_O)        0.057     2.069 r  m_base_q[7]_i_6/O
+                         net (fo=1, unplaced)         0.030     2.099    m_base_q[7]_i_6_n_0
+                         CARRY8 (Prop_CARRY8_S[1]_O[5])
+                                                      0.333     2.432 r  m_base_q_reg[7]_i_2/O[5]
+                         net (fo=3, unplaced)         0.161     2.593    m_base_q_reg[7]_i_2_n_10
+                         LUT6 (Prop_LUT6_I0_O)        0.082     2.675 r  command_weight_release_INST_0_i_5/O
+                         net (fo=1, unplaced)         0.211     2.886    command_weight_release_INST_0_i_5_n_0
                          CARRY8 (Prop_CARRY8_DI[2]_CO[6])
-                                                      0.232     2.090 r  command_m_count[4]_INST_0_i_2/CO[6]
-                         net (fo=15, unplaced)        0.193     2.283    current_m_count1
-                         LUT6 (Prop_LUT6_I1_O)        0.058     2.341 r  command_m_count[3]_INST_0/O
-                         net (fo=2, unplaced)         0.211     2.552    command_m_count[3]
-                         LUT2 (Prop_LUT2_I1_O)        0.056     2.608 r  m_base_q[7]_i_4/O
-                         net (fo=1, unplaced)         0.040     2.648    m_base_q[7]_i_4_n_0
-                         CARRY8 (Prop_CARRY8_S[3]_O[5])
-                                                      0.262     2.910 r  m_base_q_reg[7]_i_2/O[5]
-                         net (fo=3, unplaced)         0.161     3.071    m_base_q_reg[7]_i_2_n_10
-                         LUT6 (Prop_LUT6_I4_O)        0.082     3.153 r  command_weight_release_INST_0_i_5/O
-                         net (fo=1, unplaced)         0.211     3.364    command_weight_release_INST_0_i_5_n_0
-                         CARRY8 (Prop_CARRY8_DI[2]_CO[6])
-                                                      0.232     3.596 r  command_weight_release_INST_0_i_1/CO[6]
-                         net (fo=17, unplaced)        0.196     3.792    m_last
-                         LUT4 (Prop_LUT4_I0_O)        0.058     3.850 r  command_weight_release_INST_0/O
-                         net (fo=0)                   0.000     3.850    command_weight_release
+                                                      0.232     3.118 r  command_weight_release_INST_0_i_1/CO[6]
+                         net (fo=18, unplaced)        0.198     3.316    m_last
+                         LUT4 (Prop_LUT4_I0_O)        0.058     3.374 r  command_weight_release_INST_0/O
+                         net (fo=0)                   0.000     3.374    command_weight_release
                                                                       r  command_weight_release (OUT)
   -------------------------------------------------------------------    -------------------
 
-                         (clock clk rise edge)        5.000     5.000 r  
-                         clock pessimism              0.000     5.000    
-                         clock uncertainty           -0.035     4.965    
-                         output delay                -1.000     3.965    
+                         (clock clk rise edge)        5.000     5.000 r
+                         clock pessimism              0.000     5.000
+                         clock uncertainty           -0.035     4.965
+                         output delay                -1.000     3.965
   -------------------------------------------------------------------
-                         required time                          3.965    
-                         arrival time                          -3.850    
+                         required time                          3.965
+                         arrival time                          -3.374
   -------------------------------------------------------------------
-                         slack                                  0.115    
+                         slack                                  0.591
 
 
 
@@ -294,29 +290,29 @@ Slack (MET) :             0.133ns  (arrival time - required time)
 
     Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
   -------------------------------------------------------------------    -------------------
-                         (clock clk rise edge)        0.000     0.000 r  
+                         (clock clk rise edge)        0.000     0.000 r
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=98, unset)           0.014     0.014    clk
+                         net (fo=96, unset)           0.014     0.014    clk
                          FDRE                                         r  completed_commands_reg[10]/C
   -------------------------------------------------------------------    -------------------
                          FDRE (Prop_FDRE_C_Q)         0.084     0.098 r  completed_commands_reg[10]/Q
                          net (fo=2, unplaced)         0.043     0.141    completed_commands[10]
-                         LUT3 (Prop_LUT3_I2_O)        0.037     0.178 r  completed_commands[10]_i_1/O
+                         LUT3 (Prop_LUT3_I1_O)        0.037     0.178 r  completed_commands[10]_i_1/O
                          net (fo=1, unplaced)         0.018     0.196    completed_commands[10]_i_1_n_0
                          FDRE                                         r  completed_commands_reg[10]/D
   -------------------------------------------------------------------    -------------------
 
-                         (clock clk rise edge)        0.000     0.000 r  
+                         (clock clk rise edge)        0.000     0.000 r
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=98, unset)           0.019     0.019    clk
+                         net (fo=96, unset)           0.019     0.019    clk
                          FDRE                                         r  completed_commands_reg[10]/C
-                         clock pessimism              0.000     0.019    
+                         clock pessimism              0.000     0.019
                          FDRE (Hold_FDRE_C_D)         0.044     0.063    completed_commands_reg[10]
   -------------------------------------------------------------------
-                         required time                         -0.063    
-                         arrival time                           0.196    
+                         required time                         -0.063
+                         arrival time                           0.196
   -------------------------------------------------------------------
-                         slack                                  0.133    
+                         slack                                  0.133
 
 
 

@@ -110,6 +110,8 @@ puts $summary_file "CONV1_LEGACY_PATCH_TAPE_BYTES=1103520"
 puts $summary_file "CONV1_DDR_READ_REDUCTION_BYTES=702112"
 puts $summary_file "GRAPH_SCHEDULER_COMMANDS=1635"
 puts $summary_file "GRAPH_USEFUL_MACS=714188480"
+puts $summary_file "GRAPH_LOGICAL_WEIGHT_BYTES=61090496"
+puts $summary_file "GRAPH_WEIGHT_TRANSFER_BYTES=61123264"
 puts $summary_file \
     "BITSTREAM=[file join $output_dir alexnet_m8n126_graph_kv260.bit]"
 puts $summary_file \

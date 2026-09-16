@@ -18,6 +18,8 @@
     KV260 DDR 전송 순서로 가중치·파라미터를 묶는 방법
 13. `software/README.md`: PS 100 MHz 입력/MMCM 200 MHz 확인, coherent DDR, 저장 이미지 및 USB
     카메라 입력, FC8 터미널 출력을 담당하는 Linux 런타임
+14. `stages/03_kv260_m8n126_graph/README.md`: M8xN126 graph-payload,
+    format-v2 N16 weight ABI, 4-HP 연결과 200 MHz bitstream signoff
 
 Python 코드에는 각 함수의 역할, tensor shape, 필요한 이유를 한국어 주석으로
 기록했다. 처음에는 `model.py`의 `AlexNet.__init__()`과 `forward()`만 읽고,
@@ -202,16 +204,18 @@ python -m alexnet.verify_board_weights
 The output directory is `alexnet_output/int8_mlcommons500_board/`. The current
 verified images are:
 
-- `weights_board.bin`: 61,090,496 bytes, SHA-256
-  `07e8583d9c18563672ffeb211746dfc432ba5b96d27039d01563d3fb8679ec3d`;
+- `weights_board.bin`: 61,123,264 bytes, SHA-256
+  `3239c992d84077187aa19485bbf07e2d7f74a37c5a979474fd75c3b311350a78`;
 - `parameters_board.bin`: 165,504 bytes, SHA-256
   `0038da71fe9e4fc4454930b8a7f02e36d822e3cd6736388092c1429635c5a2ad`.
 
 `board_manifest.json` records every layer offset and hash. The verifier
-independently reconstructs all 61,090,496 packed weight bytes from the logical
-OIHW/NK files and also checks the complete parameter concatenation. Blob base
-addresses supplied by Linux must be 128-byte aligned; individual layer offsets
-and transfers are eight-byte aligned and are supported by the main DMA DRE.
+independently reconstructs all 61,123,264 packed weight bytes from the logical
+OIHW/NK files and also checks the complete parameter concatenation. The N128
+service consumes K-major N16 beats; FC8's final eight outputs therefore add
+32,768 zero-padding bytes without changing the 61,090,496 logical weights.
+Blob base addresses supplied by Linux must be 128-byte aligned and weight
+transfers are 16-byte aligned.
 
 ## Pre-RTL sign-off dataset and profiler
 

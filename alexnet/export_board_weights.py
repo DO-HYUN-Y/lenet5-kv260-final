@@ -51,8 +51,18 @@ PARAMETER_OFFSETS = OrderedDict(
         ("fc8", 149_504),
     )
 )
-EXPECTED_WEIGHT_BYTES = 61_090_496
+EXPECTED_LOGICAL_WEIGHT_BYTES = 61_090_496
+EXPECTED_WEIGHT_BYTES = 61_123_264
 EXPECTED_PARAMETER_BYTES = 165_504
+
+CONV_OUTPUT_TILE = {
+    "conv1": 64,
+    "conv2": 64,
+    "conv3": 112,
+    "conv4": 112,
+    "conv5": 112,
+}
+FC_OUTPUT_TILE = 16
 
 
 def sha256_file(path: Path) -> str:
@@ -78,46 +88,45 @@ def parameter_bytes(layer: QuantizedLayer) -> bytes:
     return bytes(result)
 
 
-def packed_conv_chunks(layer: QuantizedLayer):
-    """Yield `[N8 tile][input chunk][ky][kx][input lane][N lane]`."""
+def packed_conv_chunks(layer: QuantizedLayer, output_tile: int | None = None):
+    """Yield scheduler tiles in `[N tile][K][enabled N16 bank]` order."""
 
     weight = layer.weight
     output_channels, input_channels, _kernel_h, _kernel_w = weight.shape
-    if output_channels % 8:
-        raise ValueError(f"{layer.name} output channels are not N8 aligned")
-    for output_base in range(0, output_channels, 8):
-        for input_base in range(0, input_channels, 8):
-            # OIHW -> HWI(O-lane). The final dimension becomes byte lanes 0..7
-            # of each resident `[K][N-lane]` word.
-            yield (
-                weight[
-                    output_base : output_base + 8,
-                    input_base : input_base + 8,
-                    :,
-                    :,
-                ]
-                .permute(2, 3, 1, 0)
-                .contiguous()
-                .numpy()
-                .tobytes()
-            )
-
-
-def packed_fc_chunks(layer: QuantizedLayer):
-    """Yield `[N8 tile][K][N lane]` chunks for one linear layer."""
-
-    weight = layer.weight
-    output_channels, _input_features = weight.shape
-    if output_channels % 8:
-        raise ValueError(f"{layer.name} output channels are not N8 aligned")
-    for output_base in range(0, output_channels, 8):
+    tile = output_tile if output_tile is not None else CONV_OUTPUT_TILE[layer.name]
+    if tile % 16 or output_channels % 16:
+        raise ValueError(f"{layer.name} convolution output is not N16 aligned")
+    for output_base in range(0, output_channels, tile):
+        output_count = min(tile, output_channels - output_base)
+        if output_count % 16:
+            raise ValueError(f"{layer.name} convolution tail is not N16 aligned")
+        # OIHW -> HWI(N). K is [ky][kx][input_channel], and the final
+        # dimension is emitted as ascending N16 banks for each K value.
         yield (
-            weight[output_base : output_base + 8, :]
-            .transpose(0, 1)
+            weight[output_base : output_base + output_count, :, :, :]
+            .permute(2, 3, 1, 0)
             .contiguous()
             .numpy()
             .tobytes()
         )
+
+
+def packed_fc_chunks(layer: QuantizedLayer):
+    """Yield `[N16 tile][K][N lane]`, zero-padding the final N tail."""
+
+    weight = layer.weight
+    output_channels, input_features = weight.shape
+    if output_channels % 8:
+        raise ValueError(f"{layer.name} output channels are not N8 aligned")
+    for output_base in range(0, output_channels, FC_OUTPUT_TILE):
+        output_count = min(FC_OUTPUT_TILE, output_channels - output_base)
+        physical = torch.zeros(
+            (FC_OUTPUT_TILE, input_features), dtype=weight.dtype
+        )
+        physical[:output_count, :] = weight[
+            output_base : output_base + output_count, :
+        ]
+        yield physical.transpose(0, 1).contiguous().numpy().tobytes()
 
 
 def write_packed_layer(stream: BinaryIO, layer: QuantizedLayer) -> tuple[int, str]:
@@ -253,8 +262,10 @@ def main() -> None:
                 )
 
             packed_bytes, packed_hash = write_packed_layer(board_weights, layer)
-            if packed_bytes != len(logical_weight):
+            if name != "fc8" and packed_bytes != len(logical_weight):
                 raise RuntimeError(f"{name} packed weight byte count changed")
+            if name == "fc8" and packed_bytes - len(logical_weight) != 32_768:
+                raise RuntimeError("fc8 N16 tail padding byte count changed")
             parameter_blob.extend(parameters)
             layer_manifest[name] = {
                 "layer_id": LAYER_ORDER.index(name) + 1,
@@ -264,6 +275,12 @@ def main() -> None:
                 "logical_sha256": contract_record["weight_sha256"],
                 "weight_offset": WEIGHT_OFFSETS[name],
                 "weight_bytes": packed_bytes,
+                "logical_weight_bytes": len(logical_weight),
+                "output_tile_channels": (
+                    CONV_OUTPUT_TILE[name]
+                    if layer.op == "conv2d"
+                    else FC_OUTPUT_TILE
+                ),
                 "packed_sha256": packed_hash,
                 "parameter_file": parameter_path.relative_to(output_dir).as_posix(),
                 "parameter_offset": PARAMETER_OFFSETS[name],
@@ -272,18 +289,21 @@ def main() -> None:
             }
 
     board_parameter_path.write_bytes(parameter_blob)
+    if sum(layer.weight.numel() for layer in quantized.layers.values()) != (
+        EXPECTED_LOGICAL_WEIGHT_BYTES
+    ):
+        raise RuntimeError("logical weight byte count does not match AlexNet")
     if board_weight_path.stat().st_size != EXPECTED_WEIGHT_BYTES:
         raise RuntimeError("board weight image size does not match the RTL planner")
     if board_parameter_path.stat().st_size != EXPECTED_PARAMETER_BYTES:
         raise RuntimeError("board parameter image size does not match the RTL planner")
-    # The software-provided blob bases are 128-byte aligned. Individual layer
-    # offsets and transfer sizes need only the eight-byte alignment supported
-    # by the main DMA DRE (Conv1 ends at offset 23,232 = 64 mod 128).
-    if board_weight_path.stat().st_size % 8 or board_parameter_path.stat().st_size % 8:
-        raise RuntimeError("board images are not a whole number of N8 words")
+    # Blob bases are 128-byte aligned. Layer offsets remain contiguous; every
+    # current N128 service transfer is a whole 128-bit N16 beat.
+    if board_weight_path.stat().st_size % 16 or board_parameter_path.stat().st_size % 8:
+        raise RuntimeError("board images violate their stream word alignment")
 
     manifest = {
-        "format_version": 1,
+        "format_version": 2,
         "source": "torchvision AlexNet_Weights.IMAGENET1K_V1",
         "source_url": CHECKPOINT_URL,
         "checkpoint_file": checkpoint_path.name,
@@ -295,9 +315,9 @@ def main() -> None:
         "categories": categories,
         "logical_weight_layout": "OIHW_for_conv_NK_for_linear",
         "board_weight_layout": {
-            "conv": "layer_N8tile_inputC8chunk_ky_kx_input_lane_N_lane",
-            "fc": "layer_N8tile_K_N_lane",
-            "axis_word": "eight_signed_int8_N_lanes_little_endian",
+            "conv": "layer_scheduler_Ntile_K_enabled_N16bank_Nlane",
+            "fc": "layer_N16tile_K_Nlane_zero_padded_tail",
+            "axis_word": "sixteen_signed_int8_N_lanes_little_endian",
         },
         "parameter_layout": "layer_output_channel_little_endian_<iiBB6x>",
         "weights": {

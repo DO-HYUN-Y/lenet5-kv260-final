@@ -1,6 +1,6 @@
 # AlexNet M8xN126 next optimization plan
 
-Date: 2026-09-15
+Date: 2026-09-17
 
 ## 2026-09-16 graph-payload top update
 
@@ -14,21 +14,22 @@ XSA without recovery: WNS/TNS/WHS are `+0.151/0.000/+0.010 ns`, failed route
 nets and DRC errors/critical warnings are zero, and the implemented resources
 are 78,971 LUT, 87,800 registers, 9 BRAM tiles, 36 URAM and 576 DSP48E2.
 
-Conv1 raster assembly is now integrated in the same board top. The new clean
-200 MHz bitstream closes at WNS/TNS/WHS `+0.016/0.000/+0.010 ns`, with zero
-failed route nets and zero DRC errors or critical warnings. It uses 89,654
-LUT, 90,641 registers, 73 BRAM tiles, 40 URAM and 576 DSP48E2. Conv1 HP0 reads
+Conv1 raster assembly and the format-v2 N16-aligned weight ABI are integrated
+in the same board top. The 2026-09-17 clean 200 MHz bitstream closes at
+WNS/TNS/WHS `0.000/0.000/+0.010 ns` with the timing report marked MET, zero
+failed route nets and zero DRC errors or critical warnings. It uses 89,451
+LUT, 90,271 registers, 73 BRAM tiles, 40 URAM and 576 DSP48E2. Conv1 HP0 reads
 fall from the 1,103,520-byte K-major patch tape to a 401,408-byte N8 raster, a
 702,112-byte (63.6%) static reduction.
 
 This remains a graph-payload integration checkpoint, not yet an autonomous
 Conv1-through-FC8 board inference. Conv2 onward still uses the tape service,
-exact inter-layer result/pool storage is incomplete, the frozen exporter is
-N8-major while the new service consumes N16 beats, and weight fill is still
-serialized before compute. The immediate order is therefore: close the N16
-weight ABI and N-tile alignment, make every result/pool layout feed the next
-layer, pass layer/full-image C++ golden comparison, overlap HP3 weight fill,
-then establish the batch-one board throughput/TOPS/W baseline before batch 8.
+exact inter-layer result/pool storage is incomplete, and weight fill is still
+serialized before compute. The N16 weight ABI and N-tile alignment are now
+regression-tested and present in the timing-clean bitstream. The immediate
+order is therefore: make every result/pool layout feed the next layer, pass
+layer/full-image C++ golden comparison, overlap HP3 weight fill, then establish
+the batch-one board throughput/TOPS/W baseline before batch 8.
 The completed capture stage adds exactly one active cycle per emitted N8 slice;
 it does not add a cycle to every K issue.
 
@@ -54,10 +55,11 @@ it does not add a cycle to every K issue.
 
 The batch-1 Conv1-through-FC8 scheduler is now RTL rather than a spreadsheet
 projection. Randomized command/completion backpressure XSim verifies 1,635
-work descriptors, 714,188,480 useful MACs and 61,090,496 weight bytes. The
-standalone scheduler routes at 200 MHz with 345 CLB LUTs, 99 registers, WNS
-+0.435 ns and WHS +0.099 ns. This proves graph enumeration and all M/N/K
-tails; it does not yet prove the numerical payload path.
+work descriptors, 714,188,480 useful MACs, 61,090,496 logical weight bytes and
+61,123,264 N16-aligned transfer bytes. The standalone scheduler routes at
+200 MHz with 260 CLB LUTs, 97 registers, WNS +0.459 ns and WHS +0.088 ns. This proves graph
+enumeration and all M/N/K tails; it does not yet prove the numerical payload
+path.
 
 The physical-slot accounting is intentionally reported separately from useful
 work:
@@ -128,11 +130,18 @@ result; it is not yet present in the resource-probe bitstream.
    randomized backpressure; OOC route closes at WNS/WHS `+0.057/+0.101 ns`
    with 64 RAMB36, four URAM and zero DSP. The integrated clean top closes at
    WNS/WHS `+0.016/+0.010 ns` and reduces the Conv1 DDR-read contract by 63.6%.
-5. **Next:** align the N16 weight ABI/N tiles, then implement exact next-layer
-   result and Pool1/2/5 placement. Compare every layer with the C++ golden
-   model, then run a complete image comparison with exact INT8/requant
-   parameters.
-6. Add timeout, tile/tag ordering, result-count and non-overwrite assertions.
+5. **Completed and promoted into the 200 MHz bitstream:** Conv3..5 now use N112
+   tiles so every `n_base` and transfer stays N16 aligned without changing
+   command count, useful MACs or physical slot count. The format-v2 exporter
+   emits scheduler-N-tile/K/N16 order and zero-pads only FC8's final N8 tail.
+   Official-checkpoint export and the independent verifier pass for
+   61,123,264 transferred bytes (61,090,496 logical plus 32,768 padding). The
+   rebuilt top closes at WNS/WHS `0.000/+0.010 ns` with zero failed nets and
+   generated a bitstream and bitstream-bearing XSA.
+6. **Next:** implement exact next-layer result and Pool1/2/5 placement. Compare
+   every layer with the C++ golden model, then run a complete image comparison
+   with exact INT8/requant parameters.
+7. Add timeout, tile/tag ordering, result-count and non-overwrite assertions.
 
 Exit gates:
 

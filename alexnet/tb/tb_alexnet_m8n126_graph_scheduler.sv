@@ -31,6 +31,7 @@ module tb_alexnet_m8n126_graph_scheduler;
   longint unsigned fc_useful_macs;
   longint unsigned fc_physical_slots;
   longint unsigned weight_bytes;
+  longint unsigned weight_transfer_bytes;
   int layer_commands [1:8];
   int pending_delay;
   bit command_pending;
@@ -89,12 +90,16 @@ module tb_alexnet_m8n126_graph_scheduler;
             mask_bits != 2 * command_n_count)
           $fatal(1, "split-N64 descriptor mismatch");
       end else begin
-        if (mask_bits != command_n_count || command_n_count > 126)
-          $fatal(1, "logical-N126 descriptor mismatch");
+        if (mask_bits != command_n_count || command_n_count > 112 ||
+            command_n_base[3:0] != 0 || command_n_count[3:0] != 0)
+          $fatal(1, "N16-aligned convolution descriptor mismatch");
       end
 
-      if (command_weight_fill)
+      if (command_weight_fill) begin
         weight_bytes += command_n_count * command_k_count;
+        weight_transfer_bytes +=
+            (command_is_fc ? 16 : command_n_count) * command_k_count;
+      end
       if (command_result_enable != command_accum_final)
         $fatal(1, "result was not tied to the final K chunk");
       if (command_layer_id == 6) begin
@@ -130,6 +135,7 @@ module tb_alexnet_m8n126_graph_scheduler;
     fc_useful_macs = 0;
     fc_physical_slots = 0;
     weight_bytes = 0;
+    weight_transfer_bytes = 0;
     for (int layer = 1; layer <= 8; layer++)
       layer_commands[layer] = 0;
 
@@ -161,10 +167,14 @@ module tb_alexnet_m8n126_graph_scheduler;
             fc_physical_slots != 64'd3753902080)
           $fatal(1, "FC utilization accounting mismatch");
         if (weight_bytes != 64'd61090496)
-          $fatal(1, "weight byte total mismatch got=%0d", weight_bytes);
-        $display("ALEXNET_M8N126_GRAPH_SCHEDULER_TEST_PASSED commands=%0d macs=%0d slots=%0d fc_macs=%0d fc_slots=%0d weights=%0d",
+          $fatal(1, "logical weight byte total mismatch got=%0d", weight_bytes);
+        if (weight_transfer_bytes != 64'd61123264)
+          $fatal(1, "weight transfer byte total mismatch got=%0d",
+                 weight_transfer_bytes);
+        $display("ALEXNET_M8N126_GRAPH_SCHEDULER_TEST_PASSED commands=%0d macs=%0d slots=%0d fc_macs=%0d fc_slots=%0d logical_weights=%0d transferred_weights=%0d",
                  completed_commands, useful_macs, physical_slots,
-                 fc_useful_macs, fc_physical_slots, weight_bytes);
+                 fc_useful_macs, fc_physical_slots, weight_bytes,
+                 weight_transfer_bytes);
         $finish;
       end
     end

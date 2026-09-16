@@ -2,8 +2,8 @@
 
 // Batch-one AlexNet work scheduler for the physical M8xN128 array.
 //
-// Conv1/2 use the split 2xM8xN64 mode.  Conv3..5 use one logical
-// M8xN126 tile and leave the top two physical N lanes masked.  FC6..8 use a
+// Conv1/2 use the split 2xM8xN64 mode.  Conv3..5 use an N16-aligned logical
+// M8xN112 tile on the physical M8xN128 array.  FC6..8 use a
 // single N16 bank so their sustained issue rate matches one 128-bit DDR read
 // port.  FC6 is split into 4096/4096/1024 K chunks; the consumer must retain
 // the accumulator until command_accum_final.
@@ -108,15 +108,15 @@ module alexnet_m8n126_graph_scheduler (
       end
       4'd3: begin
         layer_n_total = 384;  layer_m_total = 169;
-        layer_k_total = 1728; layer_n_tile = 126; layer_m_tile = 8;
+        layer_k_total = 1728; layer_n_tile = 112; layer_m_tile = 8;
       end
       4'd4: begin
         layer_n_total = 256;  layer_m_total = 169;
-        layer_k_total = 3456; layer_n_tile = 126; layer_m_tile = 8;
+        layer_k_total = 3456; layer_n_tile = 112; layer_m_tile = 8;
       end
       4'd5: begin
         layer_n_total = 256;  layer_m_total = 169;
-        layer_k_total = 2304; layer_n_tile = 126; layer_m_tile = 8;
+        layer_k_total = 2304; layer_n_tile = 112; layer_m_tile = 8;
       end
       4'd6: begin
         layer_n_total = 4096; layer_m_total = 1;
@@ -202,13 +202,12 @@ module alexnet_m8n126_graph_scheduler (
         end
       end
     end else begin
-      // Logical N126: banks 0..6 are full and bank 7 contributes at most
-      // fourteen lanes.  Tail descriptors may enable fewer banks.
+      // N112 keeps every Conv3..5 descriptor and n_base on an N16 boundary.
+      // Tail descriptors enable only the remaining whole N16 banks.
       for (int bank = 0; bank < 8; bank++) begin
         for (int lane = 0; lane < 16; lane++) begin
           command_n_lane_mask[bank][lane] =
-              16*bank + lane < current_n_count &&
-              16*bank + lane < 126;
+              16*bank + lane < current_n_count;
         end
         command_bank_enable[bank] = |command_n_lane_mask[bank];
       end
@@ -297,6 +296,9 @@ module alexnet_m8n126_graph_scheduler (
       if (command_valid && !command_is_fc &&
           !command_mode_split_n64 && command_n_lane_mask[7][15:14] != 0)
         $fatal(1, "logical N126 mask enabled physical lanes 126/127");
+      if (command_valid && !command_is_fc &&
+          (command_n_base[3:0] != 0 || command_n_count[3:0] != 0))
+        $fatal(1, "convolution N descriptor is not N16 aligned");
       if (command_valid && command_k_count == 0)
         $fatal(1, "M8N126 graph scheduler emitted zero K count");
     end

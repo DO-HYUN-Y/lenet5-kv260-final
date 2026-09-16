@@ -19,41 +19,39 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def expected_conv_chunks(logical: bytes, shape: list[int]):
-    """Repack OIHW independently as N8/C8/ky/kx/C-lane/N-lane chunks."""
+def expected_conv_chunks(logical: bytes, shape: list[int], output_tile: int):
+    """Repack OIHW independently as scheduler-N-tile/K/N16 chunks."""
 
     outputs, inputs, kernel_h, kernel_w = shape
-    for output_base in range(0, outputs, 8):
-        for input_base in range(0, inputs, 8):
-            input_limit = min(input_base + 8, inputs)
-            chunk = bytearray()
-            for kernel_y in range(kernel_h):
-                for kernel_x in range(kernel_w):
-                    for input_channel in range(input_base, input_limit):
-                        for output_lane in range(8):
-                            output_channel = output_base + output_lane
-                            logical_index = (
-                                (
-                                    output_channel * inputs + input_channel
-                                )
-                                * kernel_h
-                                + kernel_y
-                            ) * kernel_w + kernel_x
-                            chunk.append(logical[logical_index])
-            yield bytes(chunk)
+    for output_base in range(0, outputs, output_tile):
+        output_limit = min(output_base + output_tile, outputs)
+        chunk = bytearray()
+        for kernel_y in range(kernel_h):
+            for kernel_x in range(kernel_w):
+                for input_channel in range(inputs):
+                    for output_channel in range(output_base, output_limit):
+                        logical_index = (
+                            (output_channel * inputs + input_channel) * kernel_h
+                            + kernel_y
+                        ) * kernel_w + kernel_x
+                        chunk.append(logical[logical_index])
+        yield bytes(chunk)
 
 
-def expected_fc_chunks(logical: bytes, shape: list[int]):
-    """Repack NK independently as N8/K/N-lane chunks."""
+def expected_fc_chunks(logical: bytes, shape: list[int], output_tile: int):
+    """Repack NK independently as padded N16/K/N-lane chunks."""
 
     outputs, inputs = shape
-    for output_base in range(0, outputs, 8):
-        chunk = bytearray(inputs * 8)
+    for output_base in range(0, outputs, output_tile):
+        output_limit = min(output_base + output_tile, outputs)
+        chunk = bytearray(inputs * output_tile)
         write_index = 0
         for input_index in range(inputs):
-            for output_lane in range(8):
-                output_channel = output_base + output_lane
-                chunk[write_index] = logical[output_channel * inputs + input_index]
+            for output_channel in range(output_base, output_base + output_tile):
+                if output_channel < output_limit:
+                    chunk[write_index] = logical[
+                        output_channel * inputs + input_index
+                    ]
                 write_index += 1
         yield bytes(chunk)
 
@@ -94,9 +92,13 @@ def verify(args: argparse.Namespace) -> None:
 
         packed_digest = hashlib.sha256()
         chunks = (
-            expected_conv_chunks(logical, record["shape"])
+            expected_conv_chunks(
+                logical, record["shape"], record["output_tile_channels"]
+            )
             if record["logical_layout"] == "OIHW"
-            else expected_fc_chunks(logical, record["shape"])
+            else expected_fc_chunks(
+                logical, record["shape"], record["output_tile_channels"]
+            )
         )
         layer_start = weight_cursor
         for chunk in chunks:

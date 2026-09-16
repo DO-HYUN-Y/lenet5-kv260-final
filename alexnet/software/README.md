@@ -9,7 +9,7 @@ operation can follow after one saved image completes correctly.
 - `driver/alexnet_board.c` maps the accelerator, main AXI DMA, and camera AXI
   DMA registers, verifies the stock PS PL0 input is near 100 MHz and checks the
   fixed 199,998,002 Hz MMCM fabric-clock metadata, allocates one
-  page-aligned 61,767,680-byte coherent DMA region below 4 GiB, and exposes bounded register
+  page-aligned 61,800,448-byte coherent DMA region below 4 GiB, and exposes bounded register
   ioctls plus buffer `mmap` through `/dev/alexnet_board`.
 - `runtime/alexnet_camera_demo.py` verifies and loads the generated model,
   performs the frozen resize/center-crop/RGB-normalize/INT8 packing, starts the
@@ -34,13 +34,13 @@ the physical board.
 | preprocessed camera input | 0 | 401,408 |
 | activation A | 401,408 | 64,896 |
 | activation B | 466,304 | 43,264 |
-| packed weights | 509,568 | 61,090,496 |
-| quantization parameters | 61,600,128 | 165,504 |
-| FC8 output | 61,765,632 | 1,024 (1,000 valid) |
+| packed weights | 509,568 | 61,123,264 |
+| quantization parameters | 61,632,896 | 165,504 |
+| FC8 output | 61,798,400 | 1,024 (1,000 valid) |
 
 Every region base is 128-byte aligned. The activation sizes cover the largest
 tensor assigned to each reused buffer: Conv3 for A and Conv4 for B.
-The listed regions use 61,766,656 bytes. The coherent allocation adds 1,024
+The listed regions use 61,799,424 bytes. The coherent allocation adds 1,024
 unused bytes at the end so Linux can map the whole buffer on a 4 KiB page
 boundary.
 

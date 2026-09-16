@@ -29,9 +29,10 @@ tape was 1,103,520 bytes, so the RTL byte contract removes 702,112 bytes
 measured board-throughput result.
 
 Conv2 through FC8 still use the legacy patch-tape service. Exact result
-placement, Pool1/2/5 ownership, and the frozen weight-file ABI must therefore
-be completed before this checkpoint can be called an autonomous full-graph
-board inference.
+placement and Pool1/2/5 ownership must therefore be completed before this
+checkpoint can be called an autonomous full-graph board inference. The frozen
+format-v2 weight ABI is now aligned to the N128 service: Conv3-5 use N112
+scheduler tiles and FC8's final N8 tail is zero-padded to one N16 beat.
 
 ## Build
 
@@ -54,32 +55,30 @@ vivado -mode batch -source scripts/recover_kv260_m8n126_graph_timing.tcl
 The recovery flow applies aggressive post-route physical optimization and, if
 needed, timing-driven rerouting before repeating all signoff gates.
 
-## Verified 200 MHz checkpoint
+## Verified 200 MHz format-v2 checkpoint
 
 Vivado 2025.2 generated the Conv1-raster graph-payload `.bit` and fixed `.xsa`
-on 2026-09-16. An explicit SA-result capture stage registers all 64 INT32
-values plus slice metadata before the parallel requantizer. The clean build,
-without post-route recovery, closes at WNS `+0.016 ns`, TNS `0.000 ns`, WHS
-`+0.010 ns` and THS `0.000 ns`. All 404,142 setup/hold endpoints meet timing.
-Route status has zero failed, unrouted or partially routed nets, and DRC has
-zero errors or critical warnings.
+on 2026-09-17. The clean flow's built-in post-route physical optimization
+closes at WNS `0.000 ns` (MET), TNS `0.000 ns`, WHS `+0.010 ns` and THS
+`0.000 ns`; the separate recovery script was not needed. All 403,103
+setup/hold endpoints meet timing. Route status has zero failed, unrouted or
+partially routed nets, and DRC has zero errors or critical warnings.
 
 | Resource | Used | Available | Utilization |
 | --- | ---: | ---: | ---: |
-| CLB LUT | 89,654 | 117,120 | 76.55% |
-| CLB register | 90,641 | 234,240 | 38.70% |
+| CLB LUT | 89,451 | 117,120 | 76.38% |
+| CLB register | 90,271 | 234,240 | 38.54% |
 | BRAM tile | 73 | 144 | 50.69% |
 | URAM | 40 | 64 | 62.50% |
 | DSP48E2 | 576 | 1,248 | 46.15% |
 
 The DSP split is exactly 512 for the physical M8xN128 SA and 64 for parallel
-requantization. Vectorless Vivado power is 3.555 W at medium confidence; it is
-not a board TOPS/W measurement. The capture boundary costs one cycle per
-emitted N8 result slice, not one cycle per K issue. The tile XSim active count
-changes from 281 to 302 and the two-command graph test from 1,088 to 1,123,
-while all result bytes, masks, tags and MAC accounting remain bit-exact. The
-tile and graph-payload OOC routes close at WNS `+0.099 ns` and `+0.024 ns`,
-respectively.
+requantization. Vectorless Vivado power is 3.558 W at medium confidence; it is
+not a board TOPS/W measurement. The scheduler still emits 1,635 commands and
+714,188,480 useful MACs. Its physical weight-transfer contract is 61,123,264
+bytes: 61,090,496 logical weights plus 32,768 zero-padding bytes at the FC8
+tail. The capture boundary costs one cycle per emitted N8 result slice, not
+one cycle per K issue.
 
 The following XSim gates pass after the bitstream build:
 
@@ -96,24 +95,22 @@ The following XSim gates pass after the bitstream build:
 
 Published local build hashes:
 
-- `.bit`: `cb3326c35301645261c78f6ff7ba449029b21d98c5e23aae1afe3d9b0826d497`
-- `.xsa`: `f930616b6da847fd07e69fc78533c90fabd3ba0a06e6def08a29905f6e797211`
+- `.bit`: `cf34a9eaa88774ac6a726e5e5d6d9200c210b84acf39ec3823f6ef8e9b36b9cd`
+- `.xsa`: `5b3b88dd35a804ac54dab609f1fecbfc469dd1cd4692fdfddba14415dc7c7413`
 - timing-clean `.dcp`:
-  `fe03b67192c1516e5ef74d5c60bca9baf72297ce92a2ebd826786265ee9cd2a4`
+  `469216d7c001c573e0e1034c52455b539d99df132ec198840a09f7838d296927`
 
 Build products remain under the ignored `build/` directory; the committed
 sources, scripts, reports and hashes reproduce and identify the checkpoint.
 
 ## Next functional milestone
 
-1. Align scheduler N tiles and the frozen weight exporter with the N16 DDR
-   service ABI, including the FC8 tail.
-2. Store every layer in the exact layout consumed by the next layer, integrate
+1. Store every layer in the exact layout consumed by the next layer, integrate
    Pool1/2/5 ownership, and close
    the Conv1-through-FC8 numerical loop against the C++ golden model.
-3. Schedule inactive-set weight fill concurrently with active-set compute,
+2. Schedule inactive-set weight fill concurrently with active-set compute,
    then use the hardware counters to compare shared versus dedicated HP3
    traffic.
-4. Only after the batch-one board baseline is bit-exact, add batch 8 for FC
+3. Only after the batch-one board baseline is bit-exact, add batch 8 for FC
    weight amortization and measure images/s, DDR bytes/image and VCC_SOM
    energy over the same inference interval.
