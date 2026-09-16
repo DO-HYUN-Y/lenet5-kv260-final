@@ -2,6 +2,24 @@
 
 Date: 2026-09-15
 
+## 2026-09-16 graph-payload top update
+
+The descriptor scheduler, N128 weight ping-pong, M16 patch ping-pong,
+physical M8xN128 SA, parallel requantizer, result packer and four-HP KV260
+shell are now integrated in one board top. HP3 owns an independent weight
+MM2S DMA. Vivado generated a 200 MHz bitstream and XSA after scripted
+post-route recovery: WNS/TNS/WHS are `0.000/0.000/+0.010 ns`, failed route
+nets and DRC errors/critical warnings are zero, and the implemented resources
+are 78,630 LUT, 86,172 registers, 9 BRAM tiles, 36 URAM and 576 DSP48E2.
+
+This is a graph-payload integration checkpoint, not yet an autonomous
+Conv1-through-FC8 board inference. Its patch input is the transposed K-major
+M16 tape and weight fill is still serialized before compute. The immediate
+order is therefore: add positive timing margin at the SA-to-requant boundary,
+connect the x-mod-4 raster assembler, make each result layout feed the next
+layer, pass layer/full-image C++ golden comparison, overlap HP3 weight fill,
+then establish the batch-one board throughput/TOPS/W baseline before batch 8.
+
 ## Baseline entering the next milestone
 
 - Keep the logical M8xN126 / physical M8xN128 array. Do not move to M16: DSP
@@ -13,11 +31,12 @@ Date: 2026-09-15
 - The corrected profile separates 138 first-tile startup cycles from 379
   steady-state inter-tile cycles. The old 883-cycle aggregate included both.
 - HP0, HP1, HP2 and HP3 are enabled. HP0 carries main MM2S, HP1 main S2MM,
-  HP2 camera MM2S, and HP3 is enabled but has no weight DMA master yet.
+  HP2 camera MM2S, and HP3 now carries an independent weight MM2S DMA.
 - The 200 MHz resource-probe bitstream passes route and DRC with WNS/WHS
   +0.006/+0.011 ns, 70,951 LUT, 117.5 BRAM tiles, 32 URAM and 576 DSP48E2.
-- The current M8xN126 bitstream is a self-test/resource probe, not a functional
-  end-to-end AlexNet graph.
+- The current M8xN126 bitstream contains the integrated graph payload, but its
+  tape-format patch input and incomplete inter-layer storage loop mean it is
+  not yet a functional end-to-end AlexNet graph.
 
 ## Full-graph descriptor checkpoint
 
@@ -86,11 +105,13 @@ result; it is not yet present in the resource-probe bitstream.
    `2xM8xN64` for Conv1/2, logical N126 masks for Conv3-5, and one N16 bank for
    bandwidth-matched FC6-8. All layer counts, FC6 K chunks and tails pass
    XSim.
-3. **Next:** connect those descriptors to the real activation, weight,
-   dynamic-SA, postprocess and result payload path. Keep a spatial output tile
-   resident through the true final K token instead of expanding the raster
-   partial-sum BRAM sixteenfold.
-4. Compare every layer with the C++ golden model, then run a complete image
+3. **Completed graph-payload checkpoint:** descriptors now drive the N128
+   weight ping-pong, M16 patch ping-pong, dynamic SA, parallel requantizer and
+   result stream. Two Conv1 tiles pass integrated XSim and the four-HP board
+   top produces a timing-clean bitstream/XSA. The input remains a prepacked
+   tape, so this is not yet the final feature-map storage loop.
+4. **Next:** connect raster-to-patch assembly and exact next-layer result
+   placement. Compare every layer with the C++ golden model, then run a complete image
    comparison with exact INT8/requant parameters.
 5. Add timeout, tile/tag ordering, result-count and non-overwrite assertions.
 
@@ -103,8 +124,9 @@ Exit gates:
 
 ## C: dedicate HP3 to weight traffic
 
-1. Instantiate an independent MM2S engine for weights and connect it to HP3.
-2. Fill the inactive URAM ping-pong set while the active set replays.
+1. **Completed:** instantiate an independent MM2S engine for weights and
+   connect it to HP3.
+2. **Next:** fill the inactive URAM ping-pong set while the active set replays.
 3. Add counters for bytes, bursts, outstanding reads, `ARVALID&&!ARREADY`,
    stream-starvation cycles and fill/compute overlap cycles.
 4. Measure one-port and HP3-separated configurations with identical workloads.

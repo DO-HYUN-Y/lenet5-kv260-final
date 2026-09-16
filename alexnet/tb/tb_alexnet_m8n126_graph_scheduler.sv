@@ -34,6 +34,7 @@ module tb_alexnet_m8n126_graph_scheduler;
   int layer_commands [1:8];
   int pending_delay;
   bit command_pending;
+  logic [15:0] fc6_accum_tile_tag;
 
   alexnet_m8n126_graph_scheduler dut (.*);
 
@@ -97,8 +98,13 @@ module tb_alexnet_m8n126_graph_scheduler;
       if (command_result_enable != command_accum_final)
         $fatal(1, "result was not tied to the final K chunk");
       if (command_layer_id == 6) begin
-        if (command_k_offset == 0 && command_k_count != 4096)
-          $fatal(1, "FC6 first K chunk mismatch");
+        if (command_k_offset == 0) begin
+          if (command_k_count != 4096)
+            $fatal(1, "FC6 first K chunk mismatch");
+          fc6_accum_tile_tag = command_tile_tag;
+        end else if (command_tile_tag != fc6_accum_tile_tag) begin
+          $fatal(1, "FC6 changed tile tag inside one K accumulation");
+        end
         if (command_k_offset == 4096 && command_k_count != 4096)
           $fatal(1, "FC6 second K chunk mismatch");
         if (command_k_offset == 8192 && command_k_count != 1024)
@@ -118,6 +124,7 @@ module tb_alexnet_m8n126_graph_scheduler;
     command_error = 1'b0;
     command_pending = 1'b0;
     pending_delay = 0;
+    fc6_accum_tile_tag = 0;
     useful_macs = 0;
     physical_slots = 0;
     fc_useful_macs = 0;

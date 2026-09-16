@@ -1,5 +1,26 @@
 # AlexNet M8xN126 utilization optimization results
 
+## 2026-09-16 integrated graph-payload follow-up
+
+The optimized logical M8xN126 / physical M8xN128 payload is now inside a
+four-HP KV260 top rather than only the stage-02 resource probe. HP3 has an
+independent weight MM2S DMA. The final 200 MHz recovery checkpoint reports
+WNS/TNS/WHS `0.000/0.000/+0.010 ns`, zero failed route nets, zero DRC errors
+or critical warnings, 78,630 LUT, 86,172 registers, 9 BRAM tiles, 36 URAM and
+576 DSP48E2. Vivado generated both the bitstream and fixed XSA.
+
+Scheduler, x-mod-4 patch bridge, tile payload and integrated graph-payload
+XSim regressions all pass after the build. The scheduler covers 1,635 commands
+and 714,188,480 useful MACs. This does not replace a board utilization or
+TOPS/W result: patch input still uses a pretransposed tape, inactive weight
+fill does not yet overlap compute, and the inter-layer result layout is not
+closed. Vectorless power is 3.420 W at medium confidence and must not be
+reported as measured VCC_SOM power.
+
+The next utilization work is structural timing margin at the SA-to-requant
+boundary, normal raster assembly, exact next-layer storage, HP3 fill/compute
+overlap, then matched-interval batch-one board cycle and energy measurement.
+
 - Date: 2026-09-15
 - Device: Kria K26 (`xck26-sfvc784-2LV-c`)
 - Clock: 200 MHz

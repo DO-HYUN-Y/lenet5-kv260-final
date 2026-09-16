@@ -14,6 +14,7 @@ set accelerator_top alexnet_m4n8_accelerator_top
 set accelerator_display_name {AlexNet M8xN8 DMA Accelerator}
 set accelerator_description \
     {INT8 AlexNet M8xN8 accelerator with autonomous main AXI DMA control}
+set add_weight_dma 0
 if {[info exists ::alexnet_accelerator_top_override]} {
     set accelerator_top $::alexnet_accelerator_top_override
 }
@@ -22,6 +23,9 @@ if {[info exists ::alexnet_accelerator_display_name_override]} {
 }
 if {[info exists ::alexnet_accelerator_description_override]} {
     set accelerator_description $::alexnet_accelerator_description_override
+}
+if {[info exists ::alexnet_add_weight_dma]} {
+    set add_weight_dma $::alexnet_add_weight_dma
 }
 
 file delete -force $package_project_dir
@@ -121,6 +125,32 @@ set m_axi_dma_if [add_interface $core M_AXI_DMA \
         RREADY m_axi_dma_rready
     }]
 
+if {$add_weight_dma} {
+    set m_axi_weight_dma_if [add_interface $core M_AXI_WEIGHT_DMA \
+        xilinx.com:interface:aximm:1.0 \
+        xilinx.com:interface:aximm_rtl:1.0 master {
+            AWADDR m_axi_weight_dma_awaddr
+            AWPROT m_axi_weight_dma_awprot
+            AWVALID m_axi_weight_dma_awvalid
+            AWREADY m_axi_weight_dma_awready
+            WDATA m_axi_weight_dma_wdata
+            WSTRB m_axi_weight_dma_wstrb
+            WVALID m_axi_weight_dma_wvalid
+            WREADY m_axi_weight_dma_wready
+            BRESP m_axi_weight_dma_bresp
+            BVALID m_axi_weight_dma_bvalid
+            BREADY m_axi_weight_dma_bready
+            ARADDR m_axi_weight_dma_araddr
+            ARPROT m_axi_weight_dma_arprot
+            ARVALID m_axi_weight_dma_arvalid
+            ARREADY m_axi_weight_dma_arready
+            RDATA m_axi_weight_dma_rdata
+            RRESP m_axi_weight_dma_rresp
+            RVALID m_axi_weight_dma_rvalid
+            RREADY m_axi_weight_dma_rready
+        }]
+}
+
 set s_axis_camera_if [add_interface $core S_AXIS_CAMERA \
     xilinx.com:interface:axis:1.0 xilinx.com:interface:axis_rtl:1.0 slave {
         TDATA s_axis_camera_tdata
@@ -137,6 +167,17 @@ set s_axis_mm2s_if [add_interface $core S_AXIS_MM2S \
         TREADY s_axis_mm2s_tready
         TLAST s_axis_mm2s_tlast
     }]
+if {$add_weight_dma} {
+    set s_axis_weight_if [add_interface $core S_AXIS_WEIGHT \
+        xilinx.com:interface:axis:1.0 \
+        xilinx.com:interface:axis_rtl:1.0 slave {
+            TDATA s_axis_weight_tdata
+            TKEEP s_axis_weight_tkeep
+            TVALID s_axis_weight_tvalid
+            TREADY s_axis_weight_tready
+            TLAST s_axis_weight_tlast
+        }]
+}
 set m_axis_s2mm_if [add_interface $core M_AXIS_S2MM \
     xilinx.com:interface:axis:1.0 xilinx.com:interface:axis_rtl:1.0 master {
         TDATA m_axis_s2mm_tdata
@@ -160,7 +201,12 @@ set irq_if [add_interface $core irq \
         INTERRUPT irq
     }]
 
-foreach busif {S_AXI_CTRL M_AXI_DMA S_AXIS_CAMERA S_AXIS_MM2S M_AXIS_S2MM} {
+set clock_bus_interfaces \
+    {S_AXI_CTRL M_AXI_DMA S_AXIS_CAMERA S_AXIS_MM2S M_AXIS_S2MM}
+if {$add_weight_dma} {
+    lappend clock_bus_interfaces M_AXI_WEIGHT_DMA S_AXIS_WEIGHT
+}
+foreach busif $clock_bus_interfaces {
     ipx::associate_bus_interfaces -busif $busif -clock aclk $core
 }
 set associated_reset [ipx::add_bus_parameter ASSOCIATED_RESET $clock_if]
@@ -170,8 +216,12 @@ set_property value ACTIVE_LOW $reset_polarity
 set irq_sensitivity [ipx::add_bus_parameter SENSITIVITY $irq_if]
 set_property value LEVEL_HIGH $irq_sensitivity
 
-foreach {axis_interface axis_bytes} [list \
-        $s_axis_camera_if 8 $s_axis_mm2s_if 16 $m_axis_s2mm_if 16] {
+set axis_interfaces [list \
+    $s_axis_camera_if 8 $s_axis_mm2s_if 16 $m_axis_s2mm_if 16]
+if {$add_weight_dma} {
+    lappend axis_interfaces $s_axis_weight_if 16
+}
+foreach {axis_interface axis_bytes} $axis_interfaces {
     set data_bytes [ipx::add_bus_parameter TDATA_NUM_BYTES $axis_interface]
     set_property value $axis_bytes $data_bytes
     set has_keep [ipx::add_bus_parameter HAS_TKEEP $axis_interface]
@@ -191,6 +241,15 @@ set dma_address_space [ipx::add_address_space M_AXI_DMA $core]
 set_property range 4294967296 $dma_address_space
 set_property width 32 $dma_address_space
 set_property master_address_space_ref M_AXI_DMA $m_axi_dma_if
+
+if {$add_weight_dma} {
+    set weight_dma_address_space \
+        [ipx::add_address_space M_AXI_WEIGHT_DMA $core]
+    set_property range 4294967296 $weight_dma_address_space
+    set_property width 32 $weight_dma_address_space
+    set_property master_address_space_ref M_AXI_WEIGHT_DMA \
+        $m_axi_weight_dma_if
+}
 
 ipx::create_xgui_files $core
 ipx::update_checksums $core

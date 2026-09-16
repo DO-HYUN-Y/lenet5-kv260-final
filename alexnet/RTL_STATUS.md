@@ -1,24 +1,31 @@
 # AlexNet RTL status — 2026-09-11
 
-## 2026-09-15 M8xN126 graph-migration checkpoint
+## 2026-09-16 M8xN126 graph-payload bitstream checkpoint
 
 The M8xN8 text below remains the last functional board baseline. The active
-migration keeps a logical M8xN126 / physical M8xN128 compute fabric and does
-not claim a functional full-graph bitstream yet.
+migration keeps a logical M8xN126 / physical M8xN128 compute fabric. A
+graph-payload top bitstream now exists, but it is not yet an autonomous or
+board-verified full AlexNet inference.
 
 - A batch-1 Conv1-through-FC8 RTL scheduler now emits 1,635 verified work
   descriptors covering 714,188,480 useful MACs and 61,090,496 weight bytes.
   It passes randomized XSim and routes at 200 MHz with WNS/WHS
   +0.435/+0.099 ns.
-- The M16 feeder now fills a two-set M16 patch ping-pong while the other set
-  replays. Coordinate-golden XSim passes AlexNet stride/padding, cross-row
-  grouping, tails and randomized backpressure. The integrated bridge routes
-  at 200 MHz with 6,862 CLB LUTs, 3,101 registers, 112 RAMB36E2, four URAM,
-  WNS/WHS +0.185/+0.055 ns, zero routing errors and zero DRC checks.
-- The remaining functional boundary is scheduler-to-payload integration:
-  activation/weight service, dynamic SA, postprocess and result routing must
-  be connected and compared layer-by-layer and end-to-end with the golden
-  model before generating the replacement board bitstream.
+- The M16 feeder bridge now uses x-mod-4 banking and fills a two-set M16 patch
+  ping-pong while the other set replays. Coordinate-golden XSim passes AlexNet
+  stride/padding, cross-row grouping, tails and randomized backpressure.
+- The scheduler is connected to the N128 weight ping-pong, M16 patch
+  ping-pong, dynamic SA, parallel requantizer and result stream. The integrated
+  payload XSim passes two Conv1 tiles.
+- The KV260 top activates four independent HP paths; HP3 owns the weight MM2S
+  DMA. Its 200 MHz timing-recovery checkpoint passes with WNS/TNS/WHS
+  0.000/0.000/+0.010 ns, zero failed route nets and zero DRC errors or critical
+  warnings. It uses 78,630 LUT, 86,172 registers, 9 BRAM tiles, 36 URAM and
+  576 DSP48E2, and generated both bitstream and XSA.
+- The remaining functional boundary is normal raster-to-patch assembly plus
+  exact result-to-next-layer storage. Weight fill is also not yet overlapped
+  with compute. Layer-by-layer and end-to-end golden comparison are required
+  before calling this a functional full-graph bitstream.
 - Exact descriptor slot utilization is 1.5616% for combined FC6-FC8 at batch
   1 in one-N16-bank mode, and 15.5406% for Conv1-through-FC8. These are
   scheduling ceilings, not measured board utilization.

@@ -253,7 +253,10 @@ module alexnet_m8n126_graph_scheduler (
           end
         end
         ST_NEXT: begin
-          tile_tag_q <= tile_tag_q + 1'b1;
+          // All K chunks of one output tile own the same accumulator and tag.
+          // Advance the tag only after the true final K chunk retires.
+          if (k_last)
+            tile_tag_q <= tile_tag_q + 1'b1;
           if (!k_last) begin
             k_offset_q <= k_offset_q + current_k_count;
           end else if (!m_last) begin

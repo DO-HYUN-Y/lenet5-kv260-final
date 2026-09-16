@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2025.2 (lin64) Build 6299465 Fri Nov 14 12:34:56 MST 2025
-| Date         : Tue Sep 15 14:44:27 2026
+| Date         : Tue Sep 15 15:36:05 2026
 | Host         : jian-ThinkBook-16-G9-AHP running 64-bit Ubuntu 24.04.4 LTS
 | Command      : report_utilization -file /home/jian/Documents/Codex/2026-09-09/https-github-com-do-hyun-y/work/lenet5-kv260-final/alexnet/reports/m16_patch_feeder_bridge/200mhz/synth_utilization.rpt
 | Design       : alexnet_m16_patch_feeder_bridge
@@ -29,21 +29,21 @@ Table of Contents
 1. CLB Logic
 ------------
 
-+-------------------------+------+-------+------------+-----------+-------+
-|        Site Type        | Used | Fixed | Prohibited | Available | Util% |
-+-------------------------+------+-------+------------+-----------+-------+
-| CLB LUTs*               | 7007 |     0 |          0 |    117120 |  5.98 |
-|   LUT as Logic          | 7007 |     0 |          0 |    117120 |  5.98 |
-|   LUT as Memory         |    0 |     0 |          0 |     57600 |  0.00 |
-| CLB Registers           | 3097 |     0 |          0 |    234240 |  1.32 |
-|   Register as Flip Flop | 3097 |     0 |          0 |    234240 |  1.32 |
-|   Register as Latch     |    0 |     0 |          0 |    234240 |  0.00 |
-| CARRY8                  |   95 |     0 |          0 |     14640 |  0.65 |
-| F7 Muxes                |    0 |     0 |          0 |     58560 |  0.00 |
-| F8 Muxes                |    0 |     0 |          0 |     29280 |  0.00 |
-| F9 Muxes                |    0 |     0 |          0 |     14640 |  0.00 |
-| Unique Control Sets     |   31 |       |          0 |     29280 |  0.11 |
-+-------------------------+------+-------+------------+-----------+-------+
++-------------------------+-------+-------+------------+-----------+-------+
+|        Site Type        |  Used | Fixed | Prohibited | Available | Util% |
++-------------------------+-------+-------+------------+-----------+-------+
+| CLB LUTs*               | 11559 |     0 |          0 |    117120 |  9.87 |
+|   LUT as Logic          | 11559 |     0 |          0 |    117120 |  9.87 |
+|   LUT as Memory         |     0 |     0 |          0 |     57600 |  0.00 |
+| CLB Registers           |  2958 |     0 |          0 |    234240 |  1.26 |
+|   Register as Flip Flop |  2958 |     0 |          0 |    234240 |  1.26 |
+|   Register as Latch     |     0 |     0 |          0 |    234240 |  0.00 |
+| CARRY8                  |   126 |     0 |          0 |     14640 |  0.86 |
+| F7 Muxes                |     5 |     0 |          0 |     58560 | <0.01 |
+| F8 Muxes                |     0 |     0 |          0 |     29280 |  0.00 |
+| F9 Muxes                |     0 |     0 |          0 |     14640 |  0.00 |
+| Unique Control Sets     |    58 |       |          0 |     29280 |  0.20 |
++-------------------------+-------+-------+------------+-----------+-------+
 * Warning! The Final LUT count, after physical optimizations and full implementation, is typically lower. Run opt_design after synthesis, if not already completed, for a more realistic count.
 Warning! LUT value is adjusted to account for LUT combining.
 Warning! For any ECO changes, please run place_design if there are unplaced instances
@@ -65,7 +65,7 @@ Warning! For any ECO changes, please run place_design if there are unplaced inst
 | 0     |          Yes |           - |          Set |
 | 0     |          Yes |           - |        Reset |
 | 0     |          Yes |         Set |            - |
-| 3097  |          Yes |       Reset |            - |
+| 2958  |          Yes |       Reset |            - |
 +-------+--------------+-------------+--------------+
 
 
@@ -75,9 +75,9 @@ Warning! For any ECO changes, please run place_design if there are unplaced inst
 +-------------------+------+-------+------------+-----------+-------+
 |     Site Type     | Used | Fixed | Prohibited | Available | Util% |
 +-------------------+------+-------+------------+-----------+-------+
-| Block RAM Tile    |  112 |     0 |          0 |       144 | 77.78 |
-|   RAMB36/FIFO*    |  112 |     0 |          0 |       144 | 77.78 |
-|     RAMB36E2 only |  112 |       |            |           |       |
+| Block RAM Tile    |   64 |     0 |          0 |       144 | 44.44 |
+|   RAMB36/FIFO*    |   64 |     0 |          0 |       144 | 44.44 |
+|     RAMB36E2 only |   64 |       |            |           |       |
 |   RAMB18          |    0 |     0 |          0 |       288 |  0.00 |
 | URAM              |    4 |     0 |          0 |        64 |  6.25 |
 +-------------------+------+-------+------------+-----------+-------+
@@ -172,15 +172,16 @@ Warning! For any ECO changes, please run place_design if there are unplaced inst
 +----------+------+---------------------+
 | Ref Name | Used | Functional Category |
 +----------+------+---------------------+
-| LUT6     | 4325 |                 CLB |
-| FDRE     | 3097 |            Register |
-| LUT3     | 1282 |                 CLB |
-| LUT4     | 1191 |                 CLB |
-| LUT5     | 1080 |                 CLB |
-| LUT2     |  232 |                 CLB |
-| RAMB36E2 |  112 |            BLOCKRAM |
-| CARRY8   |   95 |                 CLB |
-| LUT1     |    8 |                 CLB |
+| LUT6     | 8611 |                 CLB |
+| FDRE     | 2958 |            Register |
+| LUT5     | 1443 |                 CLB |
+| LUT4     | 1429 |                 CLB |
+| LUT3     |  466 |                 CLB |
+| LUT2     |  166 |                 CLB |
+| CARRY8   |  126 |                 CLB |
+| RAMB36E2 |   64 |            BLOCKRAM |
+| LUT1     |   20 |                 CLB |
+| MUXF7    |    5 |                 CLB |
 | URAM288  |    4 |            BLOCKRAM |
 +----------+------+---------------------+
 

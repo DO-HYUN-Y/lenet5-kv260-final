@@ -10,8 +10,15 @@ set project_dir [file join $build_dir vivado]
 set report_dir [file join $build_dir reports]
 set ip_repo_dir [file join $build_dir ip_repo]
 set use_four_hp 0
+set add_weight_dma 0
 if {[info exists ::alexnet_use_four_hp]} {
     set use_four_hp $::alexnet_use_four_hp
+}
+if {[info exists ::alexnet_add_weight_dma]} {
+    set add_weight_dma $::alexnet_add_weight_dma
+}
+if {$add_weight_dma && !$use_four_hp} {
+    error "The independent weight DMA requires the four-HP topology"
 }
 file mkdir $report_dir
 file delete -force $project_dir
@@ -95,6 +102,23 @@ set_property -dict [list \
     CONFIG.c_addr_width {32} \
 ] $camera_dma
 
+if {$add_weight_dma} {
+    # Weight traffic is 16-byte aligned and uses a dedicated HP3 read path.
+    set weight_dma [create_bd_cell -type ip \
+        -vlnv xilinx.com:ip:axi_dma:* axi_dma_weight]
+    set_property -dict [list \
+        CONFIG.c_include_sg {0} \
+        CONFIG.c_include_mm2s {1} \
+        CONFIG.c_include_s2mm {0} \
+        CONFIG.c_include_mm2s_dre {0} \
+        CONFIG.c_m_axi_mm2s_data_width {128} \
+        CONFIG.c_m_axis_mm2s_tdata_width {128} \
+        CONFIG.c_mm2s_burst_size {64} \
+        CONFIG.c_sg_length_width {26} \
+        CONFIG.c_addr_width {32} \
+    ] $weight_dma
+}
+
 set accelerator [create_bd_cell -type ip \
     -vlnv user.org:user:alexnet_m4n8_accelerator:1.0 \
     alexnet_m4n8_0]
@@ -104,7 +128,11 @@ set camera_adapter [create_bd_cell -type ip \
 
 set ctrl_ic [create_bd_cell -type ip \
     -vlnv xilinx.com:ip:smartconnect:* axi_ctrl]
-set_property -dict [list CONFIG.NUM_SI {2} CONFIG.NUM_MI {3}] $ctrl_ic
+if {$add_weight_dma} {
+    set_property -dict [list CONFIG.NUM_SI {3} CONFIG.NUM_MI {4}] $ctrl_ic
+} else {
+    set_property -dict [list CONFIG.NUM_SI {2} CONFIG.NUM_MI {3}] $ctrl_ic
+}
 
 if {!$use_four_hp} {
     set mem_ic [create_bd_cell -type ip \
@@ -138,7 +166,11 @@ set_property -dict [list CONFIG.CONST_WIDTH {1} CONFIG.CONST_VAL {1}] \
     $const_one
 set irq_concat [create_bd_cell -type ip \
     -vlnv xilinx.com:ip:xlconcat:* irq_concat]
-set_property -dict [list CONFIG.NUM_PORTS {5}] $irq_concat
+if {$add_weight_dma} {
+    set_property -dict [list CONFIG.NUM_PORTS {6}] $irq_concat
+} else {
+    set_property -dict [list CONFIG.NUM_PORTS {5}] $irq_concat
+}
 
 # PS controls the accelerator and may inspect both DMA register banks while
 # idle. The accelerator's master reaches only the main DMA register bank.
@@ -157,6 +189,14 @@ connect_bd_intf_net \
 connect_bd_intf_net \
     [get_bd_intf_pins axi_ctrl/M02_AXI] \
     [get_bd_intf_pins axi_dma_camera/S_AXI_LITE]
+if {$add_weight_dma} {
+    connect_bd_intf_net \
+        [get_bd_intf_pins alexnet_m4n8_0/M_AXI_WEIGHT_DMA] \
+        [get_bd_intf_pins axi_ctrl/S02_AXI]
+    connect_bd_intf_net \
+        [get_bd_intf_pins axi_ctrl/M03_AXI] \
+        [get_bd_intf_pins axi_dma_weight/S_AXI_LITE]
+}
 
 # The compatibility build shares HP0.  The wide-array probe removes that
 # arbitration point: main read, main write and camera read receive HP0/1/2.
@@ -172,6 +212,11 @@ if {$use_four_hp} {
     connect_bd_intf_net \
         [get_bd_intf_pins axi_dma_camera/M_AXI_MM2S] \
         [get_bd_intf_pins zynq_ultra_ps_e_0/S_AXI_HP2_FPD]
+    if {$add_weight_dma} {
+        connect_bd_intf_net \
+            [get_bd_intf_pins axi_dma_weight/M_AXI_MM2S] \
+            [get_bd_intf_pins zynq_ultra_ps_e_0/S_AXI_HP3_FPD]
+    }
 } else {
     connect_bd_intf_net \
         [get_bd_intf_pins axi_dma_main/M_AXI_MM2S] \
@@ -200,6 +245,11 @@ connect_bd_intf_net \
 connect_bd_intf_net \
     [get_bd_intf_pins camera_rgbx_0/M_AXIS] \
     [get_bd_intf_pins alexnet_m4n8_0/S_AXIS_CAMERA]
+if {$add_weight_dma} {
+    connect_bd_intf_net \
+        [get_bd_intf_pins axi_dma_weight/M_AXIS_MM2S] \
+        [get_bd_intf_pins alexnet_m4n8_0/S_AXIS_WEIGHT]
+}
 
 # Stock KV260 Ubuntu owns PL0 at approximately 100 MHz. One PL MMCM doubles
 # that reference and provides the only 200 MHz control/DMA/compute domain.
@@ -228,6 +278,11 @@ if {$use_four_hp} {
 } else {
     lappend clock_sinks axi_mem/aclk
 }
+if {$add_weight_dma} {
+    lappend clock_sinks \
+        axi_dma_weight/s_axi_lite_aclk \
+        axi_dma_weight/m_axi_mm2s_aclk
+}
 foreach clock_sink $clock_sinks {
     connect_bd_net $clock_source [get_bd_pins $clock_sink]
 }
@@ -253,13 +308,16 @@ set reset_sinks [list \
 if {!$use_four_hp} {
     lappend reset_sinks axi_mem/aresetn
 }
+if {$add_weight_dma} {
+    lappend reset_sinks axi_dma_weight/axi_resetn
+}
 foreach reset_sink $reset_sinks {
     connect_bd_net $reset_source [get_bd_pins $reset_sink]
 }
 
 # IRQ bit order is a software ABI.
 # 0 accelerator, 1 main MM2S, 2 main S2MM, 3 camera MM2S,
-# 4 malformed camera RGBX frame.
+# 4 malformed camera RGBX frame, 5 weight MM2S when present.
 connect_bd_net [get_bd_pins alexnet_m4n8_0/irq] \
     [get_bd_pins irq_concat/In0]
 connect_bd_net [get_bd_pins axi_dma_main/mm2s_introut] \
@@ -270,6 +328,10 @@ connect_bd_net [get_bd_pins axi_dma_camera/mm2s_introut] \
     [get_bd_pins irq_concat/In3]
 connect_bd_net [get_bd_pins camera_rgbx_0/format_error] \
     [get_bd_pins irq_concat/In4]
+if {$add_weight_dma} {
+    connect_bd_net [get_bd_pins axi_dma_weight/mm2s_introut] \
+        [get_bd_pins irq_concat/In5]
+}
 connect_bd_net [get_bd_pins irq_concat/dout] \
     [get_bd_pins zynq_ultra_ps_e_0/pl_ps_irq0]
 
@@ -283,6 +345,11 @@ assign_bd_address -offset 0xA0010000 -range 0x00010000 \
 assign_bd_address -offset 0xA0020000 -range 0x00010000 \
     -target_address_space [get_bd_addr_spaces zynq_ultra_ps_e_0/Data] \
     [get_bd_addr_segs axi_dma_camera/S_AXI_LITE/Reg] -force
+if {$add_weight_dma} {
+    assign_bd_address -offset 0xA0030000 -range 0x00010000 \
+        -target_address_space [get_bd_addr_spaces zynq_ultra_ps_e_0/Data] \
+        [get_bd_addr_segs axi_dma_weight/S_AXI_LITE/Reg] -force
+}
 
 assign_bd_address -offset 0xA0010000 -range 0x00010000 \
     -target_address_space [get_bd_addr_spaces alexnet_m4n8_0/M_AXI_DMA] \
@@ -293,12 +360,35 @@ exclude_bd_addr_seg -target_address_space \
 exclude_bd_addr_seg -target_address_space \
     [get_bd_addr_spaces alexnet_m4n8_0/M_AXI_DMA] \
     [get_bd_addr_segs axi_dma_camera/S_AXI_LITE/Reg]
+if {$add_weight_dma} {
+    exclude_bd_addr_seg -target_address_space \
+        [get_bd_addr_spaces alexnet_m4n8_0/M_AXI_DMA] \
+        [get_bd_addr_segs axi_dma_weight/S_AXI_LITE/Reg]
+
+    assign_bd_address -offset 0xA0030000 -range 0x00010000 \
+        -target_address_space \
+        [get_bd_addr_spaces alexnet_m4n8_0/M_AXI_WEIGHT_DMA] \
+        [get_bd_addr_segs axi_dma_weight/S_AXI_LITE/Reg] -force
+    foreach excluded_segment [list \
+            alexnet_m4n8_0/S_AXI_CTRL/Reg \
+            axi_dma_main/S_AXI_LITE/Reg \
+            axi_dma_camera/S_AXI_LITE/Reg] {
+        exclude_bd_addr_seg -target_address_space \
+            [get_bd_addr_spaces alexnet_m4n8_0/M_AXI_WEIGHT_DMA] \
+            [get_bd_addr_segs $excluded_segment]
+    }
+}
 
 if {$use_four_hp} {
-    foreach {dma_space_name ps_segment} [list \
-            axi_dma_main/Data_MM2S SAXIGP2/HP0_DDR_LOW \
-            axi_dma_main/Data_S2MM SAXIGP3/HP1_DDR_LOW \
-            axi_dma_camera/Data_MM2S SAXIGP4/HP2_DDR_LOW] {
+    set dma_address_mappings [list \
+        axi_dma_main/Data_MM2S SAXIGP2/HP0_DDR_LOW \
+        axi_dma_main/Data_S2MM SAXIGP3/HP1_DDR_LOW \
+        axi_dma_camera/Data_MM2S SAXIGP4/HP2_DDR_LOW]
+    if {$add_weight_dma} {
+        lappend dma_address_mappings \
+            axi_dma_weight/Data_MM2S SAXIGP5/HP3_DDR_LOW
+    }
+    foreach {dma_space_name ps_segment} $dma_address_mappings {
         assign_bd_address -offset 0x00000000 -range 0x80000000 \
             -target_address_space [get_bd_addr_spaces $dma_space_name] \
             [get_bd_addr_segs zynq_ultra_ps_e_0/$ps_segment] -force
@@ -345,10 +435,22 @@ foreach segment [lsort [get_bd_addr_segs -of_objects \
     puts $address_file "[get_property NAME $segment] \
 OFFSET=[get_property OFFSET $segment] RANGE=[get_property RANGE $segment]"
 }
+if {$add_weight_dma} {
+    puts $address_file "\nACCELERATOR_WEIGHT_DMA_CONTROL_ADDRESS_SPACE"
+    foreach segment [lsort [get_bd_addr_segs -of_objects \
+            [get_bd_addr_spaces alexnet_m4n8_0/M_AXI_WEIGHT_DMA]]] {
+        puts $address_file "[get_property NAME $segment] \
+OFFSET=[get_property OFFSET $segment] RANGE=[get_property RANGE $segment]"
+    }
+}
 puts $address_file "\nDMA_DDR_ADDRESS_SPACES"
-foreach space_name [list \
-        axi_dma_main/Data_MM2S axi_dma_main/Data_S2MM \
-        axi_dma_camera/Data_MM2S] {
+set dma_report_spaces [list \
+    axi_dma_main/Data_MM2S axi_dma_main/Data_S2MM \
+    axi_dma_camera/Data_MM2S]
+if {$add_weight_dma} {
+    lappend dma_report_spaces axi_dma_weight/Data_MM2S
+}
+foreach space_name $dma_report_spaces {
     puts $address_file $space_name
     foreach segment [lsort [get_bd_addr_segs -of_objects \
             [get_bd_addr_spaces $space_name]]] {
@@ -384,7 +486,11 @@ if {$use_four_hp} {
     puts $summary_file "HP0_MASTER=MAIN_MM2S"
     puts $summary_file "HP1_MASTER=MAIN_S2MM"
     puts $summary_file "HP2_MASTER=CAMERA_MM2S"
-    puts $summary_file "HP3_MASTER=RESERVED_WEIGHT_MM2S"
+    if {$add_weight_dma} {
+        puts $summary_file "HP3_MASTER=WEIGHT_MM2S"
+    } else {
+        puts $summary_file "HP3_MASTER=RESERVED_WEIGHT_MM2S"
+    }
 }
 puts $summary_file \
     "MAIN_DMA_MM2S_DRE=[get_property CONFIG.c_include_mm2s_dre $main_dma]"
@@ -393,6 +499,11 @@ puts $summary_file \
 puts $summary_file "MAIN_DMA_AXIS_WIDTH=128"
 puts $summary_file "CAMERA_DMA_AXIS_WIDTH=64"
 puts $summary_file "CAMERA_DMA_MM2S_ONLY=1"
+puts $summary_file "WEIGHT_DMA_ENABLED=$add_weight_dma"
+if {$add_weight_dma} {
+    puts $summary_file "WEIGHT_DMA_AXIS_WIDTH=128"
+    puts $summary_file "WEIGHT_DMA_MM2S_ONLY=1"
+}
 puts $summary_file "CAMERA_LAYOUT=224x224_RGB_INT8_IN_8_BYTE_WORD"
 puts $summary_file "CAMERA_BUFFER_BYTES=401408"
 puts $summary_file "CAMERA_VALID_LANE_MASK=0x07"

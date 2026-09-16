@@ -1,6 +1,6 @@
 set part xck26-sfvc784-2LV-c
 set frequency_mhz 200
-set expected_ramb36 112
+set expected_ramb36 64
 set expected_uram 4
 set_param general.maxThreads 8
 
@@ -10,6 +10,8 @@ set feeder_source \
     [file join $alexnet_root rtl feeder alexnet_n8_rs_m4_feeder.sv]
 set feeder_wrapper_source \
     [file join $alexnet_root rtl feeder alexnet_n8_rs_m16_feeder.sv]
+set banked_feeder_source \
+    [file join $alexnet_root rtl feeder alexnet_n8_rs_m16_xmod4_feeder.sv]
 set patch_source \
     [file join $alexnet_root rtl memory alexnet_m16_patch_pingpong.sv]
 set bridge_source \
@@ -22,8 +24,8 @@ file mkdir $out_dir
 file mkdir $report_dir
 cd $out_dir
 
-read_verilog -sv $feeder_source $feeder_wrapper_source $patch_source \
-    $bridge_source
+read_verilog -sv $feeder_source $feeder_wrapper_source $banked_feeder_source \
+    $patch_source $bridge_source
 read_xdc $xdc_source
 synth_design -top alexnet_m16_patch_feeder_bridge -part $part \
     -mode out_of_context
@@ -80,6 +82,7 @@ puts $metadata_file "design=alexnet_m16_patch_feeder_bridge"
 puts $metadata_file "boundary=raster_n8_to_pingpong_m16_patch"
 puts $metadata_file "input_lanes=8"
 puts $metadata_file "output_m=16"
+puts $metadata_file "activation_banking=stride_aware_xmod4"
 puts $metadata_file "patch_sets=2"
 puts $metadata_file "patch_depth_k=4096"
 puts $metadata_file "git_commit=[exec git -C $repo_root rev-parse HEAD]"

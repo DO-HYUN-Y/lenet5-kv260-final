@@ -288,9 +288,11 @@ module tb_alexnet_m16_patch_feeder_bridge;
     run_geometry(32, 32, 3, 11, 4, 2, 16'h4100);
     // Stride-one, eight input channels, cross-row groups and a nine-lane tail.
     run_geometry(13, 13, 8, 3, 1, 1, 16'h5200);
+    // Full Conv1 geometry proves all 190 M16 groups at the maximum width.
+    run_geometry(224, 224, 3, 11, 4, 2, 16'h6300);
 
-    if (fault || completed_patch_fills != 15 ||
-        completed_patch_replays != 15 || checked_words != 2244 ||
+    if (fault || completed_patch_fills != 205 ||
+        completed_patch_replays != 205 || checked_words != 71214 ||
         overlap_cycles == 0)
       $fatal(1,
              "patch bridge coverage mismatch fills=%0d replays=%0d words=%0d overlap=%0d fault=%0b",

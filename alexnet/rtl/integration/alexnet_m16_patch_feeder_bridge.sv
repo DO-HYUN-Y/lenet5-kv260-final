@@ -4,14 +4,14 @@
 // activation-patch ping-pong.  It is the first payload boundary used when the
 // M8xN126 graph scheduler replaces the resource-probe generator.
 //
-// The current implementation intentionally reuses the proven 16-read feeder.
-// A later x-mod-4 store can replace u_feeder behind this same contract without
-// changing the scheduler, patch store, or dynamic array.
+// USE_XMOD4_BANKING selects the stride-aware 64-BRAM store. The legacy
+// replicated 112-BRAM feeder remains available as a bit-exact comparison.
 module alexnet_m16_patch_feeder_bridge #(
     parameter int MAX_INPUT_WIDTH = 224,
     parameter int PATCH_DEPTH = 4096,
     parameter int DIM_W = 8,
     parameter int FRAME_TAG_W = 16,
+    parameter bit USE_XMOD4_BANKING = 1'b1,
     parameter int COUNT_W = $clog2(PATCH_DEPTH + 1),
     parameter int ADDR_W = $clog2(PATCH_DEPTH)
 ) (
@@ -136,43 +136,47 @@ module alexnet_m16_patch_feeder_bridge #(
     end
   end
 
-  alexnet_n8_rs_m16_feeder #(
-      .MAX_INPUT_WIDTH(MAX_INPUT_WIDTH),
-      .FRAME_TAG_W(FRAME_TAG_W)
-  ) u_feeder (
-      .clk,
-      .rst,
-      .frame_valid,
-      .frame_ready,
-      .frame_input_h,
-      .frame_input_w,
-      .frame_channel_count,
-      .frame_lane_mask,
-      .frame_kernel,
-      .frame_stride,
-      .frame_padding,
-      .frame_tag,
-      .s_valid,
-      .s_ready,
-      .s_values,
-      .s_lane_mask,
-      .m_valid(feeder_m_valid),
-      .m_ready(feeder_m_ready),
-      .m_act_lo(feeder_act_lo),
-      .m_act_hi(feeder_act_hi),
-      .m_lane_mask(feeder_lane_mask),
-      .m_tile_clear(feeder_tile_clear),
-      .m_reduce_last(feeder_reduce_last),
-      .m_k(feeder_k),
-      .m_input_channel(feeder_input_channel),
-      .m_count(feeder_m_count),
-      .m_output_y(feeder_output_y),
-      .m_output_x(feeder_output_x),
-      .m_frame_tag(feeder_frame_tag),
-      .frame_active,
-      .frame_done,
-      .idle(feeder_idle)
-  );
+  generate
+    if (USE_XMOD4_BANKING) begin : g_xmod4_feeder
+      alexnet_n8_rs_m16_xmod4_feeder #(
+          .MAX_INPUT_WIDTH(MAX_INPUT_WIDTH),
+          .FRAME_TAG_W(FRAME_TAG_W)
+      ) u_feeder (
+          .clk, .rst, .frame_valid, .frame_ready, .frame_input_h,
+          .frame_input_w, .frame_channel_count, .frame_lane_mask,
+          .frame_kernel, .frame_stride, .frame_padding, .frame_tag,
+          .s_valid, .s_ready, .s_values, .s_lane_mask,
+          .m_valid(feeder_m_valid), .m_ready(feeder_m_ready),
+          .m_act_lo(feeder_act_lo), .m_act_hi(feeder_act_hi),
+          .m_lane_mask(feeder_lane_mask),
+          .m_tile_clear(feeder_tile_clear),
+          .m_reduce_last(feeder_reduce_last), .m_k(feeder_k),
+          .m_input_channel(feeder_input_channel), .m_count(feeder_m_count),
+          .m_output_y(feeder_output_y), .m_output_x(feeder_output_x),
+          .m_frame_tag(feeder_frame_tag), .frame_active, .frame_done,
+          .idle(feeder_idle)
+      );
+    end else begin : g_legacy_feeder
+      alexnet_n8_rs_m16_feeder #(
+          .MAX_INPUT_WIDTH(MAX_INPUT_WIDTH),
+          .FRAME_TAG_W(FRAME_TAG_W)
+      ) u_feeder (
+          .clk, .rst, .frame_valid, .frame_ready, .frame_input_h,
+          .frame_input_w, .frame_channel_count, .frame_lane_mask,
+          .frame_kernel, .frame_stride, .frame_padding, .frame_tag,
+          .s_valid, .s_ready, .s_values, .s_lane_mask,
+          .m_valid(feeder_m_valid), .m_ready(feeder_m_ready),
+          .m_act_lo(feeder_act_lo), .m_act_hi(feeder_act_hi),
+          .m_lane_mask(feeder_lane_mask),
+          .m_tile_clear(feeder_tile_clear),
+          .m_reduce_last(feeder_reduce_last), .m_k(feeder_k),
+          .m_input_channel(feeder_input_channel), .m_count(feeder_m_count),
+          .m_output_y(feeder_output_y), .m_output_x(feeder_output_x),
+          .m_frame_tag(feeder_frame_tag), .frame_active, .frame_done,
+          .idle(feeder_idle)
+      );
+    end
+  endgenerate
 
   alexnet_m16_patch_pingpong #(
       .DEPTH(PATCH_DEPTH),

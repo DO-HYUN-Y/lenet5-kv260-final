@@ -6,6 +6,7 @@ cd $out_dir
 exec xvlog -sv \
     [file join $alexnet_root rtl feeder alexnet_n8_rs_m4_feeder.sv] \
     [file join $alexnet_root rtl feeder alexnet_n8_rs_m16_feeder.sv] \
+    [file join $alexnet_root rtl feeder alexnet_n8_rs_m16_xmod4_feeder.sv] \
     [file join $alexnet_root rtl memory alexnet_m16_patch_pingpong.sv] \
     [file join $alexnet_root rtl integration alexnet_m16_patch_feeder_bridge.sv] \
     [file join $alexnet_root tb tb_alexnet_m16_patch_feeder_bridge.sv]
