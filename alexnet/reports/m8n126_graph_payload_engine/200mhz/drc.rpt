@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2025.2 (lin64) Build 6299465 Fri Nov 14 12:34:56 MST 2025
-| Date         : Tue Sep 15 16:53:37 2026
+| Date         : Wed Sep 16 17:27:59 2026
 | Host         : jian-ThinkBook-16-G9-AHP running 64-bit Ubuntu 24.04.4 LTS
 | Command      : report_drc -file /home/jian/Documents/Codex/2026-09-09/https-github-com-do-hyun-y/work/lenet5-kv260-final/alexnet/reports/m8n126_graph_payload_engine/200mhz/drc.rpt
 | Design       : alexnet_m8n126_graph_payload_engine
@@ -24,24 +24,18 @@ Table of Contents
       Design limits: <entire design considered>
            Ruledeck: default
              Max checks: <unlimited>
-             Checks found: 2
-+-----------+----------+------------------------+--------+
-| Rule      | Severity | Description            | Checks |
-+-----------+----------+------------------------+--------+
-| DPOP-3    | Warning  | PREG Output pipelining | 1      |
-| RTSTAT-10 | Warning  | No routable loads      | 1      |
-+-----------+----------+------------------------+--------+
+             Checks found: 1
++-----------+----------+-------------------+--------+
+| Rule      | Severity | Description       | Checks |
++-----------+----------+-------------------+--------+
+| RTSTAT-10 | Warning  | No routable loads | 1      |
++-----------+----------+-------------------+--------+
 
 2. REPORT DETAILS
 -----------------
-DPOP-3#1 Warning
-PREG Output pipelining  
-DSP u_payload/u_requant/g_requant_row[2].u_requant/product_pipe_q_reg[0] output u_payload/u_requant/g_requant_row[2].u_requant/product_pipe_q_reg[0]/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
-Related violations: <none>
-
 RTSTAT-10#1 Warning
-No routable loads  
-567 net(s) have no routable loads. The problem bus(es) and/or net(s) are u_patch_pingpong/patch_axis_ready, u_patch_pingpong/patch_request_valid,
+No routable loads
+568 net(s) have no routable loads. The problem bus(es) and/or net(s) are u_patch_pingpong/patch_axis_ready, u_patch_pingpong/patch_request_valid,
 u_payload/parameter_ready, u_payload/parameter_request_layer_id[3:0],
 u_payload/parameter_request_valid,
 u_payload/u_requant/g_requant_row[0].u_requant/result_lane_mask[0][6:0],
@@ -51,7 +45,7 @@ u_payload/u_requant/g_requant_row[3].u_requant/result_lane_mask[3][6:0],
 u_payload/u_requant/g_requant_row[4].u_requant/result_lane_mask[4][6:0],
 u_payload/u_requant/g_requant_row[5].u_requant/result_lane_mask[5][6:0],
 u_scheduler/busy, u_scheduler/fault, u_scheduler/inference_done,
-u_scheduler/inference_failed (the first 15 of 473 listed).
+u_scheduler/inference_failed (the first 15 of 474 listed).
 Related violations: <none>
 
 

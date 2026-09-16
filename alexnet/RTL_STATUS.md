@@ -18,10 +18,11 @@ board-verified full AlexNet inference.
   ping-pong, dynamic SA, parallel requantizer and result stream. The integrated
   payload XSim passes two Conv1 tiles.
 - The KV260 top activates four independent HP paths; HP3 owns the weight MM2S
-  DMA. Its 200 MHz timing-recovery checkpoint passes with WNS/TNS/WHS
-  0.000/0.000/+0.010 ns, zero failed route nets and zero DRC errors or critical
-  warnings. It uses 78,630 LUT, 86,172 registers, 9 BRAM tiles, 36 URAM and
-  576 DSP48E2, and generated both bitstream and XSA.
+  DMA. A registered 64-value SA-to-requant capture boundary now gives the
+  clean 200 MHz build WNS/TNS/WHS `+0.151/0.000/+0.010 ns`, with zero failed
+  route nets and zero DRC errors or critical warnings. It uses 78,971 LUT,
+  87,800 registers, 9 BRAM tiles, 36 URAM and 576 DSP48E2, and generated both
+  bitstream and XSA without the recovery flow.
 - The remaining functional boundary is normal raster-to-patch assembly plus
   exact result-to-next-layer storage. Weight fill is also not yet overlapped
   with compute. Layer-by-layer and end-to-end golden comparison are required

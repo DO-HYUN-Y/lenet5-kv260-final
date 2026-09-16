@@ -52,57 +52,60 @@ needed, timing-driven rerouting before repeating all signoff gates.
 ## Verified 200 MHz checkpoint
 
 Vivado 2025.2 generated the graph-payload `.bit` and fixed `.xsa` on
-2026-09-16. The first complete route had WNS `-0.014 ns`; the scripted
-post-route recovery improved it to `0.000 ns` with TNS `0.000 ns` and WHS
-`+0.010 ns`. All 389,839 setup/hold endpoints meet timing. Route status has
-zero failed, unrouted or partially routed nets, and DRC has zero errors or
-critical warnings.
+2026-09-16. An explicit SA-result capture stage now registers all 64 INT32
+values plus slice metadata before the parallel requantizer. The clean build,
+without post-route recovery, closes at WNS `+0.151 ns`, TNS `0.000 ns`, WHS
+`+0.010 ns` and THS `0.000 ns`. All 393,038 setup/hold endpoints meet timing.
+Route status has zero failed, unrouted or partially routed nets, and DRC has
+zero errors or critical warnings.
 
 | Resource | Used | Available | Utilization |
 | --- | ---: | ---: | ---: |
-| CLB LUT | 78,630 | 117,120 | 67.14% |
-| CLB register | 86,172 | 234,240 | 36.79% |
+| CLB LUT | 78,971 | 117,120 | 67.43% |
+| CLB register | 87,800 | 234,240 | 37.48% |
 | BRAM tile | 9 | 144 | 6.25% |
 | URAM | 36 | 64 | 56.25% |
 | DSP48E2 | 576 | 1,248 | 46.15% |
 
 The DSP split is exactly 512 for the physical M8xN128 SA and 64 for parallel
-requantization. Vectorless Vivado power is 3.420 W at medium confidence; it is
-not a board TOPS/W measurement. The setup margin rounds to zero, so the next
-RTL revision should register the SA-result-to-requant boundary rather than
-depending on another post-route recovery.
+requantization. Vectorless Vivado power is 3.422 W at medium confidence; it is
+not a board TOPS/W measurement. The capture boundary costs one cycle per
+emitted N8 result slice, not one cycle per K issue. The tile XSim active count
+changes from 281 to 302 and the two-command graph test from 1,088 to 1,123,
+while all result bytes, masks, tags and MAC accounting remain bit-exact. The
+tile and graph-payload OOC routes close at WNS `+0.099 ns` and `+0.024 ns`,
+respectively.
 
 The following XSim gates pass after the bitstream build:
 
 - full scheduler: 1,635 commands, 714,188,480 useful MACs;
 - x-mod-4 M16 patch bridge: 205 fills/replays and 69,714 overlap cycles;
-- M8xN128 tile payload: wide/split/FC/K-continuation/result-stall coverage;
+- M8xN128 tile payload: 886 result bytes with
+  wide/split/FC/K-continuation/result-stall coverage;
 - integrated graph payload: two Conv1 tiles, 1,452 weight words, 726 patch
-  words and 2,048 result bytes.
+  words and 2,048 result bytes; capture-stage active cycles are included.
 - AXI DMA alignment/control, AXI-Lite registers, parameter-record loader and
   N128 weight ping-pong unit regressions also pass.
 
 Published local build hashes:
 
-- `.bit`: `29bd644ba094f7849163c509458efd6a437714fb87af73fdc7ab922469a818ab`
-- `.xsa`: `70fcef045cbe308f042f64eb17b85e005d41fbe36b85c0d717400cc4e62565cc`
+- `.bit`: `cf8521fc18fb3eef95019ea50a6bc228e01a216f3ed108b2f36b7c2e616808a1`
+- `.xsa`: `89b507df304b7326c1985f96c84eeda56f670655b586b6043da30758cb33d40e`
 - timing-clean `.dcp`:
-  `9c381394202eeb06ee37b3fa869145c8811ba9aee6f690c87c21d9678c4eacf8`
+  `601b851e8ab81b131a4e2c52e76ee677938d5bbdb3d43fb05831582b0ef12405`
 
 Build products remain under the ignored `build/` directory; the committed
 sources, scripts, reports and hashes reproduce and identify the checkpoint.
 
 ## Next functional milestone
 
-1. Register the SA result before parallel requantization to create positive
-   200 MHz setup margin.
-2. Connect the x-mod-4 raster assembler to the top so software can submit
+1. Connect the x-mod-4 raster assembler to the top so software can submit
    normal feature-map rasters instead of pretransposed K-major M16 tape.
-3. Store every layer in the exact layout consumed by the next layer and close
+2. Store every layer in the exact layout consumed by the next layer and close
    the Conv1-through-FC8 numerical loop against the C++ golden model.
-4. Schedule inactive-set weight fill concurrently with active-set compute,
+3. Schedule inactive-set weight fill concurrently with active-set compute,
    then use the hardware counters to compare shared versus dedicated HP3
    traffic.
-5. Only after the batch-one board baseline is bit-exact, add batch 8 for FC
+4. Only after the batch-one board baseline is bit-exact, add batch 8 for FC
    weight amortization and measure images/s, DDR bytes/image and VCC_SOM
    energy over the same inference interval.

@@ -101,6 +101,7 @@ module alexnet_m8n128_tile_payload #(
     ST_PARAM_REQ,
     ST_PARAM_WAIT,
     ST_CFG,
+    ST_CAPTURE,
     ST_REQUANT,
     ST_RESULT,
     ST_DISCARD,
@@ -158,7 +159,14 @@ module alexnet_m8n128_tile_payload #(
 
   logic requant_cfg_valid, requant_cfg_ready;
   logic requant_ingress_valid, requant_ingress_ready;
-  logic signed [31:0] requant_accumulator [0:7][0:7];
+  // Keep an explicit fabric-register boundary between the distributed SA
+  // result holdings and the 64 requant DSP pre-adders.  Without this stage,
+  // the selected-bank mux and long inter-column route terminate directly at
+  // DSP input registers and leave essentially no 200 MHz setup margin.
+  (* keep = "true" *) logic signed [31:0] requant_accumulator_q [0:7][0:7];
+  logic [3:0] requant_m_count_q;
+  logic [7:0] requant_lane_mask_q;
+  logic [TILE_TAG_W-1:0] requant_tile_tag_q;
   logic requant_egress_valid, requant_egress_ready;
   logic [3:0] requant_egress_m_count;
   logic [63:0] requant_egress_values [0:7];
@@ -207,8 +215,7 @@ module alexnet_m8n128_tile_payload #(
 
   assign requant_cfg_valid = state_q == ST_CFG;
   assign requant_cfg_fire = requant_cfg_valid && requant_cfg_ready;
-  assign requant_ingress_valid = state_q == ST_REQUANT &&
-                                 selected_slice_valid;
+  assign requant_ingress_valid = state_q == ST_REQUANT;
   assign requant_ingress_fire = requant_ingress_valid &&
                                  requant_ingress_ready;
   assign requant_egress_ready = state_q == ST_RESULT && result_ready;
@@ -340,8 +347,9 @@ module alexnet_m8n128_tile_payload #(
       group_ce[group] = state_q == ST_CLEAR || state_q == ST_ISSUE ||
                         state_q == ST_FLUSH || state_q == ST_WAIT_SLICE ||
                         state_q == ST_PARAM_REQ || state_q == ST_PARAM_WAIT ||
-                        state_q == ST_CFG || state_q == ST_REQUANT ||
-                        state_q == ST_RESULT || state_q == ST_DISCARD;
+                        state_q == ST_CFG || state_q == ST_CAPTURE ||
+                        state_q == ST_REQUANT || state_q == ST_RESULT ||
+                        state_q == ST_DISCARD;
       group_issue_valid[group] = issue_fire && issue_metadata_ok &&
                                  (group == 0 || mode_split_q);
       group_tile_clear[group] = state_q == ST_CLEAR && accum_first_q &&
@@ -375,23 +383,14 @@ module alexnet_m8n128_tile_payload #(
           sa_result_ready[bank][row][col] = 1'b0;
       end
     end
-    if (state_q == ST_REQUANT || state_q == ST_DISCARD) begin
+    if (state_q == ST_CAPTURE || state_q == ST_DISCARD) begin
       for (int row = 0; row < 4; row++) begin
         if (2*row < selected_m_count) begin
           for (int col = 0; col < 8; col++)
             sa_result_ready[selected_bank][row][selected_half*8+col] =
                 state_q == ST_DISCARD ? 1'b1 :
-                requant_ingress_valid && requant_ingress_ready;
+                selected_slice_valid;
         end
-      end
-    end
-
-    for (int row = 0; row < 4; row++) begin
-      for (int col = 0; col < 8; col++) begin
-        requant_accumulator[2*row][col] =
-            sa_result_lo[selected_bank][row][selected_half*8+col];
-        requant_accumulator[2*row+1][col] =
-            sa_result_hi[selected_bank][row][selected_half*8+col];
       end
     end
 
@@ -567,7 +566,22 @@ module alexnet_m8n128_tile_payload #(
         end
 
         ST_CFG: if (requant_cfg_fire)
+          state_q <= ST_CAPTURE;
+
+        ST_CAPTURE: if (selected_slice_valid) begin
+          requant_m_count_q <= selected_m_count;
+          requant_lane_mask_q <= selected_n_lane_mask;
+          requant_tile_tag_q <= tile_tag_q;
+          for (int row = 0; row < 4; row++) begin
+            for (int col = 0; col < 8; col++) begin
+              requant_accumulator_q[2*row][col] <=
+                  sa_result_lo[selected_bank][row][selected_half*8+col];
+              requant_accumulator_q[2*row+1][col] <=
+                  sa_result_hi[selected_bank][row][selected_half*8+col];
+            end
+          end
           state_q <= ST_REQUANT;
+        end
 
         ST_REQUANT: if (requant_ingress_fire)
           state_q <= ST_RESULT;
@@ -642,10 +656,10 @@ module alexnet_m8n128_tile_payload #(
       .cfg_relu(requant_cfg_relu_q),
       .ingress_valid(requant_ingress_valid),
       .ingress_ready(requant_ingress_ready),
-      .ingress_m_count(selected_m_count),
-      .ingress_accumulator(requant_accumulator),
-      .ingress_lane_mask(selected_n_lane_mask),
-      .ingress_tile_tag(tile_tag_q),
+      .ingress_m_count(requant_m_count_q),
+      .ingress_accumulator(requant_accumulator_q),
+      .ingress_lane_mask(requant_lane_mask_q),
+      .ingress_tile_tag(requant_tile_tag_q),
       .egress_valid(requant_egress_valid),
       .egress_ready(requant_egress_ready),
       .egress_m_count(requant_egress_m_count),
@@ -665,7 +679,7 @@ module alexnet_m8n128_tile_payload #(
     if (!rst) begin
       if (issue_fire && issue_metadata_ok && patch_k != weight_k)
         $fatal(1, "M8N128 payload activation/weight K mismatch");
-      if (state_q == ST_REQUANT && selected_m_count == 0)
+      if (state_q == ST_CAPTURE && selected_m_count == 0)
         $fatal(1, "M8N128 payload selected an empty M result group");
       if (result_valid && result_n_base + 8 < result_n_base)
         $fatal(1, "M8N128 payload result N base overflowed");

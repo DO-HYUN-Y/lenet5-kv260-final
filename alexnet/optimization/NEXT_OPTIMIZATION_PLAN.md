@@ -7,18 +7,21 @@ Date: 2026-09-15
 The descriptor scheduler, N128 weight ping-pong, M16 patch ping-pong,
 physical M8xN128 SA, parallel requantizer, result packer and four-HP KV260
 shell are now integrated in one board top. HP3 owns an independent weight
-MM2S DMA. Vivado generated a 200 MHz bitstream and XSA after scripted
-post-route recovery: WNS/TNS/WHS are `0.000/0.000/+0.010 ns`, failed route
+MM2S DMA. The SA-to-requant boundary now captures 64 INT32 results and slice
+metadata in fabric registers. Vivado generated a clean 200 MHz bitstream and
+XSA without recovery: WNS/TNS/WHS are `+0.151/0.000/+0.010 ns`, failed route
 nets and DRC errors/critical warnings are zero, and the implemented resources
-are 78,630 LUT, 86,172 registers, 9 BRAM tiles, 36 URAM and 576 DSP48E2.
+are 78,971 LUT, 87,800 registers, 9 BRAM tiles, 36 URAM and 576 DSP48E2.
 
 This is a graph-payload integration checkpoint, not yet an autonomous
 Conv1-through-FC8 board inference. Its patch input is the transposed K-major
 M16 tape and weight fill is still serialized before compute. The immediate
-order is therefore: add positive timing margin at the SA-to-requant boundary,
-connect the x-mod-4 raster assembler, make each result layout feed the next
-layer, pass layer/full-image C++ golden comparison, overlap HP3 weight fill,
-then establish the batch-one board throughput/TOPS/W baseline before batch 8.
+order is therefore: connect the x-mod-4 raster assembler, make each result
+layout feed the next layer, pass layer/full-image C++ golden comparison,
+overlap HP3 weight fill, then establish the batch-one board throughput/TOPS/W
+baseline before batch 8.
+The completed capture stage adds exactly one active cycle per emitted N8 slice;
+it does not add a cycle to every K issue.
 
 ## Baseline entering the next milestone
 
@@ -108,8 +111,10 @@ result; it is not yet present in the resource-probe bitstream.
 3. **Completed graph-payload checkpoint:** descriptors now drive the N128
    weight ping-pong, M16 patch ping-pong, dynamic SA, parallel requantizer and
    result stream. Two Conv1 tiles pass integrated XSim and the four-HP board
-   top produces a timing-clean bitstream/XSA. The input remains a prepacked
-   tape, so this is not yet the final feature-map storage loop.
+   top produces a timing-clean bitstream/XSA. The registered SA-to-requant
+   boundary gives the clean top WNS `+0.151 ns`; tile and graph OOC WNS are
+   `+0.099 ns` and `+0.024 ns`. The input remains a prepacked tape, so this is
+   not yet the final feature-map storage loop.
 4. **Next:** connect raster-to-patch assembly and exact next-layer result
    placement. Compare every layer with the C++ golden model, then run a complete image
    comparison with exact INT8/requant parameters.

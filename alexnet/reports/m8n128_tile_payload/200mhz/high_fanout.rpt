@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2025.2 (lin64) Build 6299465 Fri Nov 14 12:34:56 MST 2025
-| Date         : Tue Sep 15 16:14:00 2026
+| Date         : Wed Sep 16 17:07:07 2026
 | Host         : jian-ThinkBook-16-G9-AHP running 64-bit Ubuntu 24.04.4 LTS
 | Command      : report_high_fanout_nets -fanout_greater_than 16 -max_nets 100 -file /home/jian/Documents/Codex/2026-09-09/https-github-com-do-hyun-y/work/lenet5-kv260-final/alexnet/reports/m8n128_tile_payload/200mhz/high_fanout.rpt
 | Design       : alexnet_m8n128_tile_payload
@@ -14,109 +14,109 @@ High Fan-out Nets Information
 1. Summary
 ----------
 
-+--------------------------------------------------------------------------+--------+-------------+
-| Net Name                                                                 | Fanout | Driver Type |
-+--------------------------------------------------------------------------+--------+-------------+
-| rst                                                                      |  45782 | PORT        |
-| state_q[2]                                                               |    468 | FDRE        |
-| state_q[0]                                                               |    462 | FDSE        |
-| state_q[3]                                                               |    461 | FDRE        |
-| state_q[1]                                                               |    459 | FDRE        |
-| u_requant/g_requant_row[0].u_requant/E[0]                                |    418 | LUT6        |
-| u_dynamic_sa/g_bank[4].u_sa/g_pe_row[1].g_pe_col[13].u_pe/CEAD           |    257 | LUT5        |
-| u_dynamic_sa/g_bank[7].u_sa/g_pe_row[2].g_pe_col[4].u_pe/command_valid_0 |    254 | LUT6        |
-| u_dynamic_sa/g_bank[0].u_sa/g_pe_row[0].g_pe_col[10].u_pe/CED            |    250 | LUT5        |
-| u_dynamic_sa/g_bank[5].u_sa/g_pe_row[0].g_pe_col[6].u_pe/CEB1            |    246 | LUT5        |
-| selected_bank[1]_repN_43                                                 |    245 | FDRE        |
-| selected_bank[0]_repN_43                                                 |    245 | FDRE        |
-| u_dynamic_sa/g_bank[7].u_sa/g_pe_row[0].g_pe_col[3].u_pe/CEM             |    231 | LUT5        |
-| u_dynamic_sa/g_bank[4].u_sa/g_pe_row[0].g_pe_col[10].u_pe/CED            |    228 | LUT5        |
-| selected_bank[1]_repN_5                                                  |    224 | FDRE        |
-| selected_bank[0]_repN_4                                                  |    224 | FDRE        |
-| selected_bank[0]_repN_2                                                  |    222 | FDRE        |
-| selected_bank[1]_repN_2                                                  |    220 | FDRE        |
-| selected_bank[0]_repN_34                                                 |    218 | FDRE        |
-| selected_bank[1]_repN_30                                                 |    218 | FDRE        |
-| selected_bank[1]_repN_42                                                 |    217 | FDRE        |
-| selected_bank[0]_repN_41                                                 |    217 | FDRE        |
-| selected_bank[1]_repN_41                                                 |    215 | FDRE        |
-| selected_bank[0]_repN_42                                                 |    215 | FDRE        |
-| selected_bank[0]_repN_20                                                 |    213 | FDRE        |
-| selected_bank[1]_repN_12                                                 |    213 | FDRE        |
-| selected_bank[1]_repN_31                                                 |    210 | FDRE        |
-| selected_bank[0]_repN_30                                                 |    210 | FDRE        |
-| u_dynamic_sa/g_bank[6].u_sa/g_pe_row[0].g_pe_col[11].u_pe/CEP            |    210 | LUT5        |
-| selected_bank[0]_repN_3                                                  |    209 | FDRE        |
-| selected_bank[1]_repN_4                                                  |    209 | FDRE        |
-| mode_split_q_reg_rep_n_0                                                 |    208 | FDRE        |
-| u_dynamic_sa/g_bank[1].u_sa/g_pe_row[0].g_pe_col[10].u_pe/CED            |    205 | LUT5        |
-| selected_bank[0]_repN_9                                                  |    204 | FDRE        |
-| selected_bank[1]_repN_15                                                 |    204 | FDRE        |
-| u_requant/g_requant_row[0].u_requant/rounded_q[0][45]_i_1_n_0            |    200 | LUT4        |
-| selected_bank[0]_repN_23                                                 |    200 | FDRE        |
-| selected_bank[1]_repN_23                                                 |    200 | FDRE        |
-| selected_bank[0]_repN_7                                                  |    196 | FDRE        |
-| selected_bank[1]_repN_8                                                  |    196 | FDRE        |
-| result_slice_q_reg[3]_rep__5_n_0                                         |    194 | FDRE        |
-| u_dynamic_sa/g_bank[3].u_sa/g_pe_row[3].g_pe_col[13].u_pe/CED            |    193 | LUT5        |
-| selected_bank[1]_repN_39                                                 |    189 | FDRE        |
-| selected_bank[0]_repN_38                                                 |    189 | FDRE        |
-| selected_bank[1]_repN_7                                                  |    186 | FDRE        |
-| selected_bank[0]_repN_26                                                 |    186 | FDRE        |
-| u_requant/g_requant_row[2].u_requant/rounded_q[0][45]_i_1__1_n_0         |    184 | LUT4        |
-| u_requant/g_requant_row[6].u_requant/rounded_q[0][45]_i_1__5_n_0         |    184 | LUT4        |
-| u_requant/g_requant_row[5].u_requant/rounded_q[0][45]_i_1__4_n_0         |    184 | LUT4        |
-| u_requant/g_requant_row[3].u_requant/rounded_q[0][45]_i_1__2_n_0         |    184 | LUT4        |
-| u_requant/g_requant_row[7].u_requant/rounded_q[0][45]_i_1__6_n_0         |    184 | LUT4        |
-| u_requant/g_requant_row[1].u_requant/rounded_q[0][45]_i_1__0_n_0         |    184 | LUT4        |
-| u_requant/g_requant_row[4].u_requant/rounded_q[0][45]_i_1__3_n_0         |    184 | LUT4        |
-| selected_bank[1]_repN_17                                                 |    183 | FDRE        |
-| selected_bank[0]_repN_10                                                 |    183 | FDRE        |
-| selected_bank[0]_repN_8                                                  |    180 | FDRE        |
-| selected_bank[1]_repN_9                                                  |    180 | FDRE        |
-| selected_bank[0]_repN_40                                                 |    179 | FDRE        |
-| selected_bank[1]_repN_40                                                 |    179 | FDRE        |
-| selected_bank[0]_repN_39                                                 |    176 | FDRE        |
-| selected_bank[1]_repN_34                                                 |    176 | FDRE        |
-| u_dynamic_sa/g_bank[4].u_sa/g_pe_row[0].g_pe_col[11].u_pe/CEP            |    172 | LUT5        |
-| u_dynamic_sa/g_bank[3].u_sa/g_pe_row[1].g_pe_col[13].u_pe/CEAD           |    170 | LUT5        |
-| selected_bank[0]_repN_1                                                  |    168 | FDRE        |
-| result_slice_q_reg[0]_rep__2_n_0                                         |    167 | FDRE        |
-| selected_bank[0]_repN_5                                                  |    165 | FDRE        |
-| selected_bank[1]_repN_36                                                 |    165 | FDRE        |
-| selected_bank[0]_repN_32                                                 |    165 | FDRE        |
-| selected_bank[0]_repN_36                                                 |    164 | FDRE        |
-| selected_bank[1]_repN_37                                                 |    164 | FDRE        |
-| selected_bank[1]_repN_3                                                  |    163 | FDRE        |
-| selected_bank[1]_repN_13                                                 |    162 | FDRE        |
-| selected_bank[0]_repN_15                                                 |    162 | FDRE        |
-| selected_bank[1]_repN_29                                                 |    161 | FDRE        |
-| selected_bank[0]_repN_25                                                 |    161 | FDRE        |
-| result_slice_q_reg[0]_rep__1_n_0                                         |    160 | FDRE        |
-| u_dynamic_sa/g_bank[1].u_sa/g_pe_row[0].g_pe_col[13].u_pe/CEM            |    160 | LUT5        |
-| u_dynamic_sa/g_bank[3].u_sa/g_pe_row[0].g_pe_col[14].u_pe/CEAD           |    159 | LUT5        |
-| mode_split_q_reg_rep__2_n_0                                              |    158 | FDRE        |
-| selected_bank[1]_repN_25                                                 |    157 | FDRE        |
-| selected_bank[0]_repN_18                                                 |    157 | FDRE        |
-| selected_bank[1]_repN_22                                                 |    156 | FDRE        |
-| selected_bank[0]_repN_27                                                 |    156 | FDRE        |
-| u_dynamic_sa/g_bank[1].u_sa/g_pe_row[2].g_pe_col[0].u_pe/CED             |    155 | LUT5        |
-| result_slice_q_reg[3]_rep__10_n_0                                        |    155 | FDRE        |
-| selected_bank[1]_repN_14                                                 |    155 | FDRE        |
-| selected_bank[0]_repN_14                                                 |    155 | FDRE        |
-| selected_bank[1]_repN_24                                                 |    153 | FDRE        |
-| u_dynamic_sa/g_bank[3].u_sa/g_pe_row[0].g_pe_col[11].u_pe/CEP            |    153 | LUT5        |
-| selected_bank[0]_repN_21                                                 |    153 | FDRE        |
-| selected_bank[1]_repN_10                                                 |    152 | FDRE        |
-| selected_bank[0]_repN_11                                                 |    152 | FDRE        |
-| selected_bank[1]_repN                                                    |    151 | FDRE        |
-| selected_bank[0]_repN_22                                                 |    149 | FDRE        |
-| selected_bank[0]_repN_37                                                 |    149 | FDRE        |
-| selected_bank[1]_repN_33                                                 |    149 | FDRE        |
-| selected_bank[1]_repN_20                                                 |    149 | FDRE        |
-| selected_bank[0]_repN_33                                                 |    146 | FDRE        |
-| selected_bank[1]_repN_35                                                 |    146 | FDRE        |
-| u_dynamic_sa/g_bank[3].u_sa/g_pe_row[1].g_pe_col[8].u_pe/CEB2            |    145 | LUT5        |
-+--------------------------------------------------------------------------+--------+-------------+
++----------------------------------------------------------------------------------------+--------+-------------+
+| Net Name                                                                               | Fanout | Driver Type |
++----------------------------------------------------------------------------------------+--------+-------------+
+| rst                                                                                    |  47645 | PORT        |
+| requant_accumulator_q[0]                                                               |   1728 | LUT5        |
+| state_q_reg_n_0_[3]                                                                    |    510 | FDRE        |
+| state_q_reg_n_0_[2]                                                                    |    509 | FDRE        |
+| state_q_reg_n_0_[1]                                                                    |    508 | FDRE        |
+| state_q_reg_n_0_[0]                                                                    |    484 | FDRE        |
+| u_dynamic_sa/g_bank[3].u_sa/g_pe_row[2].g_pe_col[15].u_pe/state_q_reg[0]_0[0]          |    418 | LUT6        |
+| u_requant/g_requant_row[0].u_requant/command_fire                                      |    262 | LUT6        |
+| selected_bank[1]_repN_3                                                                |    246 | FDRE        |
+| selected_bank[0]_repN_3                                                                |    246 | FDRE        |
+| selected_bank[1]_repN_16                                                               |    240 | FDRE        |
+| selected_bank[0]_repN_9                                                                |    240 | FDRE        |
+| u_dynamic_sa/g_bank[2].u_sa/g_pe_row[0].g_pe_col[0].u_pe/CEB1                          |    237 | LUT5        |
+| selected_bank[1]_repN_22                                                               |    236 | FDRE        |
+| selected_bank[0]_repN_21                                                               |    236 | FDRE        |
+| selected_bank[1]_repN_8                                                                |    230 | FDRE        |
+| selected_bank[1]_repN_20                                                               |    230 | FDRE        |
+| selected_bank[0]_repN_11                                                               |    230 | FDRE        |
+| selected_bank[0]_repN_19                                                               |    230 | FDRE        |
+| selected_bank[0]_repN_10                                                               |    224 | FDRE        |
+| selected_bank[1]_repN_10                                                               |    224 | FDRE        |
+| selected_bank[1]_repN_18                                                               |    222 | FDRE        |
+| selected_bank[0]_repN_17                                                               |    222 | FDRE        |
+| selected_bank[0]_repN_33                                                               |    218 | FDRE        |
+| selected_bank[1]_repN_35                                                               |    218 | FDRE        |
+| selected_bank[1]_repN_30                                                               |    214 | FDRE        |
+| selected_bank[0]_repN_31                                                               |    214 | FDRE        |
+| selected_bank[0]_repN_7                                                                |    208 | FDRE        |
+| selected_bank[1]_repN_7                                                                |    208 | FDRE        |
+| selected_bank[1]_repN_21                                                               |    204 | FDRE        |
+| selected_bank[0]_repN_23                                                               |    204 | FDRE        |
+| result_slice_q_reg[0]_rep__9_n_0                                                       |    202 | FDRE        |
+| u_requant/g_requant_row[0].u_requant/rounded_q[0][45]_i_1_n_0                          |    200 | LUT4        |
+| u_dynamic_sa/g_bank[0].u_sa/g_pe_row[0].g_pe_col[0].u_pe/CEB1                          |    199 | LUT5        |
+| result_slice_q_reg[0]_rep__6_n_0                                                       |    196 | FDRE        |
+| selected_bank[1]_repN_33                                                               |    196 | FDRE        |
+| selected_bank[0]_repN_35                                                               |    196 | FDRE        |
+| selected_bank[1]_repN_26                                                               |    190 | FDRE        |
+| selected_bank[0]_repN_24                                                               |    190 | FDRE        |
+| mode_split_q_reg_rep__2_n_0                                                            |    189 | FDRE        |
+| selected_bank[0]_repN_1                                                                |    189 | FDRE        |
+| selected_bank[0]_repN_29                                                               |    188 | FDRE        |
+| selected_bank[1]_repN_29                                                               |    188 | FDRE        |
+| selected_bank[1]_repN_1                                                                |    187 | FDRE        |
+| u_requant/g_requant_row[4].u_requant/rounded_q[0][45]_i_1__3_n_0                       |    184 | LUT4        |
+| u_requant/g_requant_row[1].u_requant/rounded_q[0][45]_i_1__0_n_0                       |    184 | LUT4        |
+| u_requant/g_requant_row[7].u_requant/rounded_q[0][45]_i_1__6_n_0                       |    184 | LUT4        |
+| u_requant/g_requant_row[3].u_requant/rounded_q[0][45]_i_1__2_n_0                       |    184 | LUT4        |
+| u_requant/g_requant_row[6].u_requant/rounded_q[0][45]_i_1__5_n_0                       |    184 | LUT4        |
+| u_requant/g_requant_row[2].u_requant/rounded_q[0][45]_i_1__1_n_0                       |    184 | LUT4        |
+| u_requant/g_requant_row[5].u_requant/rounded_q[0][45]_i_1__4_n_0                       |    184 | LUT4        |
+| selected_bank[1]_repN_40                                                               |    180 | FDRE        |
+| selected_bank[0]_repN_39                                                               |    180 | FDRE        |
+| result_slice_q_reg[0]_rep__8_n_0                                                       |    179 | FDRE        |
+| selected_bank[0]_repN_26                                                               |    178 | FDRE        |
+| selected_bank[0]_repN_34                                                               |    178 | FDRE        |
+| result_slice_q_reg[0]_rep_n_0                                                          |    178 | FDRE        |
+| selected_bank[1]_repN_24                                                               |    178 | FDRE        |
+| selected_bank[1]_repN_37                                                               |    178 | FDRE        |
+| selected_bank[0]_repN_15                                                               |    177 | FDRE        |
+| selected_bank[1]_repN_19                                                               |    176 | FDRE        |
+| u_dynamic_sa/g_bank[3].u_sa/g_pe_row[2].g_pe_col[15].u_pe/result_slice_q_reg[0]_rep_4  |    176 | LUT6        |
+| selected_bank[0]_repN_20                                                               |    176 | FDRE        |
+| selected_bank[1]_repN_14                                                               |    176 | FDRE        |
+| u_dynamic_sa/g_bank[7].u_sa/patch_valid_0                                              |    171 | LUT6        |
+| result_slice_q_reg[0]_rep__1_n_0                                                       |    170 | FDRE        |
+| selected_bank[0]_repN                                                                  |    170 | FDRE        |
+| u_dynamic_sa/g_bank[1].u_sa/g_pe_row[0].g_pe_col[4].u_pe/CEB2                          |    168 | LUT5        |
+| selected_bank[1]_repN_17                                                               |    167 | FDRE        |
+| selected_bank[0]_repN_18                                                               |    167 | FDRE        |
+| u_dynamic_sa/g_bank[7].u_sa/g_pe_row[0].g_pe_col[11].u_pe/CEP                          |    165 | LUT5        |
+| u_dynamic_sa/g_bank[5].u_sa/g_pe_row[0].g_pe_col[11].u_pe/CEP                          |    162 | LUT5        |
+| u_dynamic_sa/g_bank[5].u_sa/g_pe_row[0].g_pe_col[10].u_pe/CED                          |    161 | LUT5        |
+| selected_bank[0]_repN_22                                                               |    160 | FDRE        |
+| selected_bank[1]_repN_23                                                               |    160 | FDRE        |
+| result_slice_q_reg[0]_rep__2_n_0                                                       |    159 | FDRE        |
+| result_slice_q_reg[0]_rep__5_n_0                                                       |    158 | FDRE        |
+| u_dynamic_sa/g_bank[6].u_sa/g_pe_row[0].g_pe_col[14].u_pe/CEAD                         |    158 | LUT5        |
+| result_slice_q_reg[0]_rep__14_n_0                                                      |    157 | FDRE        |
+| u_dynamic_sa/g_bank[3].u_sa/g_pe_row[2].g_pe_col[15].u_pe/result_slice_q_reg[0]_rep_2  |    155 | LUT6        |
+| u_dynamic_sa/g_bank[1].u_sa/g_pe_row[0].g_pe_col[11].u_pe/CEP                          |    154 | LUT5        |
+| selected_bank[0]_repN_13                                                               |    154 | FDRE        |
+| u_dynamic_sa/g_bank[3].u_sa/g_pe_row[2].g_pe_col[15].u_pe/result_slice_q_reg[0]_rep_5  |    154 | LUT6        |
+| selected_bank[1]_repN_9                                                                |    154 | FDRE        |
+| selected_bank[1]_repN_27                                                               |    152 | FDRE        |
+| selected_bank[0]_repN_28                                                               |    152 | FDRE        |
+| u_dynamic_sa/g_bank[4].u_sa/g_pe_row[0].g_pe_col[5].u_pe/CEM                           |    151 | LUT5        |
+| u_dynamic_sa/g_bank[3].u_sa/g_pe_row[2].g_pe_col[15].u_pe/result_slice_q_reg[0]_rep_3  |    151 | LUT6        |
+| u_dynamic_sa/g_bank[3].u_sa/g_pe_row[0].g_pe_col[8].u_pe/CEA2                          |    151 | LUT5        |
+| selected_bank[0]_repN_8                                                                |    150 | FDRE        |
+| selected_bank[1]_repN_11                                                               |    150 | FDRE        |
+| result_slice_q_reg[3]_rep__7_n_0                                                       |    149 | FDRE        |
+| u_dynamic_sa/g_bank[3].u_sa/g_pe_row[0].g_pe_col[0].u_pe/CEB1                          |    148 | LUT5        |
+| selected_bank[0]_repN_6                                                                |    148 | FDRE        |
+| selected_bank[1]_repN_6                                                                |    148 | FDRE        |
+| u_dynamic_sa/g_bank[2].u_sa/g_pe_row[0].g_pe_col[11].u_pe/CEP                          |    148 | LUT5        |
+| result_slice_q_reg[0]_rep__11_n_0                                                      |    148 | FDRE        |
+| selected_bank[1]_repN_36                                                               |    146 | FDRE        |
+| u_dynamic_sa/g_bank[3].u_sa/g_pe_row[2].g_pe_col[15].u_pe/result_slice_q_reg[0]_rep_11 |    146 | LUT6        |
+| mode_split_q_reg_rep__0_n_0                                                            |    146 | FDRE        |
++----------------------------------------------------------------------------------------+--------+-------------+
 
 
