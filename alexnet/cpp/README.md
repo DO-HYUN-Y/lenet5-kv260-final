@@ -118,3 +118,19 @@ split into 4,096 + 4,096 + 1,024 K chunks, so this also checks continuation
 state across the hardware command limit. This is an exact trained tile gate
 for every layer; the integrated graph top still requires an all-tile,
 full-image comparison before it is called end-to-end numerically proven.
+
+The generator also emits the raster, first physical weight request, first
+parameter records and first Conv1 result slice needed by the integrated-top
+smoke under `<output-dir>/top_conv1_smoke`. Run it with:
+
+```sh
+vivado -mode batch \
+  -source alexnet/scripts/run_alexnet_m8n126_graph_top_trained_conv1_smoke.tcl \
+  -notrace
+```
+
+This test programs the actual DMA control ports, starts the complete Conv1
+raster MM2S, computes the first trained tile and compares its 64-byte scatter
+S2MM exactly. It also requires that the result write complete before the long
+raster read, exercising concurrent main-DMA MM2S/S2MM operation. It remains a
+first-tile checkpoint rather than a full-image claim.

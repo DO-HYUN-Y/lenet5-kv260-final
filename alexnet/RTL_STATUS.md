@@ -1,4 +1,42 @@
-# AlexNet RTL status — 2026-09-17
+# AlexNet RTL status — 2026-09-18
+
+## 2026-09-18 integrated-top trained Conv1 and DMA-overlap checkpoint
+
+The first trained Conv1 tile now passes through the real graph accelerator top,
+including AXI-Lite DMA programming, the long Conv1 raster MM2S, physical-format
+weight and parameter reads, M8xN128 compute/requantization, result packing and
+the first scatter S2MM. The 64 result bytes match the frozen C++ full-graph
+golden exactly after 363 K issues.
+
+This test exposed a real control deadlock: one serialized main-DMA controller
+held the channel for the complete 401,408-byte raster while the compute path
+waited for a 128-byte parameter read and a result S2MM. The top now uses
+independent MM2S/S2MM channel controllers with response-locked AXI-Lite
+arbitration. Parameters share the otherwise idle HP3 weight MM2S, while the
+weight byte offset advances only for weight fills. In the passing regression,
+the first result S2MM completes while the long raster MM2S is still active,
+which proves the required overlap and removes the circular wait.
+
+The rebuilt four-HP KV260 `system_wrapper` is timing-clean at 200 MHz:
+
+- WNS/WHS are `+0.039/+0.010 ns`, TNS/THS are zero;
+- failed, unrouted and partially routed nets are zero;
+- DRC errors and critical warnings are zero;
+- 90,438 CLB LUTs (77.22%), 91,363 registers (39.00%), 96 BRAM tiles
+  (66.67%), 40 URAM (62.50%) and 576 DSP48E2 (46.15%);
+- the SA still owns exactly 512 DSP48E2 and the parallel requant path owns 64;
+- bitstream SHA-256 is
+  `ca5dd810af2d0a2e864c71d35a0ff9b4a7ae85d7e7f0cf4965ce7d686003b27f`;
+- XSA SHA-256 is
+  `27e1db6e316653293d35f47ddbe0d11eca629382e0d0ec4b4d6216e96db2009c`.
+
+Vivado's vectorless report estimates 3.556 W total on-chip power, but also
+warns that reset switching activity is unrealistic. It is therefore retained
+only as a planning estimate and is not used as a measured TOPS/W result.
+
+The remaining numerical gate is still the all-tile, all-layer integrated-top
+comparison. The current smoke proves one real Conv1 tile and the formerly
+deadlocking DMA overlap, not a complete image or board inference.
 
 ## 2026-09-17 M8xN126 format-v2 graph-payload bitstream checkpoint
 
@@ -31,11 +69,10 @@ board-verified full AlexNet inference.
   registers, 81.5 BRAM tiles, 40 URAM and 576 DSP48E2, and generated both
   bitstream and XSA without the separate recovery flow.
 - Conv1's DDR-read contract is now 401,408 bytes instead of the 1,103,520-byte
-  pretransposed patch tape, a 702,112-byte (63.6%) reduction. The remaining
-  functional boundary is a Conv2-5 patch assembler that reads the new
-  N8-tile-major A/B tensors and the Pool5-to-FC6 flatten read. Weight fill is
-  also not yet overlapped with compute. Layer-by-layer and end-to-end golden
-  comparison are required before calling this a functional full-graph bitstream.
+  pretransposed patch tape, a 702,112-byte (63.6%) reduction. Conv2-5 patch
+  assembly and the Pool5-to-FC6 flatten read are integrated. Weight fill is
+  still not overlapped with compute. All-tile, all-layer golden comparison is
+  required before calling this a functional full-graph bitstream.
 - The format-v2 official-checkpoint export and independent full-byte verifier
   pass with 61,123,264 physical weight bytes: 61,090,496 logical bytes plus
   32,768 zero-padding bytes for the FC8 N8 tail. The rebuilt bitstream now

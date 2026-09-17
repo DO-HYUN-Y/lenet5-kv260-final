@@ -119,8 +119,9 @@ module alexnet_m8n126_graph_accelerator_top #(
   logic rst;
   main_state_t main_state_q;
   logic service_fault_q;
-  logic main_dma_done_seen_q, weight_dma_done_seen_q;
+  logic main_s2mm_done_seen_q, weight_dma_done_seen_q;
   logic weight_service_active_q, weight_stream_done_q;
+  logic parameter_service_active_q, raster_stream_active_q;
   logic [31:0] weight_byte_offset_q;
   logic [4:0] result_slice_index_q;
   logic [12:0] patch_m_base_q;
@@ -224,18 +225,27 @@ module alexnet_m8n126_graph_accelerator_top #(
   logic [31:0] pool_dma_cmd_address;
   logic [25:0] pool_dma_cmd_length;
   logic pool_mm2s_ready;
+  logic pool_dma_active_s2mm_q, pool_command_fire;
   logic [127:0] pool_s2mm_data;
   logic [15:0] pool_s2mm_keep;
   logic pool_s2mm_valid, pool_s2mm_ready, pool_s2mm_last;
   logic [5:0] pool_completed_tiles;
   logic [31:0] pool_raw_words, pool_stored_words;
 
-  logic main_dma_cmd_valid, main_dma_cmd_ready, main_dma_cmd_s2mm;
-  logic [31:0] main_dma_cmd_address;
-  logic [25:0] main_dma_cmd_length;
-  logic main_dma_armed, main_dma_busy, main_dma_done, main_dma_error;
-  logic [3:0] main_dma_error_code, unused_main_dma_state;
-  logic [31:0] unused_main_dma_status, unused_main_dma_cycles;
+  logic main_mm2s_cmd_valid, main_mm2s_cmd_ready;
+  logic [31:0] main_mm2s_cmd_address;
+  logic [25:0] main_mm2s_cmd_length;
+  logic main_s2mm_cmd_valid, main_s2mm_cmd_ready;
+  logic [31:0] main_s2mm_cmd_address;
+  logic [25:0] main_s2mm_cmd_length;
+  logic main_mm2s_armed, main_mm2s_busy, main_mm2s_done;
+  logic main_mm2s_error;
+  logic main_s2mm_armed, main_s2mm_busy, main_s2mm_done;
+  logic main_s2mm_error;
+  logic [3:0] main_mm2s_error_code, main_s2mm_error_code;
+  logic [3:0] unused_main_mm2s_state, unused_main_s2mm_state;
+  logic main_dma_busy, main_dma_error;
+  logic [3:0] main_dma_error_code;
 
   logic weight_dma_cmd_valid, weight_dma_cmd_ready;
   logic [31:0] weight_dma_cmd_address;
@@ -273,7 +283,9 @@ module alexnet_m8n126_graph_accelerator_top #(
   logic [31:0] mapped_result_address;
   logic [25:0] mapped_result_bytes;
   logic result_mapping_error;
-  logic main_command_fire, weight_command_fire;
+  logic main_mm2s_command_fire, main_s2mm_command_fire;
+  logic weight_command_fire, parameter_command_fire;
+  logic weight_fill_command_selected, parameter_command_selected;
   logic raster_stream_fire, raster_patch_fire;
   logic parameter_stream_fire, weight_stream_fire;
   logic core_start_fire;
@@ -340,9 +352,9 @@ module alexnet_m8n126_graph_accelerator_top #(
   assign s_axis_camera_tready = 1'b1;
   assign activation_request_valid = engine_patch_request_valid &&
       engine_patch_request_layer_id != 1 && main_state_q == MAIN_IDLE &&
-      !pool_busy && !main_dma_busy && !accelerator_fault;
+      !pool_busy && !main_mm2s_busy && !accelerator_fault;
   assign activation_dma_cmd_ready = activation_dma_selected &&
-                                    main_dma_cmd_ready;
+                                    main_mm2s_cmd_ready;
 
   assign weight_request_bytes = weight_bytes(
       engine_weight_request_k_count, engine_weight_request_bank_enable);
@@ -367,7 +379,8 @@ module alexnet_m8n126_graph_accelerator_top #(
   assign pool_layer_valid = engine_layer_complete_valid &&
                             engine_layer_complete_requires_pool &&
                             main_state_q == MAIN_IDLE &&
-                            !result_packer_active_q && !main_dma_busy;
+                            !result_packer_active_q &&
+                            !main_mm2s_busy && !main_s2mm_busy;
   assign engine_layer_complete_ready = engine_layer_complete_valid &&
       (engine_layer_complete_requires_pool ? pool_layer_done : 1'b1);
   assign predicted_result_m_base = patch_m_base_q +
@@ -387,24 +400,29 @@ module alexnet_m8n126_graph_accelerator_top #(
   );
 
   always_comb begin
-    main_dma_cmd_valid = 1'b0;
-    main_dma_cmd_s2mm = 1'b0;
-    main_dma_cmd_address = 0;
-    main_dma_cmd_length = 0;
+    main_mm2s_cmd_valid = 1'b0;
+    main_mm2s_cmd_address = 0;
+    main_mm2s_cmd_length = 0;
+    main_s2mm_cmd_valid = 1'b0;
+    main_s2mm_cmd_address = 0;
+    main_s2mm_cmd_length = 0;
     engine_patch_request_ready = 1'b0;
-    engine_parameter_request_ready = 1'b0;
-    loader_start_valid = 1'b0;
     activation_dma_selected = 1'b0;
 
     if (pool_dma_cmd_valid && !accelerator_fault) begin
-      main_dma_cmd_valid = 1'b1;
-      main_dma_cmd_s2mm = pool_dma_cmd_s2mm;
-      main_dma_cmd_address = pool_dma_cmd_address;
-      main_dma_cmd_length = pool_dma_cmd_length;
+      if (pool_dma_cmd_s2mm) begin
+        main_s2mm_cmd_valid = 1'b1;
+        main_s2mm_cmd_address = pool_dma_cmd_address;
+        main_s2mm_cmd_length = pool_dma_cmd_length;
+      end else begin
+        main_mm2s_cmd_valid = 1'b1;
+        main_mm2s_cmd_address = pool_dma_cmd_address;
+        main_mm2s_cmd_length = pool_dma_cmd_length;
+      end
     end else if (main_state_q == MAIN_RASTER_COMMAND && !accelerator_fault) begin
-      main_dma_cmd_valid = 1'b1;
-      main_dma_cmd_address = active_input_base[31:0];
-      main_dma_cmd_length = 26'd401408;
+      main_mm2s_cmd_valid = 1'b1;
+      main_mm2s_cmd_address = active_input_base[31:0];
+      main_mm2s_cmd_length = 26'd401408;
     end else if (engine_patch_request_valid &&
                  engine_patch_request_layer_id == 1 &&
                  !accelerator_fault) begin
@@ -412,61 +430,67 @@ module alexnet_m8n126_graph_accelerator_top #(
     end else if (main_state_q == MAIN_IDLE && !accelerator_fault) begin
       if (activation_dma_cmd_valid) begin
         activation_dma_selected = 1'b1;
-        main_dma_cmd_valid = 1'b1;
-        main_dma_cmd_address = activation_dma_cmd_address;
-        main_dma_cmd_length = activation_dma_cmd_length;
+        main_mm2s_cmd_valid = 1'b1;
+        main_mm2s_cmd_address = activation_dma_cmd_address;
+        main_mm2s_cmd_length = activation_dma_cmd_length;
       end else if (engine_patch_request_valid &&
                    engine_patch_request_layer_id != 1) begin
         engine_patch_request_ready = activation_request_ready;
-      end else if (engine_parameter_request_valid && loader_start_ready) begin
-        main_dma_cmd_valid = 1'b1;
-        main_dma_cmd_address = parameter_address;
-        main_dma_cmd_length = 26'd128;
-        engine_parameter_request_ready = main_dma_cmd_ready;
-        loader_start_valid = main_dma_cmd_ready;
       end
     end else if (main_state_q == MAIN_RESULT_COMMAND &&
                  !accelerator_fault) begin
-      main_dma_cmd_valid = 1'b1;
-      main_dma_cmd_s2mm = 1'b1;
-      main_dma_cmd_address = pending_result_address_q;
-      main_dma_cmd_length = pending_result_bytes_q;
+      main_s2mm_cmd_valid = 1'b1;
+      main_s2mm_cmd_address = pending_result_address_q;
+      main_s2mm_cmd_length = pending_result_bytes_q;
     end
   end
 
-  assign main_command_fire = main_dma_cmd_valid && main_dma_cmd_ready;
+  assign main_mm2s_command_fire = main_mm2s_cmd_valid &&
+                                   main_mm2s_cmd_ready;
+  assign main_s2mm_command_fire = main_s2mm_cmd_valid &&
+                                   main_s2mm_cmd_ready;
   assign pool_dma_cmd_ready = pool_dma_cmd_valid && !accelerator_fault &&
-                              main_dma_cmd_ready;
-  assign weight_dma_cmd_valid = engine_weight_request_valid &&
-                                !weight_service_active_q &&
-                                !accelerator_fault;
-  assign weight_dma_cmd_address = active_weights_base[31:0] +
-                                  weight_byte_offset_q;
-  assign weight_dma_cmd_length = weight_request_bytes;
-  assign engine_weight_request_ready = weight_dma_cmd_ready &&
-                                       !weight_service_active_q &&
-                                       !accelerator_fault;
+      (pool_dma_cmd_s2mm ? main_s2mm_cmd_ready : main_mm2s_cmd_ready);
+  assign pool_command_fire = pool_dma_cmd_valid && pool_dma_cmd_ready;
+  assign weight_fill_command_selected = engine_weight_request_valid &&
+      !weight_service_active_q && !parameter_service_active_q &&
+      !accelerator_fault;
+  assign parameter_command_selected = !weight_fill_command_selected &&
+      engine_parameter_request_valid && loader_start_ready &&
+      main_state_q == MAIN_IDLE && !weight_service_active_q &&
+      !parameter_service_active_q && !accelerator_fault;
+  assign weight_dma_cmd_valid = weight_fill_command_selected ||
+                                parameter_command_selected;
+  assign weight_dma_cmd_address = parameter_command_selected ?
+      parameter_address : active_weights_base[31:0] + weight_byte_offset_q;
+  assign weight_dma_cmd_length = parameter_command_selected ?
+                                 26'd128 : weight_request_bytes;
+  assign engine_weight_request_ready = weight_fill_command_selected &&
+                                       weight_dma_cmd_ready;
+  assign engine_parameter_request_ready = parameter_command_selected &&
+                                          weight_dma_cmd_ready;
+  assign loader_start_valid = engine_parameter_request_ready;
   assign weight_command_fire = weight_dma_cmd_valid && weight_dma_cmd_ready;
+  assign parameter_command_fire = parameter_command_selected &&
+                                  weight_dma_cmd_ready;
 
-  assign s_axis_weight_tready = weight_service_active_q &&
-                                engine_weight_axis_ready;
-  assign weight_stream_fire = s_axis_weight_tvalid &&
-                              s_axis_weight_tready;
-  assign raster_stream_fire =
-      (main_state_q == MAIN_RASTER_ARM ||
-       main_state_q == MAIN_RASTER_STREAM) &&
+  assign s_axis_weight_tready = weight_service_active_q ?
+                                engine_weight_axis_ready :
+                                parameter_service_active_q ?
+                                loader_axis_ready : 1'b0;
+  assign weight_stream_fire = weight_service_active_q &&
+      s_axis_weight_tvalid && s_axis_weight_tready;
+  assign raster_stream_fire = raster_stream_active_q &&
       s_axis_mm2s_tvalid && raster_axis_ready;
   assign raster_patch_fire = raster_patch_axis_valid &&
                              raster_patch_axis_ready;
-  assign parameter_stream_fire = main_state_q == MAIN_PARAMETER_STREAM &&
-      s_axis_mm2s_tvalid && loader_axis_ready;
+  assign parameter_stream_fire = parameter_service_active_q &&
+      main_state_q == MAIN_PARAMETER_STREAM &&
+      s_axis_weight_tvalid && loader_axis_ready;
   assign s_axis_mm2s_tready =
       pool_busy ? pool_mm2s_ready :
       activation_cache_load_active ? activation_mm2s_ready :
-      (main_state_q == MAIN_RASTER_ARM ||
-       main_state_q == MAIN_RASTER_STREAM) ? raster_axis_ready :
-      main_state_q == MAIN_PARAMETER_STREAM ?
-      loader_axis_ready : 1'b0;
+      raster_stream_active_q ? raster_axis_ready : 1'b0;
 
   assign engine_parameter_valid = loader_parameter_valid &&
                                   main_state_q == MAIN_RESULT_WAIT;
@@ -513,6 +537,10 @@ module alexnet_m8n126_graph_accelerator_top #(
                               engine_result_values[row][63:32];
   end
 
+  assign main_dma_busy = main_mm2s_busy || main_s2mm_busy;
+  assign main_dma_error = main_mm2s_error || main_s2mm_error;
+  assign main_dma_error_code = main_mm2s_error ? main_mm2s_error_code :
+                               main_s2mm_error_code;
   assign accelerator_fault = service_fault_q || engine_fault ||
       engine_failed || main_dma_error || weight_dma_error || loader_fault ||
       raster_fault || pool_layer_error || activation_fault;
@@ -524,10 +552,13 @@ module alexnet_m8n126_graph_accelerator_top #(
     if (rst) begin
       main_state_q <= MAIN_IDLE;
       service_fault_q <= 1'b0;
-      main_dma_done_seen_q <= 1'b0;
+      main_s2mm_done_seen_q <= 1'b0;
       weight_dma_done_seen_q <= 1'b0;
       weight_service_active_q <= 1'b0;
       weight_stream_done_q <= 1'b0;
+      parameter_service_active_q <= 1'b0;
+      raster_stream_active_q <= 1'b0;
+      pool_dma_active_s2mm_q <= 1'b0;
       weight_byte_offset_q <= 0;
       result_slice_index_q <= 0;
       patch_m_base_q <= 0;
@@ -554,6 +585,7 @@ module alexnet_m8n126_graph_accelerator_top #(
         weight_byte_offset_q <= 0;
         result_slice_index_q <= 0;
         result_signature_q <= 0;
+        raster_stream_active_q <= 1'b0;
       end
 
       if (engine_start_fire)
@@ -582,18 +614,24 @@ module alexnet_m8n126_graph_accelerator_top #(
         result_slice_index_q <= 0;
       end
 
-      if (main_dma_done)
-        main_dma_done_seen_q <= 1'b1;
+      if (main_s2mm_done)
+        main_s2mm_done_seen_q <= 1'b1;
       if (weight_dma_done)
         weight_dma_done_seen_q <= 1'b1;
 
-      if (weight_command_fire) begin
+      if (weight_command_fire && weight_fill_command_selected) begin
         weight_service_active_q <= 1'b1;
         weight_stream_done_q <= 1'b0;
         weight_dma_done_seen_q <= 1'b0;
         weight_byte_offset_q <= weight_byte_offset_q +
                                 weight_request_bytes;
       end
+      if (parameter_command_fire) begin
+        parameter_service_active_q <= 1'b1;
+        weight_dma_done_seen_q <= 1'b0;
+      end
+      if (pool_command_fire)
+        pool_dma_active_s2mm_q <= pool_dma_cmd_s2mm;
       if (weight_stream_fire) begin
         if (s_axis_weight_tkeep != 16'hffff)
           service_fault_q <= 1'b1;
@@ -618,7 +656,6 @@ module alexnet_m8n126_graph_accelerator_top #(
 
       case (main_state_q)
         MAIN_IDLE: begin
-          main_dma_done_seen_q <= 1'b0;
           if (core_start_fire) begin
             main_state_q <= MAIN_RASTER_COMMAND;
           end else if (engine_parameter_request_valid &&
@@ -634,49 +671,41 @@ module alexnet_m8n126_graph_accelerator_top #(
           end
         end
 
-        MAIN_RASTER_COMMAND: if (main_command_fire) begin
-          main_dma_done_seen_q <= 1'b0;
+        MAIN_RASTER_COMMAND: if (main_mm2s_command_fire) begin
+          raster_stream_active_q <= 1'b1;
           main_state_q <= MAIN_RASTER_ARM;
         end
 
         MAIN_RASTER_ARM: begin
           if (engine_start_fire)
-            main_state_q <= MAIN_RASTER_STREAM;
-          if (raster_stream_fire && s_axis_mm2s_tlast)
-            main_state_q <= MAIN_RASTER_DRAIN;
+            main_state_q <= MAIN_IDLE;
         end
 
-        MAIN_RASTER_STREAM:
-          if (raster_stream_fire && s_axis_mm2s_tlast)
-            main_state_q <= MAIN_RASTER_DRAIN;
-
-        MAIN_RASTER_DRAIN:
-          if (main_dma_done_seen_q || main_dma_done) begin
-            main_dma_done_seen_q <= 1'b0;
-            main_state_q <= MAIN_IDLE;
-          end
+        MAIN_RASTER_STREAM, MAIN_RASTER_DRAIN:
+          main_state_q <= MAIN_IDLE;
 
         MAIN_PARAMETER_STREAM: if (parameter_stream_fire) begin
-          if (s_axis_mm2s_tkeep != 16'hffff)
+          if (s_axis_weight_tkeep != 16'hffff)
             service_fault_q <= 1'b1;
-          if (s_axis_mm2s_tlast) begin
+          if (s_axis_weight_tlast) begin
             main_state_q <= MAIN_PARAMETER_DRAIN;
           end
         end
 
         MAIN_PARAMETER_DRAIN:
-          if ((main_dma_done_seen_q || main_dma_done) &&
+          if ((weight_dma_done_seen_q || weight_dma_done) &&
               loader_parameter_valid) begin
-            main_dma_done_seen_q <= 1'b0;
+            weight_dma_done_seen_q <= 1'b0;
+            parameter_service_active_q <= 1'b0;
             main_state_q <= MAIN_RESULT_COMMAND;
           end
 
-        MAIN_RESULT_COMMAND: if (main_command_fire) begin
-          main_dma_done_seen_q <= 1'b0;
+        MAIN_RESULT_COMMAND: if (main_s2mm_command_fire) begin
+          main_s2mm_done_seen_q <= 1'b0;
           main_state_q <= MAIN_RESULT_ARM;
         end
 
-        MAIN_RESULT_ARM: if (main_dma_armed)
+        MAIN_RESULT_ARM: if (main_s2mm_armed)
           main_state_q <= MAIN_RESULT_WAIT;
 
         MAIN_RESULT_WAIT: if (engine_result_valid && engine_result_ready) begin
@@ -697,8 +726,8 @@ module alexnet_m8n126_graph_accelerator_top #(
 
         MAIN_RESULT_DRAIN:
           if (!result_packer_active_q &&
-              (main_dma_done_seen_q || main_dma_done)) begin
-            main_dma_done_seen_q <= 1'b0;
+              (main_s2mm_done_seen_q || main_s2mm_done)) begin
+            main_s2mm_done_seen_q <= 1'b0;
             result_slice_index_q <= result_slice_index_q + 1'b1;
             main_state_q <= MAIN_IDLE;
           end
@@ -716,6 +745,9 @@ module alexnet_m8n126_graph_accelerator_top #(
         service_fault_q <= 1'b1;
         main_state_q <= MAIN_FAILED;
       end
+
+      if (raster_stream_fire && s_axis_mm2s_tlast)
+        raster_stream_active_q <= 1'b0;
     end
   end
 
@@ -731,9 +763,7 @@ module alexnet_m8n126_graph_accelerator_top #(
       .frame_k_count(13'd363), .frame_tag(core_start_tag),
       .s_axis_tdata(s_axis_mm2s_tdata),
       .s_axis_tkeep(s_axis_mm2s_tkeep),
-      .s_axis_tvalid(s_axis_mm2s_tvalid &&
-          (main_state_q == MAIN_RASTER_ARM ||
-           main_state_q == MAIN_RASTER_STREAM)),
+      .s_axis_tvalid(s_axis_mm2s_tvalid && raster_stream_active_q),
       .s_axis_tready(raster_axis_ready), .s_axis_tlast(s_axis_mm2s_tlast),
       .request_valid(engine_patch_request_valid &&
           engine_patch_request_layer_id == 1),
@@ -769,8 +799,8 @@ module alexnet_m8n126_graph_accelerator_top #(
       .dma_command_ready(activation_dma_cmd_ready),
       .dma_command_address(activation_dma_cmd_address),
       .dma_command_length(activation_dma_cmd_length),
-      .dma_armed(main_dma_armed), .dma_done(main_dma_done),
-      .dma_error(main_dma_error),
+      .dma_armed(main_mm2s_armed), .dma_done(main_mm2s_done),
+      .dma_error(main_mm2s_error),
       .s_axis_tdata(s_axis_mm2s_tdata),
       .s_axis_tkeep(s_axis_mm2s_tkeep),
       .s_axis_tvalid(s_axis_mm2s_tvalid && activation_cache_load_active),
@@ -869,11 +899,11 @@ module alexnet_m8n126_graph_accelerator_top #(
       .start_layer_id(engine_parameter_request_layer_id),
       .start_job_tag(engine_parameter_request_context_tag),
       .start_n_base(engine_parameter_request_n_base),
-      .s_axis_tdata(s_axis_mm2s_tdata),
-      .s_axis_tkeep(s_axis_mm2s_tkeep),
-      .s_axis_tvalid(s_axis_mm2s_tvalid &&
-          main_state_q == MAIN_PARAMETER_STREAM),
-      .s_axis_tready(loader_axis_ready), .s_axis_tlast(s_axis_mm2s_tlast),
+      .s_axis_tdata(s_axis_weight_tdata),
+      .s_axis_tkeep(s_axis_weight_tkeep),
+      .s_axis_tvalid(s_axis_weight_tvalid &&
+          parameter_service_active_q),
+      .s_axis_tready(loader_axis_ready), .s_axis_tlast(s_axis_weight_tlast),
       .parameter_valid(loader_parameter_valid),
       .parameter_ready(loader_parameter_ready),
       .parameter_is_fc(loader_parameter_is_fc),
@@ -901,8 +931,11 @@ module alexnet_m8n126_graph_accelerator_top #(
       .dma_command_s2mm(pool_dma_cmd_s2mm),
       .dma_command_address(pool_dma_cmd_address),
       .dma_command_length(pool_dma_cmd_length),
-      .dma_armed(main_dma_armed), .dma_done(main_dma_done),
-      .dma_error(main_dma_error),
+      .dma_armed(pool_dma_active_s2mm_q ? main_s2mm_armed :
+                                                 main_mm2s_armed),
+      .dma_done(pool_dma_active_s2mm_q ? main_s2mm_done : main_mm2s_done),
+      .dma_error(pool_dma_active_s2mm_q ? main_s2mm_error :
+                                                 main_mm2s_error),
       .s_axis_tdata(s_axis_mm2s_tdata),
       .s_axis_tkeep(s_axis_mm2s_tkeep),
       .s_axis_tvalid(s_axis_mm2s_tvalid && pool_busy),
@@ -916,20 +949,29 @@ module alexnet_m8n126_graph_accelerator_top #(
       .pooled_words_written(pool_stored_words)
   );
 
-  axi_dma_simple_master #(
-      .DMA_BASE_ADDR(32'ha001_0000), .DMA_ALIGNMENT_BYTES(8)
+  alexnet_axi_dma_dual_channel_master #(
+      .DMA_BASE_ADDR(32'ha001_0000),
+      .MM2S_ALIGNMENT_BYTES(8), .S2MM_ALIGNMENT_BYTES(8)
   ) u_main_dma_control (
-      .clk(aclk), .rst_n(aresetn), .clear_error(1'b0),
-      .cmd_valid(main_dma_cmd_valid), .cmd_ready(main_dma_cmd_ready),
-      .cmd_s2mm(main_dma_cmd_s2mm),
-      .cmd_buffer_addr(main_dma_cmd_address),
-      .cmd_length_bytes(main_dma_cmd_length),
-      .cmd_timeout_cycles(active_dma_timeout_cycles),
-      .armed(main_dma_armed), .busy(main_dma_busy), .done(main_dma_done),
-      .error(main_dma_error), .error_code(main_dma_error_code),
-      .last_status(unused_main_dma_status),
-      .active_cycles(unused_main_dma_cycles),
-      .state_debug(unused_main_dma_state),
+      .clk(aclk), .rst_n(aresetn),
+      .mm2s_cmd_valid(main_mm2s_cmd_valid),
+      .mm2s_cmd_ready(main_mm2s_cmd_ready),
+      .mm2s_cmd_address(main_mm2s_cmd_address),
+      .mm2s_cmd_length(main_mm2s_cmd_length),
+      .mm2s_timeout_cycles(active_dma_timeout_cycles),
+      .mm2s_armed(main_mm2s_armed), .mm2s_busy(main_mm2s_busy),
+      .mm2s_done(main_mm2s_done), .mm2s_error(main_mm2s_error),
+      .mm2s_error_code(main_mm2s_error_code),
+      .mm2s_state(unused_main_mm2s_state),
+      .s2mm_cmd_valid(main_s2mm_cmd_valid),
+      .s2mm_cmd_ready(main_s2mm_cmd_ready),
+      .s2mm_cmd_address(main_s2mm_cmd_address),
+      .s2mm_cmd_length(main_s2mm_cmd_length),
+      .s2mm_timeout_cycles(active_dma_timeout_cycles),
+      .s2mm_armed(main_s2mm_armed), .s2mm_busy(main_s2mm_busy),
+      .s2mm_done(main_s2mm_done), .s2mm_error(main_s2mm_error),
+      .s2mm_error_code(main_s2mm_error_code),
+      .s2mm_state(unused_main_s2mm_state),
       .m_axi_awaddr(m_axi_dma_awaddr), .m_axi_awprot(m_axi_dma_awprot),
       .m_axi_awvalid(m_axi_dma_awvalid), .m_axi_awready(m_axi_dma_awready),
       .m_axi_wdata(m_axi_dma_wdata), .m_axi_wstrb(m_axi_dma_wstrb),
@@ -1047,7 +1089,8 @@ module alexnet_m8n126_graph_accelerator_top #(
     if (!rst) begin
       if (weight_command_fire && weight_request_bytes == 0)
         $fatal(1, "weight DMA accepted a zero-length graph request");
-      if (main_command_fire && main_dma_cmd_length == 0)
+      if ((main_mm2s_command_fire && main_mm2s_cmd_length == 0) ||
+          (main_s2mm_command_fire && main_s2mm_cmd_length == 0))
         $fatal(1, "main DMA accepted a zero-length graph request");
       if (engine_result_valid && engine_result_ready &&
           (engine_result_m_count != pending_result_m_count_q ||

@@ -1,6 +1,23 @@
 # AlexNet M8xN126 next optimization plan
 
-Date: 2026-09-17
+Date: 2026-09-18
+
+## 2026-09-18 integrated-top DMA checkpoint
+
+A trained first-Conv1-tile smoke now drives the real board top instead of only
+the payload engine. It discovered and removed a circular wait caused by using
+one serialized main-DMA controller for a 401,408-byte raster MM2S, short
+parameter traffic and result S2MM. Independent main MM2S/S2MM controllers now
+arbitrate the shared AXI-Lite register port with transaction ownership held
+through each response. Parameter reads use the idle HP3 weight MM2S.
+
+The regression proves that a 64-byte result S2MM can complete while the long
+raster MM2S is still active. Its 363 K issues and all 64 trained result bytes
+match the C++ golden. The rebuilt 200 MHz top closes at WNS/WHS
+`+0.039/+0.010 ns`, with zero failed route nets and zero DRC errors/critical
+warnings. It uses 90,438 CLB LUTs, 91,363 registers, 96 BRAM tiles, 40 URAM
+and 576 DSP48E2. This is a first-tile control/data checkpoint, not the final
+all-tile image proof.
 
 ## 2026-09-16 graph-payload top update
 
@@ -149,7 +166,7 @@ result; it is not yet present in the resource-probe bitstream.
    XSim checks seven loads, nine representative requests and 21,632 words. The
    integrated top closes at WNS/WHS `+0.001/+0.008 ns` with 90,251 CLB LUTs,
    96 BRAM tiles, 40 URAM, 576 DSP48E2 and zero failed route nets.
-7. **Arithmetic checkpoint completed; integrated image comparison next:** a
+7. **Arithmetic checkpoint completed:** a
    Release C++ execution of the checked board model reproduces frozen byte
    counts and SHA-256 values at all eleven Conv/Pool/FC boundaries. Focused
    XSim sends one trained tile from every layer through the physical M8xN128
@@ -159,7 +176,15 @@ result; it is not yet present in the resource-probe bitstream.
    through the integrated graph top and compare its complete boundary images;
    retain timeout, tile/tag ordering, result-count and non-overwrite
    assertions around the full loop.
-8. After correctness, add counters around the one-lane activation service and
+8. **First integrated-top tile and DMA overlap completed:** the trained Conv1
+   first tile passes through real DMA programming, raster/weight/parameter
+   streams, compute and scatter S2MM. Separate main MM2S/S2MM controllers
+   remove the raster/result circular wait, and parameters use HP3 without
+   corrupting the physical weight offset. Extend this BFM from one tile to all
+   Conv1 tiles, then cross each Pool/Conv/FC boundary against the frozen full
+   images. Add assertions for exact descriptor count, address range,
+   non-overwrite, TLAST, tile/tag order and per-boundary byte count.
+9. After correctness, add counters around the one-lane activation service and
    pipeline/bank it according to measured activation-starvation and issue
    stalls rather than analytic bandwidth alone.
 

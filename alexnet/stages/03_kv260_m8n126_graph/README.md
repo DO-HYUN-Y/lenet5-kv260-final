@@ -9,16 +9,20 @@ logical output width remains N126 and the physical compute contract remains
 
 ## Four independent HP paths
 
-- HP0: Conv1 raster, later-layer activation-cache load and parameter MM2S
+- HP0: Conv1 raster and later-layer activation-cache MM2S
 - HP1: result S2MM
 - HP2: camera MM2S
-- HP3: weight MM2S
+- HP3: weight and parameter MM2S
 
 The main and weight AXI DMA register banks are controlled independently by the
-accelerator. Weight traffic therefore no longer shares the main MM2S memory
-port. The current graph engine requests a weight tile and then computes it;
-overlapping the inactive weight ping-pong fill with the active tile is a later
-scheduling optimization and is not claimed by this checkpoint.
+accelerator. The main DMA's MM2S and S2MM channels also have independent
+controllers that arbitrate their shared AXI-Lite register port, so the long
+Conv1 raster read can overlap result writes. Parameter records use the idle
+HP3 weight MM2S rather than waiting behind that raster. Weight traffic
+therefore no longer shares the main MM2S memory port. The current graph engine
+requests a weight tile and then computes it; overlapping the inactive weight
+ping-pong fill with the active tile is a later scheduling optimization and is
+not claimed by this checkpoint.
 
 ## Storage contract
 
@@ -69,28 +73,28 @@ vivado -mode batch -source scripts/recover_kv260_m8n126_graph_timing.tcl
 The recovery flow applies aggressive post-route physical optimization and, if
 needed, timing-driven rerouting before repeating all signoff gates.
 
-## Verified 200 MHz activation-assembly checkpoint
+## Verified 200 MHz integrated-top DMA checkpoint
 
-Vivado 2025.2 generated the activation-assembly graph-payload `.bit` and fixed
-`.xsa` on 2026-09-17. The clean flow's built-in router physical optimization
-closes at WNS `+0.001 ns` (MET), TNS `0.000 ns`, WHS `+0.008 ns` and THS
-`0.000 ns`; the separate recovery script was not needed. All 407,639
-setup/hold endpoints meet timing. All 173,274 routable nets are connected, and
+Vivado 2025.2 generated the integrated graph-payload `.bit` and fixed `.xsa`
+on 2026-09-18. The clean flow's leaf-clock skew optimization closes at WNS
+`+0.039 ns` (MET), TNS `0.000 ns`, WHS `+0.010 ns` and THS `0.000 ns`; the
+separate recovery script was not needed. All 408,010 setup/hold endpoints meet
+timing. All 173,505 routable nets are connected, and
 DRC has zero errors or critical warnings.
 
 | Resource | Used | Available | Utilization |
 | --- | ---: | ---: | ---: |
-| CLB LUT | 90,251 | 117,120 | 77.06% |
-| CLB register | 91,247 | 234,240 | 38.95% |
+| CLB LUT | 90,438 | 117,120 | 77.22% |
+| CLB register | 91,363 | 234,240 | 39.00% |
 | BRAM tile | 96 | 144 | 66.67% |
 | URAM | 40 | 64 | 62.50% |
 | DSP48E2 | 576 | 1,248 | 46.15% |
 
 The DSP split is exactly 512 for the physical M8xN128 SA and 64 for parallel
 requantization. The activation patch service itself uses zero DSP and adds 14
-RAMB36E2 plus one RAMB18E2. Vectorless Vivado power is 3.582 W at medium
-confidence; it is
-not a board TOPS/W measurement. The scheduler still emits 1,635 commands and
+RAMB36E2 plus one RAMB18E2. Vectorless Vivado power is 3.556 W, but the report
+warns that reset activity makes the estimate unreliable; it is not a board
+TOPS/W measurement. The scheduler still emits 1,635 commands and
 714,188,480 useful MACs. Its physical weight-transfer contract is 61,123,264
 bytes: 61,090,496 logical weights plus 32,768 zero-padding bytes at the FC8
 tail. The capture boundary costs one cycle per emitted N8 result slice, not
@@ -108,6 +112,10 @@ The following XSim gates pass after the bitstream build:
   wide/split/FC/K-continuation/result-stall coverage;
 - integrated graph payload: two Conv1 tiles, 1,452 weight words, 726 patch
   words and 2,048 result bytes; capture-stage active cycles are included.
+- trained integrated board top: actual DMA programming, an active 401,408-byte
+  raster MM2S, 23,232-byte physical weight read, 128-byte parameter read and
+  64-byte scatter S2MM; all 64 result bytes match after 363 K issues, and the
+  result write completes before the long raster read to prove channel overlap;
 - exhaustive result address mapping across every N8 tile and layer boundary;
 - in-place Pool1/2/5 service: all 64 N8 tiles and 11,040 golden output words,
   including randomized MM2S/S2MM backpressure;
@@ -119,10 +127,10 @@ full-byte format-v2 board-weight verifier pass at the same checkpoint.
 
 Published local build hashes:
 
-- `.bit`: `b24d0e723d473f772c75a796c51359f2c70e54e35c35ab8ff3f495da922f6c84`
-- `.xsa`: `4c86a420ad0fd1321042a251df75ec8bf0469e1a43942a81c0d013228194555d`
+- `.bit`: `ca5dd810af2d0a2e864c71d35a0ff9b4a7ae85d7e7f0cf4965ce7d686003b27f`
+- `.xsa`: `27e1db6e316653293d35f47ddbe0d11eca629382e0d0ec4b4d6216e96db2009c`
 - timing-clean `.dcp`:
-  `7edd45ecbbfdc173a6a177fbe42eab3ebbfff70b97573746066a898900dfd55c`
+  `71d243ea154acab85738c5e0b6863185df24b4d4ba615cb21921e4c7ada43c8e`
 
 Build products remain under the ignored `build/` directory; the committed
 sources, scripts, reports and hashes reproduce and identify the checkpoint.

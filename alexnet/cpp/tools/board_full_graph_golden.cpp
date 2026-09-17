@@ -36,6 +36,21 @@ std::vector<std::int8_t> read_i8(const fs::path& path,
   return result;
 }
 
+std::vector<std::int8_t> read_i8_prefix(const fs::path& path,
+                                        std::size_t prefix_bytes) {
+  std::ifstream stream(path, std::ios::binary);
+  if (!stream) {
+    throw std::runtime_error("cannot open " + path.string());
+  }
+  std::vector<std::int8_t> result(prefix_bytes);
+  stream.read(reinterpret_cast<char*>(result.data()),
+              static_cast<std::streamsize>(result.size()));
+  if (!stream) {
+    throw std::runtime_error("short prefix read from " + path.string());
+  }
+  return result;
+}
+
 std::uint32_t little_u32(const std::uint8_t* bytes) {
   return static_cast<std::uint32_t>(bytes[0]) |
          (static_cast<std::uint32_t>(bytes[1]) << 8) |
@@ -197,6 +212,22 @@ void write_hex_word(std::ofstream& stream,
            << static_cast<unsigned>(static_cast<std::uint8_t>(*iterator));
   }
   stream << '\n';
+}
+
+void write_axis128_mem(const fs::path& path,
+                       const std::vector<std::int8_t>& bytes) {
+  if (bytes.size() % 16 != 0) {
+    throw std::invalid_argument("AXIS128 vector must contain complete beats");
+  }
+  std::ofstream stream(path);
+  if (!stream) {
+    throw std::runtime_error("cannot create " + path.string());
+  }
+  for (std::size_t offset = 0; offset < bytes.size(); offset += 16) {
+    const std::vector<std::int8_t> word(bytes.begin() + offset,
+                                        bytes.begin() + offset + 16);
+    write_hex_word(stream, word);
+  }
 }
 
 void write_parameter_mem(const fs::path& path,
@@ -376,6 +407,27 @@ int main(int argc, char** argv) {
                           outputs.fc7);
     write_linear_rtl_tile(output_dir, 8, outputs.fc7, parameters.fc8,
                           outputs.logits);
+
+    // Small, deterministic vectors for the first integrated-top checkpoint.
+    // These exercise the normal Conv1 raster DMA, the format-v2 physical
+    // weight stream, parameter records and the first scatter write without
+    // loading the complete 61 MB weight image into an RTL testbench.
+    const fs::path smoke_dir = output_dir / "top_conv1_smoke";
+    fs::create_directories(smoke_dir);
+    const auto input_axis = to_n8_tile_major(input);
+    const auto first_weight_request =
+        read_i8_prefix(board_dir / "weights_board.bin", 4 * 363 * 16);
+    const auto first_parameters =
+        read_i8_prefix(board_dir / "parameters_board.bin", 8 * 16);
+    auto first_conv1_result = to_n8_tile_major(outputs.conv1);
+    first_conv1_result.resize(8 * 8);
+    write_axis128_mem(smoke_dir / "input_axis128.mem", input_axis);
+    write_axis128_mem(smoke_dir / "weight_axis128.mem",
+                      first_weight_request);
+    write_axis128_mem(smoke_dir / "parameter_axis128.mem",
+                      first_parameters);
+    write_axis128_mem(smoke_dir / "expected_result_axis128.mem",
+                      first_conv1_result);
 
     std::cout << "ALEXNET_BOARD_FULL_GRAPH_GOLDEN_PASS\n";
     return 0;
