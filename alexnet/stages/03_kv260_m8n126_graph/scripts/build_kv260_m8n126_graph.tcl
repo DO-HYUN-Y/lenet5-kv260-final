@@ -10,7 +10,7 @@ set ::alexnet_accelerator_top_override \
 set ::alexnet_accelerator_display_name_override \
     {AlexNet M8xN126 graph-payload accelerator}
 set ::alexnet_accelerator_description_override \
-    {KV260 M8xN126 descriptor engine with Conv1 x-mod-4 raster assembly and independent weight DMA}
+    {KV260 M8xN126 full-graph engine with Conv1 raster and Conv2-FC8 N8-tile-major activation assembly}
 set ::alexnet_use_four_hp 1
 set ::alexnet_add_weight_dma 1
 
@@ -108,6 +108,14 @@ puts $summary_file "CONV1_INPUT_LAYOUT=N8_RASTER"
 puts $summary_file "CONV1_INPUT_BYTES=401408"
 puts $summary_file "CONV1_LEGACY_PATCH_TAPE_BYTES=1103520"
 puts $summary_file "CONV1_DDR_READ_REDUCTION_BYTES=702112"
+puts $summary_file \
+    "LATER_ACTIVATION_LAYOUT=N8_TILE_SPATIAL_N8_LANE"
+puts $summary_file "LATER_ACTIVATION_CACHE_MAX_BYTES=64896"
+puts $summary_file "LATER_ACTIVATION_CACHE_LOADS_PER_IMAGE=7"
+puts $summary_file "LATER_LEGACY_PATCH_TAPE_BYTES=0"
+puts $summary_file "ACTIVATION_PATCH_SERVICE_OOC_DSP48E2=0"
+puts $summary_file "ACTIVATION_PATCH_SERVICE_OOC_RAMB36E2=14"
+puts $summary_file "ACTIVATION_PATCH_SERVICE_OOC_RAMB18E2=1"
 puts $summary_file "GRAPH_SCHEDULER_COMMANDS=1635"
 puts $summary_file "GRAPH_USEFUL_MACS=714188480"
 puts $summary_file "GRAPH_LOGICAL_WEIGHT_BYTES=61090496"

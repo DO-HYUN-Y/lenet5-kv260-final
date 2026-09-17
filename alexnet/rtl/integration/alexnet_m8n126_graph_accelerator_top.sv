@@ -3,10 +3,9 @@
 // PS-facing batch-one M8xN126 graph-payload accelerator.
 //
 // HP0 first supplies the normal 224x224xN8 input raster.  An x-mod-4 feeder
-// assembles Conv1 M16 patches locally; later-layer patch and parameter traffic
-// still use the scheduled HP0 service while exact inter-layer patch assembly
-// is integrated. HP1 scatter-writes N8-tile-major results and HP3 independently
-// fills weights.
+// assembles Conv1 M16 patches locally. Conv2-FC8 activations are cached once
+// per layer from the N8-tile-major A/B tensors and gathered into the exact
+// K-major M16 stream. HP1 scatter-writes results and HP3 fills weights.
 module alexnet_m8n126_graph_accelerator_top #(
     parameter int CTRL_ADDR_W = 8
 ) (
@@ -108,8 +107,6 @@ module alexnet_m8n126_graph_accelerator_top #(
     MAIN_RASTER_ARM,
     MAIN_RASTER_STREAM,
     MAIN_RASTER_DRAIN,
-    MAIN_PATCH_STREAM,
-    MAIN_PATCH_DRAIN,
     MAIN_PARAMETER_STREAM,
     MAIN_PARAMETER_DRAIN,
     MAIN_RESULT_COMMAND,
@@ -124,7 +121,7 @@ module alexnet_m8n126_graph_accelerator_top #(
   logic service_fault_q;
   logic main_dma_done_seen_q, weight_dma_done_seen_q;
   logic weight_service_active_q, weight_stream_done_q;
-  logic [31:0] patch_byte_offset_q, weight_byte_offset_q;
+  logic [31:0] weight_byte_offset_q;
   logic [4:0] result_slice_index_q;
   logic [12:0] patch_m_base_q;
   logic [3:0] patch_lower_m_count_q, patch_upper_m_count_q;
@@ -174,6 +171,20 @@ module alexnet_m8n126_graph_accelerator_top #(
   logic raster_overlap_active, raster_fault, raster_idle;
   logic raster_patch_active_q;
   logic engine_start_pending_q;
+
+  logic activation_request_valid, activation_request_ready;
+  logic activation_dma_cmd_valid, activation_dma_cmd_ready;
+  logic activation_dma_selected, activation_mm2s_ready;
+  logic [31:0] activation_dma_cmd_address;
+  logic [25:0] activation_dma_cmd_length;
+  logic [127:0] activation_patch_axis_data;
+  logic activation_patch_axis_valid, activation_patch_axis_last;
+  logic activation_busy, activation_fault, activation_cache_load_active;
+  logic [3:0] activation_cached_layer_id;
+  logic [15:0] unused_activation_context_tag;
+  logic [7:0] unused_activation_m_count;
+  logic [31:0] activation_cache_loads, activation_completed_patches;
+  logic [31:0] activation_emitted_patch_words;
 
   logic engine_parameter_request_valid, engine_parameter_request_ready;
   logic [3:0] engine_parameter_request_layer_id;
@@ -255,7 +266,7 @@ module alexnet_m8n126_graph_accelerator_top #(
   logic [31:0] result_signature_fold;
 
   logic [3:0] requested_result_m_count;
-  logic [25:0] weight_request_bytes, patch_request_bytes;
+  logic [25:0] weight_request_bytes;
   logic [31:0] parameter_address;
   logic [31:0] selected_result_base;
   logic [12:0] predicted_result_m_base;
@@ -264,7 +275,7 @@ module alexnet_m8n126_graph_accelerator_top #(
   logic result_mapping_error;
   logic main_command_fire, weight_command_fire;
   logic raster_stream_fire, raster_patch_fire;
-  logic patch_stream_fire, parameter_stream_fire, weight_stream_fire;
+  logic parameter_stream_fire, weight_stream_fire;
   logic core_start_fire;
 
   function automatic logic [3:0] popcount8(input logic [7:0] value);
@@ -327,10 +338,14 @@ module alexnet_m8n126_graph_accelerator_top #(
   assign engine_start_fire = engine_start_valid && engine_start_ready;
   assign raster_frame_valid = core_start_valid && core_start_ready;
   assign s_axis_camera_tready = 1'b1;
+  assign activation_request_valid = engine_patch_request_valid &&
+      engine_patch_request_layer_id != 1 && main_state_q == MAIN_IDLE &&
+      !pool_busy && !main_dma_busy && !accelerator_fault;
+  assign activation_dma_cmd_ready = activation_dma_selected &&
+                                    main_dma_cmd_ready;
 
   assign weight_request_bytes = weight_bytes(
       engine_weight_request_k_count, engine_weight_request_bank_enable);
-  assign patch_request_bytes = {9'd0, engine_patch_request_k_count, 4'b0000};
   assign requested_result_m_count =
       engine_parameter_request_layer_id <= 2 &&
       patch_upper_m_count_q != 0 && result_slice_index_q >= 8 ?
@@ -379,6 +394,7 @@ module alexnet_m8n126_graph_accelerator_top #(
     engine_patch_request_ready = 1'b0;
     engine_parameter_request_ready = 1'b0;
     loader_start_valid = 1'b0;
+    activation_dma_selected = 1'b0;
 
     if (pool_dma_cmd_valid && !accelerator_fault) begin
       main_dma_cmd_valid = 1'b1;
@@ -394,12 +410,14 @@ module alexnet_m8n126_graph_accelerator_top #(
                  !accelerator_fault) begin
       engine_patch_request_ready = raster_request_ready;
     end else if (main_state_q == MAIN_IDLE && !accelerator_fault) begin
-      if (engine_patch_request_valid) begin
+      if (activation_dma_cmd_valid) begin
+        activation_dma_selected = 1'b1;
         main_dma_cmd_valid = 1'b1;
-        main_dma_cmd_address = active_input_base[31:0] +
-                               patch_byte_offset_q;
-        main_dma_cmd_length = patch_request_bytes;
-        engine_patch_request_ready = main_dma_cmd_ready;
+        main_dma_cmd_address = activation_dma_cmd_address;
+        main_dma_cmd_length = activation_dma_cmd_length;
+      end else if (engine_patch_request_valid &&
+                   engine_patch_request_layer_id != 1) begin
+        engine_patch_request_ready = activation_request_ready;
       end else if (engine_parameter_request_valid && loader_start_ready) begin
         main_dma_cmd_valid = 1'b1;
         main_dma_cmd_address = parameter_address;
@@ -434,8 +452,6 @@ module alexnet_m8n126_graph_accelerator_top #(
                                 engine_weight_axis_ready;
   assign weight_stream_fire = s_axis_weight_tvalid &&
                               s_axis_weight_tready;
-  assign patch_stream_fire = main_state_q == MAIN_PATCH_STREAM &&
-      s_axis_mm2s_tvalid && engine_patch_axis_ready;
   assign raster_stream_fire =
       (main_state_q == MAIN_RASTER_ARM ||
        main_state_q == MAIN_RASTER_STREAM) &&
@@ -446,10 +462,10 @@ module alexnet_m8n126_graph_accelerator_top #(
       s_axis_mm2s_tvalid && loader_axis_ready;
   assign s_axis_mm2s_tready =
       pool_busy ? pool_mm2s_ready :
+      activation_cache_load_active ? activation_mm2s_ready :
       (main_state_q == MAIN_RASTER_ARM ||
        main_state_q == MAIN_RASTER_STREAM) ? raster_axis_ready :
-      main_state_q == MAIN_PATCH_STREAM ?
-      engine_patch_axis_ready : main_state_q == MAIN_PARAMETER_STREAM ?
+      main_state_q == MAIN_PARAMETER_STREAM ?
       loader_axis_ready : 1'b0;
 
   assign engine_parameter_valid = loader_parameter_valid &&
@@ -499,10 +515,10 @@ module alexnet_m8n126_graph_accelerator_top #(
 
   assign accelerator_fault = service_fault_q || engine_fault ||
       engine_failed || main_dma_error || weight_dma_error || loader_fault ||
-      raster_fault || pool_layer_error;
+      raster_fault || pool_layer_error || activation_fault;
   assign accelerator_busy = engine_busy || main_state_q != MAIN_IDLE ||
       weight_service_active_q || main_dma_busy || weight_dma_busy ||
-      result_packer_active_q || pool_busy;
+      result_packer_active_q || pool_busy || activation_busy;
 
   always_ff @(posedge aclk) begin
     if (rst) begin
@@ -512,7 +528,6 @@ module alexnet_m8n126_graph_accelerator_top #(
       weight_dma_done_seen_q <= 1'b0;
       weight_service_active_q <= 1'b0;
       weight_stream_done_q <= 1'b0;
-      patch_byte_offset_q <= 0;
       weight_byte_offset_q <= 0;
       result_slice_index_q <= 0;
       patch_m_base_q <= 0;
@@ -536,7 +551,6 @@ module alexnet_m8n126_graph_accelerator_top #(
       if (core_start_fire) begin
         engine_start_pending_q <= 1'b1;
         active_inference_tag_q <= core_start_tag;
-        patch_byte_offset_q <= 0;
         weight_byte_offset_q <= 0;
         result_slice_index_q <= 0;
         result_signature_q <= 0;
@@ -557,6 +571,16 @@ module alexnet_m8n126_graph_accelerator_top #(
       end
       if (raster_patch_fire && raster_patch_axis_last)
         raster_patch_active_q <= 1'b0;
+
+      if (engine_patch_request_valid && engine_patch_request_ready &&
+          engine_patch_request_layer_id != 1) begin
+        patch_m_base_q <= engine_patch_request_m_base;
+        patch_lower_m_count_q <=
+            popcount8(engine_patch_request_m_lane_mask[7:0]);
+        patch_upper_m_count_q <=
+            popcount8(engine_patch_request_m_lane_mask[15:8]);
+        result_slice_index_q <= 0;
+      end
 
       if (main_dma_done)
         main_dma_done_seen_q <= 1'b1;
@@ -597,18 +621,6 @@ module alexnet_m8n126_graph_accelerator_top #(
           main_dma_done_seen_q <= 1'b0;
           if (core_start_fire) begin
             main_state_q <= MAIN_RASTER_COMMAND;
-          end else if (engine_patch_request_valid &&
-              engine_patch_request_layer_id != 1 &&
-              engine_patch_request_ready) begin
-            patch_byte_offset_q <= patch_byte_offset_q +
-                                   patch_request_bytes;
-            patch_m_base_q <= engine_patch_request_m_base;
-            patch_lower_m_count_q <=
-                popcount8(engine_patch_request_m_lane_mask[7:0]);
-            patch_upper_m_count_q <=
-                popcount8(engine_patch_request_m_lane_mask[15:8]);
-            result_slice_index_q <= 0;
-            main_state_q <= MAIN_PATCH_STREAM;
           end else if (engine_parameter_request_valid &&
                        engine_parameter_request_ready) begin
             pending_result_m_count_q <= requested_result_m_count;
@@ -639,20 +651,6 @@ module alexnet_m8n126_graph_accelerator_top #(
             main_state_q <= MAIN_RASTER_DRAIN;
 
         MAIN_RASTER_DRAIN:
-          if (main_dma_done_seen_q || main_dma_done) begin
-            main_dma_done_seen_q <= 1'b0;
-            main_state_q <= MAIN_IDLE;
-          end
-
-        MAIN_PATCH_STREAM: if (patch_stream_fire) begin
-          if (s_axis_mm2s_tkeep != 16'hffff)
-            service_fault_q <= 1'b1;
-          if (s_axis_mm2s_tlast) begin
-            main_state_q <= MAIN_PATCH_DRAIN;
-          end
-        end
-
-        MAIN_PATCH_DRAIN:
           if (main_dma_done_seen_q || main_dma_done) begin
             main_dma_done_seen_q <= 1'b0;
             main_state_q <= MAIN_IDLE;
@@ -713,7 +711,8 @@ module alexnet_m8n126_graph_accelerator_top #(
       endcase
 
       if (main_dma_error || weight_dma_error || loader_fault || raster_fault ||
-          pool_layer_error || engine_fault || engine_failed) begin
+          pool_layer_error || activation_fault || engine_fault ||
+          engine_failed) begin
         service_fault_q <= 1'b1;
         main_state_q <= MAIN_FAILED;
       end
@@ -754,6 +753,43 @@ module alexnet_m8n126_graph_accelerator_top #(
       .idle(raster_idle)
   );
 
+  alexnet_m8n126_activation_patch_service u_activation_patches (
+      .clk(aclk), .rst,
+      .request_valid(activation_request_valid),
+      .request_ready(activation_request_ready),
+      .request_layer_id(engine_patch_request_layer_id),
+      .request_m_base(engine_patch_request_m_base),
+      .request_k_offset(engine_patch_request_k_offset),
+      .request_k_count(engine_patch_request_k_count),
+      .request_m_lane_mask(engine_patch_request_m_lane_mask),
+      .request_context_tag(engine_patch_request_context_tag),
+      .activation_a_base(active_activation_a_base[31:0]),
+      .activation_b_base(active_activation_b_base[31:0]),
+      .dma_command_valid(activation_dma_cmd_valid),
+      .dma_command_ready(activation_dma_cmd_ready),
+      .dma_command_address(activation_dma_cmd_address),
+      .dma_command_length(activation_dma_cmd_length),
+      .dma_armed(main_dma_armed), .dma_done(main_dma_done),
+      .dma_error(main_dma_error),
+      .s_axis_tdata(s_axis_mm2s_tdata),
+      .s_axis_tkeep(s_axis_mm2s_tkeep),
+      .s_axis_tvalid(s_axis_mm2s_tvalid && activation_cache_load_active),
+      .s_axis_tready(activation_mm2s_ready),
+      .s_axis_tlast(s_axis_mm2s_tlast),
+      .patch_axis_tdata(activation_patch_axis_data),
+      .patch_axis_tvalid(activation_patch_axis_valid),
+      .patch_axis_tready(engine_patch_axis_ready),
+      .patch_axis_tlast(activation_patch_axis_last),
+      .busy(activation_busy), .fault(activation_fault),
+      .cache_load_active(activation_cache_load_active),
+      .cached_layer_id(activation_cached_layer_id),
+      .active_context_tag(unused_activation_context_tag),
+      .active_m_count(unused_activation_m_count),
+      .cache_loads(activation_cache_loads),
+      .completed_patches(activation_completed_patches),
+      .emitted_patch_words(activation_emitted_patch_words)
+  );
+
   alexnet_m8n126_graph_payload_engine u_graph_payload (
       .clk(aclk), .rst,
       .start_valid(engine_start_valid),
@@ -780,12 +816,12 @@ module alexnet_m8n126_graph_accelerator_top #(
       .patch_request_m_lane_mask(engine_patch_request_m_lane_mask),
       .patch_request_context_tag(engine_patch_request_context_tag),
       .patch_axis_valid(raster_patch_active_q ? raster_patch_axis_valid :
-          (s_axis_mm2s_tvalid && main_state_q == MAIN_PATCH_STREAM)),
+                                               activation_patch_axis_valid),
       .patch_axis_ready(engine_patch_axis_ready),
       .patch_axis_data(raster_patch_active_q ? raster_patch_axis_data :
-                                                 s_axis_mm2s_tdata),
+                                               activation_patch_axis_data),
       .patch_axis_last(raster_patch_active_q ? raster_patch_axis_last :
-                                                 s_axis_mm2s_tlast),
+                                               activation_patch_axis_last),
       .parameter_request_valid(engine_parameter_request_valid),
       .parameter_request_ready(engine_parameter_request_ready),
       .parameter_request_layer_id(engine_parameter_request_layer_id),
@@ -985,7 +1021,7 @@ module alexnet_m8n126_graph_accelerator_top #(
       .dma_error_code(main_dma_error ? main_dma_error_code :
                       weight_dma_error_code),
       .dma_active_source(weight_service_active_q ? 3'd1 :
-                         main_state_q == MAIN_PATCH_STREAM ? 3'd2 :
+                         activation_busy ? 3'd2 :
                          main_state_q == MAIN_PARAMETER_STREAM ? 3'd3 :
                          main_state_q >= MAIN_RESULT_COMMAND ? 3'd4 : 3'd0),
       .dma_accepted_requests(weight_words_loaded + patch_words_loaded),

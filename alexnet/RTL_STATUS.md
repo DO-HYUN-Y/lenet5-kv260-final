@@ -1777,3 +1777,42 @@ the full N128 weight rate and must use the dynamic N16 bank mask. The remaining
 memory gate is the 1,024-bit/cycle N128 URAM weight ping-pong described in
 `DYNAMIC_ARRAY_BANDWIDTH.md`; this milestone does not yet claim a complete
 M8xN128 PS/AXI/PL top or new camera throughput.
+
+## M8xN126 activation-assembly board checkpoint
+
+`rtl/integration/alexnet_m8n126_activation_patch_service.sv` removes the
+later-layer K-major patch tape from the M8 graph. It loads the complete source
+tensor once in `[N8 tile][spatial][8 lanes]` order and serves exact Conv2-5
+K-major M16 windows. The same cache emits Pool5 in FC6 channel-major flatten
+order and emits FC7/8 in linear order. The largest tensor is 64,896 bytes; the
+seven layer loads total 204,672 bytes per image. Randomized XSim covers all
+seven loads, nine representative patch/flatten requests and 21,632 returned
+words. Its 200 MHz OOC route uses zero DSP, 14 RAMB36E2 and one RAMB18E2, with
+WNS/WHS +0.234/+0.103 ns. The present correctness-first read service returns
+one activation lane per cycle; it is a known performance target after the
+full graph is numerically proven.
+
+The integrated `alexnet_m8n126_graph_accelerator_top` now selects the Conv1
+x-mod-4 raster service only for layer 1 and the activation cache for layers
+2-8. Result scatter, in-place Pool1/2/5 compaction, FC6 flattening, parameter
+loads, N128 weight ping-pong and all four HP ports are connected in the board
+top. The Conv1 feeder timing path was split across endpoint planning, registered
+row-base selection and a one-cycle BRAM-write transaction pipeline. Its OOC
+timing improved to WNS/WHS +0.129/+0.064 ns without changing DSP or memory
+counts, and its full-frame golden/backpressure regressions still pass.
+
+Vivado 2025.2 completed the clean 200 MHz top build, bitstream and
+bitstream-bearing XSA. Final WNS/TNS/WHS/THS are
+`+0.001/0.000/+0.008/0.000 ns` across 407,639 setup/hold endpoints. All 173,274
+routable nets are connected; DRC has zero errors and zero critical warnings.
+Utilization is 90,251 CLB LUTs (77.06%), 91,247 registers (38.95%), 96 BRAM
+tiles (66.67%), 40 URAM (62.50%) and 576 DSP48E2 (46.15%). The DSP split is
+exactly 512 for the physical M8xN128 SA and 64 for parallel requantization.
+Vectorless power is 3.582 W at medium confidence and is not a measured board
+TOPS/W result.
+
+This checkpoint proves RTL assembly, simulation contracts and full-board
+implementation, not trained-model end-to-end correctness. The next gates are
+layerwise and complete-image comparison against the C++ golden model, one
+batch-one KV260 run, then stall-counter-guided activation/weight overlap work.
+Batch 8 remains deferred until the batch-one graph is bit-exact and measured.

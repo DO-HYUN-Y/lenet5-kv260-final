@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version      : Vivado v.2025.2 (lin64) Build 6299465 Fri Nov 14 12:34:56 MST 2025
-| Date              : Tue Sep 15 15:38:45 2026
+| Date              : Thu Sep 17 12:14:45 2026
 | Host              : jian-ThinkBook-16-G9-AHP running 64-bit Ubuntu 24.04.4 LTS
 | Command           : report_timing -delay_type min -max_paths 20 -sort_by group -file /home/jian/Documents/Codex/2026-09-09/https-github-com-do-hyun-y/work/lenet5-kv260-final/alexnet/reports/m16_patch_feeder_bridge/200mhz/worst_hold.rpt
 | Design            : alexnet_m16_patch_feeder_bridge
@@ -13,51 +13,10 @@ Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanc
 
 Timing Report
 
-Slack (MET) :             0.055ns  (arrival time - required time)
-  Source:                 u_patch_pingpong/pending_k_q_reg[11]/C
-                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Destination:            u_patch_pingpong/patch_k_reg[11]/D
-                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Path Group:             clk
-  Path Type:              Hold (Min at Slow Process Corner)
-  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
-  Data Path Delay:        0.171ns  (logic 0.112ns (65.497%)  route 0.059ns (34.503%))
-  Logic Levels:           0  
-  Clock Path Skew:        0.013ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    0.042ns
-    Source Clock Delay      (SCD):    0.029ns
-    Clock Pessimism Removal (CPR):    -0.000ns
-
-    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
-  -------------------------------------------------------------------    -------------------
-                         (clock clk rise edge)        0.000     0.000 r  
-                                                      0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.029     0.029    u_patch_pingpong/clk
-    SLICE_X30Y24         FDRE                                         r  u_patch_pingpong/pending_k_q_reg[11]/C
-  -------------------------------------------------------------------    -------------------
-    SLICE_X30Y24         FDRE (Prop_HFF_SLICEL_C_Q)
-                                                      0.112     0.141 r  u_patch_pingpong/pending_k_q_reg[11]/Q
-                         net (fo=1, routed)           0.059     0.200    u_patch_pingpong/pending_k_q[11]
-    SLICE_X30Y24         FDRE                                         r  u_patch_pingpong/patch_k_reg[11]/D
-  -------------------------------------------------------------------    -------------------
-
-                         (clock clk rise edge)        0.000     0.000 r  
-                                                      0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.042     0.042    u_patch_pingpong/clk
-    SLICE_X30Y24         FDRE                                         r  u_patch_pingpong/patch_k_reg[11]/C
-                         clock pessimism              0.000     0.042    
-    SLICE_X30Y24         FDRE (Hold_HFF2_SLICEL_C_D)
-                                                      0.103     0.145    u_patch_pingpong/patch_k_reg[11]
-  -------------------------------------------------------------------
-                         required time                         -0.145    
-                         arrival time                           0.200    
-  -------------------------------------------------------------------
-                         slack                                  0.055    
-
 Slack (MET) :             0.064ns  (arrival time - required time)
-  Source:                 u_patch_pingpong/pending_k_q_reg[0]/C
+  Source:                 u_patch_pingpong/pending_k_q_reg[10]/C
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Destination:            u_patch_pingpong/patch_k_reg[0]/D
+  Destination:            u_patch_pingpong/patch_k_reg[10]/D
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
   Path Group:             clk
   Path Type:              Hold (Min at Slow Process Corner)
@@ -73,37 +32,37 @@ Slack (MET) :             0.064ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.031     0.031    u_patch_pingpong/clk
-    SLICE_X31Y18         FDRE                                         r  u_patch_pingpong/pending_k_q_reg[0]/C
+                         net (fo=3339, unset)         0.031     0.031    u_patch_pingpong/clk
+    SLICE_X41Y19         FDRE                                         r  u_patch_pingpong/pending_k_q_reg[10]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X31Y18         FDRE (Prop_HFF_SLICEM_C_Q)
-                                                      0.112     0.143 r  u_patch_pingpong/pending_k_q_reg[0]/Q
-                         net (fo=1, routed)           0.067     0.210    u_patch_pingpong/pending_k_q[0]
-    SLICE_X31Y18         FDRE                                         r  u_patch_pingpong/patch_k_reg[0]/D
+    SLICE_X41Y19         FDRE (Prop_HFF_SLICEM_C_Q)
+                                                      0.112     0.143 r  u_patch_pingpong/pending_k_q_reg[10]/Q
+                         net (fo=1, routed)           0.067     0.210    u_patch_pingpong/pending_k_q[10]
+    SLICE_X41Y19         FDRE                                         r  u_patch_pingpong/patch_k_reg[10]/D
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.043     0.043    u_patch_pingpong/clk
-    SLICE_X31Y18         FDRE                                         r  u_patch_pingpong/patch_k_reg[0]/C
+                         net (fo=3339, unset)         0.043     0.043    u_patch_pingpong/clk
+    SLICE_X41Y19         FDRE                                         r  u_patch_pingpong/patch_k_reg[10]/C
                          clock pessimism              0.000     0.043    
-    SLICE_X31Y18         FDRE (Hold_HFF2_SLICEM_C_D)
-                                                      0.103     0.146    u_patch_pingpong/patch_k_reg[0]
+    SLICE_X41Y19         FDRE (Hold_HFF2_SLICEM_C_D)
+                                                      0.103     0.146    u_patch_pingpong/patch_k_reg[10]
   -------------------------------------------------------------------
                          required time                         -0.146    
                          arrival time                           0.210    
   -------------------------------------------------------------------
                          slack                                  0.064    
 
-Slack (MET) :             0.094ns  (arrival time - required time)
-  Source:                 u_patch_pingpong/pending_k_q_reg[3]/C
+Slack (MET) :             0.093ns  (arrival time - required time)
+  Source:                 frame_k_count_q_reg[11]/C
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Destination:            u_patch_pingpong/patch_k_reg[3]/D
+  Destination:            u_patch_pingpong/set_k_count_q_reg[0][11]/D
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
   Path Group:             clk
   Path Type:              Hold (Min at Fast Process Corner)
   Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
-  Data Path Delay:        0.146ns  (logic 0.083ns (56.849%)  route 0.063ns (43.151%))
+  Data Path Delay:        0.144ns  (logic 0.082ns (57.089%)  route 0.062ns (42.911%))
   Logic Levels:           0  
   Clock Path Skew:        0.007ns (DCD - SCD - CPR)
     Destination Clock Delay (DCD):    0.021ns
@@ -114,119 +73,37 @@ Slack (MET) :             0.094ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.014     0.014    u_patch_pingpong/clk
-    SLICE_X31Y23         FDRE                                         r  u_patch_pingpong/pending_k_q_reg[3]/C
+                         net (fo=3339, unset)         0.014     0.014    clk
+    SLICE_X40Y23         FDRE                                         r  frame_k_count_q_reg[11]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X31Y23         FDRE (Prop_GFF_SLICEM_C_Q)
-                                                      0.083     0.097 r  u_patch_pingpong/pending_k_q_reg[3]/Q
-                         net (fo=1, routed)           0.063     0.160    u_patch_pingpong/pending_k_q[3]
-    SLICE_X31Y23         FDRE                                         r  u_patch_pingpong/patch_k_reg[3]/D
+    SLICE_X40Y23         FDRE (Prop_AFF_SLICEM_C_Q)
+                                                      0.082     0.096 r  frame_k_count_q_reg[11]/Q
+                         net (fo=2, routed)           0.062     0.158    u_patch_pingpong/set_k_count_q_reg[1][12]_0[11]
+    SLICE_X40Y23         FDRE                                         r  u_patch_pingpong/set_k_count_q_reg[0][11]/D
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.021     0.021    u_patch_pingpong/clk
-    SLICE_X31Y23         FDRE                                         r  u_patch_pingpong/patch_k_reg[3]/C
+                         net (fo=3339, unset)         0.021     0.021    u_patch_pingpong/clk
+    SLICE_X40Y23         FDRE                                         r  u_patch_pingpong/set_k_count_q_reg[0][11]/C
                          clock pessimism              0.000     0.021    
-    SLICE_X31Y23         FDRE (Hold_HFF2_SLICEM_C_D)
-                                                      0.045     0.066    u_patch_pingpong/patch_k_reg[3]
+    SLICE_X40Y23         FDRE (Hold_FFF_SLICEM_C_D)
+                                                      0.044     0.065    u_patch_pingpong/set_k_count_q_reg[0][11]
   -------------------------------------------------------------------
-                         required time                         -0.066    
-                         arrival time                           0.160    
+                         required time                         -0.065    
+                         arrival time                           0.158    
   -------------------------------------------------------------------
-                         slack                                  0.094    
+                         slack                                  0.093    
 
-Slack (MET) :             0.098ns  (arrival time - required time)
-  Source:                 u_patch_pingpong/pending_k_q_reg[9]/C
+Slack (MET) :             0.101ns  (arrival time - required time)
+  Source:                 g_xmod4_feeder.u_feeder/lane_x_base_q_reg[12][1]/C
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Destination:            u_patch_pingpong/patch_k_reg[9]/D
+  Destination:            g_xmod4_feeder.u_feeder/capture_bank_q_reg[12][1]_rep/D
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
   Path Group:             clk
   Path Type:              Hold (Min at Fast Process Corner)
   Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
-  Data Path Delay:        0.150ns  (logic 0.082ns (54.667%)  route 0.068ns (45.333%))
-  Logic Levels:           0  
-  Clock Path Skew:        0.007ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    0.021ns
-    Source Clock Delay      (SCD):    0.014ns
-    Clock Pessimism Removal (CPR):    -0.000ns
-
-    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
-  -------------------------------------------------------------------    -------------------
-                         (clock clk rise edge)        0.000     0.000 r  
-                                                      0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.014     0.014    u_patch_pingpong/clk
-    SLICE_X31Y18         FDRE                                         r  u_patch_pingpong/pending_k_q_reg[9]/C
-  -------------------------------------------------------------------    -------------------
-    SLICE_X31Y18         FDRE (Prop_EFF_SLICEM_C_Q)
-                                                      0.082     0.096 r  u_patch_pingpong/pending_k_q_reg[9]/Q
-                         net (fo=1, routed)           0.068     0.164    u_patch_pingpong/pending_k_q[9]
-    SLICE_X31Y18         FDRE                                         r  u_patch_pingpong/patch_k_reg[9]/D
-  -------------------------------------------------------------------    -------------------
-
-                         (clock clk rise edge)        0.000     0.000 r  
-                                                      0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.021     0.021    u_patch_pingpong/clk
-    SLICE_X31Y18         FDRE                                         r  u_patch_pingpong/patch_k_reg[9]/C
-                         clock pessimism              0.000     0.021    
-    SLICE_X31Y18         FDRE (Hold_EFF2_SLICEM_C_D)
-                                                      0.045     0.066    u_patch_pingpong/patch_k_reg[9]
-  -------------------------------------------------------------------
-                         required time                         -0.066    
-                         arrival time                           0.164    
-  -------------------------------------------------------------------
-                         slack                                  0.098    
-
-Slack (MET) :             0.098ns  (arrival time - required time)
-  Source:                 frame_k_count_q_reg[12]/C
-                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Destination:            u_patch_pingpong/set_k_count_q_reg[1][12]/D
-                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Path Group:             clk
-  Path Type:              Hold (Min at Fast Process Corner)
-  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
-  Data Path Delay:        0.150ns  (logic 0.084ns (56.000%)  route 0.066ns (44.000%))
-  Logic Levels:           0  
-  Clock Path Skew:        0.007ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    0.021ns
-    Source Clock Delay      (SCD):    0.014ns
-    Clock Pessimism Removal (CPR):    -0.000ns
-
-    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
-  -------------------------------------------------------------------    -------------------
-                         (clock clk rise edge)        0.000     0.000 r  
-                                                      0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.014     0.014    clk
-    SLICE_X31Y24         FDRE                                         r  frame_k_count_q_reg[12]/C
-  -------------------------------------------------------------------    -------------------
-    SLICE_X31Y24         FDRE (Prop_EFF2_SLICEM_C_Q)
-                                                      0.084     0.098 r  frame_k_count_q_reg[12]/Q
-                         net (fo=2, routed)           0.066     0.164    u_patch_pingpong/set_k_count_q_reg[1][12]_0[12]
-    SLICE_X31Y25         FDRE                                         r  u_patch_pingpong/set_k_count_q_reg[1][12]/D
-  -------------------------------------------------------------------    -------------------
-
-                         (clock clk rise edge)        0.000     0.000 r  
-                                                      0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.021     0.021    u_patch_pingpong/clk
-    SLICE_X31Y25         FDRE                                         r  u_patch_pingpong/set_k_count_q_reg[1][12]/C
-                         clock pessimism              0.000     0.021    
-    SLICE_X31Y25         FDRE (Hold_BFF2_SLICEM_C_D)
-                                                      0.045     0.066    u_patch_pingpong/set_k_count_q_reg[1][12]
-  -------------------------------------------------------------------
-                         required time                         -0.066    
-                         arrival time                           0.164    
-  -------------------------------------------------------------------
-                         slack                                  0.098    
-
-Slack (MET) :             0.102ns  (arrival time - required time)
-  Source:                 g_xmod4_feeder.u_feeder/lane_x_base_q_reg[5][1]/C
-                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Destination:            g_xmod4_feeder.u_feeder/capture_bank_q_reg[5][1]_rep/D
-                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Path Group:             clk
-  Path Type:              Hold (Min at Fast Process Corner)
-  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
-  Data Path Delay:        0.153ns  (logic 0.104ns (67.777%)  route 0.049ns (32.223%))
+  Data Path Delay:        0.152ns  (logic 0.105ns (69.166%)  route 0.047ns (30.834%))
   Logic Levels:           1  (LUT6=1)
   Clock Path Skew:        0.006ns (DCD - SCD - CPR)
     Destination Clock Delay (DCD):    0.020ns
@@ -237,85 +114,41 @@ Slack (MET) :             0.102ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.014     0.014    g_xmod4_feeder.u_feeder/clk
-    SLICE_X36Y83         FDRE                                         r  g_xmod4_feeder.u_feeder/lane_x_base_q_reg[5][1]/C
+                         net (fo=3339, unset)         0.014     0.014    g_xmod4_feeder.u_feeder/clk
+    SLICE_X47Y92         FDRE                                         r  g_xmod4_feeder.u_feeder/lane_x_base_q_reg[12][1]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X36Y83         FDRE (Prop_CFF_SLICEL_C_Q)
-                                                      0.084     0.098 r  g_xmod4_feeder.u_feeder/lane_x_base_q_reg[5][1]/Q
-                         net (fo=5, routed)           0.033     0.131    g_xmod4_feeder.u_feeder/lane_x_base_q_reg[5]_70[1]
-    SLICE_X36Y82         LUT6 (Prop_G6LUT_SLICEL_I5_O)
-                                                      0.020     0.151 r  g_xmod4_feeder.u_feeder/capture_bank_q[5][1]_rep_i_1/O
-                         net (fo=1, routed)           0.016     0.167    g_xmod4_feeder.u_feeder/capture_bank_q[5][1]_rep_i_1_n_0
-    SLICE_X36Y82         FDRE                                         r  g_xmod4_feeder.u_feeder/capture_bank_q_reg[5][1]_rep/D
+    SLICE_X47Y92         FDRE (Prop_CFF_SLICEL_C_Q)
+                                                      0.084     0.098 r  g_xmod4_feeder.u_feeder/lane_x_base_q_reg[12][1]/Q
+                         net (fo=5, routed)           0.030     0.128    g_xmod4_feeder.u_feeder/lane_x_base_q_reg[12]_40[1]
+    SLICE_X47Y91         LUT6 (Prop_H6LUT_SLICEL_I5_O)
+                                                      0.021     0.149 r  g_xmod4_feeder.u_feeder/capture_bank_q[12][1]_rep_i_1/O
+                         net (fo=1, routed)           0.017     0.166    g_xmod4_feeder.u_feeder/capture_bank_q[12][1]_rep_i_1_n_0
+    SLICE_X47Y91         FDRE                                         r  g_xmod4_feeder.u_feeder/capture_bank_q_reg[12][1]_rep/D
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.020     0.020    g_xmod4_feeder.u_feeder/clk
-    SLICE_X36Y82         FDRE                                         r  g_xmod4_feeder.u_feeder/capture_bank_q_reg[5][1]_rep/C
+                         net (fo=3339, unset)         0.020     0.020    g_xmod4_feeder.u_feeder/clk
+    SLICE_X47Y91         FDRE                                         r  g_xmod4_feeder.u_feeder/capture_bank_q_reg[12][1]_rep/C
                          clock pessimism              0.000     0.020    
-    SLICE_X36Y82         FDRE (Hold_GFF2_SLICEL_C_D)
-                                                      0.045     0.065    g_xmod4_feeder.u_feeder/capture_bank_q_reg[5][1]_rep
+    SLICE_X47Y91         FDRE (Hold_HFF2_SLICEL_C_D)
+                                                      0.045     0.065    g_xmod4_feeder.u_feeder/capture_bank_q_reg[12][1]_rep
   -------------------------------------------------------------------
                          required time                         -0.065    
-                         arrival time                           0.167    
-  -------------------------------------------------------------------
-                         slack                                  0.102    
-
-Slack (MET) :             0.103ns  (arrival time - required time)
-  Source:                 u_patch_pingpong/reads_issued_q_reg[7]/C
-                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Destination:            u_patch_pingpong/reads_issued_q_reg[7]/D
-                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Path Group:             clk
-  Path Type:              Hold (Min at Fast Process Corner)
-  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
-  Data Path Delay:        0.152ns  (logic 0.106ns (69.908%)  route 0.046ns (30.092%))
-  Logic Levels:           1  (LUT5=1)
-  Clock Path Skew:        0.005ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    0.019ns
-    Source Clock Delay      (SCD):    0.014ns
-    Clock Pessimism Removal (CPR):    -0.000ns
-
-    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
-  -------------------------------------------------------------------    -------------------
-                         (clock clk rise edge)        0.000     0.000 r  
-                                                      0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.014     0.014    u_patch_pingpong/clk
-    SLICE_X30Y24         FDRE                                         r  u_patch_pingpong/reads_issued_q_reg[7]/C
-  -------------------------------------------------------------------    -------------------
-    SLICE_X30Y24         FDRE (Prop_BFF_SLICEL_C_Q)
-                                                      0.084     0.098 r  u_patch_pingpong/reads_issued_q_reg[7]/Q
-                         net (fo=14, routed)          0.029     0.127    u_patch_pingpong/reads_issued_q[7]
-    SLICE_X30Y24         LUT5 (Prop_B6LUT_SLICEL_I3_O)
-                                                      0.022     0.149 r  u_patch_pingpong/reads_issued_q[7]_i_1/O
-                         net (fo=1, routed)           0.017     0.166    u_patch_pingpong/p_2_in[7]
-    SLICE_X30Y24         FDRE                                         r  u_patch_pingpong/reads_issued_q_reg[7]/D
-  -------------------------------------------------------------------    -------------------
-
-                         (clock clk rise edge)        0.000     0.000 r  
-                                                      0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.019     0.019    u_patch_pingpong/clk
-    SLICE_X30Y24         FDRE                                         r  u_patch_pingpong/reads_issued_q_reg[7]/C
-                         clock pessimism              0.000     0.019    
-    SLICE_X30Y24         FDRE (Hold_BFF_SLICEL_C_D)
-                                                      0.044     0.063    u_patch_pingpong/reads_issued_q_reg[7]
-  -------------------------------------------------------------------
-                         required time                         -0.063    
                          arrival time                           0.166    
   -------------------------------------------------------------------
-                         slack                                  0.103    
+                         slack                                  0.101    
 
-Slack (MET) :             0.105ns  (arrival time - required time)
-  Source:                 g_xmod4_feeder.u_feeder/write_ring_row_q_reg[1]/C
+Slack (MET) :             0.104ns  (arrival time - required time)
+  Source:                 frame_k_count_q_reg[3]/C
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Destination:            g_xmod4_feeder.u_feeder/write_ring_row_q_reg[1]/D
+  Destination:            u_patch_pingpong/set_k_count_q_reg[1][3]/D
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
   Path Group:             clk
   Path Type:              Hold (Min at Fast Process Corner)
   Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
-  Data Path Delay:        0.156ns  (logic 0.103ns (66.180%)  route 0.053ns (33.820%))
-  Logic Levels:           1  (LUT6=1)
+  Data Path Delay:        0.156ns  (logic 0.084ns (53.972%)  route 0.072ns (46.028%))
+  Logic Levels:           0  
   Clock Path Skew:        0.007ns (DCD - SCD - CPR)
     Destination Clock Delay (DCD):    0.021ns
     Source Clock Delay      (SCD):    0.014ns
@@ -325,30 +158,71 @@ Slack (MET) :             0.105ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.014     0.014    g_xmod4_feeder.u_feeder/clk
-    SLICE_X29Y53         FDRE                                         r  g_xmod4_feeder.u_feeder/write_ring_row_q_reg[1]/C
+                         net (fo=3339, unset)         0.014     0.014    clk
+    SLICE_X40Y23         FDRE                                         r  frame_k_count_q_reg[3]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X29Y53         FDRE (Prop_BFF_SLICEM_C_Q)
-                                                      0.082     0.096 r  g_xmod4_feeder.u_feeder/write_ring_row_q_reg[1]/Q
-                         net (fo=8, routed)           0.029     0.125    g_xmod4_feeder.u_feeder/write_ring_row_q_reg_n_0_[1]
-    SLICE_X29Y53         LUT6 (Prop_B6LUT_SLICEM_I5_O)
-                                                      0.021     0.146 r  g_xmod4_feeder.u_feeder/write_ring_row_q[1]_i_1/O
-                         net (fo=1, routed)           0.024     0.170    g_xmod4_feeder.u_feeder/write_ring_row_q[1]_i_1_n_0
-    SLICE_X29Y53         FDRE                                         r  g_xmod4_feeder.u_feeder/write_ring_row_q_reg[1]/D
+    SLICE_X40Y23         FDRE (Prop_AFF2_SLICEM_C_Q)
+                                                      0.084     0.098 r  frame_k_count_q_reg[3]/Q
+                         net (fo=2, routed)           0.072     0.170    u_patch_pingpong/set_k_count_q_reg[1][12]_0[3]
+    SLICE_X40Y24         FDRE                                         r  u_patch_pingpong/set_k_count_q_reg[1][3]/D
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.021     0.021    g_xmod4_feeder.u_feeder/clk
-    SLICE_X29Y53         FDRE                                         r  g_xmod4_feeder.u_feeder/write_ring_row_q_reg[1]/C
+                         net (fo=3339, unset)         0.021     0.021    u_patch_pingpong/clk
+    SLICE_X40Y24         FDRE                                         r  u_patch_pingpong/set_k_count_q_reg[1][3]/C
                          clock pessimism              0.000     0.021    
-    SLICE_X29Y53         FDRE (Hold_BFF_SLICEM_C_D)
-                                                      0.044     0.065    g_xmod4_feeder.u_feeder/write_ring_row_q_reg[1]
+    SLICE_X40Y24         FDRE (Hold_FFF2_SLICEM_C_D)
+                                                      0.045     0.066    u_patch_pingpong/set_k_count_q_reg[1][3]
   -------------------------------------------------------------------
-                         required time                         -0.065    
+                         required time                         -0.066    
                          arrival time                           0.170    
   -------------------------------------------------------------------
-                         slack                                  0.105    
+                         slack                                  0.104    
+
+Slack (MET) :             0.104ns  (arrival time - required time)
+  Source:                 g_xmod4_feeder.u_feeder/write_ring_row_q_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            g_xmod4_feeder.u_feeder/write_ring_row_q_reg[0]/D
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.154ns  (logic 0.105ns (68.062%)  route 0.049ns (31.938%))
+  Logic Levels:           1  (LUT5=1)
+  Clock Path Skew:        0.006ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.020ns
+    Source Clock Delay      (SCD):    0.014ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3339, unset)         0.014     0.014    g_xmod4_feeder.u_feeder/clk
+    SLICE_X30Y67         FDRE                                         r  g_xmod4_feeder.u_feeder/write_ring_row_q_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X30Y67         FDRE (Prop_HFF_SLICEL_C_Q)
+                                                      0.084     0.098 f  g_xmod4_feeder.u_feeder/write_ring_row_q_reg[0]/Q
+                         net (fo=16, routed)          0.030     0.128    g_xmod4_feeder.u_feeder/write_ring_row_q_reg_n_0_[0]
+    SLICE_X30Y67         LUT5 (Prop_H6LUT_SLICEL_I3_O)
+                                                      0.021     0.149 r  g_xmod4_feeder.u_feeder/write_ring_row_q[0]_i_1/O
+                         net (fo=1, routed)           0.019     0.168    g_xmod4_feeder.u_feeder/write_ring_row_q[0]_i_1_n_0
+    SLICE_X30Y67         FDRE                                         r  g_xmod4_feeder.u_feeder/write_ring_row_q_reg[0]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3339, unset)         0.020     0.020    g_xmod4_feeder.u_feeder/clk
+    SLICE_X30Y67         FDRE                                         r  g_xmod4_feeder.u_feeder/write_ring_row_q_reg[0]/C
+                         clock pessimism              0.000     0.020    
+    SLICE_X30Y67         FDRE (Hold_HFF_SLICEL_C_D)
+                                                      0.044     0.064    g_xmod4_feeder.u_feeder/write_ring_row_q_reg[0]
+  -------------------------------------------------------------------
+                         required time                         -0.064    
+                         arrival time                           0.168    
+  -------------------------------------------------------------------
+                         slack                                  0.104    
 
 Slack (MET) :             0.108ns  (arrival time - required time)
   Source:                 g_xmod4_feeder.u_feeder/scan_x_q_reg[5]/C
@@ -358,10 +232,10 @@ Slack (MET) :             0.108ns  (arrival time - required time)
   Path Group:             clk
   Path Type:              Hold (Min at Fast Process Corner)
   Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
-  Data Path Delay:        0.157ns  (logic 0.106ns (67.556%)  route 0.051ns (32.444%))
+  Data Path Delay:        0.159ns  (logic 0.103ns (64.669%)  route 0.056ns (35.331%))
   Logic Levels:           1  (LUT5=1)
-  Clock Path Skew:        0.005ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    0.019ns
+  Clock Path Skew:        0.007ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.021ns
     Source Clock Delay      (SCD):    0.014ns
     Clock Pessimism Removal (CPR):    -0.000ns
 
@@ -369,41 +243,85 @@ Slack (MET) :             0.108ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.014     0.014    g_xmod4_feeder.u_feeder/clk
-    SLICE_X36Y50         FDRE                                         r  g_xmod4_feeder.u_feeder/scan_x_q_reg[5]/C
+                         net (fo=3339, unset)         0.014     0.014    g_xmod4_feeder.u_feeder/clk
+    SLICE_X29Y75         FDRE                                         r  g_xmod4_feeder.u_feeder/scan_x_q_reg[5]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X36Y50         FDRE (Prop_BFF_SLICEL_C_Q)
-                                                      0.084     0.098 r  g_xmod4_feeder.u_feeder/scan_x_q_reg[5]/Q
-                         net (fo=15, routed)          0.034     0.132    g_xmod4_feeder.u_feeder/scan_x_q_reg_n_0_[5]
-    SLICE_X36Y50         LUT5 (Prop_B6LUT_SLICEL_I2_O)
-                                                      0.022     0.154 r  g_xmod4_feeder.u_feeder/scan_x_q[5]_i_1/O
-                         net (fo=1, routed)           0.017     0.171    g_xmod4_feeder.u_feeder/scan_x_q[5]_i_1_n_0
-    SLICE_X36Y50         FDRE                                         r  g_xmod4_feeder.u_feeder/scan_x_q_reg[5]/D
+    SLICE_X29Y75         FDRE (Prop_BFF_SLICEM_C_Q)
+                                                      0.082     0.096 r  g_xmod4_feeder.u_feeder/scan_x_q_reg[5]/Q
+                         net (fo=11, routed)          0.032     0.128    g_xmod4_feeder.u_feeder/data0[3]
+    SLICE_X29Y75         LUT5 (Prop_B6LUT_SLICEM_I2_O)
+                                                      0.021     0.149 r  g_xmod4_feeder.u_feeder/scan_x_q[5]_i_1/O
+                         net (fo=1, routed)           0.024     0.173    g_xmod4_feeder.u_feeder/scan_x_q[5]_i_1_n_0
+    SLICE_X29Y75         FDRE                                         r  g_xmod4_feeder.u_feeder/scan_x_q_reg[5]/D
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.019     0.019    g_xmod4_feeder.u_feeder/clk
-    SLICE_X36Y50         FDRE                                         r  g_xmod4_feeder.u_feeder/scan_x_q_reg[5]/C
-                         clock pessimism              0.000     0.019    
-    SLICE_X36Y50         FDRE (Hold_BFF_SLICEL_C_D)
-                                                      0.044     0.063    g_xmod4_feeder.u_feeder/scan_x_q_reg[5]
+                         net (fo=3339, unset)         0.021     0.021    g_xmod4_feeder.u_feeder/clk
+    SLICE_X29Y75         FDRE                                         r  g_xmod4_feeder.u_feeder/scan_x_q_reg[5]/C
+                         clock pessimism              0.000     0.021    
+    SLICE_X29Y75         FDRE (Hold_BFF_SLICEM_C_D)
+                                                      0.044     0.065    g_xmod4_feeder.u_feeder/scan_x_q_reg[5]
   -------------------------------------------------------------------
-                         required time                         -0.063    
-                         arrival time                           0.171    
+                         required time                         -0.065    
+                         arrival time                           0.173    
   -------------------------------------------------------------------
                          slack                                  0.108    
 
-Slack (MET) :             0.109ns  (arrival time - required time)
-  Source:                 frame_k_count_q_reg[4]/C
+Slack (MET) :             0.108ns  (arrival time - required time)
+  Source:                 g_xmod4_feeder.u_feeder/scan_y_q_reg[5]/C
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Destination:            u_patch_pingpong/set_k_count_q_reg[1][4]/D
+  Destination:            g_xmod4_feeder.u_feeder/scan_y_q_reg[5]/D
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
   Path Group:             clk
   Path Type:              Hold (Min at Fast Process Corner)
   Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
-  Data Path Delay:        0.158ns  (logic 0.084ns (53.287%)  route 0.074ns (46.713%))
-  Logic Levels:           0  
+  Data Path Delay:        0.159ns  (logic 0.103ns (64.669%)  route 0.056ns (35.331%))
+  Logic Levels:           1  (LUT5=1)
+  Clock Path Skew:        0.007ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.021ns
+    Source Clock Delay      (SCD):    0.014ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3339, unset)         0.014     0.014    g_xmod4_feeder.u_feeder/clk
+    SLICE_X29Y74         FDRE                                         r  g_xmod4_feeder.u_feeder/scan_y_q_reg[5]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X29Y74         FDRE (Prop_BFF_SLICEM_C_Q)
+                                                      0.082     0.096 r  g_xmod4_feeder.u_feeder/scan_y_q_reg[5]/Q
+                         net (fo=16, routed)          0.032     0.128    g_xmod4_feeder.u_feeder/scan_y_q[5]
+    SLICE_X29Y74         LUT5 (Prop_B6LUT_SLICEM_I3_O)
+                                                      0.021     0.149 r  g_xmod4_feeder.u_feeder/scan_y_q[5]_i_1/O
+                         net (fo=1, routed)           0.024     0.173    g_xmod4_feeder.u_feeder/scan_y_q[5]_i_1_n_0
+    SLICE_X29Y74         FDRE                                         r  g_xmod4_feeder.u_feeder/scan_y_q_reg[5]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3339, unset)         0.021     0.021    g_xmod4_feeder.u_feeder/clk
+    SLICE_X29Y74         FDRE                                         r  g_xmod4_feeder.u_feeder/scan_y_q_reg[5]/C
+                         clock pessimism              0.000     0.021    
+    SLICE_X29Y74         FDRE (Hold_BFF_SLICEM_C_D)
+                                                      0.044     0.065    g_xmod4_feeder.u_feeder/scan_y_q_reg[5]
+  -------------------------------------------------------------------
+                         required time                         -0.065    
+                         arrival time                           0.173    
+  -------------------------------------------------------------------
+                         slack                                  0.108    
+
+Slack (MET) :             0.110ns  (arrival time - required time)
+  Source:                 u_patch_pingpong/reads_issued_q_reg[3]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_patch_pingpong/reads_issued_q_reg[3]/D
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.159ns  (logic 0.106ns (66.709%)  route 0.053ns (33.291%))
+  Logic Levels:           1  (LUT6=1)
   Clock Path Skew:        0.005ns (DCD - SCD - CPR)
     Destination Clock Delay (DCD):    0.019ns
     Source Clock Delay      (SCD):    0.014ns
@@ -413,81 +331,81 @@ Slack (MET) :             0.109ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.014     0.014    clk
-    SLICE_X29Y25         FDRE                                         r  frame_k_count_q_reg[4]/C
+                         net (fo=3339, unset)         0.014     0.014    u_patch_pingpong/clk
+    SLICE_X42Y22         FDRE                                         r  u_patch_pingpong/reads_issued_q_reg[3]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X29Y25         FDRE (Prop_EFF2_SLICEM_C_Q)
-                                                      0.084     0.098 r  frame_k_count_q_reg[4]/Q
-                         net (fo=2, routed)           0.074     0.172    u_patch_pingpong/set_k_count_q_reg[1][12]_0[4]
-    SLICE_X30Y25         FDRE                                         r  u_patch_pingpong/set_k_count_q_reg[1][4]/D
+    SLICE_X42Y22         FDRE (Prop_BFF_SLICEL_C_Q)
+                                                      0.084     0.098 r  u_patch_pingpong/reads_issued_q_reg[3]/Q
+                         net (fo=12, routed)          0.036     0.134    u_patch_pingpong/reads_issued_q[3]
+    SLICE_X42Y22         LUT6 (Prop_B6LUT_SLICEL_I4_O)
+                                                      0.022     0.156 r  u_patch_pingpong/reads_issued_q[3]_i_1/O
+                         net (fo=1, routed)           0.017     0.173    u_patch_pingpong/p_2_in[3]
+    SLICE_X42Y22         FDRE                                         r  u_patch_pingpong/reads_issued_q_reg[3]/D
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.019     0.019    u_patch_pingpong/clk
-    SLICE_X30Y25         FDRE                                         r  u_patch_pingpong/set_k_count_q_reg[1][4]/C
+                         net (fo=3339, unset)         0.019     0.019    u_patch_pingpong/clk
+    SLICE_X42Y22         FDRE                                         r  u_patch_pingpong/reads_issued_q_reg[3]/C
                          clock pessimism              0.000     0.019    
-    SLICE_X30Y25         FDRE (Hold_BFF_SLICEL_C_D)
-                                                      0.044     0.063    u_patch_pingpong/set_k_count_q_reg[1][4]
+    SLICE_X42Y22         FDRE (Hold_BFF_SLICEL_C_D)
+                                                      0.044     0.063    u_patch_pingpong/reads_issued_q_reg[3]
   -------------------------------------------------------------------
                          required time                         -0.063    
-                         arrival time                           0.172    
+                         arrival time                           0.173    
   -------------------------------------------------------------------
-                         slack                                  0.109    
-
-Slack (MET) :             0.109ns  (arrival time - required time)
-  Source:                 g_xmod4_feeder.u_feeder/lane_x_base_q_reg[2][2]/C
-                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Destination:            g_xmod4_feeder.u_feeder/capture_bank_q_reg[2][0]/D
-                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Path Group:             clk
-  Path Type:              Hold (Min at Fast Process Corner)
-  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
-  Data Path Delay:        0.161ns  (logic 0.104ns (64.487%)  route 0.057ns (35.513%))
-  Logic Levels:           1  (LUT6=1)
-  Clock Path Skew:        0.007ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    0.021ns
-    Source Clock Delay      (SCD):    0.014ns
-    Clock Pessimism Removal (CPR):    -0.000ns
-
-    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
-  -------------------------------------------------------------------    -------------------
-                         (clock clk rise edge)        0.000     0.000 r  
-                                                      0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.014     0.014    g_xmod4_feeder.u_feeder/clk
-    SLICE_X34Y88         FDRE                                         r  g_xmod4_feeder.u_feeder/lane_x_base_q_reg[2][2]/C
-  -------------------------------------------------------------------    -------------------
-    SLICE_X34Y88         FDRE (Prop_CFF_SLICEM_C_Q)
-                                                      0.083     0.097 r  g_xmod4_feeder.u_feeder/lane_x_base_q_reg[2][2]/Q
-                         net (fo=4, routed)           0.035     0.132    g_xmod4_feeder.u_feeder/lane_x_base_q_reg[2]_34[2]
-    SLICE_X34Y87         LUT6 (Prop_H6LUT_SLICEM_I2_O)
-                                                      0.021     0.153 r  g_xmod4_feeder.u_feeder/capture_bank_q[2][0]_i_1/O
-                         net (fo=1, routed)           0.022     0.175    g_xmod4_feeder.u_feeder/capture_bank_q[2][0]_i_1_n_0
-    SLICE_X34Y87         FDRE                                         r  g_xmod4_feeder.u_feeder/capture_bank_q_reg[2][0]/D
-  -------------------------------------------------------------------    -------------------
-
-                         (clock clk rise edge)        0.000     0.000 r  
-                                                      0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.021     0.021    g_xmod4_feeder.u_feeder/clk
-    SLICE_X34Y87         FDRE                                         r  g_xmod4_feeder.u_feeder/capture_bank_q_reg[2][0]/C
-                         clock pessimism              0.000     0.021    
-    SLICE_X34Y87         FDRE (Hold_HFF2_SLICEM_C_D)
-                                                      0.045     0.066    g_xmod4_feeder.u_feeder/capture_bank_q_reg[2][0]
-  -------------------------------------------------------------------
-                         required time                         -0.066    
-                         arrival time                           0.175    
-  -------------------------------------------------------------------
-                         slack                                  0.109    
+                         slack                                  0.110    
 
 Slack (MET) :             0.111ns  (arrival time - required time)
-  Source:                 g_xmod4_feeder.u_feeder/emit_k_q_reg[5]/C
+  Source:                 frame_k_count_q_reg[4]/C
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Destination:            g_xmod4_feeder.u_feeder/emit_k_q_reg[5]/D
+  Destination:            u_patch_pingpong/set_k_count_q_reg[0][4]/D
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
   Path Group:             clk
   Path Type:              Hold (Min at Fast Process Corner)
   Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
-  Data Path Delay:        0.162ns  (logic 0.104ns (64.205%)  route 0.058ns (35.795%))
+  Data Path Delay:        0.162ns  (logic 0.082ns (50.731%)  route 0.080ns (49.269%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.007ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.021ns
+    Source Clock Delay      (SCD):    0.014ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3339, unset)         0.014     0.014    clk
+    SLICE_X40Y23         FDRE                                         r  frame_k_count_q_reg[4]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X40Y23         FDRE (Prop_BFF_SLICEM_C_Q)
+                                                      0.082     0.096 r  frame_k_count_q_reg[4]/Q
+                         net (fo=2, routed)           0.080     0.176    u_patch_pingpong/set_k_count_q_reg[1][12]_0[4]
+    SLICE_X40Y23         FDRE                                         r  u_patch_pingpong/set_k_count_q_reg[0][4]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3339, unset)         0.021     0.021    u_patch_pingpong/clk
+    SLICE_X40Y23         FDRE                                         r  u_patch_pingpong/set_k_count_q_reg[0][4]/C
+                         clock pessimism              0.000     0.021    
+    SLICE_X40Y23         FDRE (Hold_GFF_SLICEM_C_D)
+                                                      0.044     0.065    u_patch_pingpong/set_k_count_q_reg[0][4]
+  -------------------------------------------------------------------
+                         required time                         -0.065    
+                         arrival time                           0.176    
+  -------------------------------------------------------------------
+                         slack                                  0.111    
+
+Slack (MET) :             0.111ns  (arrival time - required time)
+  Source:                 g_xmod4_feeder.u_feeder/scan_x_q_reg[6]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            g_xmod4_feeder.u_feeder/scan_x_q_reg[7]/D
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.162ns  (logic 0.104ns (64.022%)  route 0.058ns (35.978%))
   Logic Levels:           1  (LUT6=1)
   Clock Path Skew:        0.007ns (DCD - SCD - CPR)
     Destination Clock Delay (DCD):    0.021ns
@@ -498,25 +416,25 @@ Slack (MET) :             0.111ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.014     0.014    g_xmod4_feeder.u_feeder/clk
-    SLICE_X29Y49         FDRE                                         r  g_xmod4_feeder.u_feeder/emit_k_q_reg[5]/C
+                         net (fo=3339, unset)         0.014     0.014    g_xmod4_feeder.u_feeder/clk
+    SLICE_X29Y75         FDRE                                         r  g_xmod4_feeder.u_feeder/scan_x_q_reg[6]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X29Y49         FDRE (Prop_DFF_SLICEM_C_Q)
-                                                      0.083     0.097 r  g_xmod4_feeder.u_feeder/emit_k_q_reg[5]/Q
-                         net (fo=3, routed)           0.029     0.126    g_xmod4_feeder.u_feeder/feeder_k[5]
-    SLICE_X29Y49         LUT6 (Prop_D6LUT_SLICEM_I4_O)
-                                                      0.021     0.147 r  g_xmod4_feeder.u_feeder/emit_k_q[5]_i_1/O
-                         net (fo=1, routed)           0.029     0.176    g_xmod4_feeder.u_feeder/emit_k_q[5]_i_1_n_0
-    SLICE_X29Y49         FDRE                                         r  g_xmod4_feeder.u_feeder/emit_k_q_reg[5]/D
+    SLICE_X29Y75         FDRE (Prop_HFF_SLICEM_C_Q)
+                                                      0.083     0.097 r  g_xmod4_feeder.u_feeder/scan_x_q_reg[6]/Q
+                         net (fo=12, routed)          0.035     0.132    g_xmod4_feeder.u_feeder/scan_x_q_reg_n_0_[6]
+    SLICE_X29Y75         LUT6 (Prop_G6LUT_SLICEM_I3_O)
+                                                      0.021     0.153 r  g_xmod4_feeder.u_feeder/scan_x_q[7]_i_2/O
+                         net (fo=1, routed)           0.023     0.176    g_xmod4_feeder.u_feeder/scan_x_q[7]_i_2_n_0
+    SLICE_X29Y75         FDRE                                         r  g_xmod4_feeder.u_feeder/scan_x_q_reg[7]/D
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.021     0.021    g_xmod4_feeder.u_feeder/clk
-    SLICE_X29Y49         FDRE                                         r  g_xmod4_feeder.u_feeder/emit_k_q_reg[5]/C
+                         net (fo=3339, unset)         0.021     0.021    g_xmod4_feeder.u_feeder/clk
+    SLICE_X29Y75         FDRE                                         r  g_xmod4_feeder.u_feeder/scan_x_q_reg[7]/C
                          clock pessimism              0.000     0.021    
-    SLICE_X29Y49         FDRE (Hold_DFF_SLICEM_C_D)
-                                                      0.044     0.065    g_xmod4_feeder.u_feeder/emit_k_q_reg[5]
+    SLICE_X29Y75         FDRE (Hold_GFF_SLICEM_C_D)
+                                                      0.044     0.065    g_xmod4_feeder.u_feeder/scan_x_q_reg[7]
   -------------------------------------------------------------------
                          required time                         -0.065    
                          arrival time                           0.176    
@@ -524,17 +442,17 @@ Slack (MET) :             0.111ns  (arrival time - required time)
                          slack                                  0.111    
 
 Slack (MET) :             0.112ns  (arrival time - required time)
-  Source:                 g_xmod4_feeder.u_feeder/emit_k_q_reg[3]/C
+  Source:                 u_patch_pingpong/reads_issued_q_reg[1]/C
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Destination:            g_xmod4_feeder.u_feeder/emit_k_q_reg[3]/D
+  Destination:            u_patch_pingpong/reads_issued_q_reg[1]/D
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
   Path Group:             clk
   Path Type:              Hold (Min at Fast Process Corner)
   Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
-  Data Path Delay:        0.163ns  (logic 0.104ns (63.879%)  route 0.059ns (36.121%))
+  Data Path Delay:        0.161ns  (logic 0.105ns (65.258%)  route 0.056ns (34.742%))
   Logic Levels:           1  (LUT6=1)
-  Clock Path Skew:        0.007ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    0.021ns
+  Clock Path Skew:        0.005ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.019ns
     Source Clock Delay      (SCD):    0.014ns
     Clock Pessimism Removal (CPR):    -0.000ns
 
@@ -542,40 +460,81 @@ Slack (MET) :             0.112ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.014     0.014    g_xmod4_feeder.u_feeder/clk
-    SLICE_X29Y48         FDRE                                         r  g_xmod4_feeder.u_feeder/emit_k_q_reg[3]/C
+                         net (fo=3339, unset)         0.014     0.014    u_patch_pingpong/clk
+    SLICE_X42Y22         FDRE                                         r  u_patch_pingpong/reads_issued_q_reg[1]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X29Y48         FDRE (Prop_CFF_SLICEM_C_Q)
-                                                      0.083     0.097 r  g_xmod4_feeder.u_feeder/emit_k_q_reg[3]/Q
-                         net (fo=5, routed)           0.032     0.129    g_xmod4_feeder.u_feeder/feeder_k[3]
-    SLICE_X29Y48         LUT6 (Prop_C6LUT_SLICEM_I4_O)
-                                                      0.021     0.150 r  g_xmod4_feeder.u_feeder/emit_k_q[3]_i_1/O
-                         net (fo=1, routed)           0.027     0.177    g_xmod4_feeder.u_feeder/emit_k_q[3]_i_1_n_0
-    SLICE_X29Y48         FDRE                                         r  g_xmod4_feeder.u_feeder/emit_k_q_reg[3]/D
+    SLICE_X42Y22         FDRE (Prop_CFF_SLICEL_C_Q)
+                                                      0.084     0.098 r  u_patch_pingpong/reads_issued_q_reg[1]/Q
+                         net (fo=15, routed)          0.037     0.135    u_patch_pingpong/reads_issued_q[1]
+    SLICE_X42Y22         LUT6 (Prop_C6LUT_SLICEL_I4_O)
+                                                      0.021     0.156 r  u_patch_pingpong/reads_issued_q[1]_i_1/O
+                         net (fo=1, routed)           0.019     0.175    u_patch_pingpong/p_2_in[1]
+    SLICE_X42Y22         FDRE                                         r  u_patch_pingpong/reads_issued_q_reg[1]/D
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.021     0.021    g_xmod4_feeder.u_feeder/clk
-    SLICE_X29Y48         FDRE                                         r  g_xmod4_feeder.u_feeder/emit_k_q_reg[3]/C
-                         clock pessimism              0.000     0.021    
-    SLICE_X29Y48         FDRE (Hold_CFF_SLICEM_C_D)
-                                                      0.044     0.065    g_xmod4_feeder.u_feeder/emit_k_q_reg[3]
+                         net (fo=3339, unset)         0.019     0.019    u_patch_pingpong/clk
+    SLICE_X42Y22         FDRE                                         r  u_patch_pingpong/reads_issued_q_reg[1]/C
+                         clock pessimism              0.000     0.019    
+    SLICE_X42Y22         FDRE (Hold_CFF_SLICEL_C_D)
+                                                      0.044     0.063    u_patch_pingpong/reads_issued_q_reg[1]
   -------------------------------------------------------------------
-                         required time                         -0.065    
-                         arrival time                           0.177    
+                         required time                         -0.063    
+                         arrival time                           0.175    
   -------------------------------------------------------------------
                          slack                                  0.112    
 
 Slack (MET) :             0.112ns  (arrival time - required time)
-  Source:                 frame_k_count_q_reg[11]/C
+  Source:                 u_patch_pingpong/reads_issued_q_reg[9]/C
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Destination:            u_patch_pingpong/set_k_count_q_reg[1][11]/D
+  Destination:            u_patch_pingpong/g_set[1].u_memory/memory_reg_uram_0/ADDR_A[9]
+                            (rising edge-triggered cell URAM288 clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.137ns  (logic 0.084ns (61.130%)  route 0.053ns (38.870%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.050ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.064ns
+    Source Clock Delay      (SCD):    0.014ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3339, unset)         0.014     0.014    u_patch_pingpong/clk
+    SLICE_X42Y23         FDRE                                         r  u_patch_pingpong/reads_issued_q_reg[9]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X42Y23         FDRE (Prop_BFF_SLICEL_C_Q)
+                                                      0.084     0.098 r  u_patch_pingpong/reads_issued_q_reg[9]/Q
+                         net (fo=11, routed)          0.053     0.151    u_patch_pingpong/g_set[1].u_memory/reads_issued_q2_inferred__0/i__carry[9]
+    URAM288_X0Y6         URAM288                                      r  u_patch_pingpong/g_set[1].u_memory/memory_reg_uram_0/ADDR_A[9]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3339, unset)         0.064     0.064    u_patch_pingpong/g_set[1].u_memory/clk
+    URAM288_X0Y6         URAM288                                      r  u_patch_pingpong/g_set[1].u_memory/memory_reg_uram_0/CLK
+                         clock pessimism              0.000     0.064    
+    URAM288_X0Y6         URAM288 (Hold_URAM_288K_INST_URAM288_CLK_ADDR_A[9])
+                                                     -0.025     0.039    u_patch_pingpong/g_set[1].u_memory/memory_reg_uram_0
+  -------------------------------------------------------------------
+                         required time                         -0.039    
+                         arrival time                           0.151    
+  -------------------------------------------------------------------
+                         slack                                  0.112    
+
+Slack (MET) :             0.113ns  (arrival time - required time)
+  Source:                 u_patch_pingpong/pending_k_q_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_patch_pingpong/patch_k_reg[0]/D
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
   Path Group:             clk
   Path Type:              Hold (Min at Fast Process Corner)
   Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
-  Data Path Delay:        0.163ns  (logic 0.085ns (52.147%)  route 0.078ns (47.853%))
+  Data Path Delay:        0.164ns  (logic 0.082ns (50.000%)  route 0.082ns (50.000%))
   Logic Levels:           0  
   Clock Path Skew:        0.007ns (DCD - SCD - CPR)
     Destination Clock Delay (DCD):    0.021ns
@@ -586,37 +545,122 @@ Slack (MET) :             0.112ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.014     0.014    clk
-    SLICE_X30Y25         FDRE                                         r  frame_k_count_q_reg[11]/C
+                         net (fo=3339, unset)         0.014     0.014    u_patch_pingpong/clk
+    SLICE_X41Y20         FDRE                                         r  u_patch_pingpong/pending_k_q_reg[0]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X30Y25         FDRE (Prop_EFF2_SLICEL_C_Q)
-                                                      0.085     0.099 r  frame_k_count_q_reg[11]/Q
-                         net (fo=2, routed)           0.078     0.177    u_patch_pingpong/set_k_count_q_reg[1][12]_0[11]
-    SLICE_X31Y25         FDRE                                         r  u_patch_pingpong/set_k_count_q_reg[1][11]/D
+    SLICE_X41Y20         FDRE (Prop_EFF_SLICEM_C_Q)
+                                                      0.082     0.096 r  u_patch_pingpong/pending_k_q_reg[0]/Q
+                         net (fo=1, routed)           0.082     0.178    u_patch_pingpong/pending_k_q[0]
+    SLICE_X41Y20         FDRE                                         r  u_patch_pingpong/patch_k_reg[0]/D
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.021     0.021    u_patch_pingpong/clk
-    SLICE_X31Y25         FDRE                                         r  u_patch_pingpong/set_k_count_q_reg[1][11]/C
+                         net (fo=3339, unset)         0.021     0.021    u_patch_pingpong/clk
+    SLICE_X41Y20         FDRE                                         r  u_patch_pingpong/patch_k_reg[0]/C
                          clock pessimism              0.000     0.021    
-    SLICE_X31Y25         FDRE (Hold_BFF_SLICEM_C_D)
-                                                      0.044     0.065    u_patch_pingpong/set_k_count_q_reg[1][11]
+    SLICE_X41Y20         FDRE (Hold_AFF_SLICEM_C_D)
+                                                      0.044     0.065    u_patch_pingpong/patch_k_reg[0]
   -------------------------------------------------------------------
                          required time                         -0.065    
-                         arrival time                           0.177    
+                         arrival time                           0.178    
   -------------------------------------------------------------------
-                         slack                                  0.112    
+                         slack                                  0.113    
 
-Slack (MET) :             0.112ns  (arrival time - required time)
-  Source:                 g_xmod4_feeder.u_feeder/emit_k_q_reg[0]/C
+Slack (MET) :             0.113ns  (arrival time - required time)
+  Source:                 u_patch_pingpong/write_k_q_reg[6]/C
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Destination:            g_xmod4_feeder.u_feeder/emit_k_q_reg[1]/D
+  Destination:            u_patch_pingpong/write_k_q_reg[6]/D
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
   Path Group:             clk
   Path Type:              Hold (Min at Fast Process Corner)
   Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
-  Data Path Delay:        0.163ns  (logic 0.104ns (63.757%)  route 0.059ns (36.243%))
+  Data Path Delay:        0.164ns  (logic 0.104ns (63.310%)  route 0.060ns (36.690%))
+  Logic Levels:           1  (LUT5=1)
+  Clock Path Skew:        0.007ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.021ns
+    Source Clock Delay      (SCD):    0.014ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3339, unset)         0.014     0.014    u_patch_pingpong/clk
+    SLICE_X43Y23         FDRE                                         r  u_patch_pingpong/write_k_q_reg[6]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X43Y23         FDRE (Prop_CFF_SLICEM_C_Q)
+                                                      0.083     0.097 r  u_patch_pingpong/write_k_q_reg[6]/Q
+                         net (fo=12, routed)          0.033     0.130    u_patch_pingpong/write_k_q_reg_n_0_[6]
+    SLICE_X43Y23         LUT5 (Prop_C6LUT_SLICEM_I3_O)
+                                                      0.021     0.151 r  u_patch_pingpong/write_k_q[6]_i_1/O
+                         net (fo=1, routed)           0.027     0.178    u_patch_pingpong/p_1_in[6]
+    SLICE_X43Y23         FDRE                                         r  u_patch_pingpong/write_k_q_reg[6]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3339, unset)         0.021     0.021    u_patch_pingpong/clk
+    SLICE_X43Y23         FDRE                                         r  u_patch_pingpong/write_k_q_reg[6]/C
+                         clock pessimism              0.000     0.021    
+    SLICE_X43Y23         FDRE (Hold_CFF_SLICEM_C_D)
+                                                      0.044     0.065    u_patch_pingpong/write_k_q_reg[6]
+  -------------------------------------------------------------------
+                         required time                         -0.065    
+                         arrival time                           0.178    
+  -------------------------------------------------------------------
+                         slack                                  0.113    
+
+Slack (MET) :             0.114ns  (arrival time - required time)
+  Source:                 frame_k_count_q_reg[8]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_patch_pingpong/set_k_count_q_reg[0][8]/D
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.165ns  (logic 0.085ns (51.362%)  route 0.080ns (48.638%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.007ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.021ns
+    Source Clock Delay      (SCD):    0.014ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3339, unset)         0.014     0.014    clk
+    SLICE_X39Y24         FDRE                                         r  frame_k_count_q_reg[8]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X39Y24         FDRE (Prop_EFF2_SLICEL_C_Q)
+                                                      0.085     0.099 r  frame_k_count_q_reg[8]/Q
+                         net (fo=2, routed)           0.080     0.179    u_patch_pingpong/set_k_count_q_reg[1][12]_0[8]
+    SLICE_X40Y24         FDRE                                         r  u_patch_pingpong/set_k_count_q_reg[0][8]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=3339, unset)         0.021     0.021    u_patch_pingpong/clk
+    SLICE_X40Y24         FDRE                                         r  u_patch_pingpong/set_k_count_q_reg[0][8]/C
+                         clock pessimism              0.000     0.021    
+    SLICE_X40Y24         FDRE (Hold_BFF_SLICEM_C_D)
+                                                      0.044     0.065    u_patch_pingpong/set_k_count_q_reg[0][8]
+  -------------------------------------------------------------------
+                         required time                         -0.065    
+                         arrival time                           0.179    
+  -------------------------------------------------------------------
+                         slack                                  0.114    
+
+Slack (MET) :             0.115ns  (arrival time - required time)
+  Source:                 u_patch_pingpong/write_k_q_reg[7]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Destination:            u_patch_pingpong/write_k_q_reg[7]/D
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.166ns  (logic 0.104ns (62.685%)  route 0.062ns (37.315%))
   Logic Levels:           1  (LUT6=1)
   Clock Path Skew:        0.007ns (DCD - SCD - CPR)
     Destination Clock Delay (DCD):    0.021ns
@@ -627,85 +671,41 @@ Slack (MET) :             0.112ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.014     0.014    g_xmod4_feeder.u_feeder/clk
-    SLICE_X29Y48         FDRE                                         r  g_xmod4_feeder.u_feeder/emit_k_q_reg[0]/C
+                         net (fo=3339, unset)         0.014     0.014    u_patch_pingpong/clk
+    SLICE_X41Y23         FDRE                                         r  u_patch_pingpong/write_k_q_reg[7]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X29Y48         FDRE (Prop_HFF_SLICEM_C_Q)
-                                                      0.083     0.097 r  g_xmod4_feeder.u_feeder/emit_k_q_reg[0]/Q
-                         net (fo=8, routed)           0.036     0.133    g_xmod4_feeder.u_feeder/feeder_k[0]
-    SLICE_X29Y48         LUT6 (Prop_G6LUT_SLICEM_I3_O)
-                                                      0.021     0.154 r  g_xmod4_feeder.u_feeder/emit_k_q[1]_i_1/O
-                         net (fo=1, routed)           0.023     0.177    g_xmod4_feeder.u_feeder/emit_k_q[1]_i_1_n_0
-    SLICE_X29Y48         FDRE                                         r  g_xmod4_feeder.u_feeder/emit_k_q_reg[1]/D
+    SLICE_X41Y23         FDRE (Prop_HFF_SLICEM_C_Q)
+                                                      0.083     0.097 r  u_patch_pingpong/write_k_q_reg[7]/Q
+                         net (fo=10, routed)          0.039     0.136    u_patch_pingpong/write_k_q_reg_n_0_[7]
+    SLICE_X41Y23         LUT6 (Prop_H6LUT_SLICEM_I3_O)
+                                                      0.021     0.157 r  u_patch_pingpong/write_k_q[7]_i_1/O
+                         net (fo=1, routed)           0.023     0.180    u_patch_pingpong/p_1_in[7]
+    SLICE_X41Y23         FDRE                                         r  u_patch_pingpong/write_k_q_reg[7]/D
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.021     0.021    g_xmod4_feeder.u_feeder/clk
-    SLICE_X29Y48         FDRE                                         r  g_xmod4_feeder.u_feeder/emit_k_q_reg[1]/C
+                         net (fo=3339, unset)         0.021     0.021    u_patch_pingpong/clk
+    SLICE_X41Y23         FDRE                                         r  u_patch_pingpong/write_k_q_reg[7]/C
                          clock pessimism              0.000     0.021    
-    SLICE_X29Y48         FDRE (Hold_GFF_SLICEM_C_D)
-                                                      0.044     0.065    g_xmod4_feeder.u_feeder/emit_k_q_reg[1]
+    SLICE_X41Y23         FDRE (Hold_HFF_SLICEM_C_D)
+                                                      0.044     0.065    u_patch_pingpong/write_k_q_reg[7]
   -------------------------------------------------------------------
                          required time                         -0.065    
-                         arrival time                           0.177    
+                         arrival time                           0.180    
   -------------------------------------------------------------------
-                         slack                                  0.112    
+                         slack                                  0.115    
 
-Slack (MET) :             0.113ns  (arrival time - required time)
-  Source:                 u_patch_pingpong/write_k_q_reg[1]/C
+Slack (MET) :             0.115ns  (arrival time - required time)
+  Source:                 u_patch_pingpong/completed_replays_reg[10]/C
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Destination:            u_patch_pingpong/write_k_q_reg[1]/D
+  Destination:            u_patch_pingpong/completed_replays_reg[10]/D
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
   Path Group:             clk
   Path Type:              Hold (Min at Fast Process Corner)
   Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
-  Data Path Delay:        0.164ns  (logic 0.104ns (63.243%)  route 0.060ns (36.757%))
-  Logic Levels:           1  (LUT5=1)
-  Clock Path Skew:        0.007ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    0.021ns
-    Source Clock Delay      (SCD):    0.014ns
-    Clock Pessimism Removal (CPR):    -0.000ns
-
-    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
-  -------------------------------------------------------------------    -------------------
-                         (clock clk rise edge)        0.000     0.000 r  
-                                                      0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.014     0.014    u_patch_pingpong/clk
-    SLICE_X32Y27         FDRE                                         r  u_patch_pingpong/write_k_q_reg[1]/C
-  -------------------------------------------------------------------    -------------------
-    SLICE_X32Y27         FDRE (Prop_HFF_SLICEM_C_Q)
-                                                      0.083     0.097 r  u_patch_pingpong/write_k_q_reg[1]/Q
-                         net (fo=12, routed)          0.037     0.134    u_patch_pingpong/write_k_q_reg_n_0_[1]
-    SLICE_X32Y27         LUT5 (Prop_H6LUT_SLICEM_I3_O)
-                                                      0.021     0.155 r  u_patch_pingpong/write_k_q[1]_i_1/O
-                         net (fo=1, routed)           0.023     0.178    u_patch_pingpong/p_1_in[1]
-    SLICE_X32Y27         FDRE                                         r  u_patch_pingpong/write_k_q_reg[1]/D
-  -------------------------------------------------------------------    -------------------
-
-                         (clock clk rise edge)        0.000     0.000 r  
-                                                      0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.021     0.021    u_patch_pingpong/clk
-    SLICE_X32Y27         FDRE                                         r  u_patch_pingpong/write_k_q_reg[1]/C
-                         clock pessimism              0.000     0.021    
-    SLICE_X32Y27         FDRE (Hold_HFF_SLICEM_C_D)
-                                                      0.044     0.065    u_patch_pingpong/write_k_q_reg[1]
-  -------------------------------------------------------------------
-                         required time                         -0.065    
-                         arrival time                           0.178    
-  -------------------------------------------------------------------
-                         slack                                  0.113    
-
-Slack (MET) :             0.114ns  (arrival time - required time)
-  Source:                 g_xmod4_feeder.u_feeder/scan_x_q_reg[0]/C
-                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Destination:            g_xmod4_feeder.u_feeder/scan_x_q_reg[1]/D
-                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Path Group:             clk
-  Path Type:              Hold (Min at Fast Process Corner)
-  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
-  Data Path Delay:        0.164ns  (logic 0.121ns (73.759%)  route 0.043ns (26.241%))
-  Logic Levels:           1  (LUT5=1)
+  Data Path Delay:        0.164ns  (logic 0.103ns (62.805%)  route 0.061ns (37.195%))
+  Logic Levels:           1  (CARRY8=1)
   Clock Path Skew:        0.005ns (DCD - SCD - CPR)
     Destination Clock Delay (DCD):    0.019ns
     Source Clock Delay      (SCD):    0.014ns
@@ -715,43 +715,43 @@ Slack (MET) :             0.114ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.014     0.014    g_xmod4_feeder.u_feeder/clk
-    SLICE_X33Y50         FDRE                                         r  g_xmod4_feeder.u_feeder/scan_x_q_reg[0]/C
+                         net (fo=3339, unset)         0.014     0.014    u_patch_pingpong/clk
+    SLICE_X33Y21         FDRE                                         r  u_patch_pingpong/completed_replays_reg[10]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X33Y50         FDRE (Prop_DFF_SLICEL_C_Q)
-                                                      0.084     0.098 r  g_xmod4_feeder.u_feeder/scan_x_q_reg[0]/Q
-                         net (fo=94, routed)          0.036     0.134    g_xmod4_feeder.u_feeder/scan_x_q_reg_n_0_[0]
-    SLICE_X33Y50         LUT5 (Prop_D5LUT_SLICEL_I3_O)
-                                                      0.037     0.171 r  g_xmod4_feeder.u_feeder/scan_x_q[1]_i_1/O
-                         net (fo=1, routed)           0.007     0.178    g_xmod4_feeder.u_feeder/scan_x_q[1]_i_1_n_0
-    SLICE_X33Y50         FDRE                                         r  g_xmod4_feeder.u_feeder/scan_x_q_reg[1]/D
+    SLICE_X33Y21         FDRE (Prop_BFF_SLICEL_C_Q)
+                                                      0.084     0.098 r  u_patch_pingpong/completed_replays_reg[10]/Q
+                         net (fo=1, routed)           0.053     0.151    u_patch_pingpong/completed_patch_replays[10]
+    SLICE_X33Y21         CARRY8 (Prop_CARRY8_SLICEL_S[1]_O[1])
+                                                      0.019     0.170 r  u_patch_pingpong/completed_replays0_carry__0/O[1]
+                         net (fo=1, routed)           0.008     0.178    u_patch_pingpong/p_0_in__1[10]
+    SLICE_X33Y21         FDRE                                         r  u_patch_pingpong/completed_replays_reg[10]/D
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.019     0.019    g_xmod4_feeder.u_feeder/clk
-    SLICE_X33Y50         FDRE                                         r  g_xmod4_feeder.u_feeder/scan_x_q_reg[1]/C
+                         net (fo=3339, unset)         0.019     0.019    u_patch_pingpong/clk
+    SLICE_X33Y21         FDRE                                         r  u_patch_pingpong/completed_replays_reg[10]/C
                          clock pessimism              0.000     0.019    
-    SLICE_X33Y50         FDRE (Hold_DFF2_SLICEL_C_D)
-                                                      0.045     0.064    g_xmod4_feeder.u_feeder/scan_x_q_reg[1]
+    SLICE_X33Y21         FDRE (Hold_BFF_SLICEL_C_D)
+                                                      0.044     0.063    u_patch_pingpong/completed_replays_reg[10]
   -------------------------------------------------------------------
-                         required time                         -0.064    
+                         required time                         -0.063    
                          arrival time                           0.178    
   -------------------------------------------------------------------
-                         slack                                  0.114    
+                         slack                                  0.115    
 
-Slack (MET) :             0.114ns  (arrival time - required time)
-  Source:                 g_xmod4_feeder.u_feeder/emit_k_q_reg[0]/C
+Slack (MET) :             0.115ns  (arrival time - required time)
+  Source:                 u_patch_pingpong/completed_replays_reg[2]/C
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Destination:            g_xmod4_feeder.u_feeder/emit_k_q_reg[0]/D
+  Destination:            u_patch_pingpong/completed_replays_reg[2]/D
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
   Path Group:             clk
   Path Type:              Hold (Min at Fast Process Corner)
   Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
-  Data Path Delay:        0.165ns  (logic 0.104ns (62.985%)  route 0.061ns (37.015%))
-  Logic Levels:           1  (LUT6=1)
-  Clock Path Skew:        0.007ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    0.021ns
+  Data Path Delay:        0.164ns  (logic 0.103ns (62.805%)  route 0.061ns (37.195%))
+  Logic Levels:           1  (CARRY8=1)
+  Clock Path Skew:        0.005ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.019ns
     Source Clock Delay      (SCD):    0.014ns
     Clock Pessimism Removal (CPR):    -0.000ns
 
@@ -759,43 +759,43 @@ Slack (MET) :             0.114ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.014     0.014    g_xmod4_feeder.u_feeder/clk
-    SLICE_X29Y48         FDRE                                         r  g_xmod4_feeder.u_feeder/emit_k_q_reg[0]/C
+                         net (fo=3339, unset)         0.014     0.014    u_patch_pingpong/clk
+    SLICE_X33Y20         FDRE                                         r  u_patch_pingpong/completed_replays_reg[2]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X29Y48         FDRE (Prop_HFF_SLICEM_C_Q)
-                                                      0.083     0.097 f  g_xmod4_feeder.u_feeder/emit_k_q_reg[0]/Q
-                         net (fo=8, routed)           0.038     0.135    g_xmod4_feeder.u_feeder/feeder_k[0]
-    SLICE_X29Y48         LUT6 (Prop_H6LUT_SLICEM_I3_O)
-                                                      0.021     0.156 r  g_xmod4_feeder.u_feeder/emit_k_q[0]_i_1/O
-                         net (fo=1, routed)           0.023     0.179    g_xmod4_feeder.u_feeder/emit_k_q[0]_i_1_n_0
-    SLICE_X29Y48         FDRE                                         r  g_xmod4_feeder.u_feeder/emit_k_q_reg[0]/D
+    SLICE_X33Y20         FDRE (Prop_BFF_SLICEL_C_Q)
+                                                      0.084     0.098 r  u_patch_pingpong/completed_replays_reg[2]/Q
+                         net (fo=1, routed)           0.053     0.151    u_patch_pingpong/completed_patch_replays[2]
+    SLICE_X33Y20         CARRY8 (Prop_CARRY8_SLICEL_S[1]_O[1])
+                                                      0.019     0.170 r  u_patch_pingpong/completed_replays0_carry/O[1]
+                         net (fo=1, routed)           0.008     0.178    u_patch_pingpong/p_0_in__1[2]
+    SLICE_X33Y20         FDRE                                         r  u_patch_pingpong/completed_replays_reg[2]/D
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.021     0.021    g_xmod4_feeder.u_feeder/clk
-    SLICE_X29Y48         FDRE                                         r  g_xmod4_feeder.u_feeder/emit_k_q_reg[0]/C
-                         clock pessimism              0.000     0.021    
-    SLICE_X29Y48         FDRE (Hold_HFF_SLICEM_C_D)
-                                                      0.044     0.065    g_xmod4_feeder.u_feeder/emit_k_q_reg[0]
+                         net (fo=3339, unset)         0.019     0.019    u_patch_pingpong/clk
+    SLICE_X33Y20         FDRE                                         r  u_patch_pingpong/completed_replays_reg[2]/C
+                         clock pessimism              0.000     0.019    
+    SLICE_X33Y20         FDRE (Hold_BFF_SLICEL_C_D)
+                                                      0.044     0.063    u_patch_pingpong/completed_replays_reg[2]
   -------------------------------------------------------------------
-                         required time                         -0.065    
-                         arrival time                           0.179    
+                         required time                         -0.063    
+                         arrival time                           0.178    
   -------------------------------------------------------------------
-                         slack                                  0.114    
+                         slack                                  0.115    
 
-Slack (MET) :             0.114ns  (arrival time - required time)
-  Source:                 g_xmod4_feeder.u_feeder/emit_ic_q_reg[0]/C
+Slack (MET) :             0.115ns  (arrival time - required time)
+  Source:                 u_patch_pingpong/completed_replays_reg[8]/C
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Destination:            g_xmod4_feeder.u_feeder/emit_ic_q_reg[0]/D
+  Destination:            u_patch_pingpong/completed_replays_reg[8]/D
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
   Path Group:             clk
   Path Type:              Hold (Min at Fast Process Corner)
   Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
-  Data Path Delay:        0.165ns  (logic 0.104ns (62.927%)  route 0.061ns (37.073%))
-  Logic Levels:           1  (LUT6=1)
-  Clock Path Skew:        0.007ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    0.021ns
+  Data Path Delay:        0.165ns  (logic 0.104ns (63.030%)  route 0.061ns (36.970%))
+  Logic Levels:           1  (CARRY8=1)
+  Clock Path Skew:        0.006ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.020ns
     Source Clock Delay      (SCD):    0.014ns
     Clock Pessimism Removal (CPR):    -0.000ns
 
@@ -803,35 +803,35 @@ Slack (MET) :             0.114ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.014     0.014    g_xmod4_feeder.u_feeder/clk
-    SLICE_X38Y54         FDRE                                         r  g_xmod4_feeder.u_feeder/emit_ic_q_reg[0]/C
+                         net (fo=3339, unset)         0.014     0.014    u_patch_pingpong/clk
+    SLICE_X33Y20         FDRE                                         r  u_patch_pingpong/completed_replays_reg[8]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X38Y54         FDRE (Prop_DFF_SLICEM_C_Q)
-                                                      0.083     0.097 f  g_xmod4_feeder.u_feeder/emit_ic_q_reg[0]/Q
-                         net (fo=42, routed)          0.032     0.129    g_xmod4_feeder.u_feeder/emit_ic_q_reg_n_0_[0]
-    SLICE_X38Y54         LUT6 (Prop_D6LUT_SLICEM_I4_O)
-                                                      0.021     0.150 r  g_xmod4_feeder.u_feeder/emit_ic_q[0]_i_1/O
-                         net (fo=1, routed)           0.029     0.179    g_xmod4_feeder.u_feeder/emit_ic_q[0]_i_1_n_0
-    SLICE_X38Y54         FDRE                                         r  g_xmod4_feeder.u_feeder/emit_ic_q_reg[0]/D
+    SLICE_X33Y20         FDRE (Prop_HFF_SLICEL_C_Q)
+                                                      0.084     0.098 r  u_patch_pingpong/completed_replays_reg[8]/Q
+                         net (fo=1, routed)           0.053     0.151    u_patch_pingpong/completed_patch_replays[8]
+    SLICE_X33Y20         CARRY8 (Prop_CARRY8_SLICEL_S[7]_O[7])
+                                                      0.020     0.171 r  u_patch_pingpong/completed_replays0_carry/O[7]
+                         net (fo=1, routed)           0.008     0.179    u_patch_pingpong/p_0_in__1[8]
+    SLICE_X33Y20         FDRE                                         r  u_patch_pingpong/completed_replays_reg[8]/D
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.021     0.021    g_xmod4_feeder.u_feeder/clk
-    SLICE_X38Y54         FDRE                                         r  g_xmod4_feeder.u_feeder/emit_ic_q_reg[0]/C
-                         clock pessimism              0.000     0.021    
-    SLICE_X38Y54         FDRE (Hold_DFF_SLICEM_C_D)
-                                                      0.044     0.065    g_xmod4_feeder.u_feeder/emit_ic_q_reg[0]
+                         net (fo=3339, unset)         0.020     0.020    u_patch_pingpong/clk
+    SLICE_X33Y20         FDRE                                         r  u_patch_pingpong/completed_replays_reg[8]/C
+                         clock pessimism              0.000     0.020    
+    SLICE_X33Y20         FDRE (Hold_HFF_SLICEL_C_D)
+                                                      0.044     0.064    u_patch_pingpong/completed_replays_reg[8]
   -------------------------------------------------------------------
-                         required time                         -0.065    
+                         required time                         -0.064    
                          arrival time                           0.179    
   -------------------------------------------------------------------
-                         slack                                  0.114    
+                         slack                                  0.115    
 
 Slack (MET) :             0.116ns  (arrival time - required time)
-  Source:                 g_xmod4_feeder.u_feeder/scan_y_q_reg[7]/C
+  Source:                 u_patch_pingpong/write_k_q_reg[2]/C
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
-  Destination:            g_xmod4_feeder.u_feeder/scan_y_q_reg[7]/D
+  Destination:            u_patch_pingpong/write_k_q_reg[2]/D
                             (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.500ns period=5.000ns})
   Path Group:             clk
   Path Type:              Hold (Min at Fast Process Corner)
@@ -847,25 +847,25 @@ Slack (MET) :             0.116ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.014     0.014    g_xmod4_feeder.u_feeder/clk
-    SLICE_X31Y51         FDRE                                         r  g_xmod4_feeder.u_feeder/scan_y_q_reg[7]/C
+                         net (fo=3339, unset)         0.014     0.014    u_patch_pingpong/clk
+    SLICE_X43Y23         FDRE                                         r  u_patch_pingpong/write_k_q_reg[2]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X31Y51         FDRE (Prop_BFF_SLICEM_C_Q)
-                                                      0.082     0.096 r  g_xmod4_feeder.u_feeder/scan_y_q_reg[7]/Q
-                         net (fo=11, routed)          0.040     0.136    g_xmod4_feeder.u_feeder/scan_y_q[7]
-    SLICE_X31Y51         LUT6 (Prop_B6LUT_SLICEM_I3_O)
-                                                      0.021     0.157 r  g_xmod4_feeder.u_feeder/scan_y_q[7]_i_2/O
-                         net (fo=1, routed)           0.024     0.181    g_xmod4_feeder.u_feeder/scan_y_q[7]_i_2_n_0
-    SLICE_X31Y51         FDRE                                         r  g_xmod4_feeder.u_feeder/scan_y_q_reg[7]/D
+    SLICE_X43Y23         FDRE (Prop_BFF_SLICEM_C_Q)
+                                                      0.082     0.096 r  u_patch_pingpong/write_k_q_reg[2]/Q
+                         net (fo=10, routed)          0.040     0.136    u_patch_pingpong/write_k_q_reg_n_0_[2]
+    SLICE_X43Y23         LUT6 (Prop_B6LUT_SLICEM_I3_O)
+                                                      0.021     0.157 r  u_patch_pingpong/write_k_q[2]_i_1/O
+                         net (fo=1, routed)           0.024     0.181    u_patch_pingpong/p_1_in[2]
+    SLICE_X43Y23         FDRE                                         r  u_patch_pingpong/write_k_q_reg[2]/D
   -------------------------------------------------------------------    -------------------
 
                          (clock clk rise edge)        0.000     0.000 r  
                                                       0.000     0.000 r  clk (IN)
-                         net (fo=3106, unset)         0.021     0.021    g_xmod4_feeder.u_feeder/clk
-    SLICE_X31Y51         FDRE                                         r  g_xmod4_feeder.u_feeder/scan_y_q_reg[7]/C
+                         net (fo=3339, unset)         0.021     0.021    u_patch_pingpong/clk
+    SLICE_X43Y23         FDRE                                         r  u_patch_pingpong/write_k_q_reg[2]/C
                          clock pessimism              0.000     0.021    
-    SLICE_X31Y51         FDRE (Hold_BFF_SLICEM_C_D)
-                                                      0.044     0.065    g_xmod4_feeder.u_feeder/scan_y_q_reg[7]
+    SLICE_X43Y23         FDRE (Hold_BFF_SLICEM_C_D)
+                                                      0.044     0.065    u_patch_pingpong/write_k_q_reg[2]
   -------------------------------------------------------------------
                          required time                         -0.065    
                          arrival time                           0.181    

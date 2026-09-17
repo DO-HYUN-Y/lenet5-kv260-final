@@ -22,14 +22,16 @@ LUT, 90,271 registers, 73 BRAM tiles, 40 URAM and 576 DSP48E2. Conv1 HP0 reads
 fall from the 1,103,520-byte K-major patch tape to a 401,408-byte N8 raster, a
 702,112-byte (63.6%) static reduction.
 
-This remains a graph-payload integration checkpoint, not yet an autonomous
-Conv1-through-FC8 board inference. Conv2 onward still uses the tape service,
-exact inter-layer result/pool storage is incomplete, and weight fill is still
-serialized before compute. The N16 weight ABI and N-tile alignment are now
-regression-tested and present in the timing-clean bitstream. The immediate
-order is therefore: make every result/pool layout feed the next layer, pass
-layer/full-image C++ golden comparison, overlap HP3 weight fill, then establish
-the batch-one board throughput/TOPS/W baseline before batch 8.
+The next 2026-09-17 checkpoint connects exact scatter/in-place-pool storage to
+a later-layer N8 activation cache. Conv2-5 windows, Pool5-to-FC6 channel-major
+flattening and FC7/8 linear reads are now generated inside the integrated top;
+the legacy later-layer patch tape is removed. Its clean 200 MHz route closes at
+WNS/WHS `+0.001/+0.008 ns`, with zero failed nets and zero DRC errors/critical
+warnings. It uses 90,251 CLB LUTs, 91,247 registers, 96 BRAM tiles, 40 URAM and
+576 DSP48E2. The graph is structurally connected but is not yet claimed as
+bit-exact end-to-end inference: layerwise/full-image golden comparison and
+physical-board validation remain. Weight fill is also still serialized before
+compute.
 The completed capture stage adds exactly one active cycle per emitted N8 slice;
 it does not add a cycle to every K issue.
 
@@ -47,9 +49,11 @@ it does not add a cycle to every K issue.
   HP2 camera MM2S, and HP3 now carries an independent weight MM2S DMA.
 - The 200 MHz resource-probe bitstream passes route and DRC with WNS/WHS
   +0.006/+0.011 ns, 70,951 LUT, 117.5 BRAM tiles, 32 URAM and 576 DSP48E2.
-- The current M8xN126 bitstream accepts a normal Conv1 raster, but its
-  later-layer tape service and incomplete inter-layer storage loop mean it is
-  not yet a functional end-to-end AlexNet graph.
+- The current M8xN126 bitstream accepts a normal Conv1 raster, scatter-stores
+  every result, pools layers 1/2/5 in place, and reloads each later activation
+  tensor once into the exact Conv2-FC8 patch/flatten service. The service uses
+  zero DSP and 14 RAMB36E2 plus one RAMB18E2 OOC. Full-graph numerical proof
+  and board measurement are the remaining functional gates.
 
 ## Full-graph descriptor checkpoint
 
@@ -138,10 +142,19 @@ result; it is not yet present in the resource-probe bitstream.
    61,123,264 transferred bytes (61,090,496 logical plus 32,768 padding). The
    rebuilt top closes at WNS/WHS `0.000/+0.010 ns` with zero failed nets and
    generated a bitstream and bitstream-bearing XSA.
-6. **Next:** implement exact next-layer result and Pool1/2/5 placement. Compare
-   every layer with the C++ golden model, then run a complete image comparison
-   with exact INT8/requant parameters.
-7. Add timeout, tile/tag ordering, result-count and non-overwrite assertions.
+6. **Completed and promoted into the 200 MHz bitstream:** result slices use
+   exact N8-tile-major scatter addresses, Pool1/2/5 compact in place, and the
+   activation service loads each later tensor once before assembling Conv2-5
+   K-major M16 windows, FC6 channel-major flatten order and FC7/8 linear order.
+   XSim checks seven loads, nine representative requests and 21,632 words. The
+   integrated top closes at WNS/WHS `+0.001/+0.008 ns` with 90,251 CLB LUTs,
+   96 BRAM tiles, 40 URAM, 576 DSP48E2 and zero failed route nets.
+7. **Next:** compare every layer with the C++ golden model, then run a complete
+   image comparison with exact INT8/requant parameters. Add timeout, tile/tag
+   ordering, result-count and non-overwrite assertions around the full loop.
+8. After correctness, add counters around the one-lane activation service and
+   pipeline/bank it according to measured activation-starvation and issue
+   stalls rather than analytic bandwidth alone.
 
 Exit gates:
 

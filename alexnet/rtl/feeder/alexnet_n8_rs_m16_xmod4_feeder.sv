@@ -74,9 +74,10 @@ module alexnet_n8_rs_m16_xmod4_feeder #(
   localparam int BANK_ADDR_W = $clog2(BANK_DEPTH);
   localparam int RING_ROW_W = $clog2(MAX_RING_ROWS);
 
-  typedef enum logic [2:0] {
+  typedef enum logic [3:0] {
     ST_IDLE,
     ST_PLAN,
+    ST_PLAN_ENDPOINT,
     ST_WAIT_DATA,
     ST_READ_ISSUE,
     ST_READ_SECOND,
@@ -101,9 +102,11 @@ module alexnet_n8_rs_m16_xmod4_feeder #(
   logic [DIM_W-1:0] group_y_q, group_x_q;
   logic [4:0] group_count_q;
   logic [DIM_W-1:0] planned_endpoint_y_q, planned_endpoint_x_q;
+  logic [DIM_W-1:0] endpoint_group_y_q, endpoint_group_x_q;
   logic [DIM_W-1:0] next_group_y_q, next_group_x_q;
   logic next_group_is_last_q;
-  logic [RING_ROW_W-1:0] lane_ring_base_q [0:M_GROUP-1];
+  logic [RING_ROW_W-1:0] first_row_ring_base_q;
+  logic [RING_ROW_W-1:0] second_row_ring_base_q;
   logic [DIM_W-1:0] lane_x_base_q [0:M_GROUP-1];
   logic lane_second_row_q [0:M_GROUP-1];
   logic group_crosses_row_q;
@@ -154,12 +157,8 @@ module alexnet_n8_rs_m16_xmod4_feeder #(
   logic [RING_ROW_W-1:0] plan_ring_row [0:M_GROUP-1];
 
   logic [DIM_W:0] read_x_for_lane [0:M_GROUP-1];
-  logic [RING_ROW_W:0] read_ring_sum [0:M_GROUP-1];
-  logic [RING_ROW_W-1:0] read_ring_row [0:M_GROUP-1];
   logic [DIM_W:0] read_word_index [0:M_GROUP-1];
   logic [3:0] read_bank_for_lane [0:M_GROUP-1];
-  logic [1:0] read_plane_for_lane [0:M_GROUP-1];
-  logic [BANK_ADDR_W-1:0] read_addr_for_lane [0:M_GROUP-1];
   logic [BANK_ADDR_W-1:0] bank_read_addr [0:WORD_BANKS-1]
                                               [0:XMOD4_PLANES-1];
   logic [DIM_W:0] read_output_x_start;
@@ -167,7 +166,6 @@ module alexnet_n8_rs_m16_xmod4_feeder #(
   logic [3:0] read_base_bank;
   logic [DIM_W:0] read_base_column;
   logic [1:0] read_plane;
-  logic [4:0] second_row_lane_start;
   logic [RING_ROW_W-1:0] read_common_ring_base;
   logic [RING_ROW_W:0] read_common_ring_sum;
   logic [RING_ROW_W-1:0] read_common_ring_row;
@@ -178,6 +176,11 @@ module alexnet_n8_rs_m16_xmod4_feeder #(
   logic [1:0] write_plane;
   logic [BANK_ADDR_W-1:0] write_bank_addr;
   logic [63:0] scan_values_masked;
+  logic write_valid_q;
+  logic [3:0] write_bank_q;
+  logic [1:0] write_plane_q;
+  logic [BANK_ADDR_W-1:0] write_bank_addr_q;
+  logic [63:0] write_data_q;
   logic [3:0] expected_lane_count;
   logic [7:0] expected_lane_mask;
 
@@ -219,8 +222,8 @@ module alexnet_n8_rs_m16_xmod4_feeder #(
       endpoint_group_y = group_y_q;
       endpoint_group_x = group_end_x_sum[DIM_W-1:0];
     end
-    planned_endpoint_y = endpoint_group_y * stride_q + kernel_q - 1'b1;
-    planned_endpoint_x = endpoint_group_x * stride_q + kernel_q - 1'b1;
+    planned_endpoint_y = endpoint_group_y_q * stride_q + kernel_q - 1'b1;
+    planned_endpoint_x = endpoint_group_x_q * stride_q + kernel_q - 1'b1;
 
     group_advance_x_sum = group_x_q + planned_group_count;
     if (group_advance_x_sum >= ({1'b0, output_w_q} << 1)) begin
@@ -240,9 +243,7 @@ module alexnet_n8_rs_m16_xmod4_feeder #(
   assign group_data_available = scan_complete_q ||
       scan_y_q > planned_endpoint_y_q ||
       (scan_y_q == planned_endpoint_y_q &&
-       scan_x_q > planned_endpoint_x_q) ||
-      (scan_y_q == planned_endpoint_y_q &&
-       scan_x_q == planned_endpoint_x_q && scan_step);
+       scan_x_q > planned_endpoint_x_q);
 
   assign endpoint_row_lag = scan_y_q - planned_endpoint_y_q;
   assign endpoint_ring_sum = write_ring_row_q + MAX_RING_ROWS -
@@ -301,14 +302,12 @@ module alexnet_n8_rs_m16_xmod4_feeder #(
   end
 
   always_comb begin
-    second_row_lane_start = output_w_q - group_x_q;
     if (read_second_pass) begin
       read_output_x_start = '0;
-      read_common_ring_base =
-          lane_ring_base_q[second_row_lane_start[3:0]];
+      read_common_ring_base = second_row_ring_base_q;
     end else begin
       read_output_x_start = group_x_q;
-      read_common_ring_base = lane_ring_base_q[0];
+      read_common_ring_base = first_row_ring_base_q;
     end
 
     if (stride_q == 4) begin
@@ -340,26 +339,13 @@ module alexnet_n8_rs_m16_xmod4_feeder #(
       end
     end
     for (int lane = 0; lane < M_GROUP; lane++) begin
-      read_ring_sum[lane] = lane_ring_base_q[lane] + read_ky;
-      if (read_ring_sum[lane] >= MAX_RING_ROWS)
-        read_ring_row[lane] = read_ring_sum[lane] - MAX_RING_ROWS;
-      else
-        read_ring_row[lane] = read_ring_sum[lane][RING_ROW_W-1:0];
       read_x_for_lane[lane] = lane_x_base_q[lane] + read_kx;
       if (stride_q == 4) begin
         read_word_index[lane] = read_x_for_lane[lane] >> 2;
         read_bank_for_lane[lane] = read_word_index[lane][3:0];
-        read_plane_for_lane[lane] = read_x_for_lane[lane][1:0];
-        read_addr_for_lane[lane] =
-            read_ring_row[lane] * S4_WORDS_PER_ROW +
-            (read_word_index[lane] >> 4);
       end else begin
         read_word_index[lane] = read_x_for_lane[lane];
         read_bank_for_lane[lane] = read_x_for_lane[lane][3:0];
-        read_plane_for_lane[lane] = 0;
-        read_addr_for_lane[lane] =
-            read_ring_row[lane] * S1_WORDS_PER_ROW +
-            (read_x_for_lane[lane] >> 4);
       end
     end
   end
@@ -394,8 +380,9 @@ module alexnet_n8_rs_m16_xmod4_feeder #(
         // Independent write and synchronous read ports infer one 512x64
         // simple-dual-port RAMB36E2 for each bank/plane.
         always_ff @(posedge clk) begin
-          if (scan_step && write_bank == bank && write_plane == plane)
-            mem[write_bank_addr] <= scan_values_masked;
+          if (write_valid_q && write_bank_q == bank &&
+              write_plane_q == plane)
+            mem[write_bank_addr_q] <= write_data_q;
         end
         always_ff @(posedge clk) begin
           if (memory_read_issue && read_plane == plane)
@@ -461,11 +448,18 @@ module alexnet_n8_rs_m16_xmod4_feeder #(
       scan_x_q <= '0;
       write_ring_row_q <= '0;
       scan_complete_q <= 1'b0;
+      write_valid_q <= 1'b0;
+      write_bank_q <= '0;
+      write_plane_q <= '0;
+      write_bank_addr_q <= '0;
+      write_data_q <= '0;
       group_y_q <= '0;
       group_x_q <= '0;
       group_count_q <= '0;
       planned_endpoint_y_q <= '0;
       planned_endpoint_x_q <= '0;
+      endpoint_group_y_q <= '0;
+      endpoint_group_x_q <= '0;
       next_group_y_q <= '0;
       next_group_x_q <= '0;
       next_group_is_last_q <= 1'b0;
@@ -476,8 +470,9 @@ module alexnet_n8_rs_m16_xmod4_feeder #(
       prefetch_phase_q <= '0;
       prefetch_valid_q <= 1'b0;
       frame_done <= 1'b0;
+      first_row_ring_base_q <= '0;
+      second_row_ring_base_q <= '0;
       for (int lane = 0; lane < M_GROUP; lane++) begin
-        lane_ring_base_q[lane] <= '0;
         lane_x_base_q[lane] <= '0;
         lane_second_row_q[lane] <= 1'b0;
         capture_bank_q[lane] <= '0;
@@ -486,6 +481,16 @@ module alexnet_n8_rs_m16_xmod4_feeder #(
       group_crosses_row_q <= 1'b0;
     end else begin
       frame_done <= 1'b0;
+      // Register the raster write transaction before the 64 BRAM enables and
+      // data inputs.  This keeps scan/credit control off the high-fanout RAM
+      // write path while preserving one accepted raster word per cycle.
+      write_valid_q <= scan_step;
+      if (scan_step) begin
+        write_bank_q <= write_bank;
+        write_plane_q <= write_plane;
+        write_bank_addr_q <= write_bank_addr;
+        write_data_q <= scan_values_masked;
+      end
 
       if (frame_fire) begin
         state_q <= ST_PLAN;
@@ -574,24 +579,34 @@ module alexnet_n8_rs_m16_xmod4_feeder #(
       case (state_q)
         ST_PLAN: begin
           group_count_q <= planned_group_count;
-          planned_endpoint_y_q <= planned_endpoint_y;
-          planned_endpoint_x_q <= planned_endpoint_x;
+          endpoint_group_y_q <= endpoint_group_y;
+          endpoint_group_x_q <= endpoint_group_x;
           next_group_y_q <= planned_next_group_y[DIM_W-1:0];
           next_group_x_q <= planned_next_group_x;
           next_group_is_last_q <= planned_group_is_last;
+          state_q <= ST_PLAN_ENDPOINT;
+        end
+
+        ST_PLAN_ENDPOINT: begin
+          planned_endpoint_y_q <= planned_endpoint_y;
+          planned_endpoint_x_q <= planned_endpoint_x;
           state_q <= ST_WAIT_DATA;
         end
 
         ST_WAIT_DATA: if (group_data_available) begin
+          // Register both possible row bases at the planning boundary.  The
+          // BRAM address path then selects between two short registered
+          // values instead of indexing a 16-entry array with output_w.
+          first_row_ring_base_q <= plan_ring_row[0];
+          second_row_ring_base_q <= plan_ring_row[M_GROUP-1];
           for (int lane = 0; lane < M_GROUP; lane++) begin
-            lane_ring_base_q[lane] <= plan_ring_row[lane];
             lane_second_row_q[lane] <= plan_output_y[lane] != group_y_q;
             if (lane < group_count_q)
               lane_x_base_q[lane] <= plan_output_x[lane] * stride_q;
             else
               lane_x_base_q[lane] <= '0;
           end
-          group_crosses_row_q <= endpoint_group_y != group_y_q;
+          group_crosses_row_q <= endpoint_group_y_q != group_y_q;
           emit_ky_q <= '0;
           emit_kx_q <= '0;
           emit_ic_q <= '0;

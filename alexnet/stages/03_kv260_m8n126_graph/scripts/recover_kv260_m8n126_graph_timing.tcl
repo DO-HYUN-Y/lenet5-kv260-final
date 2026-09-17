@@ -109,7 +109,7 @@ if {[llength $drc_errors] != 0 || [llength $drc_critical] != 0} {
     error "Recovered DRC failed: [llength $drc_errors] errors, [llength $drc_critical] critical warnings"
 }
 if {[llength $sa_dsp_cells] != 512 || [llength $dsp_cells] != 576 ||
-    [llength $uram_cells] != 36} {
+    [llength $uram_cells] != 40} {
     error "Recovered resource contract failed"
 }
 
