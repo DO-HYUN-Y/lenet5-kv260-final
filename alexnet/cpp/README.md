@@ -83,3 +83,38 @@ Full `224x224` vectors are generated as `.bin + manifest + SHA-256` by
 files, executes compiled C++ Conv/Pool/FC code, and requires an exact match at
 all eleven captured boundaries. The vectors are data, not a second
 implementation of these operators.
+
+For the checked board-weight export, the Release-only full-graph executable
+does not require PyTorch. It loads the logical OIHW/NK weight files and
+`<iiBB6x>` parameter records, runs the trained batch-one Conv1-through-FC8
+graph on a fixed full-range input, and serializes every boundary in the RTL
+N8-tile-major DDR layout. Regenerate all boundaries and compare their byte
+counts and SHA-256 values with the frozen contract using:
+
+```sh
+cmake -S alexnet/cpp -B alexnet/cpp/build-release -DCMAKE_BUILD_TYPE=Release
+cmake --build alexnet/cpp/build-release --parallel
+python3 alexnet/cpp/tools/verify_board_full_graph_golden.py \
+  --output-dir alexnet/cpp/build-release/full_graph_pattern_v1
+```
+
+The large board model and generated `.bin` files remain build artifacts; only
+`vectors/full_graph_pattern_v1.json` is committed. These are the layerwise
+golden DDR images used by the following focused RTL comparisons.
+
+The generator also emits one trained physical-array tile for every layer under
+`<output-dir>/rtl_tiles`. Conv1/2 use split M16xN64, Conv3-5 use M8xN112, and
+FC6-8 use M1xN16. Run those vectors through the real M8xN128 packed SA,
+continuation accumulator, 64-DSP requantizer and result path with:
+
+```sh
+vivado -mode batch \
+  -source alexnet/scripts/run_alexnet_m8n128_trained_layer_tiles.tcl \
+  -notrace
+```
+
+The regression checks 26,859 K issues and 4,784 exact result bytes. FC6 is
+split into 4,096 + 4,096 + 1,024 K chunks, so this also checks continuation
+state across the hardware command limit. This is an exact trained tile gate
+for every layer; the integrated graph top still requires an all-tile,
+full-image comparison before it is called end-to-end numerically proven.

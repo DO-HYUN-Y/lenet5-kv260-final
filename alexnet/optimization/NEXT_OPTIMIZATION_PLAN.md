@@ -149,9 +149,16 @@ result; it is not yet present in the resource-probe bitstream.
    XSim checks seven loads, nine representative requests and 21,632 words. The
    integrated top closes at WNS/WHS `+0.001/+0.008 ns` with 90,251 CLB LUTs,
    96 BRAM tiles, 40 URAM, 576 DSP48E2 and zero failed route nets.
-7. **Next:** compare every layer with the C++ golden model, then run a complete
-   image comparison with exact INT8/requant parameters. Add timeout, tile/tag
-   ordering, result-count and non-overwrite assertions around the full loop.
+7. **Arithmetic checkpoint completed; integrated image comparison next:** a
+   Release C++ execution of the checked board model reproduces frozen byte
+   counts and SHA-256 values at all eleven Conv/Pool/FC boundaries. Focused
+   XSim sends one trained tile from every layer through the physical M8xN128
+   packed SA, continuation accumulator and 64-DSP requant/result path. All
+   26,859 K issues and 4,784 result bytes match exactly, including FC6's
+   4,096 + 4,096 + 1,024 K continuation. Next, drive every scheduled tile
+   through the integrated graph top and compare its complete boundary images;
+   retain timeout, tile/tag ordering, result-count and non-overwrite
+   assertions around the full loop.
 8. After correctness, add counters around the one-lane activation service and
    pipeline/bank it according to measured activation-starvation and issue
    stalls rather than analytic bandwidth alone.

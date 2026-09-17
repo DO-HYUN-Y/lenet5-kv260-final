@@ -44,3 +44,7 @@ enable_testing()
 add_executable(alexnet_golden_tests tests/golden_tests.cpp)
 target_link_libraries(alexnet_golden_tests PRIVATE alexnet_golden alexnet_golden_dpi)
 add_test(NAME alexnet_golden_tests COMMAND alexnet_golden_tests)
+
+add_executable(alexnet_board_full_graph_golden
+    tools/board_full_graph_golden.cpp)
+target_link_libraries(alexnet_board_full_graph_golden PRIVATE alexnet_golden)

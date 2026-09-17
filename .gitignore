@@ -1,6 +1,7 @@
 # Vivado / Xilinx build artifacts (regenerate via scripts/*.tcl)
 build/
 **/build/
+**/build-*/
 checkpoints/
 cong/
 .Xil/

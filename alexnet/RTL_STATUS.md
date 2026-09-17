@@ -43,6 +43,15 @@ board-verified full AlexNet inference.
 - Exact descriptor slot utilization is 1.5616% for combined FC6-FC8 at batch
   1 in one-N16-bank mode, and 15.5406% for Conv1-through-FC8. These are
   scheduling ceilings, not measured board utilization.
+- A Release C++ run now executes the checked trained board model from Conv1
+  through FC8 for a deterministic full-range 224x224 input. All eleven layer
+  boundaries reproduce their frozen byte counts and SHA-256 values in RTL
+  N8-tile-major layout. Focused XSim then sends one real trained tile from
+  every layer through the physical M8xN128 packed SA, accumulator and 64-DSP
+  requant/result path: 26,859 K issues and 4,784 result bytes match exactly.
+  FC6 includes its 4,096 + 4,096 + 1,024 continuation sequence. This closes
+  the per-layer arithmetic gate, but not yet the integrated top's all-tile
+  full-image sequencing gate.
 
 ## Current decision
 
