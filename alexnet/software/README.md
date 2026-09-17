@@ -9,7 +9,7 @@ operation can follow after one saved image completes correctly.
 - `driver/alexnet_board.c` maps the accelerator, main AXI DMA, and camera AXI
   DMA registers, verifies the stock PS PL0 input is near 100 MHz and checks the
   fixed 199,998,002 Hz MMCM fabric-clock metadata, allocates one
-  page-aligned 61,800,448-byte coherent DMA region below 4 GiB, and exposes bounded register
+  page-aligned 62,025,728-byte coherent DMA region below 4 GiB, and exposes bounded register
   ioctls plus buffer `mmap` through `/dev/alexnet_board`.
 - `runtime/alexnet_camera_demo.py` verifies and loads the generated model,
   performs the frozen resize/center-crop/RGB-normalize/INT8 packing, starts the
@@ -32,17 +32,18 @@ the physical board.
 | Region | Offset | Allocated bytes |
 | --- | ---: | ---: |
 | preprocessed camera input | 0 | 401,408 |
-| activation A | 401,408 | 64,896 |
-| activation B | 466,304 | 43,264 |
-| packed weights | 509,568 | 61,123,264 |
-| quantization parameters | 61,632,896 | 165,504 |
-| FC8 output | 61,798,400 | 1,024 (1,000 valid) |
+| activation A | 401,408 | 193,664 (193,600-byte Conv1 raw tensor) |
+| activation B | 595,072 | 140,032 (139,968-byte Conv2 raw tensor) |
+| packed weights | 735,104 | 61,123,264 |
+| quantization parameters | 61,858,432 | 165,504 |
+| FC8 output | 62,023,936 | 1,024 (1,000 valid) |
 
-Every region base is 128-byte aligned. The activation sizes cover the largest
-tensor assigned to each reused buffer: Conv3 for A and Conv4 for B.
-The listed regions use 61,799,424 bytes. The coherent allocation adds 1,024
-unused bytes at the end so Linux can map the whole buffer on a 4 KiB page
-boundary.
+Every region base is 128-byte aligned. The activation regions cover the raw,
+unpooled Conv1 and Conv2 N8-tile-major tensors. The in-place 3x3/s2 pooling
+service compacts each tensor before the following layer may advance.
+The physical weight blob is followed by 64 bytes of alignment padding. The
+listed regions use 62,024,960 bytes. The coherent allocation adds 768 unused
+bytes at the end so Linux can map the whole buffer on a 4 KiB page boundary.
 
 The allocation is intentionally kernel-owned. Stock generic DMA-BUF mappings
 do not provide a portable physical/bus address that this 32-bit simple-mode

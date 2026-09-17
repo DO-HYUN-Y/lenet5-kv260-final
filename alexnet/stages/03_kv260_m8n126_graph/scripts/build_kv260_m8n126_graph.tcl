@@ -112,6 +112,10 @@ puts $summary_file "GRAPH_SCHEDULER_COMMANDS=1635"
 puts $summary_file "GRAPH_USEFUL_MACS=714188480"
 puts $summary_file "GRAPH_LOGICAL_WEIGHT_BYTES=61090496"
 puts $summary_file "GRAPH_WEIGHT_TRANSFER_BYTES=61123264"
+puts $summary_file "RESULT_LAYOUT=N8_TILE_SPATIAL_N8_LANE"
+puts $summary_file "INPLACE_POOL_LAYERS=1,2,5"
+puts $summary_file "POOL_MAX_RAW_TILE_BYTES=24200"
+puts $summary_file "POOL_DMA_POLICY=SEQUENTIAL_MM2S_S2MM"
 puts $summary_file \
     "BITSTREAM=[file join $output_dir alexnet_m8n126_graph_kv260.bit]"
 puts $summary_file \

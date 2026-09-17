@@ -12,21 +12,21 @@ import struct
 import time
 
 
-DMA_USED_BYTES = 61_766_656
+DMA_USED_BYTES = 62_024_960
 DMA_BUFFER_BYTES = (
     (DMA_USED_BYTES + mmap.PAGESIZE - 1) // mmap.PAGESIZE * mmap.PAGESIZE
 )
 INPUT_OFFSET = 0
 INPUT_BYTES = 401_408
 ACTIVATION_A_OFFSET = 401_408
-ACTIVATION_A_BYTES = 64_896
-ACTIVATION_B_OFFSET = 466_304
-ACTIVATION_B_BYTES = 43_264
-WEIGHTS_OFFSET = 509_568
-WEIGHTS_BYTES = 61_090_496
-PARAMETERS_OFFSET = 61_600_128
+ACTIVATION_A_BYTES = 193_664
+ACTIVATION_B_OFFSET = 595_072
+ACTIVATION_B_BYTES = 140_032
+WEIGHTS_OFFSET = 735_104
+WEIGHTS_BYTES = 61_123_264
+PARAMETERS_OFFSET = 61_858_432
 PARAMETERS_BYTES = 165_504
-OUTPUT_OFFSET = 61_765_632
+OUTPUT_OFFSET = 62_023_936
 OUTPUT_VALID_BYTES = 1_000
 OUTPUT_ALLOC_BYTES = 1_024
 BASE_ALIGNMENT = 128
@@ -63,7 +63,7 @@ EXPECTED_CHECKPOINT_SHA256 = (
     "7be5be791159472b1fbf3c69796f7cb30dca7ad8466c2df70058c37116cdee02"
 )
 EXPECTED_WEIGHT_SHA256 = (
-    "07e8583d9c18563672ffeb211746dfc432ba5b96d27039d01563d3fb8679ec3d"
+    "3239c992d84077187aa19485bbf07e2d7f74a37c5a979474fd75c3b311350a78"
 )
 EXPECTED_PARAMETER_SHA256 = (
     "0038da71fe9e4fc4454930b8a7f02e36d822e3cd6736388092c1429635c5a2ad"
@@ -247,7 +247,7 @@ class AlexNetBoard:
         manifest = json.loads(
             (board_dir / "board_manifest.json").read_text(encoding="utf-8")
         )
-        if manifest.get("format_version") != 1:
+        if manifest.get("format_version") != 2:
             raise BoardError("unsupported board manifest version")
         if manifest.get("checkpoint_sha256") != EXPECTED_CHECKPOINT_SHA256:
             raise BoardError("board manifest checkpoint does not match the frozen model")

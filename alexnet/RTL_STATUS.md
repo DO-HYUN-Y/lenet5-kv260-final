@@ -19,18 +19,23 @@ board-verified full AlexNet inference.
 - The scheduler is connected to the N128 weight ping-pong, M16 patch
   ping-pong, dynamic SA, parallel requantizer and result stream. The integrated
   payload XSim passes two Conv1 tiles.
+- Every result slice is scatter-written in N8-tile-major raster order. A layer
+  completion barrier now waits for the in-place Pool1/2/5 service; its golden
+  XSim covers all 64 N8 tiles and 11,040 pooled output words with randomized
+  backpressure. The serialized pool path uses one 24,200-byte maximum raw-tile
+  BRAM buffer and adds 465,152 DDR bytes per image.
 - The KV260 top activates four independent HP paths; HP3 owns the weight MM2S
   DMA. The format-v2 clean 200 MHz build closes at WNS/TNS/WHS
-  `0.000/0.000/+0.010 ns` with the timing report marked MET, zero failed route
-  nets and zero DRC errors or critical warnings. It uses 89,451 LUT, 90,271
-  registers, 73 BRAM tiles, 40 URAM and 576 DSP48E2, and generated both
+  `+0.010/0.000/+0.010 ns` with the timing report marked MET, zero failed route
+  nets and zero DRC errors or critical warnings. It uses 90,598 LUT, 90,869
+  registers, 81.5 BRAM tiles, 40 URAM and 576 DSP48E2, and generated both
   bitstream and XSA without the separate recovery flow.
 - Conv1's DDR-read contract is now 401,408 bytes instead of the 1,103,520-byte
   pretransposed patch tape, a 702,112-byte (63.6%) reduction. The remaining
-  functional boundary is exact result/pool-to-next-layer storage. Weight fill
-  is also not yet overlapped with compute. Layer-by-layer and end-to-end golden
-  comparison are required before calling this a functional full-graph
-  bitstream.
+  functional boundary is a Conv2-5 patch assembler that reads the new
+  N8-tile-major A/B tensors and the Pool5-to-FC6 flatten read. Weight fill is
+  also not yet overlapped with compute. Layer-by-layer and end-to-end golden
+  comparison are required before calling this a functional full-graph bitstream.
 - The format-v2 official-checkpoint export and independent full-byte verifier
   pass with 61,123,264 physical weight bytes: 61,090,496 logical bytes plus
   32,768 zero-padding bytes for the FC8 N8 tail. The rebuilt bitstream now
@@ -94,7 +99,7 @@ The official torchvision checkpoint has now also been converted into frozen
 contract-matching INT8 files and packed into the exact RTL weight/parameter DDR
 order. The 61,090,496-byte weight image and 165,504-byte parameter image retain
 separate aligned bases. A host-tested Linux driver/runtime now owns the
-61,767,680-byte page-aligned coherent DDR allocation (61,766,656 bytes used), checks the near-100 MHz PS PL0 input and
+62,025,728-byte page-aligned coherent DDR allocation (62,024,960 bytes used), checks the near-100 MHz PS PL0 input and
 fixed 199.998002 MHz fabric-clock contract,
 preprocesses saved images or V4L2/OpenCV frames, controls the camera DMA, and
 decodes the 1,000 signed INT8 FC8 outputs into top-k terminal labels. The

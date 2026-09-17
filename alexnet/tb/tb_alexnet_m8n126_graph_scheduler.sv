@@ -22,6 +22,9 @@ module tb_alexnet_m8n126_graph_scheduler;
   logic command_result_enable;
   logic [15:0] command_context_tag, command_tile_tag;
   logic command_done, command_error;
+  logic layer_complete_valid, layer_complete_ready;
+  logic [3:0] layer_complete_id;
+  logic layer_complete_requires_pool;
   logic busy, inference_done, inference_failed, fault;
   logic [3:0] active_layer_id;
   logic [15:0] completed_commands;
@@ -35,6 +38,7 @@ module tb_alexnet_m8n126_graph_scheduler;
   int layer_commands [1:8];
   int pending_delay;
   bit command_pending;
+  int layer_barriers;
   logic [15:0] fc6_accum_tile_tag;
 
   alexnet_m8n126_graph_scheduler dut (.*);
@@ -56,6 +60,8 @@ module tb_alexnet_m8n126_graph_scheduler;
     command_ready = !command_pending && $urandom_range(0, 4) != 0;
     command_done = 1'b0;
     command_error = 1'b0;
+    layer_complete_ready = layer_complete_valid &&
+                           $urandom_range(0, 3) == 0;
     if (command_pending) begin
       if (pending_delay == 0) begin
         command_done = 1'b1;
@@ -67,6 +73,18 @@ module tb_alexnet_m8n126_graph_scheduler;
   end
 
   always @(posedge clk) begin
+    if (!rst && layer_complete_valid) begin
+      if (command_valid)
+        $fatal(1, "scheduler issued work while a layer barrier was held");
+      if (layer_complete_id < 1 || layer_complete_id > 7)
+        $fatal(1, "invalid layer barrier id=%0d", layer_complete_id);
+      if (layer_complete_requires_pool !=
+          (layer_complete_id == 1 || layer_complete_id == 2 ||
+           layer_complete_id == 5))
+        $fatal(1, "layer barrier pooling metadata mismatch");
+    end
+    if (!rst && layer_complete_valid && layer_complete_ready)
+      layer_barriers++;
     if (!rst && command_valid && command_ready) begin
       int mask_bits;
       mask_bits = count_mask_bits();
@@ -127,6 +145,7 @@ module tb_alexnet_m8n126_graph_scheduler;
     command_ready = 1'b0;
     command_done = 1'b0;
     command_error = 1'b0;
+    layer_complete_ready = 1'b0;
     command_pending = 1'b0;
     pending_delay = 0;
     fc6_accum_tile_tag = 0;
@@ -136,6 +155,7 @@ module tb_alexnet_m8n126_graph_scheduler;
     fc_physical_slots = 0;
     weight_bytes = 0;
     weight_transfer_bytes = 0;
+    layer_barriers = 0;
     for (int layer = 1; layer <= 8; layer++)
       layer_commands[layer] = 0;
 
@@ -171,6 +191,8 @@ module tb_alexnet_m8n126_graph_scheduler;
         if (weight_transfer_bytes != 64'd61123264)
           $fatal(1, "weight transfer byte total mismatch got=%0d",
                  weight_transfer_bytes);
+        if (layer_barriers != 7)
+          $fatal(1, "layer barrier total mismatch got=%0d", layer_barriers);
         $display("ALEXNET_M8N126_GRAPH_SCHEDULER_TEST_PASSED commands=%0d macs=%0d slots=%0d fc_macs=%0d fc_slots=%0d logical_weights=%0d transferred_weights=%0d",
                  completed_commands, useful_macs, physical_slots,
                  fc_useful_macs, fc_physical_slots, weight_bytes,

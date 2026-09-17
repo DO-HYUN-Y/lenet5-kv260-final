@@ -47,6 +47,14 @@ module alexnet_m8n126_graph_scheduler (
     input logic command_done,
     input logic command_error,
 
+    // Held after the final descriptor of layers 1..7.  The graph data path
+    // acknowledges only after any required pooling/storage operation has
+    // committed, so the next layer cannot observe an incomplete tensor.
+    output logic layer_complete_valid,
+    input  logic layer_complete_ready,
+    output logic [3:0] layer_complete_id,
+    output logic layer_complete_requires_pool,
+
     output logic busy,
     output logic inference_done,
     output logic inference_failed,
@@ -60,6 +68,7 @@ module alexnet_m8n126_graph_scheduler (
     ST_ISSUE,
     ST_WAIT,
     ST_NEXT,
+    ST_LAYER_WAIT,
     ST_COMPLETE,
     ST_FAILED
   } state_t;
@@ -90,6 +99,10 @@ module alexnet_m8n126_graph_scheduler (
   assign busy = state_q != ST_IDLE;
   assign fault = state_q == ST_FAILED;
   assign active_layer_id = layer_q;
+  assign layer_complete_valid = state_q == ST_LAYER_WAIT;
+  assign layer_complete_id = layer_q;
+  assign layer_complete_requires_pool = layer_q == 1 || layer_q == 2 ||
+                                        layer_q == 5;
 
   always_comb begin
     layer_n_total = 0;
@@ -266,15 +279,19 @@ module alexnet_m8n126_graph_scheduler (
             m_base_q <= 0;
             n_base_q <= n_base_q + current_n_count;
           end else if (layer_q != 8) begin
-            layer_q <= layer_q + 1'b1;
-            k_offset_q <= 0;
-            m_base_q <= 0;
-            n_base_q <= 0;
+            state_q <= ST_LAYER_WAIT;
           end else begin
             state_q <= ST_COMPLETE;
           end
-          if (!(n_last && m_last && k_last && layer_q == 8))
+          if (!(n_last && m_last && k_last))
             state_q <= ST_ISSUE;
+        end
+        ST_LAYER_WAIT: if (layer_complete_valid && layer_complete_ready) begin
+          layer_q <= layer_q + 1'b1;
+          k_offset_q <= 0;
+          m_base_q <= 0;
+          n_base_q <= 0;
+          state_q <= ST_ISSUE;
         end
         ST_COMPLETE: begin
           inference_done <= 1'b1;

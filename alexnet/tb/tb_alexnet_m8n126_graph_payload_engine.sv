@@ -48,6 +48,9 @@ module tb_alexnet_m8n126_graph_payload_engine;
   logic [15:0] result_n_base;
   logic [15:0] result_tile_tag;
   logic result_last_slice;
+  logic layer_complete_valid, layer_complete_ready;
+  logic [3:0] layer_complete_id;
+  logic layer_complete_requires_pool;
 
   logic busy, inference_done, inference_failed, fault;
   logic [3:0] active_layer_id;
@@ -192,6 +195,7 @@ module tb_alexnet_m8n126_graph_payload_engine;
     int seed_sink;
     seed_sink = $urandom(32'h8126_0001);
     rst = 1'b1;
+    layer_complete_ready = 1'b0;
     start_valid = 1'b0;
     start_tag = 16'h6200;
     weight_request_ready = 1'b1;

@@ -72,6 +72,11 @@ module alexnet_m8n126_graph_payload_engine #(
     output logic [15:0] result_tile_tag,
     output logic result_last_slice,
 
+    output logic layer_complete_valid,
+    input  logic layer_complete_ready,
+    output logic [3:0] layer_complete_id,
+    output logic layer_complete_requires_pool,
+
     output logic busy,
     output logic inference_done,
     output logic inference_failed,
@@ -404,6 +409,8 @@ module alexnet_m8n126_graph_payload_engine #(
       .command_tile_tag(scheduler_command_tile_tag),
       .command_done(scheduler_command_done_q),
       .command_error(scheduler_command_error_q),
+      .layer_complete_valid, .layer_complete_ready, .layer_complete_id,
+      .layer_complete_requires_pool,
       .busy(scheduler_busy), .inference_done, .inference_failed,
       .fault(scheduler_fault), .active_layer_id, .completed_commands
   );

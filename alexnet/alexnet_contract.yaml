@@ -2228,11 +2228,11 @@ rtl_bringup_revision:
       stage_readme: stages/01_kv260_m4n8/README.md
 
 m8n126_graph_payload_checkpoint:
-  status: timing_clean_bitstream_and_bitstream_bearing_xsa_generated
+  status: timing_clean_result_layout_pooling_bitstream_and_bitstream_bearing_xsa_generated
   date: 2026-09-17
-  scope: conv1_raster_plus_descriptor_driven_conv1_through_fc8_payload_shell
+  scope: conv1_raster_result_layout_inplace_pooling_plus_descriptor_driven_conv1_through_fc8_payload_shell
   functional_full_graph_board_inference: false
-  remaining_functional_boundary: [conv2_through_fc8_exact_interlayer_layout, pool1_pool2_pool5_ownership, layerwise_golden_comparison, end_to_end_golden_comparison]
+  remaining_functional_boundary: [conv2_through_conv5_n8_layout_patch_assembly, pool5_to_fc6_flatten_read, layerwise_golden_comparison, end_to_end_golden_comparison]
   board: kria_kv260_k26
   part: xck26-sfvc784-2LV-c
   clock_mhz: 200
@@ -2247,6 +2247,35 @@ m8n126_graph_payload_checkpoint:
     logical_weight_bytes: 61090496
     physical_weight_transfer_bytes: 61123264
     fc8_tail_zero_padding_bytes: 32768
+  result_tensor_layout:
+    status: rtl_integrated_and_exhaustive_mapper_sim_pass
+    layout: n8_tile_then_spatial_then_n8_lane
+    scatter_write_formula_bytes: base_plus_n8_index_times_spatial_times_8_plus_m_base_times_8
+    conv_raw_spatial: {conv1: 3025, conv2: 729, conv3: 169, conv4: 169, conv5: 169}
+    fc_spatial: {fc6: 1, fc7: 1, fc8: 1}
+    split_n64_upper_group_m_offset: 8
+    mapper_pass_marker: ALEXNET_M8N126_RESULT_ADDRESS_MAPPER_SIM_PASS
+    actual_result_metadata_checked: [m_base, n_base, m_count]
+  runtime_buffer_abi:
+    alignment_bytes: 128
+    activation_a: {offset: 401408, allocation_bytes: 193664, conv1_raw_valid_bytes: 193600}
+    activation_b: {offset: 595072, allocation_bytes: 140032, conv2_raw_valid_bytes: 139968}
+    weights: {offset: 735104, bytes: 61123264}
+    weight_to_parameter_alignment_padding_bytes: 64
+    parameters: {offset: 61858432, bytes: 165504}
+    output: {offset: 62023936, allocation_bytes: 1024, valid_bytes: 1000}
+    coherent_dma_used_bytes: 62024960
+    coherent_dma_page_allocation_bytes: 62025728
+  inplace_pool_service:
+    status: rtl_integrated_golden_sim_and_ooc_route_pass
+    layers: [pool1, pool2, pool5]
+    policy: sequential_full_raw_n8_tile_mm2s_then_pool_then_s2mm
+    maximum_raw_tile_bytes: 24200
+    total_n8_tiles_checked: 64
+    total_output_words_checked: 11040
+    pass_marker: ALEXNET_M8N126_INPLACE_POOL_SERVICE_SIM_PASS
+    added_ddr_bytes_per_image: 465152
+    ooc_200mhz: {wns_ns: 0.644, whs_ns: 0.064, dsp48e2: 0, ramb36e2: 8, ramb18e2: 1}
   conv1_ddr_contract:
     input_layout: n8_raster
     current_bytes: 401408
@@ -2262,39 +2291,43 @@ m8n126_graph_payload_checkpoint:
   implementation:
     vivado: "2025.2"
     timing_report_status: met
-    wns_ns: 0.000
+    wns_ns: 0.010
     tns_ns: 0.000
     whs_ns: 0.010
     ths_ns: 0.000
-    constrained_setup_hold_endpoints: 403103
+    constrained_setup_hold_endpoints: 405587
     failed_route_nets: 0
     unrouted_nets: 0
     partially_routed_nets: 0
     route_node_overlaps: 0
     drc_errors: 0
     drc_critical_warnings: 0
-    clb_lut: 89451
+    clb_lut: 90598
     clb_lut_available: 117120
-    clb_lut_percent: 76.38
-    clb_register: 90271
+    clb_lut_percent: 77.35
+    clb_register: 90869
     clb_register_available: 234240
-    clb_register_percent: 38.54
-    block_ram_tiles: 73
-    ramb36e2: 71
-    ramb18e2: 4
+    clb_register_percent: 38.79
+    block_ram_tiles: 81.5
+    block_ram_tiles_percent: 56.60
+    ramb36e2: 79
+    ramb18e2: 5
     uram288: 40
     sa_dsp48e2: 512
     total_dsp48e2: 576
-    vectorless_power_w: 3.558
+    vectorless_power_w: 3.575
+    vectorless_dynamic_power_w: 3.265
+    vectorless_device_static_power_w: 0.310
     vectorless_power_confidence: medium
     vectorless_power_is_board_tops_per_w_measurement: false
+    drc_advisory_warnings: {REQP-1731: 64, REQP-1732: 64, REQP-1934: 4, REQP-1935: 7, RTSTAT-10: 1}
   artifacts:
     bitstream: stages/03_kv260_m8n126_graph/build/output/alexnet_m8n126_graph_kv260.bit
-    bitstream_sha256: cf34a9eaa88774ac6a726e5e5d6d9200c210b84acf39ec3823f6ef8e9b36b9cd
+    bitstream_sha256: cf08108cc7e0aceb4ee122f6f8f52aea8563c7fb72444958423f9ed214826f8b
     hardware_platform: stages/03_kv260_m8n126_graph/build/output/alexnet_m8n126_graph_kv260.xsa
-    hardware_platform_sha256: 5b3b88dd35a804ac54dab609f1fecbfc469dd1cd4692fdfddba14415dc7c7413
+    hardware_platform_sha256: 87b53c41633fee6e955ea25682fd0cddfc89f3531a19c68b85ae6ee5c1008dce
     timing_clean_dcp: stages/03_kv260_m8n126_graph/build/vivado/alexnet_m4n8_kv260.runs/impl_1/system_wrapper_postroute_physopt.dcp
-    timing_clean_dcp_sha256: 469216d7c001c573e0e1034c52455b539d99df132ec198840a09f7838d296927
+    timing_clean_dcp_sha256: b4299c42d98c83d46f934ca7e441395fe608a7c188f9ba39c6e0e8fb3dd1e316
     build_products_git_ignored: true
 
 pre_rtl_architecture:

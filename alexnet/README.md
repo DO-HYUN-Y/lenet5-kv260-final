@@ -19,7 +19,8 @@
 13. `software/README.md`: PS 100 MHz 입력/MMCM 200 MHz 확인, coherent DDR, 저장 이미지 및 USB
     카메라 입력, FC8 터미널 출력을 담당하는 Linux 런타임
 14. `stages/03_kv260_m8n126_graph/README.md`: M8xN126 graph-payload,
-    format-v2 N16 weight ABI, 4-HP 연결과 200 MHz bitstream signoff
+    N8 결과 배치와 Pool1/2/5, format-v2 N16 weight ABI, 4-HP 연결 및
+    200 MHz bitstream signoff
 
 Python 코드에는 각 함수의 역할, tensor shape, 필요한 이유를 한국어 주석으로
 기록했다. 처음에는 `model.py`의 `AlexNet.__init__()`과 `forward()`만 읽고,
