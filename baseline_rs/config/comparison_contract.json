@@ -1,0 +1,23 @@
+{
+  "status": "scaffold_only_not_yet_implemented_or_verified",
+  "hybrid_reference_commit": "854adea4d30e7861eae07f56df8f35966af31eb3",
+  "dataflow": "pure_row_stationary",
+  "logical_sa": [8, 128],
+  "physical_packed_sa": [4, 128],
+  "sa_dsp_target": 512,
+  "postprocessor_dsp_target": 64,
+  "total_compute_dsp_target": 576,
+  "target_part": "xck26-sfvc784-2LV-c",
+  "target_clock_mhz": 200,
+  "input_banks": {"sets": 2, "depth_words": 4096, "width_bits": 128, "bytes": 131072},
+  "output_staging_banks": {"sets": 2, "depth_words": 512, "width_bits": 64, "bytes": 8192},
+  "psum_sram_budget_bytes": 16384,
+  "batch": 1,
+  "activation_and_weight_bits": 8,
+  "sa_accumulator_bits": 27,
+  "raw_tensor_layout": "N8_tile_major",
+  "conv_weight_order": "HWIC",
+  "fc6_flatten_order": "CHW",
+  "pooling_layers": [1, 2, 5],
+  "physical_ddr_measurement_verified": false
+}
