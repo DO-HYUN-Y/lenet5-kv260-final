@@ -1,0 +1,297 @@
+{
+  "source_commit": "854adea4d30e7861eae07f56df8f35966af31eb3",
+  "scope": "executed RTL scheduler descriptors and independent RS gather-policy replay",
+  "physical_ddr_measured": false,
+  "pure_rs": [
+    {
+      "commands": 3080,
+      "useful_macs": 70276800,
+      "weight_transfer_bytes": 8944320,
+      "input_valid_bytes": 1098075,
+      "input_tiles": 385,
+      "name": "conv1"
+    },
+    {
+      "commands": 7776,
+      "useful_macs": 223948800,
+      "weight_transfer_bytes": 33177600,
+      "input_valid_bytes": 1166400,
+      "input_tiles": 324,
+      "psum_write_valid_bytes": 1119744,
+      "psum_read_valid_bytes": 1119744,
+      "name": "conv2"
+    },
+    {
+      "commands": 6240,
+      "useful_macs": 112140288,
+      "weight_transfer_bytes": 17252352,
+      "input_valid_bytes": 292032,
+      "input_tiles": 130,
+      "psum_write_valid_bytes": 1038336,
+      "psum_read_valid_bytes": 1038336,
+      "name": "conv3"
+    },
+    {
+      "commands": 7488,
+      "useful_macs": 149520384,
+      "weight_transfer_bytes": 23003136,
+      "input_valid_bytes": 584064,
+      "input_tiles": 234,
+      "psum_write_valid_bytes": 1384448,
+      "psum_read_valid_bytes": 1384448,
+      "name": "conv4"
+    },
+    {
+      "commands": 4992,
+      "useful_macs": 99680256,
+      "weight_transfer_bytes": 15335424,
+      "input_valid_bytes": 389376,
+      "input_tiles": 156,
+      "psum_write_valid_bytes": 865280,
+      "psum_read_valid_bytes": 865280,
+      "name": "conv5"
+    },
+    {
+      "commands": 6144,
+      "useful_macs": 37748736,
+      "weight_transfer_bytes": 37748736,
+      "input_valid_bytes": 9216,
+      "input_tiles": 12,
+      "psum_write_valid_bytes": 180224,
+      "psum_read_valid_bytes": 180224,
+      "name": "fc6"
+    },
+    {
+      "commands": 16384,
+      "useful_macs": 16777216,
+      "weight_transfer_bytes": 16777216,
+      "input_valid_bytes": 4096,
+      "input_tiles": 32,
+      "psum_write_valid_bytes": 507904,
+      "psum_read_valid_bytes": 507904,
+      "name": "fc7"
+    },
+    {
+      "commands": 4000,
+      "useful_macs": 4096000,
+      "weight_transfer_bytes": 4096000,
+      "input_valid_bytes": 4096,
+      "input_tiles": 32,
+      "psum_write_valid_bytes": 124000,
+      "psum_read_valid_bytes": 124000,
+      "name": "fc8"
+    }
+  ],
+  "github_hybrid": [
+    {
+      "commands": 190,
+      "useful_macs": 70276800,
+      "weight_transfer_bytes": 23232,
+      "input_valid_bytes": 1098075,
+      "name": "conv1"
+    },
+    {
+      "commands": 138,
+      "useful_macs": 223948800,
+      "weight_transfer_bytes": 307200,
+      "input_valid_bytes": 3499200,
+      "name": "conv2"
+    },
+    {
+      "commands": 88,
+      "useful_macs": 112140288,
+      "weight_transfer_bytes": 663552,
+      "input_valid_bytes": 1168128,
+      "name": "conv3"
+    },
+    {
+      "commands": 66,
+      "useful_macs": 149520384,
+      "weight_transfer_bytes": 884736,
+      "input_valid_bytes": 1752192,
+      "name": "conv4"
+    },
+    {
+      "commands": 66,
+      "useful_macs": 99680256,
+      "weight_transfer_bytes": 589824,
+      "input_valid_bytes": 1168128,
+      "name": "conv5"
+    },
+    {
+      "commands": 768,
+      "useful_macs": 37748736,
+      "weight_transfer_bytes": 37748736,
+      "input_valid_bytes": 2359296,
+      "name": "fc6"
+    },
+    {
+      "commands": 256,
+      "useful_macs": 16777216,
+      "weight_transfer_bytes": 16777216,
+      "input_valid_bytes": 1048576,
+      "name": "fc7"
+    },
+    {
+      "commands": 63,
+      "useful_macs": 4096000,
+      "weight_transfer_bytes": 4128768,
+      "input_valid_bytes": 258048,
+      "name": "fc8"
+    }
+  ],
+  "rs_gather_policy_prediction": [
+    {
+      "input_tiles": 385,
+      "input_valid_bytes": 1098075,
+      "commands": 3080,
+      "weight_axis_bytes": 8944320,
+      "useful_macs": 70276800,
+      "parameter_requested_bytes": 394240,
+      "gather_requested_bytes": 1281056,
+      "name": "conv1",
+      "pool_read_axis_bytes": 193600,
+      "main_write_axis_bytes": 240256,
+      "main_read_axis_bytes": 1868896,
+      "scratch_capacity_bytes": 2048
+    },
+    {
+      "input_tiles": 324,
+      "input_valid_bytes": 1166400,
+      "commands": 7776,
+      "weight_axis_bytes": 33177600,
+      "useful_macs": 223948800,
+      "psum_write_valid_bytes": 1119744,
+      "psum_read_valid_bytes": 1119744,
+      "gather_requested_bytes": 321984,
+      "parameter_requested_bytes": 331776,
+      "name": "conv2",
+      "pool_read_axis_bytes": 139968,
+      "main_write_axis_bytes": 172416,
+      "main_read_axis_bytes": 793728,
+      "scratch_capacity_bytes": 6144
+    },
+    {
+      "input_tiles": 130,
+      "input_valid_bytes": 292032,
+      "commands": 6240,
+      "weight_axis_bytes": 17252352,
+      "useful_macs": 112140288,
+      "psum_write_valid_bytes": 1038336,
+      "psum_read_valid_bytes": 1038336,
+      "gather_requested_bytes": 106560,
+      "parameter_requested_bytes": 159744,
+      "name": "conv3",
+      "pool_read_axis_bytes": 0,
+      "main_write_axis_bytes": 64896,
+      "main_read_axis_bytes": 266304,
+      "scratch_capacity_bytes": 12288
+    },
+    {
+      "input_tiles": 234,
+      "input_valid_bytes": 584064,
+      "commands": 7488,
+      "weight_axis_bytes": 23003136,
+      "useful_macs": 149520384,
+      "psum_write_valid_bytes": 1384448,
+      "psum_read_valid_bytes": 1384448,
+      "gather_requested_bytes": 213120,
+      "parameter_requested_bytes": 106496,
+      "name": "conv4",
+      "pool_read_axis_bytes": 0,
+      "main_write_axis_bytes": 43264,
+      "main_read_axis_bytes": 319616,
+      "scratch_capacity_bytes": 8192
+    },
+    {
+      "input_tiles": 156,
+      "input_valid_bytes": 389376,
+      "commands": 4992,
+      "weight_axis_bytes": 15335424,
+      "useful_macs": 99680256,
+      "psum_write_valid_bytes": 865280,
+      "psum_read_valid_bytes": 865280,
+      "gather_requested_bytes": 142080,
+      "parameter_requested_bytes": 106496,
+      "name": "conv5",
+      "pool_read_axis_bytes": 43264,
+      "main_write_axis_bytes": 52480,
+      "main_read_axis_bytes": 291840,
+      "scratch_capacity_bytes": 8192
+    },
+    {
+      "input_tiles": 12,
+      "input_valid_bytes": 9216,
+      "commands": 6144,
+      "weight_axis_bytes": 37748736,
+      "useful_macs": 37748736,
+      "psum_write_valid_bytes": 180224,
+      "gather_requested_bytes": 11520,
+      "psum_read_valid_bytes": 180224,
+      "parameter_requested_bytes": 65536,
+      "name": "fc6",
+      "pool_read_axis_bytes": 0,
+      "main_write_axis_bytes": 4096,
+      "main_read_axis_bytes": 77056,
+      "scratch_capacity_bytes": 16384
+    },
+    {
+      "input_tiles": 32,
+      "input_valid_bytes": 4096,
+      "commands": 16384,
+      "weight_axis_bytes": 16777216,
+      "useful_macs": 16777216,
+      "psum_write_valid_bytes": 507904,
+      "gather_requested_bytes": 4096,
+      "psum_read_valid_bytes": 507904,
+      "parameter_requested_bytes": 65536,
+      "name": "fc7",
+      "pool_read_axis_bytes": 0,
+      "main_write_axis_bytes": 4096,
+      "main_read_axis_bytes": 69632,
+      "scratch_capacity_bytes": 16384
+    },
+    {
+      "input_tiles": 32,
+      "input_valid_bytes": 4096,
+      "commands": 4000,
+      "weight_axis_bytes": 4096000,
+      "useful_macs": 4096000,
+      "psum_write_valid_bytes": 124000,
+      "gather_requested_bytes": 4096,
+      "psum_read_valid_bytes": 124000,
+      "parameter_requested_bytes": 16000,
+      "name": "fc8",
+      "pool_read_axis_bytes": 0,
+      "main_write_axis_bytes": 1000,
+      "main_read_axis_bytes": 20096,
+      "scratch_capacity_bytes": 4000
+    }
+  ],
+  "trace_sha256": {
+    "pure_rs_schedule.csv": "e5f25ccb005f200c4fa41da023e7dcca258e4043dc5f5f0038c10685a695c692",
+    "hybrid_schedule.csv": "bcfbf9f6e2434bedbfff87c49adba14be642cccd7f573faf34d2eb0e57ae927a"
+  },
+  "weight_bytes": {
+    "pure_rs": 156334784,
+    "hybrid": 61123264,
+    "hybrid_reduction_percent": 60.902326125963114
+  },
+  "memory_budget": {
+    "shared_input_bank_bytes": 131072,
+    "shared_output_bank_bytes": 8192,
+    "external_psum_scratch_bytes": 16384,
+    "psum_ddr_spill_bytes": 0,
+    "weight_uram_bytes": 0,
+    "unique_filter_row_rf_max_bytes": 1408,
+    "input_union_row_rf_allocated_bytes": 8192,
+    "local_row_psum_payload_bits": 19456,
+    "gather_row_buffer_payload_bytes": 312
+  },
+  "limits": [
+    "Weight-component savings do not alone establish total physical DDR savings or speed.",
+    "RS has additional row register storage; DSP count and shared bank capacities are fixed, total FF/LUT area is reported separately.",
+    "Gather predictions describe RS row-buffer policy; no hybrid physical input-traffic measurement is claimed.",
+    "M tiles stop at output row boundaries; this increases RS Conv weight loads relative to cross-row M8 tiling."
+  ]
+}

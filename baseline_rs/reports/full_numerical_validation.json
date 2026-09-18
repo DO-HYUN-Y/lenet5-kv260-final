@@ -1,0 +1,133 @@
+{
+  "scope": "full trained-model SOFTWARE row numerical replay plus exported RTL tile vectors",
+  "whole_network_rtl_numerical_inference_verified": false,
+  "physical_ddr_measured": false,
+  "input_kind": "deterministic signed INT8 numerical vector",
+  "input_seed": 7,
+  "input_sha256": "52ee21aafabf4c73cf7b59fb5cbb6d14b83ed4bc20ca609524b9b1700ef2ddc8",
+  "trained_weights_sha256": "d0cb5a3472ad4d4ded09807c8fbe4682e39eb10c29930593cb8e6ee40ea334d8",
+  "quantization_contract_sha256": "1a85423e46a77b088703428b00292b14b6d86c1f835c697537305f04641207d0",
+  "layers": [
+    {
+      "layer": "conv1",
+      "output_bytes": 193600,
+      "output_sha256": "cfdfb74c8ffef53e49a6d682fc383c3b5634ce2c5d4c6256fe56564a5a4b22c5",
+      "accumulator_mismatches": 0,
+      "output_mismatches": 0,
+      "macs": 70276800,
+      "commands": 3080,
+      "input_tiles": 385,
+      "accumulator_min": -191539,
+      "accumulator_max": 204373
+    },
+    {
+      "layer": "pool1",
+      "output_mismatches": 0,
+      "output_bytes": 46656,
+      "output_sha256": "12586fb97e7f9607e54e2261ee0466c5e80654eeb6792934ee433075928e48e1"
+    },
+    {
+      "layer": "conv2",
+      "output_bytes": 139968,
+      "output_sha256": "df101943ab5649cd24fc57beeae23c82df210b00efbe617599da3e38859f7406",
+      "accumulator_mismatches": 0,
+      "output_mismatches": 0,
+      "macs": 223948800,
+      "commands": 7776,
+      "input_tiles": 324,
+      "accumulator_min": -277168,
+      "accumulator_max": 79362
+    },
+    {
+      "layer": "pool2",
+      "output_mismatches": 0,
+      "output_bytes": 32448,
+      "output_sha256": "2b51b04a94a99998f426084d173fae90365d5236d4e1d549b033160c3b513fa9"
+    },
+    {
+      "layer": "conv3",
+      "output_bytes": 64896,
+      "output_sha256": "7cda0430c7c7a9b52fbe03ec9f25bdac90cf149bf010515adbbdc41ee5d355e9",
+      "accumulator_mismatches": 0,
+      "output_mismatches": 0,
+      "macs": 112140288,
+      "commands": 6240,
+      "input_tiles": 130,
+      "accumulator_min": -125998,
+      "accumulator_max": 47467
+    },
+    {
+      "layer": "conv4",
+      "output_bytes": 43264,
+      "output_sha256": "96022cb44796b9e8ba6f758ea9e571173f00702caebbc36bda89024307a04938",
+      "accumulator_mismatches": 0,
+      "output_mismatches": 0,
+      "macs": 149520384,
+      "commands": 7488,
+      "input_tiles": 234,
+      "accumulator_min": -95682,
+      "accumulator_max": 37640
+    },
+    {
+      "layer": "conv5",
+      "output_bytes": 43264,
+      "output_sha256": "ea828e07072b51f0aac5c9bbab180579fd8180b053121f987e67fd280c348638",
+      "accumulator_mismatches": 0,
+      "output_mismatches": 0,
+      "macs": 99680256,
+      "commands": 4992,
+      "input_tiles": 156,
+      "accumulator_min": -64933,
+      "accumulator_max": 29913
+    },
+    {
+      "layer": "pool5",
+      "output_mismatches": 0,
+      "output_bytes": 9216,
+      "output_sha256": "aa891945dbb7f0f4497bf548114eaf3b01af1e3f8d80654146b3c599d8b15157"
+    },
+    {
+      "layer": "fc6",
+      "output_bytes": 4096,
+      "output_sha256": "8dc648ed6f534a4ea1708d50461e81601db7107535c5b7187ba2dda8d6f46a9d",
+      "accumulator_mismatches": 0,
+      "output_mismatches": 0,
+      "macs": 37748736,
+      "commands": 6144,
+      "input_tiles": 12,
+      "accumulator_min": -204058,
+      "accumulator_max": 140221
+    },
+    {
+      "layer": "fc7",
+      "output_bytes": 4096,
+      "output_sha256": "c2e9439f07f8e6d9690337f3602eb71ea73aed4b17537588db699d36e7f1d5df",
+      "accumulator_mismatches": 0,
+      "output_mismatches": 0,
+      "macs": 16777216,
+      "commands": 16384,
+      "input_tiles": 32,
+      "accumulator_min": -273507,
+      "accumulator_max": 179293
+    },
+    {
+      "layer": "fc8",
+      "output_bytes": 1000,
+      "output_sha256": "ba4a520dc05a2b1a35b9f8674f49c070642800dbffcb0c63ac48f5247be381bc",
+      "accumulator_mismatches": 0,
+      "output_mismatches": 0,
+      "macs": 4096000,
+      "commands": 4000,
+      "input_tiles": 32,
+      "accumulator_min": -30322,
+      "accumulator_max": 33424
+    }
+  ],
+  "useful_macs": 714188480,
+  "commands": 56104,
+  "input_tiles": 1305,
+  "elapsed_seconds": 6.863135880004847,
+  "all_accumulators_and_outputs_match": true,
+  "signed19_to26_row_tree_and_signed27_continuation_postbias_checked": true,
+  "numerical_model_source_sha256": "dcdb243d87870226d83c7b5577c310941d1d0ddda664a0a2c28fd4ebde2a1be4"
+}

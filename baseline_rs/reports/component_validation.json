@@ -1,0 +1,57 @@
+{
+  "scope": "component tests; full trained-model numerical report is separate",
+  "row_sa": {
+    "passed": true,
+    "contexts": 22,
+    "n_tokens": 44,
+    "signed_int8_extreme_positive_and_negative_rows": true,
+    "row_widths": [
+      1,
+      3,
+      5,
+      6,
+      11
+    ],
+    "row_counts": [
+      1,
+      33,
+      64,
+      128
+    ],
+    "m_counts": [
+      1,
+      3,
+      5,
+      7,
+      8
+    ],
+    "input_stalls": true,
+    "output_stalls": true,
+    "same_input_rf_reused_for_two_n_tokens": true
+  },
+  "scheduler": {
+    "passed": true,
+    "commands": 56104,
+    "input_tiles": 1305,
+    "useful_macs": 714188480,
+    "row_boundary_and_alignment_checked": true
+  },
+  "control": {
+    "passed": true,
+    "jobs": 2,
+    "per_job_counters_and_read_backpressure": true
+  },
+  "weight_dma": {
+    "passed": true,
+    "early_and_late_done": true,
+    "malformed_keep_last_fault": true
+  },
+  "python_export_and_ps_tests_passed": 9,
+  "physical_board_inference_verified": false,
+  "row_sa_source_sha256": {
+    "rtl/packed_mac/alexnet_row_stationary_pe.sv": "c3c7b7a8a34b1a957a608fd33f51e4a4b9cd8aad7faae953139f19666621edeb",
+    "rtl/packed_mac/alexnet_rs_filter_row_rf.sv": "2f15ae8ff4709d5290c0ee91f9d931ff6f5e63142dfc4d9e5e5db426fb4d7882",
+    "rtl/sa/alexnet_sa_m8r128_row_stationary.sv": "0a30bf84bcc49eeff9f964f4961a9b0702c165eccd82ce2567a3e625c1b815f1",
+    "tb/tb_alexnet_row_stationary_sa.sv": "dda1f251defaf2cc4ddb3605991235a1ce9500fa1be75da3cd2ec1cee20450d8"
+  }
+}

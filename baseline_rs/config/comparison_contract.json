@@ -1,23 +1,73 @@
 {
-  "status": "scaffold_only_not_yet_implemented_or_verified",
+  "status": "row_stationary_rtl_implemented_components_pass_full_inference_and_fpga_build_in_progress",
   "hybrid_reference_commit": "854adea4d30e7861eae07f56df8f35966af31eb3",
   "dataflow": "pure_row_stationary",
-  "logical_sa": [8, 128],
-  "physical_packed_sa": [4, 128],
+  "logical_sa": [
+    8,
+    128
+  ],
+  "physical_packed_sa": [
+    4,
+    128
+  ],
   "sa_dsp_target": 512,
   "postprocessor_dsp_target": 64,
   "total_compute_dsp_target": 576,
   "target_part": "xck26-sfvc784-2LV-c",
   "target_clock_mhz": 200,
-  "input_banks": {"sets": 2, "depth_words": 4096, "width_bits": 128, "bytes": 131072},
-  "output_staging_banks": {"sets": 2, "depth_words": 512, "width_bits": 64, "bytes": 8192},
+  "input_banks": {
+    "sets": 2,
+    "depth_words": 4096,
+    "width_bits": 128,
+    "bytes": 131072
+  },
+  "output_staging_banks": {
+    "sets": 2,
+    "depth_words": 512,
+    "width_bits": 64,
+    "bytes": 8192
+  },
   "psum_sram_budget_bytes": 16384,
   "batch": 1,
   "activation_and_weight_bits": 8,
   "sa_accumulator_bits": 27,
   "raw_tensor_layout": "N8_tile_major",
-  "conv_weight_order": "HWIC",
+  "conv_weight_order": "kernel_y_input_channel_kernel_x",
   "fc6_flatten_order": "CHW",
-  "pooling_layers": [1, 2, 5],
-  "physical_ddr_measurement_verified": false
+  "pooling_layers": [
+    1,
+    2,
+    5
+  ],
+  "physical_ddr_measurement_verified": false,
+  "original_conv_order": "HWIC",
+  "sa_axis_mapping": [
+    "horizontal_output_window",
+    "filter_row_primitive"
+  ],
+  "filter_row_width_by_layer": [
+    11,
+    5,
+    3,
+    3,
+    3,
+    6,
+    1,
+    1
+  ],
+  "weight_uram_bytes": 0,
+  "input_row_rf_allocated_bytes": 8192,
+  "unique_filter_row_rf_max_bytes": 1408,
+  "gather_row_buffer_payload_bytes": 312,
+  "local_row_accumulator_bits": 19,
+  "spatial_tree_stage_bits": [
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26
+  ],
+  "input_row_rf_implementation": "single_write_dual_read_distributed_memory"
 }

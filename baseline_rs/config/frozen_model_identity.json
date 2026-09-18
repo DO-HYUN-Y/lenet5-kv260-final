@@ -1,0 +1,74 @@
+{
+  "layout": "N_HCW_for_conv_NK_for_FC",
+  "weights": {
+    "file": "weights_rs.bin",
+    "bytes": 61090496,
+    "sha256": "d0cb5a3472ad4d4ded09807c8fbe4682e39eb10c29930593cb8e6ee40ea334d8"
+  },
+  "parameters": {
+    "file": "parameters_board.bin",
+    "bytes": 165504,
+    "sha256": "0038da71fe9e4fc4454930b8a7f02e36d822e3cd6736388092c1429635c5a2ad"
+  },
+  "checkpoint_sha256": "7be5be791159472b1fbf3c69796f7cb30dca7ad8466c2df70058c37116cdee02",
+  "quantization_contract_sha256": "1a85423e46a77b088703428b00292b14b6d86c1f835c697537305f04641207d0",
+  "source_manifest_sha256": "c372517c33e39ab89a3d4ce7c2adbaf17b32edf6294c5eb4929c36b2121dfc7e",
+  "logical_layers": {
+    "conv1": {
+      "logical_sha256": "9174d314e97c1d83ed0ec01c6811b51640b3b05ceeb69c8b7d70b5ce56697df0",
+      "k": 363,
+      "n": 64,
+      "offset": 0,
+      "bytes": 23232
+    },
+    "conv2": {
+      "logical_sha256": "ed9b313521dba96938c531653b62173a663f77ac6dc88bb6c18f5db224f88c7f",
+      "k": 1600,
+      "n": 192,
+      "offset": 23232,
+      "bytes": 307200
+    },
+    "conv3": {
+      "logical_sha256": "ccc8633bdca0812a9c0e5491b7c20b830e7a4e4140691fb2249e6cba02b1687a",
+      "k": 1728,
+      "n": 384,
+      "offset": 330432,
+      "bytes": 663552
+    },
+    "conv4": {
+      "logical_sha256": "258a37d5d6e0d0367c0dd07ca389c09c6cf8d4f721cdf3dd18c29da31b0f9637",
+      "k": 3456,
+      "n": 256,
+      "offset": 993984,
+      "bytes": 884736
+    },
+    "conv5": {
+      "logical_sha256": "d65ff4b2d375d80f405da703bd47fbc95e7fc1450a1fed1ecf64f07e99a0fe72",
+      "k": 2304,
+      "n": 256,
+      "offset": 1878720,
+      "bytes": 589824
+    },
+    "fc6": {
+      "logical_sha256": "fc350dac22357b2aca81f163a1150a8e58982b065ea8288e4099b1775c85b430",
+      "k": 9216,
+      "n": 4096,
+      "offset": 2468544,
+      "bytes": 37748736
+    },
+    "fc7": {
+      "logical_sha256": "71784078667b6aa201f213ed7c77b7bf72a52d58e36e1377bfa5403c45f7edc0",
+      "k": 4096,
+      "n": 4096,
+      "offset": 40217280,
+      "bytes": 16777216
+    },
+    "fc8": {
+      "logical_sha256": "801d6408d006bc7904bbb6ebe5460d639187e5a115937f35dae6a34beb0560fc",
+      "k": 4096,
+      "n": 1000,
+      "offset": 56994496,
+      "bytes": 4096000
+    }
+  }
+}
