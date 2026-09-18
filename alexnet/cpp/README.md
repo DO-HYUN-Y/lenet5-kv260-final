@@ -134,3 +134,17 @@ raster MM2S, computes the first trained tile and compares its 64-byte scatter
 S2MM exactly. It also requires that the result write complete before the long
 raster read, exercising concurrent main-DMA MM2S/S2MM operation. It remains a
 first-tile checkpoint rather than a full-image claim.
+
+The same generator writes the complete trained Conv1 boundary under
+`<output-dir>/top_conv1_full`. Run all 190 spatial descriptors through the
+integrated top with:
+
+```sh
+vivado -mode batch \
+  -source alexnet/scripts/run_alexnet_m8n126_graph_top_trained_conv1_full.tcl \
+  -notrace
+```
+
+This regression checks 68,970 K issues, 3,032 scatter S2MM transfers and all
+193,600 result bytes. Every one of the 24,200 N8 result rows must be written
+exactly once at its golden address, with exact `TKEEP` and `TLAST` framing.

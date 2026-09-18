@@ -122,6 +122,7 @@ module alexnet_m8n126_graph_accelerator_top #(
   logic main_s2mm_done_seen_q, weight_dma_done_seen_q;
   logic weight_service_active_q, weight_stream_done_q;
   logic parameter_service_active_q, raster_stream_active_q;
+  logic result_slice_reset_pending_q;
   logic [31:0] weight_byte_offset_q;
   logic [4:0] result_slice_index_q;
   logic [12:0] patch_m_base_q;
@@ -558,6 +559,7 @@ module alexnet_m8n126_graph_accelerator_top #(
       weight_stream_done_q <= 1'b0;
       parameter_service_active_q <= 1'b0;
       raster_stream_active_q <= 1'b0;
+      result_slice_reset_pending_q <= 1'b0;
       pool_dma_active_s2mm_q <= 1'b0;
       weight_byte_offset_q <= 0;
       result_slice_index_q <= 0;
@@ -586,6 +588,7 @@ module alexnet_m8n126_graph_accelerator_top #(
         result_slice_index_q <= 0;
         result_signature_q <= 0;
         raster_stream_active_q <= 1'b0;
+        result_slice_reset_pending_q <= 1'b0;
       end
 
       if (engine_start_fire)
@@ -599,7 +602,15 @@ module alexnet_m8n126_graph_accelerator_top #(
             popcount8(engine_patch_request_m_lane_mask[7:0]);
         patch_upper_m_count_q <=
             popcount8(engine_patch_request_m_lane_mask[15:8]);
-        result_slice_index_q <= 0;
+        if (main_state_q == MAIN_IDLE) begin
+          result_slice_index_q <= 0;
+          result_slice_reset_pending_q <= 1'b0;
+        end else begin
+          // Patch fill may overlap retirement of the preceding descriptor.
+          // Defer the new slice epoch until that old S2MM drain completes;
+          // otherwise its final +1 overwrites this reset one cycle later.
+          result_slice_reset_pending_q <= 1'b1;
+        end
       end
       if (raster_patch_fire && raster_patch_axis_last)
         raster_patch_active_q <= 1'b0;
@@ -611,7 +622,12 @@ module alexnet_m8n126_graph_accelerator_top #(
             popcount8(engine_patch_request_m_lane_mask[7:0]);
         patch_upper_m_count_q <=
             popcount8(engine_patch_request_m_lane_mask[15:8]);
-        result_slice_index_q <= 0;
+        if (main_state_q == MAIN_IDLE) begin
+          result_slice_index_q <= 0;
+          result_slice_reset_pending_q <= 1'b0;
+        end else begin
+          result_slice_reset_pending_q <= 1'b1;
+        end
       end
 
       if (main_s2mm_done)
@@ -728,7 +744,14 @@ module alexnet_m8n126_graph_accelerator_top #(
           if (!result_packer_active_q &&
               (main_s2mm_done_seen_q || main_s2mm_done)) begin
             main_s2mm_done_seen_q <= 1'b0;
-            result_slice_index_q <= result_slice_index_q + 1'b1;
+            if (result_slice_reset_pending_q ||
+                (engine_patch_request_valid &&
+                 engine_patch_request_ready)) begin
+              result_slice_index_q <= 0;
+              result_slice_reset_pending_q <= 1'b0;
+            end else begin
+              result_slice_index_q <= result_slice_index_q + 1'b1;
+            end
             main_state_q <= MAIN_IDLE;
           end
 

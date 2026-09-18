@@ -230,6 +230,22 @@ void write_axis128_mem(const fs::path& path,
   }
 }
 
+void write_axis64_mem(const fs::path& path,
+                      const std::vector<std::int8_t>& bytes) {
+  if (bytes.size() % 8 != 0) {
+    throw std::invalid_argument("AXIS64 vector must contain complete rows");
+  }
+  std::ofstream stream(path);
+  if (!stream) {
+    throw std::runtime_error("cannot create " + path.string());
+  }
+  for (std::size_t offset = 0; offset < bytes.size(); offset += 8) {
+    const std::vector<std::int8_t> word(bytes.begin() + offset,
+                                        bytes.begin() + offset + 8);
+    write_hex_word(stream, word);
+  }
+}
+
 void write_parameter_mem(const fs::path& path,
                          const std::vector<ag::RequantParams>& params,
                          int output_count) {
@@ -428,6 +444,23 @@ int main(int argc, char** argv) {
                       first_parameters);
     write_axis128_mem(smoke_dir / "expected_result_axis128.mem",
                       first_conv1_result);
+    write_axis64_mem(smoke_dir / "expected_result_axis64.mem",
+                     first_conv1_result);
+
+    // Full Conv1 integrated-top gate. The same physical weights are replayed
+    // across 190 spatial descriptors; all 64 parameter records and the full
+    // N8-tile-major result image are needed for the 3,032 scatter writes.
+    const fs::path conv1_dir = output_dir / "top_conv1_full";
+    fs::create_directories(conv1_dir);
+    const auto conv1_parameters =
+        read_i8_prefix(board_dir / "parameters_board.bin", 64 * 16);
+    write_axis128_mem(conv1_dir / "input_axis128.mem", input_axis);
+    write_axis128_mem(conv1_dir / "weight_axis128.mem",
+                      first_weight_request);
+    write_axis128_mem(conv1_dir / "parameter_axis128.mem",
+                      conv1_parameters);
+    write_axis64_mem(conv1_dir / "expected_result_axis64.mem",
+                     to_n8_tile_major(outputs.conv1));
 
     std::cout << "ALEXNET_BOARD_FULL_GRAPH_GOLDEN_PASS\n";
     return 0;

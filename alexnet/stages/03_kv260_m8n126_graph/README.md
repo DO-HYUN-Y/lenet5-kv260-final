@@ -77,22 +77,22 @@ needed, timing-driven rerouting before repeating all signoff gates.
 
 Vivado 2025.2 generated the integrated graph-payload `.bit` and fixed `.xsa`
 on 2026-09-18. The clean flow's leaf-clock skew optimization closes at WNS
-`+0.039 ns` (MET), TNS `0.000 ns`, WHS `+0.010 ns` and THS `0.000 ns`; the
-separate recovery script was not needed. All 408,010 setup/hold endpoints meet
+`+0.006 ns` (MET), TNS `0.000 ns`, WHS `+0.010 ns` and THS `0.000 ns`; the
+separate recovery script was not needed. All 407,964 setup/hold endpoints meet
 timing. All 173,505 routable nets are connected, and
 DRC has zero errors or critical warnings.
 
 | Resource | Used | Available | Utilization |
 | --- | ---: | ---: | ---: |
-| CLB LUT | 90,438 | 117,120 | 77.22% |
-| CLB register | 91,363 | 234,240 | 39.00% |
+| CLB LUT | 90,463 | 117,120 | 77.24% |
+| CLB register | 91,346 | 234,240 | 39.00% |
 | BRAM tile | 96 | 144 | 66.67% |
 | URAM | 40 | 64 | 62.50% |
 | DSP48E2 | 576 | 1,248 | 46.15% |
 
 The DSP split is exactly 512 for the physical M8xN128 SA and 64 for parallel
 requantization. The activation patch service itself uses zero DSP and adds 14
-RAMB36E2 plus one RAMB18E2. Vectorless Vivado power is 3.556 W, but the report
+RAMB36E2 plus one RAMB18E2. Vectorless Vivado power is 3.536 W, but the report
 warns that reset activity makes the estimate unreliable; it is not a board
 TOPS/W measurement. The scheduler still emits 1,635 commands and
 714,188,480 useful MACs. Its physical weight-transfer contract is 61,123,264
@@ -116,6 +116,10 @@ The following XSim gates pass after the bitstream build:
   raster MM2S, 23,232-byte physical weight read, 128-byte parameter read and
   64-byte scatter S2MM; all 64 result bytes match after 363 K issues, and the
   result write completes before the long raster read to prove channel overlap;
+- complete trained Conv1 integrated top: all 190 spatial descriptors, 68,970 K
+  issues, 3,032 scatter S2MM transfers and 193,600 result bytes match exactly;
+  all 24,200 N8 rows are written once at their expected addresses with exact
+  `TKEEP` and `TLAST` framing;
 - exhaustive result address mapping across every N8 tile and layer boundary;
 - in-place Pool1/2/5 service: all 64 N8 tiles and 11,040 golden output words,
   including randomized MM2S/S2MM backpressure;
@@ -127,18 +131,19 @@ full-byte format-v2 board-weight verifier pass at the same checkpoint.
 
 Published local build hashes:
 
-- `.bit`: `ca5dd810af2d0a2e864c71d35a0ff9b4a7ae85d7e7f0cf4965ce7d686003b27f`
-- `.xsa`: `27e1db6e316653293d35f47ddbe0d11eca629382e0d0ec4b4d6216e96db2009c`
+- `.bit`: `753b240653485b21fa84562d1c8f2ed8cf4af972465273895068367b288470c8`
+- `.xsa`: `774166403de42cfb33eba9cbe69e19b399fff0321738d6d0e7775a8fae998b52`
 - timing-clean `.dcp`:
-  `71d243ea154acab85738c5e0b6863185df24b4d4ba615cb21921e4c7ada43c8e`
+  `ecd0811a70b9c9166dfe84c49313956334fe82f10f242dd332545cbca988ee32`
 
 Build products remain under the ignored `build/` directory; the committed
 sources, scripts, reports and hashes reproduce and identify the checkpoint.
 
 ## Next functional milestone
 
-1. Compare every layer and then one complete Conv1-through-FC8 image against
-   the C++ golden model, including all scatter/pool/cache address boundaries.
+1. Extend the current BFM into one continuous Conv1-through-FC8 run and compare
+   all remaining Conv/Pool/FC boundary images against the C++ golden model in
+   that single regression.
 2. Deploy the timing-clean image on KV260, validate one batch-one inference,
    and read hardware counters to separate activation starvation, issue,
    compute, result and DMA stalls.

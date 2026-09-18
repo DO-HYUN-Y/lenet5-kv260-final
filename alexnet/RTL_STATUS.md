@@ -1,12 +1,14 @@
 # AlexNet RTL status — 2026-09-18
 
-## 2026-09-18 integrated-top trained Conv1 and DMA-overlap checkpoint
+## 2026-09-18 complete trained Conv1 integrated-top checkpoint
 
-The first trained Conv1 tile now passes through the real graph accelerator top,
-including AXI-Lite DMA programming, the long Conv1 raster MM2S, physical-format
-weight and parameter reads, M8xN128 compute/requantization, result packing and
-the first scatter S2MM. The 64 result bytes match the frozen C++ full-graph
-golden exactly after 363 K issues.
+All 190 trained Conv1 spatial descriptors now pass through the real graph
+accelerator top, including AXI-Lite DMA programming, the long Conv1 raster
+MM2S, physical-format weight and parameter reads, M8xN128
+compute/requantization, result packing and every scatter S2MM. The regression
+matches all 193,600 result bytes against the frozen C++ full-graph golden after
+68,970 K issues and 3,032 result transfers. Every one of the 24,200 N8 rows is
+written exactly once at its expected address with exact `TKEEP` and `TLAST`.
 
 This test exposed a real control deadlock: one serialized main-DMA controller
 held the channel for the complete 401,408-byte raster while the compute path
@@ -17,26 +19,35 @@ weight byte offset advances only for weight fills. In the passing regression,
 the first result S2MM completes while the long raster MM2S is still active,
 which proves the required overlap and removes the circular wait.
 
-The rebuilt four-HP KV260 `system_wrapper` is timing-clean at 200 MHz:
+The full run also exposed a descriptor-boundary race. Patch prefetch can accept
+the next descriptor one cycle before the preceding descriptor's final S2MM
+drain. Resetting the result-slice index immediately was then overwritten by
+the old drain's increment, so the next descriptor began at slice 1. The top
+now records a pending slice-epoch reset and applies it when the outstanding
+drain retires, retaining patch-prefetch overlap without corrupting addresses.
 
-- WNS/WHS are `+0.039/+0.010 ns`, TNS/THS are zero;
+The rebuilt four-HP KV260 `system_wrapper` is timing-clean at 200 MHz with the
+descriptor-boundary fix included:
+
+- WNS/WHS are `+0.006/+0.010 ns`, TNS/THS are zero;
 - failed, unrouted and partially routed nets are zero;
 - DRC errors and critical warnings are zero;
-- 90,438 CLB LUTs (77.22%), 91,363 registers (39.00%), 96 BRAM tiles
+- 90,463 CLB LUTs (77.24%), 91,346 registers (39.00%), 96 BRAM tiles
   (66.67%), 40 URAM (62.50%) and 576 DSP48E2 (46.15%);
 - the SA still owns exactly 512 DSP48E2 and the parallel requant path owns 64;
 - bitstream SHA-256 is
-  `ca5dd810af2d0a2e864c71d35a0ff9b4a7ae85d7e7f0cf4965ce7d686003b27f`;
+  `753b240653485b21fa84562d1c8f2ed8cf4af972465273895068367b288470c8`;
 - XSA SHA-256 is
-  `27e1db6e316653293d35f47ddbe0d11eca629382e0d0ec4b4d6216e96db2009c`.
+  `774166403de42cfb33eba9cbe69e19b399fff0321738d6d0e7775a8fae998b52`.
 
-Vivado's vectorless report estimates 3.556 W total on-chip power, but also
+Vivado's vectorless report estimates 3.536 W total on-chip power, but also
 warns that reset switching activity is unrealistic. It is therefore retained
 only as a planning estimate and is not used as a measured TOPS/W result.
 
-The remaining numerical gate is still the all-tile, all-layer integrated-top
-comparison. The current smoke proves one real Conv1 tile and the formerly
-deadlocking DMA overlap, not a complete image or board inference.
+The next numerical gate is one continuous Conv1-through-FC8 integrated-top
+run that checks all remaining Pool/Conv/FC boundary images in the same BFM.
+Conv1 is now complete in integrated-top XSim, but this is not yet a complete
+image or physical-board inference.
 
 ## 2026-09-17 M8xN126 format-v2 graph-payload bitstream checkpoint
 

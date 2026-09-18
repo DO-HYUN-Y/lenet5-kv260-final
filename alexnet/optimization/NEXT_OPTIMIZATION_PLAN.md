@@ -2,22 +2,26 @@
 
 Date: 2026-09-18
 
-## 2026-09-18 integrated-top DMA checkpoint
+## 2026-09-18 complete trained Conv1 integrated-top checkpoint
 
-A trained first-Conv1-tile smoke now drives the real board top instead of only
-the payload engine. It discovered and removed a circular wait caused by using
-one serialized main-DMA controller for a 401,408-byte raster MM2S, short
-parameter traffic and result S2MM. Independent main MM2S/S2MM controllers now
-arbitrate the shared AXI-Lite register port with transaction ownership held
-through each response. Parameter reads use the idle HP3 weight MM2S.
+A trained Conv1 regression now drives all 190 spatial descriptors through the
+real board top instead of stopping at the first payload tile. The earlier
+first-tile smoke discovered and removed a circular wait caused by using one
+serialized main-DMA controller for a 401,408-byte raster MM2S, short parameter
+traffic and result S2MM. Independent main MM2S/S2MM controllers now arbitrate
+the shared AXI-Lite register port with transaction ownership held through each
+response. Parameter reads use the idle HP3 weight MM2S.
 
-The regression proves that a 64-byte result S2MM can complete while the long
-raster MM2S is still active. Its 363 K issues and all 64 trained result bytes
-match the C++ golden. The rebuilt 200 MHz top closes at WNS/WHS
-`+0.039/+0.010 ns`, with zero failed route nets and zero DRC errors/critical
-warnings. It uses 90,438 CLB LUTs, 91,363 registers, 96 BRAM tiles, 40 URAM
-and 576 DSP48E2. This is a first-tile control/data checkpoint, not the final
-all-tile image proof.
+The complete test checks 68,970 K issues, 3,032 scatter S2MM transfers and all
+193,600 result bytes against the C++ golden, with every one of the 24,200 N8
+rows written exactly once. It exposed a second control race: the next patch
+could be accepted before the previous descriptor's final S2MM drain, allowing
+that old drain to advance the new descriptor's slice index. Slice-epoch reset
+is now deferred through the outstanding drain while preserving patch prefetch
+overlap. The rebuilt 200 MHz top closes at WNS/WHS `+0.006/+0.010 ns`, with
+zero failed route nets and zero DRC errors/critical warnings. It uses 90,463
+CLB LUTs, 91,346 registers, 96 BRAM tiles, 40 URAM and 576 DSP48E2. The
+updated control fix is therefore included in the timing-clean bitstream/XSA.
 
 ## 2026-09-16 graph-payload top update
 
@@ -176,15 +180,14 @@ result; it is not yet present in the resource-probe bitstream.
    through the integrated graph top and compare its complete boundary images;
    retain timeout, tile/tag ordering, result-count and non-overwrite
    assertions around the full loop.
-8. **First integrated-top tile and DMA overlap completed:** the trained Conv1
-   first tile passes through real DMA programming, raster/weight/parameter
-   streams, compute and scatter S2MM. Separate main MM2S/S2MM controllers
-   remove the raster/result circular wait, and parameters use HP3 without
-   corrupting the physical weight offset. Extend this BFM from one tile to all
-   Conv1 tiles, then cross each Pool/Conv/FC boundary against the frozen full
-   images. Add assertions for exact descriptor count, address range,
-   non-overwrite, TLAST, tile/tag order and per-boundary byte count.
-9. After correctness, add counters around the one-lane activation service and
+8. **Complete Conv1 integrated-top checkpoint completed:** all 190 trained
+   Conv1 descriptors pass through real DMA programming, raster/weight/parameter
+   streams, compute and 3,032 scatter S2MM transfers. The test checks exact
+   descriptor and issue counts, address range, non-overwrite, `TKEEP`, `TLAST`
+   and all 193,600 golden result bytes. Next extend the same BFM into one
+   continuous Conv1-through-FC8 run and check all remaining Conv/Pool/FC
+   boundaries together against the frozen full images.
+9. After full-graph correctness, add counters around the one-lane activation service and
    pipeline/bank it according to measured activation-starvation and issue
    stalls rather than analytic bandwidth alone.
 
