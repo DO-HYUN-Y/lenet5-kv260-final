@@ -176,18 +176,27 @@ result; it is not yet present in the resource-probe bitstream.
    XSim sends one trained tile from every layer through the physical M8xN128
    packed SA, continuation accumulator and 64-DSP requant/result path. All
    26,859 K issues and 4,784 result bytes match exactly, including FC6's
-   4,096 + 4,096 + 1,024 K continuation. Next, drive every scheduled tile
-   through the integrated graph top and compare its complete boundary images;
-   retain timeout, tile/tag ordering, result-count and non-overwrite
-   assertions around the full loop.
+   4,096 + 4,096 + 1,024 K continuation.
 8. **Complete Conv1 integrated-top checkpoint completed:** all 190 trained
    Conv1 descriptors pass through real DMA programming, raster/weight/parameter
    streams, compute and 3,032 scatter S2MM transfers. The test checks exact
    descriptor and issue counts, address range, non-overwrite, `TKEEP`, `TLAST`
-   and all 193,600 golden result bytes. Next extend the same BFM into one
-   continuous Conv1-through-FC8 run and check all remaining Conv/Pool/FC
-   boundaries together against the frozen full images.
-9. After full-graph correctness, add counters around the one-lane activation service and
+   and all 193,600 golden result bytes.
+9. **Complete full-graph numerical checkpoint completed:** one continuous
+   integrated-top XSim run checks all eleven Conv/Pool/FC DDR boundaries.  It
+   retires 1,635 descriptors and 4,487,914 K issues, consumes all 61,123,264
+   physical weight bytes, and matches every expected N8 row exactly once.  The
+   run found and fixed a duplicate pool-layer acceptance at the scheduler
+   barrier before passing Pool1/2/5 and FC6/7/8 in the same execution.
+10. **Timing-clean integrated image completed:** register the x-mod-4 BRAM
+    read commands, rerun the focused feeder/service gates and rebuild the
+    four-HP top.  The clean 200 MHz build closes at WNS/WHS
+    `+0.041/+0.010 ns`, routes all 172,519 routable nets, passes DRC/bitgen and
+    exports the fixed XSA.  The full-graph XSim gate passes against the same
+    source checkpoint.
+11. Deploy this image on KV260, validate one batch-one inference and archive
+    hardware counter/power traces for the exact inference interval.
+12. Add counters around the one-lane activation service and
    pipeline/bank it according to measured activation-starvation and issue
    stalls rather than analytic bandwidth alone.
 

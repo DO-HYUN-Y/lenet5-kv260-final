@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2025.2 (lin64) Build 6299465 Fri Nov 14 12:34:56 MST 2025
-| Date         : Thu Sep 17 12:11:47 2026
+| Date         : Fri Sep 18 20:54:47 2026
 | Host         : jian-ThinkBook-16-G9-AHP running 64-bit Ubuntu 24.04.4 LTS
 | Command      : report_control_sets -verbose -file /home/jian/Documents/Codex/2026-09-09/https-github-com-do-hyun-y/work/lenet5-kv260-final/alexnet/reports/m16_patch_feeder_bridge/200mhz/synth_control_sets.rpt
 | Design       : alexnet_m16_patch_feeder_bridge
@@ -23,11 +23,11 @@ Table of Contents
 +----------------------------------------------------------+-------+
 |                          Status                          | Count |
 +----------------------------------------------------------+-------+
-| Total control sets                                       |    61 |
-|    Minimum number of control sets                        |    61 |
+| Total control sets                                       |    63 |
+|    Minimum number of control sets                        |    63 |
 |    Addition due to synthesis replication                 |     0 |
 |    Addition due to physical synthesis replication        |     0 |
-| Unused register locations in slices containing registers |    43 |
+| Unused register locations in slices containing registers |    42 |
 +----------------------------------------------------------+-------+
 * Control sets can be merged at opt_design using control_set_merge or merge_equivalent_drivers
 ** Run report_qor_suggestions for automated merging and remapping suggestions
@@ -39,15 +39,15 @@ Table of Contents
 +--------------------+-------+
 |       Fanout       | Count |
 +--------------------+-------+
-| Total control sets |    61 |
-| >= 0 to < 4        |     4 |
-| >= 4 to < 6        |     0 |
-| >= 6 to < 8        |     1 |
-| >= 8 to < 10       |     3 |
+| Total control sets |    63 |
+| >= 0 to < 4        |     5 |
+| >= 4 to < 6        |     1 |
+| >= 6 to < 8        |     0 |
+| >= 8 to < 10       |     4 |
 | >= 10 to < 12      |     0 |
-| >= 12 to < 14      |     3 |
+| >= 12 to < 14      |     4 |
 | >= 14 to < 16      |     0 |
-| >= 16              |    50 |
+| >= 16              |    49 |
 +--------------------+-------+
 * Control sets can be remapped at either synth_design or opt_design
 
@@ -60,80 +60,82 @@ Table of Contents
 +--------------+-----------------------+------------------------+-----------------+--------------+
 | No           | No                    | No                     |               5 |            0 |
 | No           | No                    | Yes                    |               0 |            0 |
-| No           | Yes                   | No                     |               8 |            0 |
-| Yes          | No                    | No                     |            1024 |            0 |
+| No           | Yes                   | No                     |               9 |            0 |
+| Yes          | No                    | No                     |            1026 |            0 |
 | Yes          | No                    | Yes                    |               0 |            0 |
-| Yes          | Yes                   | No                     |            2164 |            0 |
+| Yes          | Yes                   | No                     |            2354 |            0 |
 +--------------+-----------------------+------------------------+-----------------+--------------+
 
 
 4. Detailed Control Set Information
 -----------------------------------
 
-+--------------+-------------------------------------------------------------+----------------------------------------------------------+------------------+----------------+--------------+
-| Clock Signal |                        Enable Signal                        |                     Set/Reset Signal                     | Slice Load Count | Bel Load Count | Bels / Slice |
-+--------------+-------------------------------------------------------------+----------------------------------------------------------+------------------+----------------+--------------+
-|  clk         | u_patch_pingpong/set_state[1][1]_i_1_n_0                    | u_patch_pingpong/set_k_count_q[1][12]_i_1_n_0            |                0 |              2 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/prefetch_phase_q[0]                 | rst                                                      |                0 |              2 |           NA |
-|  clk         | u_patch_pingpong/set_state[0][1]_i_1_n_0                    | u_patch_pingpong/set_context_tag_q                       |                0 |              2 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/p_102_in                            | g_xmod4_feeder.u_feeder/write_plane_q[1]_i_1_n_0         |                0 |              2 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/group_count_q[4]_i_1_n_0            | rst                                                      |                0 |              7 |           NA |
-|  clk         |                                                             | rst                                                      |                0 |              8 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/scan_x_q[7]_i_1_n_0                 | rst                                                      |                0 |              8 |           NA |
-|  clk         |                                                             |                                                          |                0 |              9 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/E[0]                                | rst                                                      |                0 |             12 |           NA |
-|  clk         | u_patch_pingpong/reads_issued_q[12]_i_2_n_0                 | u_patch_pingpong/reads_issued_q[12]_i_1_n_0              |                0 |             13 |           NA |
-|  clk         | u_patch_pingpong/pending_k_q_0                              | rst                                                      |                0 |             13 |           NA |
-|  clk         | u_patch_pingpong/completed_replays[15]_i_1_n_0              | rst                                                      |                0 |             16 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/emit_kx_q[0]                        | rst                                                      |                0 |             16 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/scan_y_q[7]_i_1_n_0                 | rst                                                      |                0 |             16 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/fill_descriptor_accepted_q_reg_1[0] | g_xmod4_feeder.u_feeder/SR[0]                            |                0 |             16 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/planned_endpoint_x_q[7]_i_1_n_0     | rst                                                      |                0 |             16 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/fill_descriptor_accepted_q_reg[0]   | rst                                                      |                0 |             16 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/emit_ic_q[0]                        | rst                                                      |                0 |             17 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/CEA2                                | rst                                                      |                0 |             21 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/state_q[0]                          | rst                                                      |                0 |             22 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/next_group_y_q[7]_i_1_n_0           | rst                                                      |                0 |             33 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/p_102_in                            | rst                                                      |                0 |             40 |           NA |
-|  clk         | u_patch_pingpong/set_k_count_q[0][12]_i_2_n_0               | u_patch_pingpong/set_context_tag_q                       |                0 |             45 |           NA |
-|  clk         | u_patch_pingpong/set_k_count_q[1][12]_i_2_n_0               | u_patch_pingpong/set_k_count_q[1][12]_i_1_n_0            |                0 |             45 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/pixel_q[4][63]_i_1_n_0              |                                                          |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/pixel_q[8][63]_i_1_n_0              |                                                          |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/pixel_q[12][63]_i_1_n_0             |                                                          |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/pixel_q[1][63]_i_1_n_0              |                                                          |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/pixel_q[5][63]_i_1_n_0              |                                                          |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/pixel_q[9][63]_i_1_n_0              |                                                          |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/pixel_q[0][63]_i_1_n_0              |                                                          |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/pixel_q[13][63]_i_1_n_0             |                                                          |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[12][63]_i_2_n_0    | g_xmod4_feeder.u_feeder/prefetch_pixel_q[12][63]_i_1_n_0 |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[10][63]_i_2_n_0    | g_xmod4_feeder.u_feeder/prefetch_pixel_q[10][63]_i_1_n_0 |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[8][63]_i_2_n_0     | g_xmod4_feeder.u_feeder/prefetch_pixel_q[8][63]_i_1_n_0  |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[6][63]_i_2_n_0     | g_xmod4_feeder.u_feeder/prefetch_pixel_q[6][63]_i_1_n_0  |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[4][63]_i_2_n_0     | g_xmod4_feeder.u_feeder/prefetch_pixel_q[4][63]_i_1_n_0  |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[2][63]_i_2_n_0     | g_xmod4_feeder.u_feeder/prefetch_pixel_q[2][63]_i_1_n_0  |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[0][63]_i_2_n_0     | g_xmod4_feeder.u_feeder/prefetch_pixel_q[0][63]_i_1_n_0  |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[14][63]_i_2_n_0    | g_xmod4_feeder.u_feeder/prefetch_pixel_q[14][63]_i_1_n_0 |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/pixel_q[6][63]_i_1_n_0              |                                                          |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[13][63]_i_2_n_0    | g_xmod4_feeder.u_feeder/prefetch_pixel_q[13][63]_i_1_n_0 |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[15][63]_i_2_n_0    | g_xmod4_feeder.u_feeder/prefetch_pixel_q[15][63]_i_1_n_0 |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[11][63]_i_2_n_0    | g_xmod4_feeder.u_feeder/prefetch_pixel_q[11][63]_i_1_n_0 |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[9][63]_i_2_n_0     | g_xmod4_feeder.u_feeder/prefetch_pixel_q[9][63]_i_1_n_0  |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[7][63]_i_2_n_0     | g_xmod4_feeder.u_feeder/prefetch_pixel_q[7][63]_i_1_n_0  |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[5][63]_i_2_n_0     | g_xmod4_feeder.u_feeder/prefetch_pixel_q[5][63]_i_1_n_0  |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[3][63]_i_2_n_0     | g_xmod4_feeder.u_feeder/prefetch_pixel_q[3][63]_i_1_n_0  |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[1][63]_i_2_n_0     | g_xmod4_feeder.u_feeder/prefetch_pixel_q[1][63]_i_1_n_0  |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/pixel_q[15][63]_i_1_n_0             |                                                          |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/pixel_q[7][63]_i_1_n_0              |                                                          |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/pixel_q[3][63]_i_1_n_0              |                                                          |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/pixel_q[14][63]_i_1_n_0             |                                                          |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/pixel_q[10][63]_i_1_n_0             |                                                          |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/pixel_q[11][63]_i_1_n_0             |                                                          |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/pixel_q[2][63]_i_1_n_0              |                                                          |                0 |             64 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/frame_fire                          | rst                                                      |                0 |             98 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/memory_read_issue                   | rst                                                      |                0 |            112 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/group_crosses_row_q                 | rst                                                      |                0 |            121 |           NA |
-|  clk         | u_patch_pingpong/packed_patch_q[7]_i_1_n_0                  | rst                                                      |                0 |            173 |           NA |
-|  clk         | g_xmod4_feeder.u_feeder/write_data_q[63]_i_1_n_0            | rst                                                      |                0 |            256 |           NA |
-+--------------+-------------------------------------------------------------+----------------------------------------------------------+------------------+----------------+--------------+
++--------------+----------------------------------------------------------+----------------------------------------------------------+------------------+----------------+--------------+
+| Clock Signal |                       Enable Signal                      |                     Set/Reset Signal                     | Slice Load Count | Bel Load Count | Bels / Slice |
++--------------+----------------------------------------------------------+----------------------------------------------------------+------------------+----------------+--------------+
+|  clk         | g_xmod4_feeder.u_feeder/read_cmd_plane_q[1]_i_1_n_0      |                                                          |                0 |              2 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/prefetch_phase_q[0]              | rst                                                      |                0 |              2 |           NA |
+|  clk         | u_patch_pingpong/set_state[1][1]_i_1_n_0                 | u_patch_pingpong/set_k_count_q[1][12]_i_1_n_0            |                0 |              2 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/p_119_in                         | g_xmod4_feeder.u_feeder/write_plane_q[1]_i_1_n_0         |                0 |              2 |           NA |
+|  clk         | u_patch_pingpong/set_state[0][1]_i_1_n_0                 | u_patch_pingpong/set_context_tag_q                       |                0 |              2 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/state_q[0]                       | rst                                                      |                0 |              4 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/group_count_q[4]_i_1_n_0         | rst                                                      |                0 |              8 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/scan_x_q[7]_i_2_n_0              | g_xmod4_feeder.u_feeder/scan_x_q[7]_i_1_n_0              |                0 |              8 |           NA |
+|  clk         |                                                          | rst                                                      |                0 |              9 |           NA |
+|  clk         |                                                          |                                                          |                0 |              9 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/emit_ky_q_reg[3]_1[0]            | rst                                                      |                0 |             12 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/scan_y_q[7]_i_1_n_0              | rst                                                      |                0 |             12 |           NA |
+|  clk         | u_patch_pingpong/reads_issued_q[12]_i_2_n_0              | u_patch_pingpong/reads_issued_q[12]_i_1_n_0              |                0 |             13 |           NA |
+|  clk         | u_patch_pingpong/pending_k_q_0                           | rst                                                      |                0 |             13 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/emit_ky_q_reg[3]_0[0]            | rst                                                      |                0 |             16 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/E[0]                             | g_xmod4_feeder.u_feeder/SR[0]                            |                0 |             16 |           NA |
+|  clk         | u_patch_pingpong/completed_replays[15]_i_1_n_0           | rst                                                      |                0 |             16 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/CEP                              | rst                                                      |                0 |             16 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/emit_kx_q[0]                     | rst                                                      |                0 |             16 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/emit_ic_q[0]                     | rst                                                      |                0 |             18 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/group_y_q[7]_i_1_n_0             | rst                                                      |                0 |             21 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/CEA2                             | rst                                                      |                0 |             33 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/p_119_in                         | rst                                                      |                0 |             40 |           NA |
+|  clk         | u_patch_pingpong/set_k_count_q[1][12]_i_2_n_0            | u_patch_pingpong/set_k_count_q[1][12]_i_1_n_0            |                0 |             45 |           NA |
+|  clk         | u_patch_pingpong/set_k_count_q[0][12]_i_2_n_0            | u_patch_pingpong/set_context_tag_q                       |                0 |             45 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[4][63]_i_2_n_0  | g_xmod4_feeder.u_feeder/prefetch_pixel_q[4][63]_i_1_n_0  |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[14][63]_i_2_n_0 | g_xmod4_feeder.u_feeder/prefetch_pixel_q[14][63]_i_1_n_0 |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[13][63]_i_2_n_0 | g_xmod4_feeder.u_feeder/prefetch_pixel_q[13][63]_i_1_n_0 |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[2][63]_i_2_n_0  | g_xmod4_feeder.u_feeder/prefetch_pixel_q[2][63]_i_1_n_0  |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[12][63]_i_2_n_0 | g_xmod4_feeder.u_feeder/prefetch_pixel_q[12][63]_i_1_n_0 |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[1][63]_i_2_n_0  | g_xmod4_feeder.u_feeder/prefetch_pixel_q[1][63]_i_1_n_0  |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[0]              | g_xmod4_feeder.u_feeder/prefetch_pixel_q[0][63]_i_1_n_0  |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[10][63]_i_2_n_0 | g_xmod4_feeder.u_feeder/prefetch_pixel_q[10][63]_i_1_n_0 |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[7][63]_i_2_n_0  | g_xmod4_feeder.u_feeder/prefetch_pixel_q[7][63]_i_1_n_0  |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[6][63]_i_2_n_0  | g_xmod4_feeder.u_feeder/prefetch_pixel_q[6][63]_i_1_n_0  |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[15][63]_i_2_n_0 | g_xmod4_feeder.u_feeder/prefetch_pixel_q[15][63]_i_1_n_0 |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/pixel_q[15][63]_i_1_n_0          |                                                          |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[9][63]_i_2_n_0  | g_xmod4_feeder.u_feeder/prefetch_pixel_q[9][63]_i_1_n_0  |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[5][63]_i_2_n_0  | g_xmod4_feeder.u_feeder/prefetch_pixel_q[5][63]_i_1_n_0  |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/pixel_q[0][63]_i_1_n_0           |                                                          |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/pixel_q[12][63]_i_1_n_0          |                                                          |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/pixel_q[2][63]_i_1_n_0           |                                                          |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/pixel_q[5][63]_i_1_n_0           |                                                          |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/pixel_q[1][63]_i_1_n_0           |                                                          |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/pixel_q[6][63]_i_1_n_0           |                                                          |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/pixel_q[4][63]_i_1_n_0           |                                                          |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/pixel_q[14][63]_i_1_n_0          |                                                          |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/pixel_q[3][63]_i_1_n_0           |                                                          |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/pixel_q[10][63]_i_1_n_0          |                                                          |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/pixel_q[8][63]_i_1_n_0           |                                                          |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[8][63]_i_2_n_0  | g_xmod4_feeder.u_feeder/prefetch_pixel_q[8][63]_i_1_n_0  |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[11][63]_i_2_n_0 | g_xmod4_feeder.u_feeder/prefetch_pixel_q[11][63]_i_1_n_0 |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/pixel_q[7][63]_i_1_n_0           |                                                          |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/pixel_q[11][63]_i_1_n_0          |                                                          |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/pixel_q[13][63]_i_1_n_0          |                                                          |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/pixel_q[9][63]_i_1_n_0           |                                                          |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/prefetch_pixel_q[3][63]_i_2_n_0  | g_xmod4_feeder.u_feeder/prefetch_pixel_q[3][63]_i_1_n_0  |                0 |             64 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/frame_fire                       | rst                                                      |                0 |            100 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/read_cmd_valid_q                 | rst                                                      |                0 |            112 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/group_crosses_row_q              | rst                                                      |                0 |            121 |           NA |
+|  clk         | u_patch_pingpong/packed_patch_q[7]_i_1_n_0               | rst                                                      |                0 |            173 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/memory_read_issue                | rst                                                      |                0 |            208 |           NA |
+|  clk         | g_xmod4_feeder.u_feeder/write_data_q[63]_i_2_n_0         | g_xmod4_feeder.u_feeder/write_data_q[63]_i_1_n_0         |                0 |            256 |           NA |
++--------------+----------------------------------------------------------+----------------------------------------------------------+------------------+----------------+--------------+
 
 

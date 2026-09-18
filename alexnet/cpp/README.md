@@ -115,9 +115,21 @@ vivado -mode batch \
 
 The regression checks 26,859 K issues and 4,784 exact result bytes. FC6 is
 split into 4,096 + 4,096 + 1,024 K chunks, so this also checks continuation
-state across the hardware command limit. This is an exact trained tile gate
-for every layer; the integrated graph top still requires an all-tile,
-full-image comparison before it is called end-to-end numerically proven.
+state across the hardware command limit. This remains the fast exact trained
+tile gate for every layer.
+
+Run the all-tile integrated-top gate with:
+
+```sh
+vivado -mode batch \
+  -source alexnet/scripts/run_alexnet_m8n126_graph_top_trained_full_graph.tcl \
+  -notrace
+```
+
+This single XSim invocation streams the physical board DMA images and checks
+all eleven boundary images while the RTL writes them.  The passing checkpoint
+retires 1,635 descriptors and 4,487,914 K issues and consumes exactly
+61,123,264 physical weight bytes without a missing or duplicate N8 row.
 
 The generator also emits the raster, first physical weight request, first
 parameter records and first Conv1 result slice needed by the integrated-top

@@ -1,5 +1,58 @@
 # AlexNet RTL status — 2026-09-18
 
+## 2026-09-18 complete trained Conv1-through-FC8 integrated-top checkpoint
+
+One continuous XSim run now drives the real integrated graph top from Conv1
+through FC8.  It programs the behavioral AXI DMAs, streams the checked
+format-v2 board weights and parameter records, preserves the A/B activation
+ping-pong contents, executes Pool1/2/5 in place, and compares every S2MM write
+against the frozen C++ golden images as the write occurs.  All eleven
+Conv/Pool/FC boundaries pass byte-exact comparison with no missing or duplicate
+N8 rows.
+
+The passing run retires 1,635 descriptors and 4,487,914 K issues, accounts for
+714,188,480 useful MACs and 4,595,623,936 physical M8xN128 slots, and consumes
+all 61,123,264 bytes of the physical weight-transfer image.  FC6's continuation
+chunks and the FC8 N8 tail are therefore covered by the same run rather than by
+separate layer-only tests.
+
+The same RTL now has a fresh timing-clean four-HP KV260 image.  The Conv1
+x-mod-4 feeder registers sixteen shared bank-address commands before their
+four BRAM planes, cutting the former input-geometry-to-BRAM address path.  A
+row-crossing M16 prefetch holds its last Conv1 channel beat for one cycle to
+keep command/data selectors aligned.  Both focused feeder XSim regressions
+pass; routed OOC WNS/WHS are `+0.291/+0.055 ns` for the patch bridge and
+`+0.368/+0.055 ns` for the raster service.
+
+The clean integrated build completes route, DRC, bitgen and fixed-XSA export
+at 200 MHz with WNS/WHS `+0.041/+0.010 ns`, zero TNS/THS, 408,633 timing
+endpoints, 172,519 fully routed nets and zero DRC errors or critical warnings.
+It uses 89,829 LUTs (76.70%), 91,572 registers (39.09%), 96 BRAM tiles
+(66.67%), 40 URAM (62.50%) and 576 DSP48E2 (46.15%).  The current local
+artifact hashes are:
+
+- bitstream: `b1bc037d70af1bbd0ca98d40594fdcac5a3efd945c6ea3e82cb9b930c7c2b159`;
+- fixed XSA: `004cd0abcd934147a6011e6c28a734e911a436c247fd1167da3723772320ca45`;
+- post-route physical checkpoint:
+  `7865f8f4ae19cd08021916290701cc0c1684533340e270589045dae18e32d2ab`.
+
+Vivado's vectorless estimate is 3.498 W and carries the reset-activity
+accuracy warning, so it is not a measured board-power or TOPS/W result.
+
+The full run exposed a second integration control bug after the Conv1
+checkpoint.  A pool completion request is level-held until the scheduler
+consumes the pool-done pulse, while the pool service becomes ready again on
+that same retirement edge.  Pool1 could consequently be accepted twice.  The
+top now records the first pool-layer acceptance until the scheduler drops the
+completion request.  A rerun passes Pool1, Pool2 and Pool5 once each and then
+continues through FC8.  The first 15-million-cycle test limit was also replaced
+with a full-graph guard after it correctly reached Conv4 without a mismatch.
+
+This closes trained RTL numerical integration in simulation and produces the
+board-loadable timing-clean artifacts.  Physical-board correctness, measured
+throughput, DDR stalls, power and TOPS/W remain board measurements and are not
+inferred from XSim or vectorless power.
+
 ## 2026-09-18 complete trained Conv1 integrated-top checkpoint
 
 All 190 trained Conv1 spatial descriptors now pass through the real graph
@@ -26,7 +79,8 @@ the old drain's increment, so the next descriptor began at slice 1. The top
 now records a pending slice-epoch reset and applies it when the outstanding
 drain retires, retaining patch-prefetch overlap without corrupting addresses.
 
-The rebuilt four-HP KV260 `system_wrapper` is timing-clean at 200 MHz with the
+At that earlier Conv1-only checkpoint, the rebuilt four-HP KV260
+`system_wrapper` was timing-clean at 200 MHz with the
 descriptor-boundary fix included:
 
 - WNS/WHS are `+0.006/+0.010 ns`, TNS/THS are zero;
@@ -44,10 +98,8 @@ Vivado's vectorless report estimates 3.536 W total on-chip power, but also
 warns that reset switching activity is unrealistic. It is therefore retained
 only as a planning estimate and is not used as a measured TOPS/W result.
 
-The next numerical gate is one continuous Conv1-through-FC8 integrated-top
-run that checks all remaining Pool/Conv/FC boundary images in the same BFM.
-Conv1 is now complete in integrated-top XSim, but this is not yet a complete
-image or physical-board inference.
+The formerly pending continuous Conv1-through-FC8 gate is completed in the
+checkpoint above.  Physical-board inference remains pending.
 
 ## 2026-09-17 M8xN126 format-v2 graph-payload bitstream checkpoint
 

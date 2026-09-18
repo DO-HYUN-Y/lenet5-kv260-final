@@ -462,6 +462,34 @@ int main(int argc, char** argv) {
     write_axis64_mem(conv1_dir / "expected_result_axis64.mem",
                      to_n8_tile_major(outputs.conv1));
 
+    // Compact 64-bit rows for one continuous integrated-top run. Keeping the
+    // full board weight/parameter images binary avoids creating a multi-million
+    // line text file; the DMA BFM reads those binaries at transfer time.
+    const fs::path full_graph_dir = output_dir / "full_graph_axis64";
+    fs::create_directories(full_graph_dir);
+    write_axis64_mem(full_graph_dir / "conv1.mem",
+                     to_n8_tile_major(outputs.conv1));
+    write_axis64_mem(full_graph_dir / "pool1.mem",
+                     to_n8_tile_major(outputs.pool1));
+    write_axis64_mem(full_graph_dir / "conv2.mem",
+                     to_n8_tile_major(outputs.conv2));
+    write_axis64_mem(full_graph_dir / "pool2.mem",
+                     to_n8_tile_major(outputs.pool2));
+    write_axis64_mem(full_graph_dir / "conv3.mem",
+                     to_n8_tile_major(outputs.conv3));
+    write_axis64_mem(full_graph_dir / "conv4.mem",
+                     to_n8_tile_major(outputs.conv4));
+    write_axis64_mem(full_graph_dir / "conv5.mem",
+                     to_n8_tile_major(outputs.conv5));
+    write_axis64_mem(full_graph_dir / "pool5.mem",
+                     to_n8_tile_major(outputs.pool5));
+    write_axis64_mem(full_graph_dir / "fc6.mem",
+                     to_n8_tile_major(outputs.fc6));
+    write_axis64_mem(full_graph_dir / "fc7.mem",
+                     to_n8_tile_major(outputs.fc7));
+    write_axis64_mem(full_graph_dir / "fc8.mem",
+                     to_n8_tile_major(outputs.logits));
+
     std::cout << "ALEXNET_BOARD_FULL_GRAPH_GOLDEN_PASS\n";
     return 0;
   } catch (const std::exception& error) {

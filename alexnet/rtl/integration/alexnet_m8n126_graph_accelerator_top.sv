@@ -221,6 +221,7 @@ module alexnet_m8n126_graph_accelerator_top #(
 
   logic pool_layer_valid, pool_layer_ready, pool_layer_done;
   logic pool_layer_error, pool_busy;
+  logic pool_layer_accepted_q;
   logic [31:0] pool_layer_base;
   logic pool_dma_cmd_valid, pool_dma_cmd_ready, pool_dma_cmd_s2mm;
   logic [31:0] pool_dma_cmd_address;
@@ -379,6 +380,7 @@ module alexnet_m8n126_graph_accelerator_top #(
                            active_activation_a_base[31:0];
   assign pool_layer_valid = engine_layer_complete_valid &&
                             engine_layer_complete_requires_pool &&
+                            !pool_layer_accepted_q &&
                             main_state_q == MAIN_IDLE &&
                             !result_packer_active_q &&
                             !main_mm2s_busy && !main_s2mm_busy;
@@ -560,6 +562,7 @@ module alexnet_m8n126_graph_accelerator_top #(
       parameter_service_active_q <= 1'b0;
       raster_stream_active_q <= 1'b0;
       result_slice_reset_pending_q <= 1'b0;
+      pool_layer_accepted_q <= 1'b0;
       pool_dma_active_s2mm_q <= 1'b0;
       weight_byte_offset_q <= 0;
       result_slice_index_q <= 0;
@@ -593,6 +596,15 @@ module alexnet_m8n126_graph_accelerator_top #(
 
       if (engine_start_fire)
         engine_start_pending_q <= 1'b0;
+
+      // A layer-complete request is level-held until the pool-done pulse is
+      // consumed by the scheduler. The pool service returns to IDLE on that
+      // same pulse, so remember the first acceptance and prevent a second
+      // launch during the one-cycle scheduler retirement window.
+      if (!engine_layer_complete_valid)
+        pool_layer_accepted_q <= 1'b0;
+      else if (pool_layer_valid && pool_layer_ready)
+        pool_layer_accepted_q <= 1'b1;
 
       if (engine_patch_request_valid && engine_patch_request_ready &&
           engine_patch_request_layer_id == 1) begin

@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2025.2 (lin64) Build 6299465 Fri Nov 14 12:34:56 MST 2025
-| Date         : Thu Sep 17 12:11:37 2026
+| Date         : Fri Sep 18 20:54:38 2026
 | Host         : jian-ThinkBook-16-G9-AHP running 64-bit Ubuntu 24.04.4 LTS
 | Command      : report_utilization -hierarchical -file /home/jian/Documents/Codex/2026-09-09/https-github-com-do-hyun-y/work/lenet5-kv260-final/alexnet/reports/m16_patch_feeder_bridge/200mhz/synth_utilization_hierarchical.rpt
 | Design       : alexnet_m16_patch_feeder_bridge
@@ -22,11 +22,11 @@ Table of Contents
 +-------------------------------------+--------------------------------+------------+------------+---------+------+------+--------+--------+------+------------+
 |               Instance              |             Module             | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs | RAMB36 | RAMB18 | URAM | DSP Blocks |
 +-------------------------------------+--------------------------------+------------+------------+---------+------+------+--------+--------+------+------------+
-| alexnet_m16_patch_feeder_bridge     |                          (top) |      10358 |      10358 |       0 |    0 | 3201 |     64 |      0 |    4 |          0 |
+| alexnet_m16_patch_feeder_bridge     |                          (top) |       9707 |       9707 |       0 |    0 | 3394 |     64 |      0 |    4 |          0 |
 |   (alexnet_m16_patch_feeder_bridge) |                          (top) |          1 |          1 |       0 |    0 |   46 |      0 |      0 |    0 |          0 |
-|   g_xmod4_feeder.u_feeder           | alexnet_n8_rs_m16_xmod4_feeder |       9986 |       9986 |       0 |    0 | 2810 |     64 |      0 |    0 |          0 |
-|   u_patch_pingpong                  |     alexnet_m16_patch_pingpong |        371 |        371 |       0 |    0 |  345 |      0 |      0 |    4 |          0 |
-|     (u_patch_pingpong)              |     alexnet_m16_patch_pingpong |        116 |        116 |       0 |    0 |  345 |      0 |      0 |    0 |          0 |
+|   g_xmod4_feeder.u_feeder           | alexnet_n8_rs_m16_xmod4_feeder |       9329 |       9329 |       0 |    0 | 3003 |     64 |      0 |    0 |          0 |
+|   u_patch_pingpong                  |     alexnet_m16_patch_pingpong |        377 |        377 |       0 |    0 |  345 |      0 |      0 |    4 |          0 |
+|     (u_patch_pingpong)              |     alexnet_m16_patch_pingpong |        122 |        122 |       0 |    0 |  345 |      0 |      0 |    0 |          0 |
 |     g_set[1].u_memory               |       alexnet_m16_patch_uram_0 |        254 |        254 |       0 |    0 |    0 |      0 |      0 |    2 |          0 |
 +-------------------------------------+--------------------------------+------------+------------+---------+------+------+--------+--------+------+------------+
 
