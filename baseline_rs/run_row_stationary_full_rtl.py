@@ -93,8 +93,10 @@ def main():
     output = (args.output_dir/'full_rtl_validation.json').resolve()
     output.unlink(missing_ok=True)  # A failed run cannot leave a stale PASS.
     started = time.monotonic()
+    # Keep layer progress visible when the simulator writes to a regular log.
+    line_buffer = [shutil.which('stdbuf'), '-oL'] if shutil.which('stdbuf') else []
     with (build/'run.log').open('w') as log:
-        subprocess.run([str(binary),'+vector_root='+str(args.vector_root.resolve()),
+        subprocess.run(line_buffer+[str(binary),'+vector_root='+str(args.vector_root.resolve()),
                         '+model_root='+str(args.model_root.resolve()),'+report='+str(output)],
                        check=True,stdout=log,stderr=subprocess.STDOUT)
     run_log = (build/'run.log').read_text()

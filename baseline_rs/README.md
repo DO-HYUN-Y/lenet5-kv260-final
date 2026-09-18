@@ -1,7 +1,7 @@
 # AlexNet pure row stationary baseline
 
 GitHub hybrid `854adea4d30e7861eae07f56df8f35966af31eb3`와 비교하는 별도 RS 구현이다.
-준비 폴더를 먼저 커밋한 뒤 `baseline/pure-row-stationary` 브랜치에서 구현한다.
+준비 폴더를 먼저 커밋한 뒤 `baseline/pure-row-stationary` 브랜치에서 구현했다.
 검증 범위는 `reports/`와 `config/comparison_contract.json`에 기록한다.
 
 논리 SA 크기 **8×128**, 물리 packed **4×128 / 512 DSP**를 유지한다. RS에서는
@@ -38,6 +38,9 @@ M 타일은 7 / 3 / 5개다. 이 분할은 RS Conv 가중치 재적재량을 증
 
 입력 gather의 39×64-bit 행 버퍼(312-byte payload)는 겹치는 window와 N8의
 8개 채널을 재사용한다. FC6는 한 N8 channel group의 36개 공간 word를 담는다.
+요청 metadata는 handshake에서 저장하고, 두 검증 단계에서 주소·크기·행
+정렬과 출력 행 경계를 검사한 다음 DDR 요청을 시작한다. Producer가 handshake
+직후 request 신호를 바꾸어도 저장된 요청만 검사한다.
 PE 입력 행 RF는 512×16-byte, 공유 filter RF는 최대 128×11-byte다. DSP 수와
 공통 bank 용량을 고정했어도 RF/FF/LUT 전체 면적은 같다고 가정하지 않는다.
 
@@ -57,7 +60,7 @@ vivado -mode batch -source baseline_rs/scripts/run_row_stationary_regressions.tc
 python baseline_rs/audit_row_stationary_traffic.py
 python baseline_rs/run_row_stationary_full_rtl.py --model-root /path/to/rs-model --verilator /path/to/verilator
 vivado -mode batch -source baseline_rs/scripts/synth_row_stationary_board.tcl
-python -m unittest baseline_rs.test_row_stationary_export baseline_rs.software.runtime.test_row_stationary_board
+python -m unittest baseline_rs.test_row_stationary_export baseline_rs.software.runtime.test_row_stationary_board baseline_rs.test_verify_board_result
 vivado -mode batch -source baseline_rs/board/scripts/build_kv260_pure_rs.tcl
 ```
 
@@ -81,7 +84,12 @@ slice를 위해 DRE를 켠다. main read / main write / weight read는 HP0 / HP1
 
 ```sh
 python -m baseline_rs.software.runtime.alexnet_row_stationary_board --model /path/to/rs-model --input /path/to/input_n8.bin --report /path/to/rs-board-result.json
+python -m baseline_rs.verify_board_result --report /path/to/rs-board-result.json --vector-root baseline_rs/build/rs_trained_vectors
 ```
+
+Golden 검증을 위해서는 위 numerical validation에서 만든 `input_n8.bin`을
+보드에 넣는다. Verifier는 보드 ID, 모델 SHA, 입력 SHA, 1000개 FC8 출력 바이트,
+전체 graph와 전송량 카운터를 대조한다. 임의의 다른 입력에 이 golden을 사용하지 않는다.
 
 `reports/traffic.json`의 hybrid 숫자는 실행된 RTL scheduler descriptor다.
 전체 RTL의 main/weight/gather 카운터는 accepted AXI-Stream valid byte다.

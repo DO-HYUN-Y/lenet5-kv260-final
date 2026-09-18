@@ -1,4 +1,9 @@
 set_param general.maxThreads 8
+set build_jobs 2
+if {[info exists ::env(ALEXNET_PURE_RS_BUILD_JOBS)]} {
+    set build_jobs $::env(ALEXNET_PURE_RS_BUILD_JOBS)
+    if {![string is integer -strict $build_jobs] || $build_jobs < 1} {error "Build jobs must be a positive integer"}
+}
 
 set stage_dir [file normalize [file join [file dirname [info script]] ..]]
 set shared_scripts [file normalize [file join $stage_dir .. .. alexnet stages 01_kv260_m4n8 scripts]]
@@ -34,7 +39,7 @@ set_property strategy Flow_PerfOptimized_high [get_runs synth_1]
 set_property strategy Performance_ExplorePostRoutePhysOpt [get_runs impl_1]
 
 reset_run synth_1
-launch_runs synth_1 -jobs 8
+launch_runs synth_1 -jobs $build_jobs
 wait_on_run synth_1
 if {[get_property PROGRESS [get_runs synth_1]] ne "100%"} {
     error "Synthesis did not complete: [get_property STATUS [get_runs synth_1]]"
@@ -47,7 +52,7 @@ report_timing_summary -delay_type min_max -check_timing_verbose \
     -report_unconstrained -file \
     [file join $report_dir post_synth_timing.rpt]
 
-launch_runs impl_1 -to_step write_bitstream -jobs 8
+launch_runs impl_1 -to_step write_bitstream -jobs $build_jobs
 wait_on_run impl_1
 if {[get_property PROGRESS [get_runs impl_1]] ne "100%"} {
     error "Implementation did not complete: [get_property STATUS [get_runs impl_1]]"

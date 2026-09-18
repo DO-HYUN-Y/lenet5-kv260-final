@@ -6,6 +6,7 @@ Telemetry counts accepted AXI-Stream valid bytes, not physical DDR bus traffic.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import time
@@ -108,11 +109,20 @@ def main():
     with RowStationaryBoard(args.device) as board:
         model = board.load_model(args.model)
         board.configure()
+        packed_input = args.input.read_bytes()
         started = time.monotonic()
-        logits = board.infer(args.input.read_bytes(),args.timeout)
+        logits = board.infer(packed_input,args.timeout)
         scores = [b if b<128 else b-256 for b in logits]
         top = sorted(range(1000),key=lambda n:scores[n],reverse=True)[:5]
         result = {'elapsed_seconds':time.monotonic()-started,'telemetry':board.telemetry(),
+                  'accelerator_id':board.read_reg(abi.REG_SPACE_ACCELERATOR,abi.REG_ID),
+                  'build_config':board.read_reg(abi.REG_SPACE_ACCELERATOR,abi.REG_BUILD_CONFIG),
+                  'input_bytes':len(packed_input),
+                  'input_sha256':hashlib.sha256(packed_input).hexdigest(),
+                  'checkpoint_sha256':model['checkpoint_sha256'],
+                  'quantization_contract_sha256':model['quantization_contract_sha256'],
+                  'weights_sha256':model['weights']['sha256'],
+                  'parameters_sha256':model['parameters']['sha256'],
                   'top5':[{'index':n,'class':model['categories'][n],'int8_logit':scores[n]} for n in top]}
         args.report.parent.mkdir(parents=True,exist_ok=True)
         args.report.write_text(json.dumps(result,indent=2)+'\n')

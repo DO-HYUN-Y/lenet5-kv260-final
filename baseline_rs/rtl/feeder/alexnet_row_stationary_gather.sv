@@ -27,7 +27,7 @@
     output logic [63:0] raw_read_bytes,
     output logic [31:0] completed_tiles
 );
-    typedef enum logic [3:0] {IDLE, INDEX, DECODE, REMAINDER, COORDINATE, OFFSET, ADDRESS, LOOKUP, READ, RESPONSE, EMIT, FAILED} state_t;
+    typedef enum logic [3:0] {IDLE, CHECK, CHECK_ROWS, INDEX, DECODE, REMAINDER, COORDINATE, OFFSET, ADDRESS, LOOKUP, READ, RESPONSE, EMIT, FAILED} state_t;
     state_t state_q;
     logic [3:0] layer_q, mc_q;
     logic [12:0] mb_q;
@@ -41,6 +41,8 @@
     logic [5:0] lookup_index;
     logic key_valid_q;
     logic fields_ok;
+    logic rows_aligned_q;
+    logic [5:0] output_row_remaining_q;
     // Registered fixed-geometry address stages. No generic divider/multiplier
     // is placed on the array enable path; all constants are layer-specific.
     logic [12:0] absolute_m_q, output_y_q, output_x_q;
@@ -62,22 +64,20 @@
             6,7,8: return 1; default: return 0;
         endcase
     endfunction
-    assign fields_ok=request_layer>=1 && request_layer<=8 &&
-        request_m_count>=1 && request_m_count<=8 &&
-        request_k_count>=1 && request_k_count<=128*row_width(request_layer) &&
-        {1'b0,request_m_base}+request_m_count<=layer_m(request_layer) &&
-        {1'b0,request_k_offset}+request_k_count<=layer_k(request_layer) &&
-        request_source_base[2:0]==0 &&
-        row_aligned(request_layer,request_k_offset) && row_aligned(request_layer,{2'd0,request_k_count}) &&
-        same_output_row(request_layer,request_m_base,request_m_count);
+    // Capture the request before checking it: combinational constant-modulus
+    // checks must not feed the scheduler's request handshake or RF write enables.
+    assign fields_ok=layer_q>=1 && layer_q<=8 && mc_q>=1 && mc_q<=8 &&
+        kc_q>=1 && kc_q<=128*row_width(layer_q) &&
+        {1'b0,mb_q}+mc_q<=layer_m(layer_q) &&
+        {1'b0,ko_q}+kc_q<=layer_k(layer_q) && base_q[2:0]==0;
     function automatic integer row_width(input logic [3:0] layer);
         case(layer)1:return 11;2:return 5;3,4,5:return 3;6:return 6;default:return 1;endcase
     endfunction
     function automatic logic row_aligned(input logic [3:0] layer,input logic [13:0] k);
         case(layer)1:return k%11==0;2:return k%5==0;3,4,5:return k%3==0;6:return k%6==0;default:return 1;endcase
     endfunction
-    function automatic logic same_output_row(input logic[3:0] layer,input logic[12:0] m,input logic[3:0] count);
-        case(layer)1:return m%55+count<=55;2:return m%27+count<=27;3,4,5:return m%13+count<=13;default:return count==1;endcase
+    function automatic logic [5:0] output_row_remaining(input logic[3:0] layer,input logic[12:0] m);
+        case(layer)1:return 6'(55-m%55);2:return 6'(27-m%27);3,4,5:return 6'(13-m%13);default:return 6'd1;endcase
     endfunction
     always_comb begin
         lookup_key={channel_q[13:3],source_y_q};
@@ -106,16 +106,22 @@
             kernel_position_q<=0; channel_q<=0; kernel_y_q<=0; kernel_x_q<=0;
             source_y_q<=0; source_x_q<=0; channel_offset_q<=0; spatial_offset_q<=0; padding_q<=0;
             word_valid_q<=0;word_key_q<=0;key_valid_q<=0; raw_read_bytes<=0; completed_tiles<=0;
+            rows_aligned_q<=0;output_row_remaining_q<=0;
             for(int i=0;i<39;i++) word_values_q[i]<=0;
         end else begin
             case(state_q)
                 IDLE: if(request_valid) begin
-                    if(!fields_ok) state_q<=FAILED;
-                    else begin
-                        layer_q<=request_layer; mc_q<=request_m_count; mb_q<=request_m_base;
-                        ko_q<=request_k_offset; kc_q<=request_k_count; base_q<=request_source_base;
-                        k_q<=0; m_q<=0; values_q<=0; word_valid_q<=0;key_valid_q<=0; state_q<=INDEX;
-                    end
+                    layer_q<=request_layer; mc_q<=request_m_count; mb_q<=request_m_base;
+                    ko_q<=request_k_offset; kc_q<=request_k_count; base_q<=request_source_base;
+                    k_q<=0; m_q<=0; values_q<=0; word_valid_q<=0;key_valid_q<=0; state_q<=CHECK;
+                end
+                CHECK: begin
+                    rows_aligned_q<=row_aligned(layer_q,ko_q) && row_aligned(layer_q,{2'd0,kc_q});
+                    output_row_remaining_q<=output_row_remaining(layer_q,mb_q);
+                    state_q<=fields_ok ? CHECK_ROWS : FAILED;
+                end
+                CHECK_ROWS: begin
+                    state_q<=rows_aligned_q && mc_q<=output_row_remaining_q ? INDEX : FAILED;
                 end
                 INDEX: begin
                     absolute_m_q<=mb_q+13'(m_q); absolute_k_q<=ko_q+14'(k_q); state_q<=DECODE;

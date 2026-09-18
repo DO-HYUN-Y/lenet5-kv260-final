@@ -2,6 +2,7 @@ set_param general.maxThreads 8
 source [file join [file dirname [info script]] rs_sources.tcl]
 set out_dir [file join $rs_root build rs_board_synth]
 file mkdir $out_dir
+foreach name {utilization.rpt timing.rpt worst_setup.rpt summary.txt post_synth.dcp} {file delete -force [file join $out_dir $name]}
 read_verilog -sv $rs_sources
 synth_design -top alexnet_row_stationary_accelerator_top -part xck26-sfvc784-2LV-c -mode out_of_context
 create_clock -name aclk -period 5 [get_ports aclk]

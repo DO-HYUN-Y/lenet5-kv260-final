@@ -1,5 +1,5 @@
 {
-  "scope": "component tests; full trained-model numerical report is separate",
+  "scope": "completed pure RS component simulations and Python model/PS/board-verifier tests; whole-network RTL is separate",
   "row_sa": {
     "passed": true,
     "contexts": 22,
@@ -46,12 +46,56 @@
     "early_and_late_done": true,
     "malformed_keep_last_fault": true
   },
-  "python_export_and_ps_tests_passed": 9,
+  "python_export_and_ps_tests_passed": 14,
   "physical_board_inference_verified": false,
   "row_sa_source_sha256": {
     "rtl/packed_mac/alexnet_row_stationary_pe.sv": "c3c7b7a8a34b1a957a608fd33f51e4a4b9cd8aad7faae953139f19666621edeb",
     "rtl/packed_mac/alexnet_rs_filter_row_rf.sv": "2f15ae8ff4709d5290c0ee91f9d931ff6f5e63142dfc4d9e5e5db426fb4d7882",
     "rtl/sa/alexnet_sa_m8r128_row_stationary.sv": "0a30bf84bcc49eeff9f964f4961a9b0702c165eccd82ce2567a3e625c1b815f1",
     "tb/tb_alexnet_row_stationary_sa.sv": "dda1f251defaf2cc4ddb3605991235a1ce9500fa1be75da3cd2ec1cee20450d8"
+  },
+  "gather": {
+    "passed": true,
+    "valid_requests": 1,
+    "malformed_requests": 7,
+    "request_fields_changed_immediately_after_handshake": true,
+    "read_and_output_backpressure": true,
+    "malformed_requests_issue_no_ddr_or_axis_traffic": true
+  },
+  "xsim_regression_logs": {
+    "tb_alexnet_row_stationary_sa.log": {
+      "sha256": "6a83272410d17d50bd73c5cfa9a896c2be48f23eb3403c554df2af0ab0cce7c9",
+      "pass_markers": [
+        "ALEXNET_ROW_STATIONARY_SA_TEST_PASSED contexts=22 N_tokens=44"
+      ]
+    },
+    "tb_alexnet_row_stationary_graph.log": {
+      "sha256": "7e9bf17c49cca5c9537bfe7320950ddc8c84bcba850823ddef24da9e0cf2a138",
+      "pass_markers": [
+        "ALEXNET_ROW_STATIONARY_GRAPH_TEST_PASSED commands=56104 input_tiles=1305 macs=714188480 weights=156334784 inputs=3547355 psum_reads=5219936 psum_writes=5219936 outputs=494184"
+      ]
+    },
+    "tb_alexnet_row_stationary_control.log": {
+      "sha256": "40417b2a83b3007b14714cf36be26625480064ac374c4a4d1c344f4059d7c790",
+      "pass_markers": [
+        "ALEXNET_ROW_STATIONARY_CONTROL_TEST_PASSED jobs=2 telemetry_backpressure=1"
+      ]
+    },
+    "tb_alexnet_row_stationary_weight_dma_bridge.log": {
+      "sha256": "b0ec8f7d9a14b91c0a98995b838ccf52fdcdd923e82d253bf67d033890d37021",
+      "pass_markers": [
+        "ALEXNET_ROW_STATIONARY_WEIGHT_DMA_TEST_PASSED packets=24 beats=48 valid_bytes=408"
+      ]
+    },
+    "tb_alexnet_row_stationary_gather.log": {
+      "sha256": "3af98a81db0251d89a4efe34109cff43f77dc8205a6f38bf14258e4df4679afe",
+      "pass_markers": [
+        "ALEXNET_RS_GATHER_TEST_PASSED valid=1 invalid=7 live_request_changes=1 stalls=1"
+      ]
+    }
+  },
+  "gather_source_sha256": {
+    "rtl/feeder/alexnet_row_stationary_gather.sv": "8090e466975913de5ae593d1903ac9928ca1ba229c375c88d1528081914f4e6b",
+    "tb/tb_alexnet_row_stationary_gather.sv": "db6e728a35c86d4861a72e992a84208ed5784abdbe1ae535c4660c8ecb124ae3"
   }
 }
