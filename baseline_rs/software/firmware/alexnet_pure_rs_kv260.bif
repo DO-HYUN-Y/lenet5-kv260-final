@@ -1,0 +1,4 @@
+all:
+{
+    [destination_device = pl] alexnet_pure_rs_kv260.bit
+}

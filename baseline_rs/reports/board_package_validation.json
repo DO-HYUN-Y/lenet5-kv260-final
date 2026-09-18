@@ -1,0 +1,164 @@
+{
+  "scope": "Vivado imported pure-RS custom IP sources and BD clock/DMA/address configuration; not routed timing or physical board proof",
+  "all_imported_sources_byte_identical": true,
+  "source_count": 28,
+  "source_sha256": {
+    "alexnet/rtl/control/alexnet_axi_lite_regs.sv": {
+      "sha256": "c97ba0a5a2ae72bf4ac07c6d96e3b1d48899fef7a5104091066822cda335ad30",
+      "packaged_path": "src/alexnet_axi_lite_regs.sv"
+    },
+    "alexnet/rtl/dma/alexnet_axis128_to_n8_unpacker.sv": {
+      "sha256": "823549e0f9e4a316260278c79815d05f3278ffbb9410cda67d774e06251b7402",
+      "packaged_path": "src/alexnet_axis128_to_n8_unpacker.sv"
+    },
+    "alexnet/rtl/integration/alexnet_conv_result_pool_service.sv": {
+      "sha256": "c3e31b5fcd32ac43cbeeefedf083bd0a993750b7107923240c7d1ff7898adde9",
+      "packaged_path": "src/alexnet_conv_result_pool_service.sv"
+    },
+    "alexnet/rtl/memory/alexnet_m16_patch_pingpong.sv": {
+      "sha256": "0191c505ea9a413f84e6a66839d4cc5f070f89a3320c12088d75eb5d3da1d2bd",
+      "packaged_path": "src/alexnet_m16_patch_pingpong.sv"
+    },
+    "alexnet/rtl/integration/alexnet_m8n126_inplace_pool_service.sv": {
+      "sha256": "7c8ec4048a2db2ce966c284f6b6c9ffd8823ef3b364f732f0bc7f2fbfe174fe7",
+      "packaged_path": "src/alexnet_m8n126_inplace_pool_service.sv"
+    },
+    "alexnet/rtl/memory/alexnet_m8n8_int32_partial_sum_bank.sv": {
+      "sha256": "706e9ab117da5776c13dbc9dbff1e96f373ada6358a9ba31fc3d9126d74f8504",
+      "packaged_path": "src/alexnet_m8n8_int32_partial_sum_bank.sv"
+    },
+    "alexnet/rtl/postprocess/alexnet_m8n8_parallel_requant.sv": {
+      "sha256": "e0d9a34713a4df71eb739ee563492189a856791d6b23da697a3c1d12a709b076",
+      "packaged_path": "src/alexnet_m8n8_parallel_requant.sv"
+    },
+    "alexnet/rtl/postprocess/alexnet_m8n8_requant_serializer.sv": {
+      "sha256": "31076b247ecb7eeca84ffbccb3f24e56619a233761ebc1721ced74d00a7be8b9",
+      "packaged_path": "src/alexnet_m8n8_requant_serializer.sv"
+    },
+    "baseline_rs/rtl/integration/alexnet_m8r128_row_stationary_core.sv": {
+      "sha256": "fe6385db33d9b07ec4f568fd2c9841e10d3e5b6d737bb52dc3d5172fd1d7e2a3",
+      "packaged_path": "src/alexnet_m8r128_row_stationary_core.sv"
+    },
+    "alexnet/rtl/memory/alexnet_n8_activation_bank.sv": {
+      "sha256": "e4adb972b7ece7853a67ab2f39be78adb01bb8e7bb92d1290cfd72d279030bd1",
+      "packaged_path": "src/alexnet_n8_activation_bank.sv"
+    },
+    "alexnet/rtl/memory/alexnet_n8_activation_pingpong.sv": {
+      "sha256": "c15d7e32867f3e5280800f66d14aeb2514ffa9e3a0c6fabe5e70063b17edebff",
+      "packaged_path": "src/alexnet_n8_activation_pingpong.sv"
+    },
+    "alexnet/rtl/pool/alexnet_n8_maxpool3x3.sv": {
+      "sha256": "b26224533a9cffadeb62672b8f6283c8d32533e5c0a42c8be0308693e5961ad6",
+      "packaged_path": "src/alexnet_n8_maxpool3x3.sv"
+    },
+    "alexnet/rtl/result/alexnet_n8_output_router.sv": {
+      "sha256": "9c96663cc9d2e7f1f494089c129bbf443eb1c041a6cf15c0bb10805e9eac8ca1",
+      "packaged_path": "src/alexnet_n8_output_router.sv"
+    },
+    "alexnet/rtl/postprocess/alexnet_n8_requant.sv": {
+      "sha256": "cd6b8d344b866fe572e14ef116656f2c880d1ce3446587565772bfcaa0c30c94",
+      "packaged_path": "src/alexnet_n8_requant.sv"
+    },
+    "alexnet/rtl/dma/alexnet_n8_to_axis128_packer.sv": {
+      "sha256": "dd79daee34166884400c8a9d6802693fde4d165782b9cd676a05e49a01e73a3c",
+      "packaged_path": "src/alexnet_n8_to_axis128_packer.sv"
+    },
+    "alexnet/rtl/dma/alexnet_parameter_record_loader.sv": {
+      "sha256": "dacc1a644ff1236ba9397b7d40b807c9d7e3aadab5496829cb4a2b2d22186b98",
+      "packaged_path": "src/alexnet_parameter_record_loader.sv"
+    },
+    "baseline_rs/rtl/integration/alexnet_row_stationary_accelerator_top.sv": {
+      "sha256": "7d364b8a2c42fad7b7f7ad3a4a59ad7b52d73e8e8b66ef6d68909f19afcc0b56",
+      "packaged_path": "src/alexnet_row_stationary_accelerator_top.sv"
+    },
+    "baseline_rs/rtl/integration/alexnet_row_stationary_banked_engine.sv": {
+      "sha256": "aba25ea778458e79cbd91fc8ca9ad97ccc74990abe60784dead4a8bafc9f8bea",
+      "packaged_path": "src/alexnet_row_stationary_banked_engine.sv"
+    },
+    "baseline_rs/rtl/integration/alexnet_row_stationary_ddr_engine.sv": {
+      "sha256": "3bb9a1dccd1d5483ebdc5984531a81675c58d779b091203935f9eaf4ed981baa",
+      "packaged_path": "src/alexnet_row_stationary_ddr_engine.sv"
+    },
+    "baseline_rs/rtl/feeder/alexnet_row_stationary_gather.sv": {
+      "sha256": "8090e466975913de5ae593d1903ac9928ca1ba229c375c88d1528081914f4e6b",
+      "packaged_path": "src/alexnet_row_stationary_gather.sv"
+    },
+    "baseline_rs/rtl/integration/alexnet_row_stationary_graph_engine.sv": {
+      "sha256": "828614f08f045cc34f9459c4547c7037dd8b8c75f9b4c76baf26774f71cf6a80",
+      "packaged_path": "src/alexnet_row_stationary_graph_engine.sv"
+    },
+    "baseline_rs/rtl/control/alexnet_row_stationary_graph_scheduler.sv": {
+      "sha256": "14cd106aa8129bfd46bdbf27f944699bb9ba6e7bc1911c12ee3d50883119749e",
+      "packaged_path": "src/alexnet_row_stationary_graph_scheduler.sv"
+    },
+    "baseline_rs/rtl/packed_mac/alexnet_row_stationary_pe.sv": {
+      "sha256": "c3c7b7a8a34b1a957a608fd33f51e4a4b9cd8aad7faae953139f19666621edeb",
+      "packaged_path": "src/alexnet_row_stationary_pe.sv"
+    },
+    "baseline_rs/rtl/memory/alexnet_row_stationary_psum_scratch.sv": {
+      "sha256": "cde98b03b4b31bdb3964735ee0b25000a1117824bc955d343e0fdc0230d341e0",
+      "packaged_path": "src/alexnet_row_stationary_psum_scratch.sv"
+    },
+    "baseline_rs/rtl/dma/alexnet_row_stationary_weight_dma_bridge.sv": {
+      "sha256": "038d08366221cab216dd91757ace9b99aa941a39e8e9592380a984f3d6914fe0",
+      "packaged_path": "src/alexnet_row_stationary_weight_dma_bridge.sv"
+    },
+    "baseline_rs/rtl/packed_mac/alexnet_rs_filter_row_rf.sv": {
+      "sha256": "2f15ae8ff4709d5290c0ee91f9d931ff6f5e63142dfc4d9e5e5db426fb4d7882",
+      "packaged_path": "src/alexnet_rs_filter_row_rf.sv"
+    },
+    "baseline_rs/rtl/sa/alexnet_sa_m8r128_row_stationary.sv": {
+      "sha256": "0a30bf84bcc49eeff9f964f4961a9b0702c165eccd82ce2567a3e625c1b815f1",
+      "packaged_path": "src/alexnet_sa_m8r128_row_stationary.sv"
+    },
+    "rtl/axi_dma_simple_master.sv": {
+      "sha256": "cdecebe24be6fad4d2a99403d173123c04454fa3e2ddfe34ede95bb0fa55d00d",
+      "packaged_path": "src/axi_dma_simple_master.sv"
+    }
+  },
+  "clock_nominal_mhz": 200,
+  "bd_propagated_clock_hz": 199998002,
+  "dma_parameters": {
+    "axi_dma_main": {
+      "C_INCLUDE_MM2S_DRE": "1",
+      "C_INCLUDE_S2MM_DRE": "1",
+      "C_M_AXIS_MM2S_CNTRL_TDATA_WIDTH": "32",
+      "C_M_AXIS_MM2S_TDATA_WIDTH": "128",
+      "C_M_AXI_MM2S_DATA_WIDTH": "128",
+      "C_M_AXI_S2MM_DATA_WIDTH": "128",
+      "C_M_AXI_SG_DATA_WIDTH": "32",
+      "C_S_AXIS_S2MM_STS_TDATA_WIDTH": "32",
+      "C_S_AXIS_S2MM_TDATA_WIDTH": "128",
+      "C_S_AXI_LITE_DATA_WIDTH": "32",
+      "c_include_mm2s_dre": "1",
+      "c_include_s2mm_dre": "1",
+      "c_m_axi_mm2s_data_width": "128",
+      "c_m_axi_s2mm_data_width": "128",
+      "c_m_axis_mm2s_tdata_width": "128",
+      "c_s_axis_s2mm_tdata_width": "128",
+      "C_BASEADDR": "0xA0010000",
+      "C_HIGHADDR": "0xA001FFFF"
+    },
+    "axi_dma_weight": {
+      "C_INCLUDE_MM2S_DRE": "1",
+      "C_INCLUDE_S2MM_DRE": "0",
+      "C_M_AXIS_MM2S_CNTRL_TDATA_WIDTH": "32",
+      "C_M_AXIS_MM2S_TDATA_WIDTH": "128",
+      "C_M_AXI_MM2S_DATA_WIDTH": "128",
+      "C_M_AXI_S2MM_DATA_WIDTH": "32",
+      "C_M_AXI_SG_DATA_WIDTH": "32",
+      "C_S_AXIS_S2MM_STS_TDATA_WIDTH": "32",
+      "C_S_AXIS_S2MM_TDATA_WIDTH": "32",
+      "C_S_AXI_LITE_DATA_WIDTH": "32",
+      "c_include_mm2s_dre": "1",
+      "c_include_s2mm_dre": "0",
+      "c_m_axi_mm2s_data_width": "128",
+      "c_m_axi_s2mm_data_width": "32",
+      "c_m_axis_mm2s_tdata_width": "128",
+      "c_s_axis_s2mm_tdata_width": "32",
+      "C_BASEADDR": "0xA0030000",
+      "C_HIGHADDR": "0xA003FFFF"
+    }
+  },
+  "system_hwh_sha256": "b2701669be2fb11065f06ffff091b11e553b82fa7c6e15b8cf4e68ffc63771c3"
+}

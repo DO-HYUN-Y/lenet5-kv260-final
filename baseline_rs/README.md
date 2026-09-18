@@ -56,6 +56,7 @@ OIHW/NK 파일들은 원본 frozen board export를 사용한다.
 ```sh
 python -m baseline_rs.export_row_stationary_weights --board-manifest /path/to/frozen/board_manifest.json --output-dir /path/to/rs-model
 python -m baseline_rs.validate_row_stationary_inference --rs-manifest /path/to/rs-model/rs_manifest.json --board-manifest /path/to/frozen/board_manifest.json
+python -m baseline_rs.audit_trained_ranges --model-root /path/to/rs-model
 vivado -mode batch -source baseline_rs/scripts/run_row_stationary_regressions.tcl
 python baseline_rs/audit_row_stationary_traffic.py
 python baseline_rs/run_row_stationary_full_rtl.py --model-root /path/to/rs-model --verilator /path/to/verilator
@@ -71,6 +72,11 @@ DMA, postprocessor, pool 회로를 사용한다. 외부 DMA/DDR만 testbench 서
 각 층과 pool 결과의 모든 출력 바이트를 검사하고, 다음 층은 실제 RTL 출력
 메모리를 읽는다. C++ 연산으로 SA를 대체하지 않는다.
 
+`audit_trained_ranges`는 frozen 모델의 10,344개 출력 채널별 양수·음수
+가중치 합으로 최악의 누산 범위를 구한다. Conv1의 signed INT8 입력과 이후
+ReLU/pool의 0..127 입력에서 모든 K continuation subset이 signed27,
+postbias가 signed32에 들어감을 검사한다. 이 범위 증명은 특정 추론 입력에 의존하지 않는다.
+
 ## 보드
 
 빌드 출력은 `baseline_rs/board/build/output/alexnet_pure_rs_kv260.bit`와 `.xsa`다.
@@ -81,8 +87,14 @@ slice를 위해 DRE를 켠다. main read / main write / weight read는 HP0 / HP1
 원본 coherent allocator/kernel driver와 PS 주소 map을 유지한다. camera DMA는
 추론에 사용하지 않고 quantized N8 raster를 직접 gather한다. RS ID는
 `0x52530100`, build는 `0x088000c8`다. 기존 hybrid runtime 대신 아래 runner를 쓴다.
+Vivado 환경에서 RS firmware를 만들고, KV260에서는 원본
+`alexnet/software/driver/alexnet_board.ko`를 해당 보드 kernel용으로 빌드한다.
+RS 전용 설치 script는 생성된 firmware SHA를 검사한다.
 
 ```sh
+baseline_rs/software/scripts/package_firmware.sh
+# KV260에서 실행한다.
+sudo baseline_rs/software/scripts/install_board.sh
 python -m baseline_rs.software.runtime.alexnet_row_stationary_board --model /path/to/rs-model --input /path/to/input_n8.bin --report /path/to/rs-board-result.json
 python -m baseline_rs.verify_board_result --report /path/to/rs-board-result.json --vector-root baseline_rs/build/rs_trained_vectors
 ```

@@ -1,0 +1,139 @@
+{
+  "scope": "Conservative trained-weight worst-case accumulator bounds for every legal input, including all K continuation subsets",
+  "weights_sha256": "d0cb5a3472ad4d4ded09807c8fbe4682e39eb10c29930593cb8e6ee40ea334d8",
+  "parameters_sha256": "0038da71fe9e4fc4454930b8a7f02e36d822e3cd6736388092c1429635c5a2ad",
+  "accumulator_bits": 27,
+  "postbias_bits": 32,
+  "layers": [
+    {
+      "layer": "conv1",
+      "output_channels": 64,
+      "input_range": [
+        -128,
+        127
+      ],
+      "accumulator_bounds": [
+        -1803106,
+        1803104
+      ],
+      "postbias_bounds": [
+        -1805100,
+        1801110
+      ]
+    },
+    {
+      "layer": "conv2",
+      "output_channels": 192,
+      "input_range": [
+        0,
+        127
+      ],
+      "accumulator_bounds": [
+        -4734941,
+        2420747
+      ],
+      "postbias_bounds": [
+        -4733824,
+        2420490
+      ]
+    },
+    {
+      "layer": "conv3",
+      "output_channels": 384,
+      "input_range": [
+        0,
+        127
+      ],
+      "accumulator_bounds": [
+        -3834384,
+        2850769
+      ],
+      "postbias_bounds": [
+        -3834005,
+        2850621
+      ]
+    },
+    {
+      "layer": "conv4",
+      "output_channels": 256,
+      "input_range": [
+        0,
+        127
+      ],
+      "accumulator_bounds": [
+        -7288657,
+        5362448
+      ],
+      "postbias_bounds": [
+        -7288480,
+        5361838
+      ]
+    },
+    {
+      "layer": "conv5",
+      "output_channels": 256,
+      "input_range": [
+        0,
+        127
+      ],
+      "accumulator_bounds": [
+        -5789930,
+        3496056
+      ],
+      "postbias_bounds": [
+        -5788076,
+        3496630
+      ]
+    },
+    {
+      "layer": "fc6",
+      "output_channels": 4096,
+      "input_range": [
+        0,
+        127
+      ],
+      "accumulator_bounds": [
+        -32519493,
+        23847552
+      ],
+      "postbias_bounds": [
+        -32519718,
+        23847327
+      ]
+    },
+    {
+      "layer": "fc7",
+      "output_channels": 4096,
+      "input_range": [
+        0,
+        127
+      ],
+      "accumulator_bounds": [
+        -16052800,
+        10960989
+      ],
+      "postbias_bounds": [
+        -16053149,
+        10960640
+      ]
+    },
+    {
+      "layer": "fc8",
+      "output_channels": 1000,
+      "input_range": [
+        0,
+        127
+      ],
+      "accumulator_bounds": [
+        -6542151,
+        7039102
+      ],
+      "postbias_bounds": [
+        -6542123,
+        7039278
+      ]
+    }
+  ],
+  "all_neurons_and_k_continuations_overflow_safe": true,
+  "physical_board_inference_verified": false
+}
