@@ -10,9 +10,8 @@ module axi_dma_simple_master #(
   parameter int DMA_LEN_W = 26,
   parameter logic [AXI_ADDR_W-1:0] DMA_BASE_ADDR = 32'ha001_0000,
   parameter int POLL_INTERVAL = 4,
-  // Keep the LeNet-compatible 16-byte default. AlexNet selects 8 because
-  // FC8 emits one signed INT64/N8 result per descriptor and its DMA IP enables
-  // the data realignment engines (DRE).
+  // Keep the LeNet-compatible 16-byte default. Integrations whose DMA IP
+  // enables the data realignment engines (DRE) may select 8-byte alignment.
   parameter int DMA_ALIGNMENT_BYTES = 16,
   parameter logic [31:0] DEFAULT_TIMEOUT = 32'd10_000_000
 ) (

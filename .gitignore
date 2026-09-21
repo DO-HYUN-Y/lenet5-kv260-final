@@ -21,7 +21,6 @@ vivado_*.backup.*
 __pycache__/
 *.pyc
 .venv/
-alexnet_output/
 
 # datasets (fetch via train_and_extract.py)
 data/
